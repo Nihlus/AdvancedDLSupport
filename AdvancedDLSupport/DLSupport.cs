@@ -32,7 +32,7 @@ namespace AdvancedDLSupport
             _libraryHandle = PlatformLoader.LoadLibrary(path);
         }
 
-        private T LoadFunction<T>(string symbolName) => PlatformLoader.LoadFunction<T>(_libraryHandle, symbolName);
+        public T LoadFunction<T>(string symbolName) => PlatformLoader.LoadFunction<T>(_libraryHandle, symbolName);
 
         /// <summary>
         /// Unsafe Dispose will free the loaded library handle, if any of the functions or variables are still in use
