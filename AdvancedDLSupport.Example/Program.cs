@@ -12,7 +12,14 @@ namespace AdvancedDLSupport.Example
         private static void Main()
         {
             IExample wrapper;
-            wrapper = DLSupportConstructor.ResolveAndActivateInterface<IExample>("./libDemo.so");
+            wrapper = DLSupportConstructor.ResolveAndActivateInterface<IExample>
+            (
+                Path.Combine
+                (
+                    Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                    "libDemo.so"
+                )
+            );
 
             var field = wrapper.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField)
             .First

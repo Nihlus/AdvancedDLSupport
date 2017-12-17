@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using static AdvancedDLSupport.SymbolFlags;
 
@@ -23,15 +25,33 @@ namespace AdvancedDLSupport
             {
                 return libraryHandle;
             }
-
             var errorPtr = dl.error(true);
+            if (errorPtr != IntPtr.Zero)
+            {
+                throw new LibraryLoadingException(string.Format("Library could not be loaded: {0}", Marshal.PtrToStringAuto(errorPtr)));
+            }
+            libraryHandle = dl.open
+            (
+                Path.Combine
+                (
+                    Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                    path
+                ),
+                flags,
+                true
+            );
+            if (libraryHandle != IntPtr.Zero)
+            {
+                return libraryHandle;
+            }
+
+            errorPtr = dl.error(true);
             if (errorPtr == IntPtr.Zero)
             {
                 throw new LibraryLoadingException("Library could not be loaded, and error information from dl library could not be found.");
             }
 
-            var msg = Marshal.PtrToStringAuto(errorPtr);
-            throw new LibraryLoadingException(string.Format("Library could not be loaded: {0}", msg));
+            throw new LibraryLoadingException(string.Format("Library could not be loaded: {0}", Marshal.PtrToStringAuto(errorPtr)));
         }
 
         /// <inheritdoc />
