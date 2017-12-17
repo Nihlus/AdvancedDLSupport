@@ -1,0 +1,61 @@
+{
+    "$schema" : "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
+    "settings" : {
+        "indentation" : {
+            "indentationSize" : 4,
+            "tabSize" : 4,
+            "useTabs" : false
+        },
+        "spacingRules" : {
+        },
+        "readabilityRules" : {
+        },
+        "orderingRules" : {
+            "elementOrder" : [
+                "kind",
+                "constant",
+                "accessibility",
+                "static",
+                "readonly"
+            ],
+            "systemUsingDirectivesFirst" : true,
+            "usingDirectivesPlacement" : "outsideNamespace",
+            "blankLinesBetweenUsingGroups" : "allow"
+        },
+        "namingRules" : {
+            "allowCommonHungarianPrefixes" : true,
+            "allowedHungarianPrefixes" : [
+                "gl"
+            ]
+        },
+        "maintainabilityRules" : {
+            "topLevelTypes" : [
+                "class",
+                "interface",
+                "struct",
+                "enum"
+            ]
+        },
+        "layoutRules" : {
+            "newlineAtEndOfFile" : "require",
+            "allowConsecutiveUsings" : false
+        },
+        "documentationRules" : {
+            "companyName" : "",
+            "copyrightText" : "",
+            "variables" : {
+                "licenseFile": "LICENSE",
+                "year" : "2017",
+                "author" : ""
+            },
+            "xmlHeader" : false,
+            "documentInterfaces" : true,
+            "documentExposedElements" : true,
+            "documentInternalElements" : true,
+            "documentPrivateElements" : false,
+            "documentPrivateFields" : false,
+            "documentationCulture" : "en-US",
+            "fileNamingConvention" : "stylecop"
+        }
+    }
+}
