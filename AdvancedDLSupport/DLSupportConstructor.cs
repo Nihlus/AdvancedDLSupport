@@ -107,12 +107,13 @@ namespace AdvancedDLSupport
                 // Let's define our methods!
                 foreach (var method in interfaceType.GetMethods())
                 {
+                    var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
                     var parameters = method.GetParameters();
 
                     // Declare a delegate type!
                     var delegateBuilder = moduleBuilder.DefineType
                     (
-                        $"{method.Name}_dt",
+                        $"{method.Name}_dt_{uniqueIdentifier}",
                         TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AnsiClass | TypeAttributes.AutoClass,
                         typeof(MulticastDelegate)
                     );
@@ -139,7 +140,7 @@ namespace AdvancedDLSupport
                     var delegateBuilderType = delegateBuilder.CreateTypeInfo();
 
                     // Create a delegate field!
-                    var delegateField = typeBuilder.DefineField($"{method.Name}_dtm", delegateBuilderType, FieldAttributes.Public);
+                    var delegateField = typeBuilder.DefineField($"{method.Name}_dtm_{uniqueIdentifier}", delegateBuilderType, FieldAttributes.Public);
                     var methodBuilder = typeBuilder.DefineMethod
                     (
                         method.Name,
