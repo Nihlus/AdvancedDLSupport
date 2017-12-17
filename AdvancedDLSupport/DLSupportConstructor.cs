@@ -118,7 +118,8 @@ namespace AdvancedDLSupport
 
                     var delegateCtorBuilder = delegateBuilder.DefineConstructor
                     (
-                        MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public, CallingConventions.Standard,
+                        MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public,
+                        CallingConventions.Standard,
                         new Type[] { typeof(object), typeof(System.IntPtr) }
                     );
 
