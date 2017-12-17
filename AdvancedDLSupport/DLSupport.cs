@@ -33,9 +33,9 @@ public class DLSupport
 
     [DllImport("kernel32.dll")]
     static extern bool FreeLibrary(IntPtr handle);
-    
+
     private IntPtr libraryHandle {get;set;}
-    
+
     public DLSupport(string path)
     {
         if (IsOnWindows)
@@ -67,7 +67,7 @@ public class DLSupport
 
     /// <summary>
     /// Unsafe Dispose will free the loaded library handle, if any of the functions or variables are still in use after this library handle is freed,
-    /// segmentation fault will occur and can potentially crash the Runtime. Do note however that Library Handle can be shared between the Runtime and this class, 
+    /// segmentation fault will occur and can potentially crash the Runtime. Do note however that Library Handle can be shared between the Runtime and this class,
     /// so if that library handle is freed then both Runtime and this class will be affected.
     /// In normal use case, this shouldn't be used at all.
     /// </summary>
@@ -103,7 +103,7 @@ public class DLSupport
 
         if (string.IsNullOrWhiteSpace(typeName))
             typeName = $"Generated_{type.Name}";
-        
+
         //typeName = $"{typeName}{Guid.NewGuid().ToString().Replace("-", "_")}";
         // Let's create a new type!
         var typeBuilder = moduleBuilder.DefineType(typeName,
@@ -119,7 +119,7 @@ public class DLSupport
         var il = constructorBuilder.GetILGenerator();
         il.Emit(OpCodes.Ldarg_0); // Load instance
         il.Emit(OpCodes.Ldarg_1); // Load libraryPath parameter
-        il.Emit(OpCodes.Call, typeof(DLSupport).GetConstructors().First(I => 
+        il.Emit(OpCodes.Call, typeof(DLSupport).GetConstructors().First(I =>
             I.GetParameters().Length == 1 &&
             I.GetParameters()[0].ParameterType == typeof(string)));
         // Let's define our methods!
@@ -128,31 +128,31 @@ public class DLSupport
             var parameters = method.GetParameters();
 
             // Declare a delegate type!
-            var delegateBuilder = moduleBuilder.DefineType($"{method.Name}_dt", 
+            var delegateBuilder = moduleBuilder.DefineType($"{method.Name}_dt",
                                                     TypeAttributes.Class | TypeAttributes.Public |
                                                     TypeAttributes.Sealed | TypeAttributes.AnsiClass |
                                                     TypeAttributes.AutoClass, typeof(MulticastDelegate));
 
             ConstructorBuilder delegateCtorBuilder = delegateBuilder.DefineConstructor(MethodAttributes.RTSpecialName | MethodAttributes.HideBySig |
-                                                                                  MethodAttributes.Public, CallingConventions.Standard, 
+                                                                                  MethodAttributes.Public, CallingConventions.Standard,
                                                                                   new Type[] { typeof(object), typeof(System.IntPtr) });
 
             delegateCtorBuilder.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
 
-            var delegateMethodBuilder = delegateBuilder.DefineMethod("Invoke", MethodAttributes.Public | MethodAttributes.HideBySig | 
-                                                                   MethodAttributes.NewSlot | MethodAttributes.Virtual, 
+            var delegateMethodBuilder = delegateBuilder.DefineMethod("Invoke", MethodAttributes.Public | MethodAttributes.HideBySig |
+                                                                   MethodAttributes.NewSlot | MethodAttributes.Virtual,
                                                                    method.ReturnType, parameters.Select(I => I.ParameterType).ToArray());
 
             delegateMethodBuilder.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
 
-            var delegateBuilderType = delegateBuilder.CreateType();
+            var delegateBuilderType = delegateBuilder.CreateTypeInfo();
 
             // Create a delegate property!
             var delegateField = typeBuilder.DefineField($"{method.Name}_dtm", delegateBuilderType, FieldAttributes.Public);
-            var methodBuilder = typeBuilder.DefineMethod(method.Name, 
-                MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.Virtual | MethodAttributes.HideBySig | MethodAttributes.NewSlot, 
-                System.Reflection.CallingConventions.Standard, 
-                method.ReturnType, 
+            var methodBuilder = typeBuilder.DefineMethod(method.Name,
+                MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.Virtual | MethodAttributes.HideBySig | MethodAttributes.NewSlot,
+                System.Reflection.CallingConventions.Standard,
+                method.ReturnType,
                 parameters.Select(I => I.ParameterType).ToArray());
 
             // Let's create a method that simply invoke the delegate
@@ -175,7 +175,7 @@ public class DLSupport
         {
             if (property.CanRead)
             {
-                
+
             }
 
             if (property.CanWrite)
@@ -184,6 +184,6 @@ public class DLSupport
             }
         }
         il.Emit(OpCodes.Ret);
-        return (T)Activator.CreateInstance(typeBuilder.CreateType(), libraryPath);
+        return (T)Activator.CreateInstance(typeBuilder.CreateTypeInfo(), libraryPath);
     }
 }

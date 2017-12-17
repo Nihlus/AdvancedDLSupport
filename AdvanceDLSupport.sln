@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "metadata", ".\", "{F1A57014-71CE-4032-A652-01B7E35E14DB}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDLSupport", "AdvancedDLSupport\AdvancedDLSupport.csproj", "{7EDC8F84-DF28-4C3C-AF56-F283B694218A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDLSupport.Example", "AdvancedDLSupport.Example\AdvancedDLSupport.Example.csproj", "{CE54588C-3E60-46F9-BA3E-B1778208A369}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7EDC8F84-DF28-4C3C-AF56-F283B694218A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EDC8F84-DF28-4C3C-AF56-F283B694218A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EDC8F84-DF28-4C3C-AF56-F283B694218A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EDC8F84-DF28-4C3C-AF56-F283B694218A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE54588C-3E60-46F9-BA3E-B1778208A369}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE54588C-3E60-46F9-BA3E-B1778208A369}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE54588C-3E60-46F9-BA3E-B1778208A369}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE54588C-3E60-46F9-BA3E-B1778208A369}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
