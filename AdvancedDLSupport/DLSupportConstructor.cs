@@ -3,13 +3,12 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.InteropServices;
 
-#pragma warning disable SA1600, CS1591 // Elements should be documented
-#pragma warning disable SA1300 // Element should begin with an uppercase letter
-#pragma warning disable SA1117 // Parameter should be placed on the same line
 namespace AdvancedDLSupport
 {
+    /// <summary>
+    /// Builder class for anonymous types that bind to native libraries.
+    /// </summary>
     public static class DLSupportConstructor
     {
         private static ModuleBuilder moduleBuilder;
@@ -80,10 +79,9 @@ namespace AdvancedDLSupport
                 // Let's create a new type!
                 var typeBuilder = moduleBuilder.DefineType
                 (
-                    typeName,
-                    TypeAttributes.AutoClass | TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed,
-                    typeof(DLSupport),
-                    new[] { interfaceType }
+                    MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public,
+                    CallingConventions.Standard,
+                    new Type[] { typeof(object), typeof(System.IntPtr) }
                 );
 
                 // Now the constructor
