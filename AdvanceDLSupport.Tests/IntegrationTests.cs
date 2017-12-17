@@ -28,7 +28,7 @@ namespace AdvanceDLSupport.Tests
 			var strct =  new TestStruct { A = value };
 
 			var expected = value * multiplier;
-			var actual = _fixture.Library.Multiply(ref strct, multiplier);
+			var actual = _fixture.Library.DoStructMath(ref strct, multiplier);
 
 			Assert.Equal(expected, actual);
 		}

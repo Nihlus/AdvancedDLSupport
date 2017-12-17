@@ -117,12 +117,12 @@ namespace AdvancedDLSupport
                         typeof(MulticastDelegate)
                     );
 
-                var delegateCtorBuilder = delegateBuilder.DefineConstructor
-                (
-                    MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public,
-                    CallingConventions.Standard,
-                    new Type[] { typeof(object), typeof(System.IntPtr) }
-                );
+                    var delegateCtorBuilder = delegateBuilder.DefineConstructor
+                    (
+                        MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public,
+                        CallingConventions.Standard,
+                        new Type[] { typeof(object), typeof(System.IntPtr) }
+                    );
 
                     delegateCtorBuilder.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
 

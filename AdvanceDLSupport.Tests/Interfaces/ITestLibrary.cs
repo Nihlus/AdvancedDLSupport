@@ -6,7 +6,7 @@ namespace AdvanceDLSupport.Tests.Interfaces
 {
     public interface ITestLibrary
     {
-        int Multiply(ref TestStruct struc, int multiplier);
+        int DoStructMath(ref TestStruct struc, int multiplier);
         int Multiply(int value, int multiplier);
     }
 }
