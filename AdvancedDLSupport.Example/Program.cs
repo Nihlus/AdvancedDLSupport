@@ -8,7 +8,7 @@ namespace AdvancedDLSupport.Example
 {
     internal class Program
     {
-        private static void Main(string[] args)
+        private static void Main()
         {
             IExample wrapper;
             try
@@ -18,8 +18,9 @@ namespace AdvancedDLSupport.Example
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                throw e;
+                throw;
             }
+
             Console.WriteLine("Wrapper loaded!");
             var field = wrapper.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField)
             .First

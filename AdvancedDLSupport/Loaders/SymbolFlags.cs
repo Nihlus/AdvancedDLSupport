@@ -3,7 +3,7 @@
 namespace AdvancedDLSupport
 {
     /// <summary>
-    /// <see cref="LinuxPlatformLoader.dlopen"/> flags. Taken from the source code of
+    /// <see cref="dl.open"/> flags. Taken from the source code of
     /// GNU libc: <a href="https://github.com/lattera/glibc/blob/master/bits/dlfcn.h"/>
     /// </summary>
     public enum SymbolFlags
