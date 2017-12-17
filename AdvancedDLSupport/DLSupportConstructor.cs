@@ -1,27 +1,28 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
-using System.Linq;
 
 #pragma warning disable SA1600, CS1591 // Elements should be documented
 #pragma warning disable SA1300 // Element should begin with an uppercase letter
-
+#pragma warning disable SA1117 // Parameter should be placed on the same line
 namespace AdvancedDLSupport
 {
     public static class DLSupportConstructor
     {
-        static ModuleBuilder moduleBuilder;
-        static AssemblyBuilder assemblyBuilder;
+        private static ModuleBuilder moduleBuilder;
+        private static AssemblyBuilder assemblyBuilder;
 
         static DLSupportConstructor()
         {
             assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("DLSupportAssembly"), AssemblyBuilderAccess.Run);
             moduleBuilder = assemblyBuilder.DefineDynamicModule("DLSupportModule");
         }
-        static bool IsMethodParametersUnacceptable(MethodInfo info) =>
+
+        private static bool IsMethodParametersUnacceptable(MethodInfo info) =>
             info.ReturnParameter.ParameterType.IsClass ||
-            info.GetParameters().Any(I => I.ParameterType.IsClass);
+            info.GetParameters().Any(p => p.ParameterType.IsClass);
 
         /// <summary>
         /// Attempts to resolve interface to C Library via C# Interface by dynamically creating C# Class during runtime
@@ -31,35 +32,51 @@ namespace AdvancedDLSupport
         {
             var interfaceType = typeof(T);
             if (!interfaceType.IsInterface)
+            {
                 throw new Exception("The generic argument type must be an interface! Please review the documentation on how to use this.");
+            }
 
-            if (interfaceType.GetMethods().Any(I => IsMethodParametersUnacceptable(I)))
+            if (interfaceType.GetMethods().Any(m => IsMethodParametersUnacceptable(m)))
+            {
                 throw new Exception("One or more method contains a parameter/return type that is a class, P/Invoke cannot marshal class! for C Library!");
+            }
 
             // Let's determine a name for our class!
             var typeName = interfaceType.Name.StartsWith("I") ? interfaceType.Name.Substring(1) : $"Generated_{interfaceType.Name}";
 
             if (string.IsNullOrWhiteSpace(typeName))
+            {
                 typeName = $"Generated_{interfaceType.Name}";
+            }
 
-            //typeName = $"{typeName}{Guid.NewGuid().ToString().Replace("-", "_")}";
+            // typeName = $"{typeName}{Guid.NewGuid().ToString().Replace("-", "_")}";
             // Let's create a new type!
-            var typeBuilder = moduleBuilder.DefineType(typeName,
+            var typeBuilder = moduleBuilder.DefineType
+            (
+                typeName,
                 TypeAttributes.AutoClass | TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed,
-                typeof(DLSupport), new [] {interfaceType});
+                typeof(DLSupport),
+                new[] { interfaceType }
+            );
 
-                    // Now the constructor
-            var constructorBuilder = typeBuilder.DefineConstructor(
+            // Now the constructor
+            var constructorBuilder = typeBuilder.DefineConstructor
+            (
                 MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.HideBySig,
-                CallingConventions.Standard, new [] {typeof(string)});
+                CallingConventions.Standard,
+                new[] { typeof(string) }
+            );
 
             constructorBuilder.DefineParameter(1, ParameterAttributes.In, "libraryPath");
             var il = constructorBuilder.GetILGenerator();
             il.Emit(OpCodes.Ldarg_0); // Load instance
             il.Emit(OpCodes.Ldarg_1); // Load libraryPath parameter
-            il.Emit(OpCodes.Call, typeof(DLSupport).GetConstructors().First(I =>
-                I.GetParameters().Length == 1 &&
-                I.GetParameters()[0].ParameterType == typeof(string)));
+            il.Emit(OpCodes.Call, typeof(DLSupport).GetConstructors().First
+            (
+                p =>
+                p.GetParameters().Length == 1 &&
+                p.GetParameters()[0].ParameterType == typeof(string))
+            );
 
             // Let's define our methods!
             foreach (var method in interfaceType.GetMethods())
@@ -67,20 +84,28 @@ namespace AdvancedDLSupport
                 var parameters = method.GetParameters();
 
                 // Declare a delegate type!
-                var delegateBuilder = moduleBuilder.DefineType($"{method.Name}_dt",
-                                                        TypeAttributes.Class | TypeAttributes.Public |
-                                                        TypeAttributes.Sealed | TypeAttributes.AnsiClass |
-                                                        TypeAttributes.AutoClass, typeof(MulticastDelegate));
+                var delegateBuilder = moduleBuilder.DefineType
+                (
+                    $"{method.Name}_dt",
+                    TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AnsiClass | TypeAttributes.AutoClass,
+                    typeof(MulticastDelegate)
+                );
 
-                var delegateCtorBuilder = delegateBuilder.DefineConstructor(MethodAttributes.RTSpecialName | MethodAttributes.HideBySig |
-                                                                                    MethodAttributes.Public, CallingConventions.Standard,
-                                                                                    new Type[] { typeof(object), typeof(System.IntPtr) });
+                var delegateCtorBuilder = delegateBuilder.DefineConstructor
+                (
+                    MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public, CallingConventions.Standard,
+                    new Type[] { typeof(object), typeof(System.IntPtr) }
+                );
 
                 delegateCtorBuilder.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
 
-                var delegateMethodBuilder = delegateBuilder.DefineMethod("Invoke", MethodAttributes.Public | MethodAttributes.HideBySig |
-                                                                    MethodAttributes.NewSlot | MethodAttributes.Virtual,
-                                                                    method.ReturnType, parameters.Select(I => I.ParameterType).ToArray());
+                var delegateMethodBuilder = delegateBuilder.DefineMethod
+                (
+                    "Invoke",
+                    MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual,
+                    method.ReturnType,
+                    parameters.Select(p => p.ParameterType).ToArray()
+                );
 
                 delegateMethodBuilder.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
 
@@ -88,18 +113,23 @@ namespace AdvancedDLSupport
 
                 // Create a delegate field!
                 var delegateField = typeBuilder.DefineField($"{method.Name}_dtm", delegateBuilderType, FieldAttributes.Public);
-                var methodBuilder = typeBuilder.DefineMethod(method.Name,
+                var methodBuilder = typeBuilder.DefineMethod
+                (
+                    method.Name,
                     MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.Virtual | MethodAttributes.HideBySig | MethodAttributes.NewSlot,
                     System.Reflection.CallingConventions.Standard,
                     method.ReturnType,
-                    parameters.Select(I => I.ParameterType).ToArray());
+                    parameters.Select(p => p.ParameterType).ToArray()
+                );
 
                 // Let's create a method that simply invoke the delegate
                 var methodIL = methodBuilder.GetILGenerator();
                 methodIL.Emit(OpCodes.Ldarg_0);
                 methodIL.Emit(OpCodes.Ldfld, delegateField);
-                for (int I = 1; I <= parameters.Length; I++)
-                    methodIL.Emit(OpCodes.Ldarg, I);
+                for (int p = 1; p <= parameters.Length; p++)
+                {
+                    methodIL.Emit(OpCodes.Ldarg, p);
+                }
                 methodIL.EmitCall(OpCodes.Call, delegateBuilderType.GetMethod("Invoke"), null);
                 methodIL.Emit(OpCodes.Ret);
 
@@ -114,12 +144,10 @@ namespace AdvancedDLSupport
             {
                 if (property.CanRead)
                 {
-
                 }
 
                 if (property.CanWrite)
                 {
-
                 }
             }
             il.Emit(OpCodes.Ret);
