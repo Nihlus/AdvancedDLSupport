@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+  <Target Name="CompileCProject" AfterTargets="AfterBuild">
+    <exec Command="clang -std=c99 -shared -fPIC -olibDemo.so Example.c" />
+    <Copy SourceFiles="libDemo.so" DestinationFolder="$(OutDir)" />
+  </Target>
+</Project>
