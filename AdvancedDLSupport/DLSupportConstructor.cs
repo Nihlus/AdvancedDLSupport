@@ -79,9 +79,10 @@ namespace AdvancedDLSupport
                 // Let's create a new type!
                 var typeBuilder = moduleBuilder.DefineType
                 (
-                    MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public,
-                    CallingConventions.Standard,
-                    new Type[] { typeof(object), typeof(System.IntPtr) }
+                    typeName,
+                    TypeAttributes.AutoClass | TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed,
+                    typeof(DLSupport),
+                    new[] { interfaceType }
                 );
 
                 // Now the constructor

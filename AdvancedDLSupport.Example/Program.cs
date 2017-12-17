@@ -13,11 +13,7 @@ namespace AdvancedDLSupport.Example
             IExample wrapper;
             wrapper = DLSupportConstructor.ResolveAndActivateInterface<IExample>
             (
-                Path.Combine
-                (
-                    Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                    "libDemo.so"
-                )
+                "./libDemo.so"
             );
 
             var field = wrapper.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField)
