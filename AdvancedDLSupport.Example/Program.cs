@@ -12,17 +12,8 @@ namespace AdvancedDLSupport.Example
         private static void Main()
         {
             IExample wrapper;
-            try
-            {
-                wrapper = DLSupportConstructor.ResolveAndActivateInterface<IExample>("./libDemo.so");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                throw;
-            }
+            wrapper = DLSupportConstructor.ResolveAndActivateInterface<IExample>("./libDemo.so");
 
-            Console.WriteLine("Wrapper loaded!");
             var field = wrapper.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField)
             .First
             (
@@ -30,15 +21,6 @@ namespace AdvancedDLSupport.Example
             );
 
             var val = field.GetValue(wrapper);
-            if (val == null)
-            {
-                Console.WriteLine("DoMath_dtm is null!");
-            }
-            else
-            {
-                Console.WriteLine("DoMath_dtm is not null!");
-            }
-
             var struc = new MyStruct { A = 22 };
             Console.WriteLine("{0}", wrapper.DoMath(ref struc));
         }
