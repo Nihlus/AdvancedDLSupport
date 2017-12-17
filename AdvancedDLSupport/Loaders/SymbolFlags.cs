@@ -11,7 +11,7 @@ namespace AdvancedDLSupport
         /// <summary>
         /// The default flags.
         /// </summary>
-        RTLD_DEFAULT = RTLD_LOCAL,
+        RTLD_DEFAULT = RTLD_NOW,
 
         /// <summary>
         /// Lazy function call binding.

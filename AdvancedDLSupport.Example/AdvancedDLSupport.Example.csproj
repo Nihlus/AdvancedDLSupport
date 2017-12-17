@@ -23,7 +23,7 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" />
   </ItemGroup>
   <Target Name="CompileCProject" AfterTargets="AfterBuild">
-    <exec Command="clang -std=c99 -shared -fPIC -oc\libDemo.so c\src\Example.c" />
+    <exec Command="clang -std=c99 -shared -fPIC -oc/libDemo.so c/src/Example.c" />
     <Copy SourceFiles="c\libDemo.so" DestinationFolder="$(OutDir)" />
   </Target>
 </Project>

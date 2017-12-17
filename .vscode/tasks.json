@@ -2,12 +2,12 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "taskName": "build",
+            "label": "build",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/AdvancedDLSupport.csproj"
+                "${workspaceFolder}/AdvancedDLSupport.Example/AdvancedDLSupport.Example.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

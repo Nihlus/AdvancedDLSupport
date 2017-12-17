@@ -17,8 +17,8 @@ namespace AdvancedDLSupport
     /// </summary>
     internal static class dl
     {
-        private const string LibraryNameUnix = "libdl";
-        private const string LibraryNameBSD = "libc";
+        private const string LibraryNameUnix = "dl";
+        private const string LibraryNameBSD = "c";
 
         public static IntPtr open(string fileName, SymbolFlags flags = RTLD_DEFAULT, bool useCLibrary = false)
         {

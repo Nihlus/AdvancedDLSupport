@@ -20,15 +20,26 @@ namespace AdvancedDLSupport
             moduleBuilder = assemblyBuilder.DefineDynamicModule("DLSupportModule");
         }
 
-        private static bool IsMethodParametersUnacceptable(MethodInfo info) =>
-            info.ReturnParameter.ParameterType.IsClass ||
-            info.GetParameters().Any(p => p.ParameterType.IsClass);
+        private static bool IsMethodParametersUnacceptable(MethodInfo info)
+        {
+            if (info.ReturnParameter.ParameterType.IsClass)
+            {
+                if (info.ReturnParameter.ParameterType != typeof(Delegate))
+                {
+                    return true;
+                }
+            }
+            return !info.GetParameters().Any(p => p.ParameterType.IsValueType || p.ParameterType.IsByRef || p.ParameterType == typeof(Delegate));
+        }
 
         /// <summary>
         /// Attempts to resolve interface to C Library via C# Interface by dynamically creating C# Class during runtime
         /// and return a new instance of the said class. This approach does not resolve any C++ implication such as name manglings.
         /// </summary>
-        public static T ResolveAndActivateInterface<T>(string libraryPath)
+        /// <param name="libraryPath">Path to Native Library to bind interface to.</param>
+        /// <typeparam name="T">P/Invoke Interface Type to bind Native Library to.</typeparam>
+        /// <returns>Returns a generated type object that binds to native library with provided interface.</returns>
+        public static T ResolveAndActivateInterface<T>(string libraryPath) where T : class
         {
             var interfaceType = typeof(T);
             if (!interfaceType.IsInterface)
@@ -38,7 +49,7 @@ namespace AdvancedDLSupport
 
             if (interfaceType.GetMethods().Any(m => IsMethodParametersUnacceptable(m)))
             {
-                throw new Exception("One or more method contains a parameter/return type that is a class, P/Invoke cannot marshal class! for C Library!");
+                throw new Exception("One or more method contains a parameter/return type that is a class, P/Invoke cannot marshal class for C Library!");
             }
 
             // Let's determine a name for our class!

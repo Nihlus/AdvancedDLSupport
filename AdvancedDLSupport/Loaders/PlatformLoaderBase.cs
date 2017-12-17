@@ -9,11 +9,8 @@ namespace AdvancedDLSupport
     public abstract class PlatformLoaderBase : IPlatformLoader
     {
         /// <inheritdoc />
-        public T LoadFunction<T>(IntPtr library, string symbolName)
-        {
-            var symbolPtr = LoadSymbol(library, symbolName);
-            return Marshal.GetDelegateForFunctionPointer<T>(symbolPtr);
-        }
+        public T LoadFunction<T>(IntPtr library, string symbolName) =>
+            Marshal.GetDelegateForFunctionPointer<T>(LoadSymbol(library, symbolName));
 
         /// <inheritdoc />
         public abstract IntPtr LoadLibrary(string path);

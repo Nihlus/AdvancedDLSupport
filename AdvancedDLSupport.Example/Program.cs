@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -13,7 +14,7 @@ namespace AdvancedDLSupport.Example
             IExample wrapper;
             try
             {
-                wrapper = DLSupport.ResolveAndActivateInterface<IExample>("./libDemo.so");
+                wrapper = DLSupportConstructor.ResolveAndActivateInterface<IExample>("./libDemo.so");
             }
             catch (Exception e)
             {
