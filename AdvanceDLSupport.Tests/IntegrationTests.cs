@@ -41,5 +41,34 @@ namespace AdvanceDLSupport.Tests
 
 			Assert.Equal(expected, actual);
 		}
+
+		[Property]
+		public void CanCallFunctionWithDifferentEntryPoint(int value, int multiplier)
+		{
+			var strct =  new TestStruct { A = value };
+
+			var expected = value * multiplier;
+			var actual = _fixture.Library.Multiply(ref strct, multiplier);
+
+			Assert.Equal(expected, actual);
+		}
+
+		[Property]
+		public void CanCallFunctionWithDifferentCallingConvention(int value, int other)
+		{
+			var expected = value - other;
+			var actual = _fixture.Library.CDeclSubtract(value, other);
+
+			Assert.Equal(expected, actual);
+		}
+
+		[Property]
+		public void CanCallDuplicateFunction(int value, int other)
+		{
+			var expected = value - other;
+			var actual = _fixture.Library.Subtract(value, other);
+
+			Assert.Equal(expected, actual);
+		}
 	}
 }

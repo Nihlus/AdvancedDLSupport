@@ -19,7 +19,7 @@ namespace AdvancedDLSupport.Example
             var field = wrapper.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField)
             .First
             (
-                f => f.Name == "DoMath_dtm"
+                f => f.Name.StartsWith("DoMath_dtm")
             );
 
             var val = field.GetValue(wrapper);
