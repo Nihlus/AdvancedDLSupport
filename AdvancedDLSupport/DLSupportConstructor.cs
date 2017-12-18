@@ -3,6 +3,8 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.InteropServices;
+using AdvancedDLSupport.Attributes;
 
 namespace AdvancedDLSupport
 {
@@ -110,6 +112,9 @@ namespace AdvancedDLSupport
                     var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
                     var parameters = method.GetParameters();
 
+                    var metadataAttribute = method.GetCustomAttribute<NativeFunctionAttribute>() ??
+                                            new NativeFunctionAttribute(method.Name);
+
                     // Declare a delegate type!
                     var delegateBuilder = moduleBuilder.DefineType
                     (
@@ -117,6 +122,15 @@ namespace AdvancedDLSupport
                         TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AnsiClass | TypeAttributes.AutoClass,
                         typeof(MulticastDelegate)
                     );
+
+                    var attributeConstructors = typeof(UnmanagedFunctionPointerAttribute).GetConstructors();
+                    var functionPointerAttributeBuilder = new CustomAttributeBuilder
+                    (
+                        attributeConstructors[1],
+                        new object[] { metadataAttribute.CallingConvention }
+                    );
+
+                    delegateBuilder.SetCustomAttribute(functionPointerAttributeBuilder);
 
                     var delegateCtorBuilder = delegateBuilder.DefineConstructor
                     (
@@ -161,11 +175,13 @@ namespace AdvancedDLSupport
                     methodIL.EmitCall(OpCodes.Call, delegateBuilderType.GetMethod("Invoke"), null);
                     methodIL.Emit(OpCodes.Ret);
 
+                    var entrypointName = metadataAttribute.Entrypoint ?? method.Name;
+
                     // Assign Delegate from Function Pointer
                     il.Emit(OpCodes.Ldarg_0); // This is for storing field delegate, it needs the "this" reference
                     il.Emit(OpCodes.Ldarg_0);
-                    il.Emit(OpCodes.Ldstr, method.Name);
-                    il.EmitCall(OpCodes.Call, typeof(DLSupport).GetMethod("LoadFunction").MakeGenericMethod(delegateBuilderType), null);
+                    il.Emit(OpCodes.Ldstr, entrypointName);
+                    il.EmitCall(OpCodes.Call, typeof(DLSupport).GetMethod(nameof(DLSupport.LoadFunction)).MakeGenericMethod(delegateBuilderType), null);
                     il.Emit(OpCodes.Stfld, delegateField);
                 }
                 foreach (var property in interfaceType.GetProperties())
