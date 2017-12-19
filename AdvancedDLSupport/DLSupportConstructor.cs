@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.InteropServices;
-using AdvancedDLSupport.Attributes;
 
 namespace AdvancedDLSupport
 {
@@ -96,10 +95,10 @@ namespace AdvancedDLSupport
                 );
 
                 constructorBuilder.DefineParameter(1, ParameterAttributes.In, "libraryPath");
-                var il = constructorBuilder.GetILGenerator();
-                il.Emit(OpCodes.Ldarg_0); // Load instance
-                il.Emit(OpCodes.Ldarg_1); // Load libraryPath parameter
-                il.Emit(OpCodes.Call, typeof(DLSupport).GetConstructors().First
+                var ctorIL = constructorBuilder.GetILGenerator();
+                ctorIL.Emit(OpCodes.Ldarg_0); // Load instance
+                ctorIL.Emit(OpCodes.Ldarg_1); // Load libraryPath parameter
+                ctorIL.Emit(OpCodes.Call, typeof(DLSupport).GetConstructors().First
                 (
                     p =>
                     p.GetParameters().Length == 1 &&
@@ -112,9 +111,6 @@ namespace AdvancedDLSupport
                     var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
                     var parameters = method.GetParameters();
 
-                    var metadataAttribute = method.GetCustomAttribute<NativeFunctionAttribute>() ??
-                                            new NativeFunctionAttribute(method.Name);
-
                     // Declare a delegate type!
                     var delegateBuilder = moduleBuilder.DefineType
                     (
@@ -122,15 +118,6 @@ namespace AdvancedDLSupport
                         TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AnsiClass | TypeAttributes.AutoClass,
                         typeof(MulticastDelegate)
                     );
-
-                    var attributeConstructors = typeof(UnmanagedFunctionPointerAttribute).GetConstructors();
-                    var functionPointerAttributeBuilder = new CustomAttributeBuilder
-                    (
-                        attributeConstructors[1],
-                        new object[] { metadataAttribute.CallingConvention }
-                    );
-
-                    delegateBuilder.SetCustomAttribute(functionPointerAttributeBuilder);
 
                     var delegateCtorBuilder = delegateBuilder.DefineConstructor
                     (
@@ -175,26 +162,76 @@ namespace AdvancedDLSupport
                     methodIL.EmitCall(OpCodes.Call, delegateBuilderType.GetMethod("Invoke"), null);
                     methodIL.Emit(OpCodes.Ret);
 
-                    var entrypointName = metadataAttribute.Entrypoint ?? method.Name;
-
                     // Assign Delegate from Function Pointer
-                    il.Emit(OpCodes.Ldarg_0); // This is for storing field delegate, it needs the "this" reference
-                    il.Emit(OpCodes.Ldarg_0);
-                    il.Emit(OpCodes.Ldstr, entrypointName);
-                    il.EmitCall(OpCodes.Call, typeof(DLSupport).GetMethod(nameof(DLSupport.LoadFunction)).MakeGenericMethod(delegateBuilderType), null);
-                    il.Emit(OpCodes.Stfld, delegateField);
+                    ctorIL.Emit(OpCodes.Ldarg_0); // This is for storing field delegate, it needs the "this" reference
+                    ctorIL.Emit(OpCodes.Ldarg_0);
+                    ctorIL.Emit(OpCodes.Ldstr, method.Name);
+                    ctorIL.EmitCall(OpCodes.Call, typeof(DLSupport).GetMethod("LoadFunction").MakeGenericMethod(delegateBuilderType), null);
+                    ctorIL.Emit(OpCodes.Stfld, delegateField);
                 }
                 foreach (var property in interfaceType.GetProperties())
                 {
+                    var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
+
+                    // Note, the field is going to have to be a pointer, because it is pointing to global variable
+                    var propertyFieldBuilder = typeBuilder.DefineField
+                    (
+                        $"{property.Name}_{uniqueIdentifier}",
+                        property.PropertyType.MakePointerType(),
+                        FieldAttributes.Private
+                    );
+
+                    var propertyBuilder = typeBuilder.DefineProperty
+                    (
+                        property.Name,
+                        PropertyAttributes.None,
+                        CallingConventions.HasThis,
+                        property.PropertyType,
+                        property.GetIndexParameters().Select(p => p.ParameterType).ToArray()
+                    );
+
                     if (property.CanRead)
                     {
+                        var getterMethod = typeBuilder.DefineMethod
+                        (
+                            $"{property.Name}Getter_{uniqueIdentifier}",
+                            MethodAttributes.Public,
+                            CallingConventions.Standard,
+                            property.PropertyType,
+                            null
+                        );
+                        System.Linq.Expressions.Expression.Lambda(null, true).Compile().
+                        var getterIL = getterMethod.GetILGenerator();
+                        getterIL.Emit(OpCodes.Ldarg_0);
+                        getterIL.Emit(OpCodes.Ldflda, propertyFieldBuilder);
+                        getterIL.Emit(OpCodes.Ret);
+
+                        propertyBuilder.SetGetMethod(getterMethod);
                     }
 
                     if (property.CanWrite)
                     {
+                        var setterMethod = typeBuilder.DefineMethod
+                        (
+                            $"{property.Name}Getter_{uniqueIdentifier}",
+                            MethodAttributes.Public,
+                            CallingConventions.Standard,
+                            typeof(void),
+                            new[] { property.PropertyType }
+                        );
+
+                        var setterIL = setterMethod.GetILGenerator();
+                        setterIL.Emit(OpCodes.Ldarg_0);
+                        setterIL.Emit(OpCodes.Ldarg_1);
+                        setterIL.Emit(OpCodes.Stfld, propertyFieldBuilder);
+                        setterIL.Emit(OpCodes.Ret);
+
+                        propertyBuilder.SetSetMethod(setterMethod);
                     }
+
+                    ctorIL.Emit()
                 }
-                il.Emit(OpCodes.Ret);
+                ctorIL.Emit(OpCodes.Ret);
                 return (T)Activator.CreateInstance(typeBuilder.CreateTypeInfo(), libraryPath);
             }
         }
