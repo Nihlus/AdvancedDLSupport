@@ -11,14 +11,14 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Builder class for anonymous types that bind to native libraries.
     /// </summary>
-    public static class DLSupportConstructor
+    public static class AnonymousImplementationBuilder
     {
         private static ModuleBuilder moduleBuilder;
         private static AssemblyBuilder assemblyBuilder;
 
         private static ConcurrentDictionary<KeyForInterfaceTypeAndLibName, object> TypeCache;
 
-        static DLSupportConstructor()
+        static AnonymousImplementationBuilder()
         {
             assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("DLSupportAssembly"), AssemblyBuilderAccess.Run);
             moduleBuilder = assemblyBuilder.DefineDynamicModule("DLSupportModule");
@@ -135,7 +135,7 @@ namespace AdvancedDLSupport
                 ctorIL.Emit(OpCodes.Ldarg_0);
                 ctorIL.Emit(OpCodes.Ldarg_0);
                 ctorIL.Emit(OpCodes.Ldstr, property.Name);
-                ctorIL.EmitCall(OpCodes.Call, typeof(DLSupport).GetMethod("LoadSymbol"), null);
+                ctorIL.EmitCall(OpCodes.Call, typeof(AnonymousImplementationBase).GetMethod("LoadSymbol"), null);
                 ctorIL.Emit(OpCodes.Stfld, propertyFieldBuilder);
             }
         }
@@ -216,7 +216,7 @@ namespace AdvancedDLSupport
                 ctorIL.Emit(OpCodes.Ldarg_0); // This is for storing field delegate, it needs the "this" reference
                 ctorIL.Emit(OpCodes.Ldarg_0);
                 ctorIL.Emit(OpCodes.Ldstr, method.Name);
-                ctorIL.EmitCall(OpCodes.Call, typeof(DLSupport).GetMethod("LoadFunction").MakeGenericMethod(delegateBuilderType), null);
+                ctorIL.EmitCall(OpCodes.Call, typeof(AnonymousImplementationBase).GetMethod("LoadFunction").MakeGenericMethod(delegateBuilderType), null);
                 ctorIL.Emit(OpCodes.Stfld, delegateField);
             }
         }
@@ -267,7 +267,7 @@ namespace AdvancedDLSupport
                 (
                     typeName,
                     TypeAttributes.AutoClass | TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed,
-                    typeof(DLSupport),
+                    typeof(AnonymousImplementationBase),
                     new[] { interfaceType }
                 );
 
@@ -283,15 +283,15 @@ namespace AdvancedDLSupport
                 var ctorIL = constructorBuilder.GetILGenerator();
                 ctorIL.Emit(OpCodes.Ldarg_0); // Load instance
                 ctorIL.Emit(OpCodes.Ldarg_1); // Load libraryPath parameter
-                ctorIL.Emit(OpCodes.Call, typeof(DLSupport).GetConstructors().First
+                ctorIL.Emit(OpCodes.Call, typeof(AnonymousImplementationBase).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).First
                 (
                     p =>
                     p.GetParameters().Length == 1 &&
                     p.GetParameters()[0].ParameterType == typeof(string))
                 );
 
-                DLSupportConstructor.ConstructMethods(ref typeBuilder, ref ctorIL, interfaceType);
-                DLSupportConstructor.ConstructNonArrayProperties(ref typeBuilder, ref ctorIL, interfaceType);
+                AnonymousImplementationBuilder.ConstructMethods(ref typeBuilder, ref ctorIL, interfaceType);
+                AnonymousImplementationBuilder.ConstructNonArrayProperties(ref typeBuilder, ref ctorIL, interfaceType);
 
                 ctorIL.Emit(OpCodes.Ret);
                 return (T)Activator.CreateInstance(typeBuilder.CreateTypeInfo(), libraryPath);

@@ -3,13 +3,13 @@ using System;
 namespace AdvancedDLSupport
 {
     /// <summary>
-    /// Internal wrapper class for loaded libraries.
+    /// Internal base class for library implementations
     /// </summary>
-    public class DLSupport
+    public abstract class AnonymousImplementationBase
     {
         private static readonly IPlatformLoader PlatformLoader;
 
-        static DLSupport()
+        static AnonymousImplementationBase()
         {
             PlatformLoader = PlatformLoaderBase.SelectPlatformLoader();
         }
@@ -17,10 +17,10 @@ namespace AdvancedDLSupport
         private readonly IntPtr _libraryHandle;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DLSupport"/> class.
+        /// Initializes a new instance of the <see cref="AnonymousImplementationBase"/> class.
         /// </summary>
         /// <param name="path">The path to the library.</param>
-        public DLSupport(string path)
+        protected AnonymousImplementationBase(string path)
         {
             _libraryHandle = PlatformLoader.LoadLibrary(path);
         }

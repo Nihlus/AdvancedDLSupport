@@ -11,7 +11,7 @@ namespace AdvancedDLSupport.Example
         private static unsafe void Main()
         {
             IExample wrapper;
-            wrapper = DLSupportConstructor.ResolveAndActivateInterface<IExample>
+            wrapper = AnonymousImplementationBuilder.ResolveAndActivateInterface<IExample>
             (
                 "./libDemo.so"
             );
