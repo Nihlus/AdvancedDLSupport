@@ -44,17 +44,24 @@ namespace AdvancedDLSupport
         /// <param name="typeBuilder">Reference to TypeBuilder to define the methods in.</param>
         /// <param name="ctorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
         /// <param name="interfaceType">Type definition of a provided interface.</param>
-        private static void ConstructNonArrayProperties(ref TypeBuilder typeBuilder, ref ILGenerator ctorIL, Type interfaceType)
+        private static void ConstructProperties(ref TypeBuilder typeBuilder, ref ILGenerator ctorIL, Type interfaceType)
         {
             foreach (var property in interfaceType.GetProperties())
             {
                 if (property.PropertyType.IsArray)
                 {
-                    continue; // This will be handled in ConstructArrayProperties method.
+                    GenerateArrayPropertyImplementation(typeBuilder, ctorIL, property);
                 }
-
-                GeneratePropertyImplementation(typeBuilder, ctorIL, property);
+                else
+                {
+                    GeneratePropertyImplementation(typeBuilder, ctorIL, property);
+                }
             }
+        }
+
+        private static void GenerateArrayPropertyImplementation(TypeBuilder typeBuilder, ILGenerator ctorIL, PropertyInfo property)
+        {
+            throw new NotImplementedException();
         }
 
         private static void GeneratePropertyImplementation(TypeBuilder typeBuilder, ILGenerator constructorIL, PropertyInfo property)
@@ -329,7 +336,7 @@ namespace AdvancedDLSupport
                 );
 
                 ConstructMethods(ref typeBuilder, ref ctorIL, interfaceType);
-                ConstructNonArrayProperties(ref typeBuilder, ref ctorIL, interfaceType);
+                ConstructProperties(ref typeBuilder, ref ctorIL, interfaceType);
 
                 ctorIL.Emit(OpCodes.Ret);
                 return (T)Activator.CreateInstance(typeBuilder.CreateTypeInfo(), libraryPath);
