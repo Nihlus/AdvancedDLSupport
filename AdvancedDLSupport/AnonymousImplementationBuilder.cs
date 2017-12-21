@@ -43,7 +43,7 @@ namespace AdvancedDLSupport
         /// <param name="typeBuilder">Reference to TypeBuilder to define the methods in.</param>
         /// <param name="ctorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
         /// <param name="interfaceType">Type definition of a provided interface.</param>
-        internal static void ConstructNonArrayProperties(ref TypeBuilder typeBuilder, ref ILGenerator ctorIL, Type interfaceType)
+        private static void ConstructNonArrayProperties(ref TypeBuilder typeBuilder, ref ILGenerator ctorIL, Type interfaceType)
         {
             foreach (var property in interfaceType.GetProperties())
             {
@@ -147,7 +147,7 @@ namespace AdvancedDLSupport
         /// <param name="typeBuilder">Reference to TypeBuilder to define the methods in.</param>
         /// <param name="ctorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
         /// <param name="interfaceType">Type definition of a provided interface.</param>
-        internal static void ConstructMethods(ref TypeBuilder typeBuilder, ref ILGenerator ctorIL, Type interfaceType)
+        private static void ConstructMethods(ref TypeBuilder typeBuilder, ref ILGenerator ctorIL, Type interfaceType)
         {
             // Let's define our methods!
             foreach (var method in interfaceType.GetMethods())
