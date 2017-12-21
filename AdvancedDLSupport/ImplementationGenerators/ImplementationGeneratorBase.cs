@@ -7,7 +7,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// Base class for implementation generators.
     /// </summary>
     /// <typeparam name="T">The type of member to generate the implementation for.</typeparam>
-    public abstract class ImplementationGeneratorBase<T> : IImplementationGenerator<T> where T : MemberInfo
+    internal abstract class ImplementationGeneratorBase<T> : IImplementationGenerator<T> where T : MemberInfo
     {
         /// <summary>
         /// Gets the module in which the implementation should be generated.

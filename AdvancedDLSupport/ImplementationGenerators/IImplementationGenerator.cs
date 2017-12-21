@@ -6,7 +6,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// Interface for classes that generate anonymous implementations for members.
     /// </summary>
     /// <typeparam name="T">The type of member that the class will generate for.</typeparam>
-    public interface IImplementationGenerator<in T> where T : MemberInfo
+    internal interface IImplementationGenerator<in T> where T : MemberInfo
     {
         /// <summary>
         /// Generates the implementation for the given member.

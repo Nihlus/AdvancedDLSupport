@@ -9,7 +9,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// <summary>
     /// Generates implementations for properties.
     /// </summary>
-    public class PropertyImplementationGenerator : ImplementationGeneratorBase<PropertyInfo>
+    internal class PropertyImplementationGenerator : ImplementationGeneratorBase<PropertyInfo>
     {
         private const MethodAttributes PropertyMethodAttributes =
             MethodAttributes.PrivateScope |
