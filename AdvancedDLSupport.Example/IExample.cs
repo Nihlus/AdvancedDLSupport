@@ -4,6 +4,8 @@ namespace AdvancedDLSupport.Example
 {
     public interface IExample
     {
+        MyStruct MyStructure { get; set; }
+
         int DoMath(ref MyStruct struc);
     }
 }

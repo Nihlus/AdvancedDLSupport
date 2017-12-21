@@ -29,7 +29,7 @@ namespace AdvancedDLSupport
             var errorPtr = dl.error();
             if (errorPtr != IntPtr.Zero)
             {
-                throw new LibraryLoadingException(string.Format("Library could not be loaded: {0}", Marshal.PtrToStringAuto(errorPtr)));
+                throw new LibraryLoadingException(string.Format("Library could not be loaded: {0}", Marshal.PtrToStringAnsi(errorPtr)));
             }
             libraryHandle = dl.open
             (
@@ -50,7 +50,7 @@ namespace AdvancedDLSupport
                 throw new LibraryLoadingException("Library could not be loaded, and error information from dl library could not be found.");
             }
 
-            throw new LibraryLoadingException(string.Format("Library could not be loaded: {0}", Marshal.PtrToStringAuto(errorPtr)));
+            throw new LibraryLoadingException(string.Format("Library could not be loaded: {0}", Marshal.PtrToStringAnsi(errorPtr)));
         }
 
         /// <inheritdoc />
@@ -71,7 +71,7 @@ namespace AdvancedDLSupport
                 throw new SymbolLoadingException("Symbol could not be loaded, and error information from dl could not be found.");
             }
 
-            var msg = Marshal.PtrToStringAuto(errorPtr);
+            var msg = Marshal.PtrToStringAnsi(errorPtr);
             throw new SymbolLoadingException(string.Format("Symbol could not be loaded: {0}", msg));
         }
 

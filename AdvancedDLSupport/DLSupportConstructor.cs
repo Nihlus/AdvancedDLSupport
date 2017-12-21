@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.InteropServices;
 
 namespace AdvancedDLSupport
 {
@@ -66,7 +67,7 @@ namespace AdvancedDLSupport
             {
                 if (interfaceType.GetMethods().Any(m => IsMethodParametersUnacceptable(m)))
                 {
-                    throw new Exception("One or more method contains a parameter/return type that is a class, P/Invoke cannot marshal class for C Library!");
+                    // throw new Exception("One or more method contains a parameter/return type that is a class, P/Invoke cannot marshal class for C Library!");
                 }
 
                 // Let's determine a name for our class!
@@ -172,12 +173,11 @@ namespace AdvancedDLSupport
                 foreach (var property in interfaceType.GetProperties())
                 {
                     var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
-
                     // Note, the field is going to have to be a pointer, because it is pointing to global variable
                     var propertyFieldBuilder = typeBuilder.DefineField
                     (
                         $"{property.Name}_{uniqueIdentifier}",
-                        property.PropertyType.MakePointerType(),
+                        typeof(IntPtr),
                         FieldAttributes.Private
                     );
 
@@ -196,14 +196,22 @@ namespace AdvancedDLSupport
                         (
                             $"{property.Name}Getter_{uniqueIdentifier}",
                             MethodAttributes.Public,
-                            CallingConventions.Standard,
+                            CallingConventions.HasThis,
                             property.PropertyType,
                             null
                         );
-                        System.Linq.Expressions.Expression.Lambda(null, true).Compile().
                         var getterIL = getterMethod.GetILGenerator();
                         getterIL.Emit(OpCodes.Ldarg_0);
-                        getterIL.Emit(OpCodes.Ldflda, propertyFieldBuilder);
+                        getterIL.Emit(OpCodes.Ldfld, propertyFieldBuilder);
+                        getterIL.EmitCall(
+                            OpCodes.Call,
+                            typeof(Marshal).GetMethods().First
+                            (
+                                m => m.GetParameters().Length == 1 &&
+                                m.IsGenericMethod
+                            ).MakeGenericMethod(property.PropertyType),
+                            null
+                        );
                         getterIL.Emit(OpCodes.Ret);
 
                         propertyBuilder.SetGetMethod(getterMethod);
@@ -215,21 +223,34 @@ namespace AdvancedDLSupport
                         (
                             $"{property.Name}Getter_{uniqueIdentifier}",
                             MethodAttributes.Public,
-                            CallingConventions.Standard,
+                            CallingConventions.HasThis,
                             typeof(void),
                             new[] { property.PropertyType }
                         );
-
                         var setterIL = setterMethod.GetILGenerator();
-                        setterIL.Emit(OpCodes.Ldarg_0);
                         setterIL.Emit(OpCodes.Ldarg_1);
-                        setterIL.Emit(OpCodes.Stfld, propertyFieldBuilder);
+                        setterIL.Emit(OpCodes.Ldarg_0);
+                        setterIL.Emit(OpCodes.Ldfld, propertyFieldBuilder);
+                        setterIL.Emit(OpCodes.Ldc_I4, 0);
+                        setterIL.EmitCall
+                        (
+                            OpCodes.Call,
+                            typeof(Marshal).GetMethods().First
+                            (
+                                m => m.Name == "StructureToPtr" &&
+                                m.GetParameters().Length == 3
+                            ),
+                            null
+                        );
                         setterIL.Emit(OpCodes.Ret);
 
                         propertyBuilder.SetSetMethod(setterMethod);
                     }
-
-                    ctorIL.Emit()
+                    ctorIL.Emit(OpCodes.Ldarg_0);
+                    ctorIL.Emit(OpCodes.Ldarg_0);
+                    ctorIL.Emit(OpCodes.Ldstr, property.Name.ToString());
+                    ctorIL.EmitCall(OpCodes.Call, typeof(DLSupport).GetMethod("LoadSymbol"), null);
+                    ctorIL.Emit(OpCodes.Stfld, propertyFieldBuilder);
                 }
                 ctorIL.Emit(OpCodes.Ret);
                 return (T)Activator.CreateInstance(typeBuilder.CreateTypeInfo(), libraryPath);
