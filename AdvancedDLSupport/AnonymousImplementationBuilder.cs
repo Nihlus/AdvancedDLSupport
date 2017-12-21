@@ -240,8 +240,7 @@ namespace AdvancedDLSupport
                 FullInterfaceTypeName = interfaceType.FullName,
                 LibraryPath = libraryPath
             };
-            object cachedType;
-            if (TypeCache.TryGetValue(key, out cachedType))
+            if (TypeCache.TryGetValue(key, out var cachedType))
             {
                 return (T)cachedType;
             }
