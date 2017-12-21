@@ -37,6 +37,6 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Do not delete the object when closed.
         /// </summary>
-        RTLD_NODELETE = 0x01000,
+        RTLD_NODELETE = 0x01000
     }
 }

@@ -16,7 +16,7 @@ namespace AdvanceDLSupport.Tests
 				Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
 				"libTest.so"
 			);
-			Library =  DLSupportConstructor.ResolveAndActivateInterface<ITestLibrary>(path);
+			Library =  AnonymousImplementationBuilder.ResolveAndActivateInterface<ITestLibrary>(path);
 		}
 	}
 }

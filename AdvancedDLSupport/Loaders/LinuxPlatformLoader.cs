@@ -26,11 +26,13 @@ namespace AdvancedDLSupport
             {
                 return libraryHandle;
             }
+
             var errorPtr = dl.error();
             if (errorPtr != IntPtr.Zero)
             {
                 throw new LibraryLoadingException(string.Format("Library could not be loaded: {0}", Marshal.PtrToStringAnsi(errorPtr)));
             }
+
             libraryHandle = dl.open
             (
                 Path.Combine
