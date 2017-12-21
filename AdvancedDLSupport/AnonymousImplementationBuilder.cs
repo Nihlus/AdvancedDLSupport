@@ -13,15 +13,15 @@ namespace AdvancedDLSupport
     /// </summary>
     public static class AnonymousImplementationBuilder
     {
-        private static ModuleBuilder moduleBuilder;
-        private static AssemblyBuilder assemblyBuilder;
+        private static readonly ModuleBuilder ModuleBuilder;
+        private static readonly AssemblyBuilder AssemblyBuilder;
 
-        private static ConcurrentDictionary<KeyForInterfaceTypeAndLibName, object> TypeCache;
+        private static readonly ConcurrentDictionary<KeyForInterfaceTypeAndLibName, object> TypeCache;
 
         static AnonymousImplementationBuilder()
         {
-            assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("DLSupportAssembly"), AssemblyBuilderAccess.Run);
-            moduleBuilder = assemblyBuilder.DefineDynamicModule("DLSupportModule");
+            AssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("DLSupportAssembly"), AssemblyBuilderAccess.Run);
+            ModuleBuilder = AssemblyBuilder.DefineDynamicModule("DLSupportModule");
             TypeCache = new ConcurrentDictionary<KeyForInterfaceTypeAndLibName, object>();
         }
 
@@ -162,7 +162,7 @@ namespace AdvancedDLSupport
                 var parameters = method.GetParameters();
 
                 // Declare a delegate type!
-                var delegateBuilder = moduleBuilder.DefineType
+                var delegateBuilder = ModuleBuilder.DefineType
                 (
                     $"{method.Name}_dt_{uniqueIdentifier}",
                     TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AnsiClass | TypeAttributes.AutoClass,
@@ -247,7 +247,7 @@ namespace AdvancedDLSupport
                 return (T)cachedType;
             }
 
-            lock (moduleBuilder)
+            lock (ModuleBuilder)
             {
                 if (interfaceType.GetMethods().Any(m => IsMethodParametersUnacceptable(m)))
                 {
@@ -263,7 +263,7 @@ namespace AdvancedDLSupport
                 }
 
                 // Let's create a new type!
-                var typeBuilder = moduleBuilder.DefineType
+                var typeBuilder = ModuleBuilder.DefineType
                 (
                     typeName,
                     TypeAttributes.AutoClass | TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed,
