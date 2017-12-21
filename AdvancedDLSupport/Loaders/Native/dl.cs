@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-
 using static AdvancedDLSupport.SymbolFlags;
 
 // ReSharper disable InconsistentNaming

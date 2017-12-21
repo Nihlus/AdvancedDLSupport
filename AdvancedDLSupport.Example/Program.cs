@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Reflection;
 
 #pragma warning disable SA1600, CS1591 // Elements should be documented
 
@@ -11,7 +9,7 @@ namespace AdvancedDLSupport.Example
         private static unsafe void Main()
         {
             IExample wrapper;
-            wrapper = DLSupportConstructor.ResolveAndActivateInterface<IExample>
+            wrapper = AnonymousImplementationBuilder.ResolveAndActivateInterface<IExample>
             (
                 "./libDemo.so"
             );
