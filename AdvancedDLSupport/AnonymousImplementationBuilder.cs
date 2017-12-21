@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
@@ -173,7 +172,7 @@ namespace AdvancedDLSupport
                 (
                     MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public,
                     CallingConventions.Standard,
-                    new Type[] { typeof(object), typeof(System.IntPtr) }
+                    new[] { typeof(object), typeof(IntPtr) }
                 );
 
                 delegateCtorBuilder.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
@@ -196,7 +195,7 @@ namespace AdvancedDLSupport
                 (
                     method.Name,
                     MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.Virtual | MethodAttributes.HideBySig | MethodAttributes.NewSlot,
-                    System.Reflection.CallingConventions.Standard,
+                    CallingConventions.Standard,
                     method.ReturnType,
                     parameters.Select(p => p.ParameterType).ToArray()
                 );
@@ -290,8 +289,8 @@ namespace AdvancedDLSupport
                     p.GetParameters()[0].ParameterType == typeof(string))
                 );
 
-                AnonymousImplementationBuilder.ConstructMethods(ref typeBuilder, ref ctorIL, interfaceType);
-                AnonymousImplementationBuilder.ConstructNonArrayProperties(ref typeBuilder, ref ctorIL, interfaceType);
+                ConstructMethods(ref typeBuilder, ref ctorIL, interfaceType);
+                ConstructNonArrayProperties(ref typeBuilder, ref ctorIL, interfaceType);
 
                 ctorIL.Emit(OpCodes.Ret);
                 return (T)Activator.CreateInstance(typeBuilder.CreateTypeInfo(), libraryPath);
