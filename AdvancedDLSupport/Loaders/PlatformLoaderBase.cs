@@ -7,7 +7,7 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Acts as the base for platform loaders.
     /// </summary>
-    public abstract class PlatformLoaderBase : IPlatformLoader
+    internal abstract class PlatformLoaderBase : IPlatformLoader
     {
         /// <inheritdoc />
         public T LoadFunction<T>(IntPtr library, string symbolName) =>
