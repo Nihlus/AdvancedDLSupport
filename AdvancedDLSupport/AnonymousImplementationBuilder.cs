@@ -249,7 +249,7 @@ namespace AdvancedDLSupport
 
             lock (ModuleBuilder)
             {
-                if (interfaceType.GetMethods().Any(m => IsMethodParametersUnacceptable(m)))
+                if (interfaceType.GetMethods().Any(IsMethodParametersUnacceptable))
                 {
                     // throw new Exception("One or more method contains a parameter/return type that is a class, P/Invoke cannot marshal class for C Library!");
                 }
