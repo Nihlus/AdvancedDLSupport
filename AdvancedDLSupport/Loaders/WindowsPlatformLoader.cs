@@ -10,7 +10,7 @@ namespace AdvancedDLSupport
     public class WindowsPlatformLoader : PlatformLoaderBase
     {
         /// <inheritdoc />
-        public override IntPtr LoadLibrary(string path)
+        protected override IntPtr LoadLibraryInternal(string path)
         {
             var libraryHandle = kernel32.LoadLibrary(path);
             if (libraryHandle == IntPtr.Zero)
