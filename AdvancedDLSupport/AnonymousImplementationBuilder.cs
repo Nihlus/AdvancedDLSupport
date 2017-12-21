@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
+using AdvancedDLSupport.Attributes;
 
 namespace AdvancedDLSupport
 {
@@ -133,10 +134,16 @@ namespace AdvancedDLSupport
                     propertyBuilder.SetSetMethod(setterMethod);
                 }
 
+                var loadSymbolMethod = typeof(AnonymousImplementationBase).GetMethod
+                (
+                    "LoadSymbol",
+                    BindingFlags.NonPublic | BindingFlags.Instance
+                );
+
                 ctorIL.Emit(OpCodes.Ldarg_0);
                 ctorIL.Emit(OpCodes.Ldarg_0);
                 ctorIL.Emit(OpCodes.Ldstr, property.Name);
-                ctorIL.EmitCall(OpCodes.Call, typeof(AnonymousImplementationBase).GetMethod("LoadSymbol"), null);
+                ctorIL.EmitCall(OpCodes.Call, loadSymbolMethod, null);
                 ctorIL.Emit(OpCodes.Stfld, propertyFieldBuilder);
             }
         }
@@ -162,6 +169,9 @@ namespace AdvancedDLSupport
                 var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
                 var parameters = method.GetParameters();
 
+                var metadataAttribute = method.GetCustomAttribute<NativeFunctionAttribute>() ??
+                                        new NativeFunctionAttribute(method.Name);
+
                 // Declare a delegate type!
                 var delegateBuilder = ModuleBuilder.DefineType
                 (
@@ -169,6 +179,15 @@ namespace AdvancedDLSupport
                     TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AnsiClass | TypeAttributes.AutoClass,
                     typeof(MulticastDelegate)
                 );
+
+                var attributeConstructors = typeof(UnmanagedFunctionPointerAttribute).GetConstructors();
+                var functionPointerAttributeBuilder = new CustomAttributeBuilder
+                (
+                    attributeConstructors[1],
+                    new object[] { metadataAttribute.CallingConvention }
+                );
+
+                delegateBuilder.SetCustomAttribute(functionPointerAttributeBuilder);
 
                 var delegateCtorBuilder = delegateBuilder.DefineConstructor
                 (
@@ -214,11 +233,19 @@ namespace AdvancedDLSupport
                 methodIL.EmitCall(OpCodes.Call, delegateBuilderType.GetMethod("Invoke"), null);
                 methodIL.Emit(OpCodes.Ret);
 
+                var entrypointName = metadataAttribute.Entrypoint ?? method.Name;
+
+                var loadFuncMethod = typeof(AnonymousImplementationBase).GetMethod
+                (
+                    "LoadFunction",
+                    BindingFlags.NonPublic | BindingFlags.Instance
+                );
+
                 // Assign Delegate from Function Pointer
                 ctorIL.Emit(OpCodes.Ldarg_0); // This is for storing field delegate, it needs the "this" reference
                 ctorIL.Emit(OpCodes.Ldarg_0);
-                ctorIL.Emit(OpCodes.Ldstr, method.Name);
-                ctorIL.EmitCall(OpCodes.Call, typeof(AnonymousImplementationBase).GetMethod("LoadFunction").MakeGenericMethod(delegateBuilderType), null);
+                ctorIL.Emit(OpCodes.Ldstr, entrypointName);
+                ctorIL.EmitCall(OpCodes.Call, loadFuncMethod.MakeGenericMethod(delegateBuilderType), null);
                 ctorIL.Emit(OpCodes.Stfld, delegateField);
             }
         }
