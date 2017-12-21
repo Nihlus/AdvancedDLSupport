@@ -278,11 +278,7 @@ namespace AdvancedDLSupport
                 throw new Exception("The generic argument type must be an interface! Please review the documentation on how to use this.");
             }
 
-            var key = new LibraryIdentifier
-            {
-                FullInterfaceTypeName = interfaceType.FullName,
-                LibraryPath = libraryPath
-            };
+            var key = new LibraryIdentifier(interfaceType, libraryPath);
 
             if (TypeCache.TryGetValue(key, out var cachedType))
             {
