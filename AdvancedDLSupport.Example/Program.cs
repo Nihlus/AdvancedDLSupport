@@ -25,6 +25,9 @@ namespace AdvancedDLSupport.Example
             var val = field.GetValue(wrapper);
             var struc = new MyStruct { A = 22 };
             Console.WriteLine("{0}", wrapper.DoMath(ref struc));
+            Console.WriteLine("Premodified Struct: {0}", wrapper.MyStructure.A);
+            wrapper.MyStructure = new MyStruct { A = 25 };
+            Console.WriteLine("Modified struct: {0}", wrapper.MyStructure.A);
         }
     }
 }

@@ -109,6 +109,12 @@ namespace AdvancedDLSupport
                 // Let's define our methods!
                 foreach (var method in interfaceType.GetMethods())
                 {
+                    // Skip any property accessor methods, those will be manually implemented.
+                    if (method.IsSpecialName && (method.Name.StartsWith("get_") || method.Name.StartsWith("set_")))
+                    {
+                        continue;
+                    }
+
                     var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
                     var parameters = method.GetParameters();
 
@@ -173,6 +179,7 @@ namespace AdvancedDLSupport
                 foreach (var property in interfaceType.GetProperties())
                 {
                     var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
+
                     // Note, the field is going to have to be a pointer, because it is pointing to global variable
                     var propertyFieldBuilder = typeBuilder.DefineField
                     (
@@ -192,13 +199,14 @@ namespace AdvancedDLSupport
 
                     if (property.CanRead)
                     {
+                        var actualGetMethod = property.GetGetMethod();
                         var getterMethod = typeBuilder.DefineMethod
                         (
-                            $"{property.Name}Getter_{uniqueIdentifier}",
-                            MethodAttributes.Public,
-                            CallingConventions.HasThis,
-                            property.PropertyType,
-                            null
+                            actualGetMethod.Name,
+                            MethodAttributes.PrivateScope | MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.HideBySig | MethodAttributes.VtableLayoutMask | MethodAttributes.SpecialName,
+                            actualGetMethod.CallingConvention,
+                            actualGetMethod.ReturnType,
+                            Type.EmptyTypes
                         );
                         var getterIL = getterMethod.GetILGenerator();
                         getterIL.Emit(OpCodes.Ldarg_0);
@@ -207,8 +215,10 @@ namespace AdvancedDLSupport
                             OpCodes.Call,
                             typeof(Marshal).GetMethods().First
                             (
-                                m => m.GetParameters().Length == 1 &&
-                                m.IsGenericMethod
+                                m =>
+                                m.GetParameters().Length == 1 &&
+                                m.IsGenericMethod &&
+                                m.Name == "PtrToStructure"
                             ).MakeGenericMethod(property.PropertyType),
                             null
                         );
@@ -219,27 +229,29 @@ namespace AdvancedDLSupport
 
                     if (property.CanWrite)
                     {
+                        var actualSetMethod = property.GetSetMethod();
                         var setterMethod = typeBuilder.DefineMethod
                         (
-                            $"{property.Name}Getter_{uniqueIdentifier}",
-                            MethodAttributes.Public,
-                            CallingConventions.HasThis,
+                            actualSetMethod.Name,
+                            MethodAttributes.PrivateScope | MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.HideBySig | MethodAttributes.VtableLayoutMask | MethodAttributes.SpecialName,
+                            actualSetMethod.CallingConvention,
                             typeof(void),
-                            new[] { property.PropertyType }
+                            actualSetMethod.GetParameters().Select(p => p.ParameterType).ToArray()
                         );
                         var setterIL = setterMethod.GetILGenerator();
                         setterIL.Emit(OpCodes.Ldarg_1);
                         setterIL.Emit(OpCodes.Ldarg_0);
                         setterIL.Emit(OpCodes.Ldfld, propertyFieldBuilder);
-                        setterIL.Emit(OpCodes.Ldc_I4, 0);
+                        setterIL.Emit(OpCodes.Ldc_I4, 0); // false for deleting structure that is already stored in pointer
                         setterIL.EmitCall
                         (
                             OpCodes.Call,
                             typeof(Marshal).GetMethods().First
                             (
                                 m => m.Name == "StructureToPtr" &&
-                                m.GetParameters().Length == 3
-                            ),
+                                m.GetParameters().Length == 3 &&
+                                m.IsGenericMethod
+                            ).MakeGenericMethod(property.PropertyType),
                             null
                         );
                         setterIL.Emit(OpCodes.Ret);
@@ -248,7 +260,7 @@ namespace AdvancedDLSupport
                     }
                     ctorIL.Emit(OpCodes.Ldarg_0);
                     ctorIL.Emit(OpCodes.Ldarg_0);
-                    ctorIL.Emit(OpCodes.Ldstr, property.Name.ToString());
+                    ctorIL.Emit(OpCodes.Ldstr, property.Name);
                     ctorIL.EmitCall(OpCodes.Call, typeof(DLSupport).GetMethod("LoadSymbol"), null);
                     ctorIL.Emit(OpCodes.Stfld, propertyFieldBuilder);
                 }
