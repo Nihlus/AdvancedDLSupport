@@ -1,27 +1,27 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
+using AdvancedDLSupport.Attributes;
 
 namespace AdvancedDLSupport
 {
     /// <summary>
     /// Builder class for anonymous types that bind to native libraries.
     /// </summary>
-    public static class DLSupportConstructor
+    public static class AnonymousImplementationBuilder
     {
-        private static ModuleBuilder moduleBuilder;
-        private static AssemblyBuilder assemblyBuilder;
+        private static readonly ModuleBuilder ModuleBuilder;
+        private static readonly AssemblyBuilder AssemblyBuilder;
 
-        private static ConcurrentDictionary<KeyForInterfaceTypeAndLibName, object> TypeCache;
+        private static readonly ConcurrentDictionary<KeyForInterfaceTypeAndLibName, object> TypeCache;
 
-        static DLSupportConstructor()
+        static AnonymousImplementationBuilder()
         {
-            assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("DLSupportAssembly"), AssemblyBuilderAccess.Run);
-            moduleBuilder = assemblyBuilder.DefineDynamicModule("DLSupportModule");
+            AssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("DLSupportAssembly"), AssemblyBuilderAccess.Run);
+            ModuleBuilder = AssemblyBuilder.DefineDynamicModule("DLSupportModule");
             TypeCache = new ConcurrentDictionary<KeyForInterfaceTypeAndLibName, object>();
         }
 
@@ -34,6 +34,7 @@ namespace AdvancedDLSupport
                     return true;
                 }
             }
+
             return !info.GetParameters().Any(p => p.ParameterType.IsValueType || p.ParameterType.IsByRef || p.ParameterType == typeof(Delegate));
         }
 
@@ -43,7 +44,7 @@ namespace AdvancedDLSupport
         /// <param name="typeBuilder">Reference to TypeBuilder to define the methods in.</param>
         /// <param name="ctorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
         /// <param name="interfaceType">Type definition of a provided interface.</param>
-        internal static void ConstructNonArrayProperties(ref TypeBuilder typeBuilder, ref ILGenerator ctorIL, Type interfaceType)
+        private static void ConstructNonArrayProperties(ref TypeBuilder typeBuilder, ref ILGenerator ctorIL, Type interfaceType)
         {
             foreach (var property in interfaceType.GetProperties())
             {
@@ -132,10 +133,17 @@ namespace AdvancedDLSupport
 
                     propertyBuilder.SetSetMethod(setterMethod);
                 }
+
+                var loadSymbolMethod = typeof(AnonymousImplementationBase).GetMethod
+                (
+                    "LoadSymbol",
+                    BindingFlags.NonPublic | BindingFlags.Instance
+                );
+
                 ctorIL.Emit(OpCodes.Ldarg_0);
                 ctorIL.Emit(OpCodes.Ldarg_0);
                 ctorIL.Emit(OpCodes.Ldstr, property.Name);
-                ctorIL.EmitCall(OpCodes.Call, typeof(DLSupport).GetMethod("LoadSymbol"), null);
+                ctorIL.EmitCall(OpCodes.Call, loadSymbolMethod, null);
                 ctorIL.Emit(OpCodes.Stfld, propertyFieldBuilder);
             }
         }
@@ -147,7 +155,7 @@ namespace AdvancedDLSupport
         /// <param name="typeBuilder">Reference to TypeBuilder to define the methods in.</param>
         /// <param name="ctorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
         /// <param name="interfaceType">Type definition of a provided interface.</param>
-        internal static void ConstructMethods(ref TypeBuilder typeBuilder, ref ILGenerator ctorIL, Type interfaceType)
+        private static void ConstructMethods(ref TypeBuilder typeBuilder, ref ILGenerator ctorIL, Type interfaceType)
         {
             // Let's define our methods!
             foreach (var method in interfaceType.GetMethods())
@@ -161,19 +169,31 @@ namespace AdvancedDLSupport
                 var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
                 var parameters = method.GetParameters();
 
+                var metadataAttribute = method.GetCustomAttribute<NativeFunctionAttribute>() ??
+                                        new NativeFunctionAttribute(method.Name);
+
                 // Declare a delegate type!
-                var delegateBuilder = moduleBuilder.DefineType
+                var delegateBuilder = ModuleBuilder.DefineType
                 (
                     $"{method.Name}_dt_{uniqueIdentifier}",
                     TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AnsiClass | TypeAttributes.AutoClass,
                     typeof(MulticastDelegate)
                 );
 
+                var attributeConstructors = typeof(UnmanagedFunctionPointerAttribute).GetConstructors();
+                var functionPointerAttributeBuilder = new CustomAttributeBuilder
+                (
+                    attributeConstructors[1],
+                    new object[] { metadataAttribute.CallingConvention }
+                );
+
+                delegateBuilder.SetCustomAttribute(functionPointerAttributeBuilder);
+
                 var delegateCtorBuilder = delegateBuilder.DefineConstructor
                 (
                     MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public,
                     CallingConventions.Standard,
-                    new Type[] { typeof(object), typeof(System.IntPtr) }
+                    new[] { typeof(object), typeof(IntPtr) }
                 );
 
                 delegateCtorBuilder.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
@@ -196,7 +216,7 @@ namespace AdvancedDLSupport
                 (
                     method.Name,
                     MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.Virtual | MethodAttributes.HideBySig | MethodAttributes.NewSlot,
-                    System.Reflection.CallingConventions.Standard,
+                    CallingConventions.Standard,
                     method.ReturnType,
                     parameters.Select(p => p.ParameterType).ToArray()
                 );
@@ -209,14 +229,23 @@ namespace AdvancedDLSupport
                 {
                     methodIL.Emit(OpCodes.Ldarg, p);
                 }
+
                 methodIL.EmitCall(OpCodes.Call, delegateBuilderType.GetMethod("Invoke"), null);
                 methodIL.Emit(OpCodes.Ret);
+
+                var entrypointName = metadataAttribute.Entrypoint ?? method.Name;
+
+                var loadFuncMethod = typeof(AnonymousImplementationBase).GetMethod
+                (
+                    "LoadFunction",
+                    BindingFlags.NonPublic | BindingFlags.Instance
+                );
 
                 // Assign Delegate from Function Pointer
                 ctorIL.Emit(OpCodes.Ldarg_0); // This is for storing field delegate, it needs the "this" reference
                 ctorIL.Emit(OpCodes.Ldarg_0);
-                ctorIL.Emit(OpCodes.Ldstr, method.Name);
-                ctorIL.EmitCall(OpCodes.Call, typeof(DLSupport).GetMethod("LoadFunction").MakeGenericMethod(delegateBuilderType), null);
+                ctorIL.Emit(OpCodes.Ldstr, entrypointName);
+                ctorIL.EmitCall(OpCodes.Call, loadFuncMethod.MakeGenericMethod(delegateBuilderType), null);
                 ctorIL.Emit(OpCodes.Stfld, delegateField);
             }
         }
@@ -241,15 +270,15 @@ namespace AdvancedDLSupport
                 FullInterfaceTypeName = interfaceType.FullName,
                 LibraryPath = libraryPath
             };
-            object cachedType;
-            if (TypeCache.TryGetValue(key, out cachedType))
+
+            if (TypeCache.TryGetValue(key, out var cachedType))
             {
                 return (T)cachedType;
             }
 
-            lock (moduleBuilder)
+            lock (ModuleBuilder)
             {
-                if (interfaceType.GetMethods().Any(m => IsMethodParametersUnacceptable(m)))
+                if (interfaceType.GetMethods().Any(IsMethodParametersUnacceptable))
                 {
                     // throw new Exception("One or more method contains a parameter/return type that is a class, P/Invoke cannot marshal class for C Library!");
                 }
@@ -263,11 +292,11 @@ namespace AdvancedDLSupport
                 }
 
                 // Let's create a new type!
-                var typeBuilder = moduleBuilder.DefineType
+                var typeBuilder = ModuleBuilder.DefineType
                 (
                     typeName,
                     TypeAttributes.AutoClass | TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed,
-                    typeof(DLSupport),
+                    typeof(AnonymousImplementationBase),
                     new[] { interfaceType }
                 );
 
@@ -283,15 +312,15 @@ namespace AdvancedDLSupport
                 var ctorIL = constructorBuilder.GetILGenerator();
                 ctorIL.Emit(OpCodes.Ldarg_0); // Load instance
                 ctorIL.Emit(OpCodes.Ldarg_1); // Load libraryPath parameter
-                ctorIL.Emit(OpCodes.Call, typeof(DLSupport).GetConstructors().First
+                ctorIL.Emit(OpCodes.Call, typeof(AnonymousImplementationBase).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).First
                 (
                     p =>
                     p.GetParameters().Length == 1 &&
                     p.GetParameters()[0].ParameterType == typeof(string))
                 );
 
-                DLSupportConstructor.ConstructMethods(ref typeBuilder, ref ctorIL, interfaceType);
-                DLSupportConstructor.ConstructNonArrayProperties(ref typeBuilder, ref ctorIL, interfaceType);
+                ConstructMethods(ref typeBuilder, ref ctorIL, interfaceType);
+                ConstructNonArrayProperties(ref typeBuilder, ref ctorIL, interfaceType);
 
                 ctorIL.Emit(OpCodes.Ret);
                 return (T)Activator.CreateInstance(typeBuilder.CreateTypeInfo(), libraryPath);

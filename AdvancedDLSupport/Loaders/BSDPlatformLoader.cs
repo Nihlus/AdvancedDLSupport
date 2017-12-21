@@ -26,6 +26,7 @@ namespace AdvancedDLSupport
             {
                 return libraryHandle;
             }
+
             var errorPtr = dl.error(true);
             if (errorPtr == IntPtr.Zero)
             {
