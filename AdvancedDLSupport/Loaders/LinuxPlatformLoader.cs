@@ -26,25 +26,8 @@ namespace AdvancedDLSupport
             {
                 return libraryHandle;
             }
-            var errorPtr = dl.error();
-            if (errorPtr != IntPtr.Zero)
-            {
-                throw new LibraryLoadingException(string.Format("Library could not be loaded: {0}", Marshal.PtrToStringAnsi(errorPtr)));
-            }
-            libraryHandle = dl.open
-            (
-                Path.Combine
-                (
-                    Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                    path
-                )
-            );
-            if (libraryHandle != IntPtr.Zero)
-            {
-                return libraryHandle;
-            }
 
-            errorPtr = dl.error();
+            var errorPtr = dl.error();
             if (errorPtr == IntPtr.Zero)
             {
                 throw new LibraryLoadingException("Library could not be loaded, and error information from dl library could not be found.");
@@ -54,7 +37,7 @@ namespace AdvancedDLSupport
         }
 
         /// <inheritdoc />
-        public override IntPtr LoadLibrary(string path) => LoadLibrary(path, RTLD_DEFAULT);
+        protected override IntPtr LoadLibraryInternal(string path) => LoadLibrary(path, RTLD_DEFAULT);
 
         /// <inheritdoc />
         public override IntPtr LoadSymbol(IntPtr library, string symbolName)

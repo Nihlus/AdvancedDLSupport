@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace AdvancedDLSupport
@@ -13,7 +14,27 @@ namespace AdvancedDLSupport
             Marshal.GetDelegateForFunctionPointer<T>(LoadSymbol(library, symbolName));
 
         /// <inheritdoc />
-        public abstract IntPtr LoadLibrary(string path);
+        public IntPtr LoadLibrary(string path)
+        {
+            // TODO: make local search first configurable
+            try
+            {
+                var library = DynamicLinkLibraryPathResolver.ResolveAbsolutePath(path, true);
+                return LoadLibraryInternal(library);
+            }
+            catch (FileNotFoundException fex)
+            {
+                throw new LibraryLoadingException("Could not find the specified library.", fex);
+            }
+        }
+
+        /// <summary>
+        /// Load the given library.
+        /// </summary>
+        /// <param name="path">The path to the library.</param>
+        /// <returns>A handle to the library. This value carries no intrinsic meaning.</returns>
+        /// <exception cref="LibraryLoadingException">Thrown if the library could not be loaded.</exception>
+        protected abstract IntPtr LoadLibraryInternal(string path);
 
         /// <inheritdoc />
         public abstract IntPtr LoadSymbol(IntPtr library, string symbolName);
