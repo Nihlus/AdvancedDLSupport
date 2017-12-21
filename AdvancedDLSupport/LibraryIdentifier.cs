@@ -3,7 +3,7 @@ namespace AdvancedDLSupport
     /// <summary>
     /// A key struct for ConcurrentDictionary TypeCache for all generated types provided by DLSupportConstructor.
     /// </summary>
-    internal struct KeyForInterfaceTypeAndLibName
+    internal struct LibraryIdentifier
     {
         /// <summary>
         /// Interface Type name with Namespace

@@ -16,13 +16,13 @@ namespace AdvancedDLSupport
         private static readonly ModuleBuilder ModuleBuilder;
         private static readonly AssemblyBuilder AssemblyBuilder;
 
-        private static readonly ConcurrentDictionary<KeyForInterfaceTypeAndLibName, object> TypeCache;
+        private static readonly ConcurrentDictionary<LibraryIdentifier, object> TypeCache;
 
         static AnonymousImplementationBuilder()
         {
             AssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("DLSupportAssembly"), AssemblyBuilderAccess.Run);
             ModuleBuilder = AssemblyBuilder.DefineDynamicModule("DLSupportModule");
-            TypeCache = new ConcurrentDictionary<KeyForInterfaceTypeAndLibName, object>();
+            TypeCache = new ConcurrentDictionary<LibraryIdentifier, object>();
         }
 
         private static bool IsMethodParametersUnacceptable(MethodInfo info)
@@ -278,7 +278,7 @@ namespace AdvancedDLSupport
                 throw new Exception("The generic argument type must be an interface! Please review the documentation on how to use this.");
             }
 
-            var key = new KeyForInterfaceTypeAndLibName
+            var key = new LibraryIdentifier
             {
                 FullInterfaceTypeName = interfaceType.FullName,
                 LibraryPath = libraryPath
