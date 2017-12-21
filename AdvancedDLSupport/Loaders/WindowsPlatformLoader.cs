@@ -7,7 +7,7 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Loads libraries on the Windows platform.
     /// </summary>
-    public class WindowsPlatformLoader : PlatformLoaderBase
+    internal class WindowsPlatformLoader : PlatformLoaderBase
     {
         /// <inheritdoc />
         protected override IntPtr LoadLibraryInternal(string path)

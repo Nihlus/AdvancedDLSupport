@@ -5,7 +5,7 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Represents a class which can load libraries and symbols on a specific platform.
     /// </summary>
-    public interface IPlatformLoader
+    internal interface IPlatformLoader
     {
         /// <summary>
         /// Loads the given symbol name and marshals it into a function delegate.
