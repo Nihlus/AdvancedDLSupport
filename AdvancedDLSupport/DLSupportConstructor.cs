@@ -47,9 +47,9 @@ namespace AdvancedDLSupport
         {
             foreach (var property in interfaceType.GetProperties())
             {
-                if (property.PropertyType.IsPointer)
+                if (property.PropertyType.IsArray)
                 {
-                    continue; // This will be handled in ConstructPointerProperties method.
+                    continue; // This will be handled in ConstructArrayProperties method.
                 }
 
                 var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
