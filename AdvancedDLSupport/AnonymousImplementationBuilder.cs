@@ -33,6 +33,7 @@ namespace AdvancedDLSupport
                     return true;
                 }
             }
+
             return !info.GetParameters().Any(p => p.ParameterType.IsValueType || p.ParameterType.IsByRef || p.ParameterType == typeof(Delegate));
         }
 
@@ -131,6 +132,7 @@ namespace AdvancedDLSupport
 
                     propertyBuilder.SetSetMethod(setterMethod);
                 }
+
                 ctorIL.Emit(OpCodes.Ldarg_0);
                 ctorIL.Emit(OpCodes.Ldarg_0);
                 ctorIL.Emit(OpCodes.Ldstr, property.Name);
@@ -208,6 +210,7 @@ namespace AdvancedDLSupport
                 {
                     methodIL.Emit(OpCodes.Ldarg, p);
                 }
+
                 methodIL.EmitCall(OpCodes.Call, delegateBuilderType.GetMethod("Invoke"), null);
                 methodIL.Emit(OpCodes.Ret);
 
