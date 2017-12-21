@@ -85,8 +85,8 @@ namespace AdvancedDLSupport
                     p.GetParameters()[0].ParameterType == typeof(string))
                 );
 
-                ConstructMethods(ref typeBuilder, ref ctorIL, interfaceType);
-                ConstructProperties(ref typeBuilder, ref ctorIL, interfaceType);
+                ConstructMethods(typeBuilder, ctorIL, interfaceType);
+                ConstructProperties(typeBuilder, ctorIL, interfaceType);
 
                 ctorIL.Emit(OpCodes.Ret);
                 return (T)Activator.CreateInstance(typeBuilder.CreateTypeInfo(), libraryPath);
@@ -94,13 +94,12 @@ namespace AdvancedDLSupport
         }
 
         /// <summary>
-        /// Define all non-property accessor methods. The accessor methods are handled by both ConstructNonArrayProperties and
-        /// ConstructArrayProperties methods.
+        /// Constructs the implementations for all normal methods.
         /// </summary>
         /// <param name="typeBuilder">Reference to TypeBuilder to define the methods in.</param>
         /// <param name="ctorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
         /// <param name="interfaceType">Type definition of a provided interface.</param>
-        private static void ConstructMethods(ref TypeBuilder typeBuilder, ref ILGenerator ctorIL, Type interfaceType)
+        private static void ConstructMethods(TypeBuilder typeBuilder, ILGenerator ctorIL, Type interfaceType)
         {
             var methodGenerator = new MethodImplementationGenerator(ModuleBuilder, typeBuilder, ctorIL);
 
@@ -118,12 +117,12 @@ namespace AdvancedDLSupport
         }
 
         /// <summary>
-        /// Define all non-array properties, array property is a special case that have to be written differently.
+        /// Constructs the implementations for all properties.
         /// </summary>
         /// <param name="typeBuilder">Reference to TypeBuilder to define the methods in.</param>
         /// <param name="ctorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
         /// <param name="interfaceType">Type definition of a provided interface.</param>
-        private static void ConstructProperties(ref TypeBuilder typeBuilder, ref ILGenerator ctorIL, Type interfaceType)
+        private static void ConstructProperties(TypeBuilder typeBuilder, ILGenerator ctorIL, Type interfaceType)
         {
             var propertyGenerator = new PropertyImplementationGenerator(ModuleBuilder, typeBuilder, ctorIL);
 
