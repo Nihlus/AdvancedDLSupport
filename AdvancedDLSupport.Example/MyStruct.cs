@@ -4,6 +4,11 @@ namespace AdvancedDLSupport.Example
 {
     public struct MyStruct
     {
+        public MyStruct(int a = 25)
+        {
+            A = a;
+        }
+
         public int A;
     }
 }

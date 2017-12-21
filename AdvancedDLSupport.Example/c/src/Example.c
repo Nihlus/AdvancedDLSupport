@@ -4,11 +4,10 @@ typedef struct {
     int32_t a;
 } MyStruct;
 
-MyStruct MyStructure;
+MyStruct MyStructure[3];
 
 int32_t DoMath(MyStruct* struc)
 {
-    MyStructure.a = struc->a;
     return struc->a;
 }
 

@@ -8,7 +8,7 @@ namespace AdvancedDLSupport.Example
 {
     internal class Program
     {
-        private static void Main()
+        private static unsafe void Main()
         {
             IExample wrapper;
             wrapper = DLSupportConstructor.ResolveAndActivateInterface<IExample>
@@ -16,18 +16,11 @@ namespace AdvancedDLSupport.Example
                 "./libDemo.so"
             );
 
-            var field = wrapper.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField)
-            .First
-            (
-                f => f.Name.StartsWith("DoMath_dtm")
-            );
+            var mystruc = default(MyStruct);
+            mystruc.A = 25;
+            wrapper.MyStructure[0] = mystruc;
 
-            var val = field.GetValue(wrapper);
-            var struc = new MyStruct { A = 22 };
-            Console.WriteLine("{0}", wrapper.DoMath(ref struc));
-            Console.WriteLine("Premodified Struct: {0}", wrapper.MyStructure.A);
-            wrapper.MyStructure = new MyStruct { A = 25 };
-            Console.WriteLine("Modified struct: {0}", wrapper.MyStructure.A);
+            Console.WriteLine(wrapper.MyStructure[0].A);
         }
     }
 }
