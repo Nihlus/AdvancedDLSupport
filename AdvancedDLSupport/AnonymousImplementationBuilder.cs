@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -39,6 +40,12 @@ namespace AdvancedDLSupport
             if (!interfaceType.IsInterface)
             {
                 throw new Exception("The generic argument type must be an interface! Please review the documentation on how to use this.");
+            }
+
+            var resolveResult = DynamicLinkLibraryPathResolver.ResolveAbsolutePath(libraryPath, true);
+            if (!resolveResult.IsSuccess)
+            {
+                throw resolveResult.Exception ?? new FileNotFoundException("The specified library was not found in any of the loader search paths.");
             }
 
             var key = new LibraryIdentifier(interfaceType, libraryPath);
@@ -89,7 +96,10 @@ namespace AdvancedDLSupport
                 ConstructProperties(typeBuilder, ctorIL, interfaceType);
 
                 ctorIL.Emit(OpCodes.Ret);
-                return (T)Activator.CreateInstance(typeBuilder.CreateTypeInfo(), libraryPath);
+                var instance = (T)Activator.CreateInstance(typeBuilder.CreateTypeInfo(), libraryPath);
+                TypeCache.TryAdd(key, instance);
+
+                return instance;
             }
         }
 

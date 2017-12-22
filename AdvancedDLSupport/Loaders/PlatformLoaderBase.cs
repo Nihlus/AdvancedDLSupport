@@ -17,15 +17,13 @@ namespace AdvancedDLSupport
         public IntPtr LoadLibrary(string path)
         {
             // TODO: make local search first configurable
-            try
+            var resolveResult = DynamicLinkLibraryPathResolver.ResolveAbsolutePath(path, true);
+            if (resolveResult.IsSuccess)
             {
-                var library = DynamicLinkLibraryPathResolver.ResolveAbsolutePath(path, true);
-                return LoadLibraryInternal(library);
+                return LoadLibraryInternal(resolveResult.Path);
             }
-            catch (FileNotFoundException fex)
-            {
-                throw new LibraryLoadingException("Could not find the specified library.", fex);
-            }
+
+            throw new LibraryLoadingException("Could not find the specified library.", resolveResult.Exception);
         }
 
         /// <summary>
