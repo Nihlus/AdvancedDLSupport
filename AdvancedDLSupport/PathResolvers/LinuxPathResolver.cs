@@ -12,7 +12,7 @@ namespace AdvancedDLSupport
         /// <inheritdoc />
         public string Resolve(string library)
         {
-            var libraryPaths = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH").Split(';');
+            var libraryPaths = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH").Split(':').Where(p => !string.IsNullOrWhiteSpace(p));
 
             string libraryLocation;
             foreach (var path in libraryPaths)
@@ -27,7 +27,13 @@ namespace AdvancedDLSupport
             if (File.Exists("/etc/ld.so.cache"))
             {
                 var cachedLibraries = File.ReadAllText("/etc/ld.so.cache").Split('\0');
-                var cachedMatch = cachedLibraries.FirstOrDefault(l => l.EndsWith(library));
+                var cachedMatch = cachedLibraries.FirstOrDefault
+                (
+                    l =>
+                        l.EndsWith(library) &&
+                        Path.GetFileName(l) == Path.GetFileName(library)
+                );
+
                 if (!(cachedMatch is null))
                 {
                     return cachedMatch;
