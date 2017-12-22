@@ -5,6 +5,23 @@
     <CodeAnalysisRuleSet>..\stylecop.ruleset</CodeAnalysisRuleSet>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
+  <PropertyGroup>
+    <Title>AdvanceDLSupport</Title>
+    <Authors>TheBlackCentipede;Jax</Authors>
+    <Version>1.0.0</Version>
+    <Description>An alternative approach to your typical P/Invoke.</Description>
+    <Copyright>Copyright 2017</Copyright>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageId>AdvanceDLSupport</PackageId>
+    <PackageLicenseUrl>https://www.gnu.org/licenses/lgpl-3.0.en.html</PackageLicenseUrl>
+    <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
+    <PackageTags>p/invoke;cross-platform;mono;netcore;netstandard;native;interop</PackageTags>
+    <PackageOutputPath>../nuget</PackageOutputPath>
+    <IncludeSymbols>True</IncludeSymbols>
+    <IncludeSource>True</IncludeSource>
+    <RepositoryUrl>https://github.com/TheBlackCentipede/AdvanceDLSupport/</RepositoryUrl>
+  </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="$(ProjectDir)\..\stylecop.json">
       <Link>stylecop.json</Link>
@@ -16,7 +33,7 @@
     </AdditionalFiles>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" PrivateAssets="all"/>
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
   </ItemGroup>
 </Project>
