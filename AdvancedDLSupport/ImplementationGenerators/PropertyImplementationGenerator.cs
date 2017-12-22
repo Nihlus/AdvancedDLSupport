@@ -68,29 +68,27 @@ namespace AdvancedDLSupport.ImplementationGenerators
                     GeneratePointerPropertySetter(property, propertyFieldBuilder, propertyBuilder);
                 }
             }
-            else if (property.PropertyType.IsArray)
+            else if (!property.PropertyType.IsArray && property.PropertyType.IsValueType)
             {
                 if (property.CanRead)
                 {
-                    GenerateArrayPropertyGetter(property, propertyFieldBuilder, propertyBuilder);
+                    GenerateValueTypePropertyGetter(property, propertyFieldBuilder, propertyBuilder);
                 }
 
                 if (property.CanWrite)
                 {
-                    GenerateArrayPropertySetter(property, propertyFieldBuilder, propertyBuilder);
+                    GenerateValueTypePropertySetter(property, propertyFieldBuilder, propertyBuilder);
                 }
             }
             else
             {
-                if (property.CanRead)
-                {
-                    GenerateNonArrayPropertyGetter(property, propertyFieldBuilder, propertyBuilder);
-                }
-
-                if (property.CanWrite)
-                {
-                    GenerateNonArrayPropertySetter(property, propertyFieldBuilder, propertyBuilder);
-                }
+                throw new NotSupportedException(
+                    string.Format
+                    (
+                        "{0} Type is not supported. Only ValueType property or Pointer Property is supported.",
+                        property.PropertyType.FullName
+                    )
+                );
             }
 
             PropertyInitializationInConstructor(property, propertyFieldBuilder); // This is ok for all 3 types of properties.
@@ -191,80 +189,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             propertyBuilder.SetGetMethod(getterMethod);
         }
 
-        private void GenerateArrayPropertySetter(PropertyInfo property, FieldInfo propertyFieldBuilder, PropertyBuilder propertyBuilder)
-        {
-            var actualSetMethod = property.GetSetMethod();
-            var setterMethod = TargetType.DefineMethod
-            (
-                actualSetMethod.Name,
-                PropertyMethodAttributes,
-                actualSetMethod.CallingConvention,
-                typeof(void),
-                actualSetMethod.GetParameters().Select(p => p.ParameterType).ToArray()
-            );
-
-            var structToPtrFunc = typeof(Marshal).GetMethods().First
-            (
-                m =>
-                    m.Name == nameof(Marshal.StructureToPtr) &&
-                    m.GetParameters().Length == 3 &&
-                    m.IsGenericMethod
-            );
-
-            var setterIL = setterMethod.GetILGenerator();
-            setterIL.Emit(OpCodes.Ldarg_1);
-            setterIL.Emit(OpCodes.Ldarg_0);
-            setterIL.Emit(OpCodes.Ldfld, propertyFieldBuilder);
-            setterIL.Emit(OpCodes.Ldc_I4, 0); // false for deleting structure that is already stored in pointer
-            setterIL.EmitCall
-            (
-                OpCodes.Call,
-                structToPtrFunc.MakeGenericMethod(property.PropertyType),
-                null
-            );
-
-            setterIL.Emit(OpCodes.Ret);
-
-            propertyBuilder.SetSetMethod(setterMethod);
-        }
-
-        private void GenerateArrayPropertyGetter(PropertyInfo property, FieldInfo propertyFieldBuilder, PropertyBuilder propertyBuilder)
-        {
-            throw new NotImplementedException("Still a work in progress.");
-            var actualGetMethod = property.GetGetMethod();
-            var getterMethod = TargetType.DefineMethod
-            (
-                actualGetMethod.Name,
-                PropertyMethodAttributes,
-                actualGetMethod.CallingConvention,
-                actualGetMethod.ReturnType,
-                Type.EmptyTypes
-            );
-
-            var ptrToStructFunc = typeof(Marshal).GetMethods().First
-            (
-                m =>
-                    m.Name == nameof(Marshal.PtrToStructure) &&
-                    m.GetParameters().Length == 1 &&
-                    m.IsGenericMethod
-            );
-
-            var getterIL = getterMethod.GetILGenerator();
-            getterIL.Emit(OpCodes.Ldarg_0);
-            getterIL.Emit(OpCodes.Ldfld, propertyFieldBuilder);
-            getterIL.EmitCall
-            (
-                OpCodes.Call,
-                ptrToStructFunc.MakeGenericMethod(property.PropertyType),
-                null
-            );
-
-            getterIL.Emit(OpCodes.Ret);
-
-            propertyBuilder.SetGetMethod(getterMethod);
-        }
-
-        private void GenerateNonArrayPropertySetter(PropertyInfo property, FieldInfo propertyFieldBuilder, PropertyBuilder propertyBuilder)
+        private void GenerateValueTypePropertySetter(PropertyInfo property, FieldInfo propertyFieldBuilder, PropertyBuilder propertyBuilder)
         {
             throw new NotImplementedException("Still a work in progress.");
 
@@ -303,7 +228,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             propertyBuilder.SetSetMethod(setterMethod);
         }
 
-        private void GenerateNonArrayPropertyGetter(PropertyInfo property, FieldInfo propertyFieldBuilder, PropertyBuilder propertyBuilder)
+        private void GenerateValueTypePropertyGetter(PropertyInfo property, FieldInfo propertyFieldBuilder, PropertyBuilder propertyBuilder)
         {
             var actualGetMethod = property.GetGetMethod();
             var getterMethod = TargetType.DefineMethod
