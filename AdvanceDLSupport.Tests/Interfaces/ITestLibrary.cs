@@ -6,8 +6,12 @@ using AdvanceDLSupport.Tests.Structures;
 
 namespace AdvanceDLSupport.Tests.Interfaces
 {
-    public interface ITestLibrary
+    public unsafe interface ITestLibrary
     {
+        int GlobalVariableA { get; set; }
+        int* GlobalPointerVariable { get; set; }
+
+        void InitializeGlobalPointerVariable();
         int DoStructMath(ref TestStruct struc, int multiplier);
 
         [NativeFunction("DoStructMath")]

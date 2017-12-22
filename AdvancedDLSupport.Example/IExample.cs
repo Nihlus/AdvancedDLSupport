@@ -6,6 +6,8 @@ namespace AdvancedDLSupport.Example
     {
         MyStruct* MyStructure { get; set; }
 
+        void InitializeMyStructure();
+
         int DoMath(ref MyStruct struc);
     }
 }

@@ -27,11 +27,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <inheritdoc />
         public override void GenerateImplementation(MethodInfo method)
         {
-            if (AreMethodParametersUnacceptable(method))
-            {
-                throw new ArgumentException("The method contains a parameter or has a return type that is a class. P/Invoke cannot marshal classes for C libraries.");
-            }
-
             var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
             var parameters = method.GetParameters();
 
@@ -46,19 +41,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
             GenerateDelegateInvoker(method, parameters, delegateField, delegateBuilderType);
 
             AugmentHostingTypeConstructor(method, metadataAttribute, delegateBuilderType, delegateField);
-        }
-
-        private static bool AreMethodParametersUnacceptable(MethodInfo info)
-        {
-            if (info.ReturnParameter.ParameterType.IsClass)
-            {
-                if (info.ReturnParameter.ParameterType != typeof(Delegate))
-                {
-                    return true;
-                }
-            }
-
-            return !info.GetParameters().Any(p => p.ParameterType.IsValueType || p.ParameterType.IsByRef || p.ParameterType == typeof(Delegate));
         }
 
         private void AugmentHostingTypeConstructor(MethodInfo method, NativeFunctionAttribute metadataAttribute, Type delegateBuilderType, FieldInfo delegateField)

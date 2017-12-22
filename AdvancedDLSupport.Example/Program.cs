@@ -8,17 +8,16 @@ namespace AdvancedDLSupport.Example
     {
         private static unsafe void Main()
         {
-            IExample wrapper;
-            wrapper = AnonymousImplementationBuilder.ResolveAndActivateInterface<IExample>
+            var wrapper = AnonymousImplementationBuilder.ResolveAndActivateInterface<IExample>
             (
                 "./libDemo.so"
             );
+            wrapper.InitializeMyStructure();
+            *wrapper.MyStructure = new MyStruct(24);
+            Console.WriteLine(wrapper.MyStructure->A);
+            wrapper.MyStructure->A = 25;
 
-            var mystruc = default(MyStruct);
-            mystruc.A = 25;
-            wrapper.MyStructure[0] = mystruc;
-
-            Console.WriteLine(wrapper.MyStructure[0].A);
+            Console.WriteLine(wrapper.MyStructure->A);
         }
     }
 }

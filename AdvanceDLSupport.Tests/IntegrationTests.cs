@@ -67,5 +67,33 @@ namespace AdvanceDLSupport.Tests
 
 			Assert.Equal(expected, actual);
 		}
+
+		[Fact]
+		public void CanGetGlobalVariableAsProperty()
+		{
+			Assert.Equal(5, _fixture.Library.GlobalVariableA);
+		}
+
+		[Fact]
+		public void CanSetGlobalVariableAsProperty()
+		{
+			_fixture.Library.GlobalVariableA = 1;
+			Assert.Equal(1, _fixture.Library.GlobalVariableA);
+		}
+
+		[Fact]
+		public unsafe void CanGetGlobalPointerVariableAsProperty()
+		{
+			_fixture.Library.InitializeGlobalPointerVariable();
+			Assert.Equal(20, *_fixture.Library.GlobalPointerVariable);
+		}
+
+		[Fact]
+		public unsafe void CanSetGlobalPointerVariableAsProperty()
+		{
+			_fixture.Library.InitializeGlobalPointerVariable();
+			*_fixture.Library.GlobalPointerVariable = 25;
+			Assert.Equal(25, _fixture.Library.GlobalVariableA);
+		}
 	}
 }
