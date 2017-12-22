@@ -4,6 +4,9 @@
     <IsPackable>false</IsPackable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FsCheck.Xunit" Version="3.0.0-alpha2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
