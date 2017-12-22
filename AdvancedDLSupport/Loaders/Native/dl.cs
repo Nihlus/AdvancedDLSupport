@@ -39,6 +39,14 @@ namespace AdvancedDLSupport
             return useCLibrary ? BSD.dlerror() : Unix.dlerror();
         }
 
+        public static void ResetError(bool useCLibrary = false)
+        {
+            // Clear any outstanding errors by looping until no error is found
+            while (error(useCLibrary) != IntPtr.Zero)
+            {
+            }
+        }
+
         private static class Unix
         {
             [DllImport(LibraryNameUnix)]

@@ -20,7 +20,8 @@ namespace AdvancedDLSupport
         /// <exception cref="LibraryLoadingException">Thrown if the library could not be loaded.</exception>
         public IntPtr LoadLibrary(string path, SymbolFlags flags)
         {
-            // TODO: Refactor this code and implement path scanning resolver.
+            dl.ResetError(true);
+
             var libraryHandle = dl.open(path, flags, true);
             if (libraryHandle != IntPtr.Zero)
             {
@@ -42,6 +43,8 @@ namespace AdvancedDLSupport
         /// <inheritdoc />
         public override IntPtr LoadSymbol(IntPtr library, string symbolName)
         {
+            dl.ResetError(true);
+
             var symbolHandle = dl.sym(library, symbolName, true);
             if (symbolHandle != IntPtr.Zero)
             {
