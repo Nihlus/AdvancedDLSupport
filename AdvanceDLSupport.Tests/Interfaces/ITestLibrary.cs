@@ -12,6 +12,7 @@ namespace AdvanceDLSupport.Tests.Interfaces
         int* GlobalPointerVariable { get; set; }
 
         void InitializeGlobalPointerVariable();
+
         int DoStructMath(ref TestStruct struc, int multiplier);
 
         [NativeFunction("DoStructMath")]
