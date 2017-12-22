@@ -9,6 +9,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "metadata", ".\", "{F1A57014
 		.travis.yml = .travis.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", ".\docs", "{96E3AE84-1774-4086-8E07-3B9F842D16DC}"
+	ProjectSection(SolutionItems) = preProject
+		docs\index.md = docs\index.md
+		docs\quickstart.md = docs\quickstart.md
+		docs\supported_constructs.md = docs\supported_constructs.md
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDLSupport", "AdvancedDLSupport\AdvancedDLSupport.csproj", "{7EDC8F84-DF28-4C3C-AF56-F283B694218A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDLSupport.Example", "AdvancedDLSupport.Example\AdvancedDLSupport.Example.csproj", "{CE54588C-3E60-46F9-BA3E-B1778208A369}"
