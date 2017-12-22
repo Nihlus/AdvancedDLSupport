@@ -191,8 +191,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
         private void GenerateValueTypePropertySetter(PropertyInfo property, FieldInfo propertyFieldBuilder, PropertyBuilder propertyBuilder)
         {
-            throw new NotImplementedException("Still a work in progress.");
-
             var actualSetMethod = property.GetSetMethod();
             var setterMethod = TargetType.DefineMethod
             (
