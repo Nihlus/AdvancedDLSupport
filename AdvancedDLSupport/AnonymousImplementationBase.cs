@@ -17,6 +17,14 @@ namespace AdvancedDLSupport
             PlatformLoader = PlatformLoaderBase.SelectPlatformLoader();
         }
 
+        /// <summary>
+        /// Finalizes an instance of the <see cref="AnonymousImplementationBase"/> class.
+        /// </summary>
+        ~AnonymousImplementationBase()
+        {
+            Dispose();
+        }
+
         [NotNull]
         private readonly string _path;
 
