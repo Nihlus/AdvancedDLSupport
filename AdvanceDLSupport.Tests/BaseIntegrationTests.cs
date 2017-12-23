@@ -16,12 +16,12 @@ namespace AdvanceDLSupport.Tests
         }
 
         [Fact]
-        public void LoadingSameInterfaceAndSameFileTwiceProducesIdenticalReferences()
+        public void LoadingSameInterfaceAndSameFileTwiceProducesDifferentReferences()
         {
             var firstLoad = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
             var secondLoad = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
 
-            Assert.Same(firstLoad, secondLoad);
+            Assert.NotSame(firstLoad, secondLoad);
         }
 
         [Fact]

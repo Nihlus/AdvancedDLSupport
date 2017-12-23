@@ -89,8 +89,6 @@ namespace AdvancedDLSupport
 
             PlatformLoader.CloseLibrary(_libraryHandle);
             _libraryHandle = IntPtr.Zero;
-
-            AnonymousImplementationBuilder.ReleaseTypeInstance(new LibraryIdentifier(_interfaceType, _path, Configuration));
         }
     }
 }

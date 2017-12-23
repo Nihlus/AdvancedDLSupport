@@ -28,7 +28,6 @@ namespace AdvancedDLSupport
 
         private static readonly object BuilderLock = new object();
 
-        private static readonly ConcurrentDictionary<LibraryIdentifier, object> InstanceCache;
         private static readonly ConcurrentDictionary<LibraryIdentifier, Type> TypeCache;
 
         static AnonymousImplementationBuilder()
@@ -49,7 +48,6 @@ namespace AdvancedDLSupport
 
             ModuleBuilder = AssemblyBuilder.DefineDynamicModule("DLSupportModule");
 
-            InstanceCache = new ConcurrentDictionary<LibraryIdentifier, object>(new LibraryIdentifierEqualityComparer());
             TypeCache = new ConcurrentDictionary<LibraryIdentifier, Type>(new LibraryIdentifierEqualityComparer());
         }
 
@@ -61,25 +59,6 @@ namespace AdvancedDLSupport
         public AnonymousImplementationBuilder(ImplementationConfiguration configuration = default)
         {
             Configuration = configuration;
-        }
-
-        /// <summary>
-        /// Releases the cached instance of the library identified by the given key.
-        /// </summary>
-        /// <param name="key">The library key.</param>
-        internal static void ReleaseTypeInstance(LibraryIdentifier key)
-        {
-            if (!InstanceCache.TryGetValue(key, out var cachedType))
-            {
-                return;
-            }
-
-            if (cachedType is AnonymousImplementationBase implBase && !implBase.IsDisposed)
-            {
-                implBase.Dispose();
-            }
-
-            InstanceCache.TryUpdate(key, null, cachedType);
         }
 
         /// <summary>
@@ -107,17 +86,12 @@ namespace AdvancedDLSupport
             libraryPath = resolveResult.Path;
 
             var key = new LibraryIdentifier(interfaceType, libraryPath, Configuration);
-            if (InstanceCache.TryGetValue(key, out var cachedType))
+            if (TypeCache.TryGetValue(key, out var cachedType))
             {
                 if (!(cachedType is null))
                 {
-                    return (T)cachedType;
+                    return (T)Activator.CreateInstance(cachedType, libraryPath, interfaceType, Configuration);
                 }
-
-                var instance = (T)Activator.CreateInstance(TypeCache[key], libraryPath, interfaceType, Configuration);
-                InstanceCache.TryUpdate(key, instance, null);
-
-                return instance;
             }
 
             lock (BuilderLock)
@@ -179,7 +153,6 @@ namespace AdvancedDLSupport
                     var finalType = typeBuilder.CreateTypeInfo();
 
                     var instance = (T)Activator.CreateInstance(finalType, libraryPath, interfaceType, Configuration);
-                    InstanceCache.TryAdd(key, instance);
                     TypeCache.TryAdd(key, finalType);
 
                     return instance;
