@@ -43,6 +43,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
 
+            var metadataAttribute = property.GetCustomAttribute<NativeSymbolAttribute>() ??
+                                    new NativeSymbolAttribute(property.Name);
+
             // Note, the field is going to have to be a pointer, because it is pointing to global variable
             var fieldType = Configuration.UseLazyBinding ? typeof(Lazy<IntPtr>) : typeof(IntPtr);
             var propertyFieldBuilder = TargetType.DefineField
@@ -71,12 +74,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 GeneratePropertySetter(property, propertyFieldBuilder, propertyBuilder);
             }
 
-            PropertyInitializationInConstructor(property, propertyFieldBuilder); // This is ok for all 3 types of properties.
+            var symbolName = metadataAttribute.Entrypoint ?? property.Name;
+            PropertyInitializationInConstructor(symbolName, propertyFieldBuilder); // This is ok for all 3 types of properties.
         }
 
         private void PropertyInitializationInConstructor
         (
-            [NotNull] PropertyInfo property,
+            [NotNull] string symbolName,
             [NotNull] FieldInfo propertyFieldBuilder
         )
         {
@@ -91,12 +95,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             if (Configuration.UseLazyBinding)
             {
-                var lambdaBuilder = GenerateSymbolLoadingLambda(property.Name);
+                var lambdaBuilder = GenerateSymbolLoadingLambda(symbolName);
                 GenerateLazyLoadedField(lambdaBuilder, typeof(IntPtr));
             }
             else
             {
-                TargetTypeConstructorIL.Emit(OpCodes.Ldstr, property.Name);
+                TargetTypeConstructorIL.Emit(OpCodes.Ldstr, symbolName);
                 TargetTypeConstructorIL.EmitCall(OpCodes.Call, loadSymbolMethod, null);
             }
 
