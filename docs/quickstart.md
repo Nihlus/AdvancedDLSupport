@@ -46,7 +46,7 @@ Using this interface, we can then initialize an anonymous type which
 implements our interface, and allows us to use the native library.
 
 ```cs
-var mathLibrary = AnonymousImplementationBuilder.ResolveAndActivateInterface<IMath>(LibraryName);
+var mathLibrary = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IMath>(LibraryName);
 
 int mySubtraction = mathLibrary.Subtract(10, 5);
 int myMultiplication mathLibrary.Multiply(5, 5);
