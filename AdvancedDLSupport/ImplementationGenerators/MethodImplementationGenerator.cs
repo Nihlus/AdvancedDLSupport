@@ -115,7 +115,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 EmitDisposalCheck(methodIL);
             }
 
-            methodIL.Emit(OpCodes.Ldarg_0);
             GenerateSymbolPush(methodIL, delegateField);
 
             for (int p = 1; p <= parameters.Count; p++)

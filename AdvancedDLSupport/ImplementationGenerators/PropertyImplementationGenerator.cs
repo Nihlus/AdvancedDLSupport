@@ -167,7 +167,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                         m.Name == "op_Explicit"
                 );
 
-                setterIL.Emit(OpCodes.Ldarg_0);
+
                 GenerateSymbolPush(setterIL, propertyFieldBuilder); // Push Symbol address to stack
                 setterIL.Emit(OpCodes.Ldc_I4, 0);                   // Push 0 offset to stack
 
@@ -177,7 +177,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
             if (property.PropertyType.IsValueType)
             {
                 setterIL.Emit(OpCodes.Ldarg_1);
-                setterIL.Emit(OpCodes.Ldarg_0);
                 GenerateSymbolPush(setterIL, propertyFieldBuilder);
                 setterIL.Emit(OpCodes.Ldc_I4, 0); // false for deleting structure that is already stored in pointer
             }
@@ -245,7 +244,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 EmitDisposalCheck(getterIL);
             }
 
-            getterIL.Emit(OpCodes.Ldarg_0);                     // Push this reference so Symbol pointer can be loaded
             GenerateSymbolPush(getterIL, propertyFieldBuilder);
 
             getterIL.EmitCall

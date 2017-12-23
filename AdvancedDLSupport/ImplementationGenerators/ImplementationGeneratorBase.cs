@@ -66,6 +66,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="symbolField">The field to generate the IL for.</param>
         protected void GenerateSymbolPush(ILGenerator il, FieldInfo symbolField)
         {
+            il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldfld, symbolField);
             if (!Configuration.UseLazyBinding)
             {
