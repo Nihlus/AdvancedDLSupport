@@ -81,23 +81,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             if (Configuration.UseLazyBinding)
             {
                 var lambdaBuilder = GenerateSymbolLoadingLambda(property.Name);
-
-                var funcType = typeof(Func<>).MakeGenericType(typeof(IntPtr));
-                var lazyType = typeof(Lazy<>).MakeGenericType(typeof(IntPtr));
-
-                var funcConstructor = funcType.GetConstructors().First();
-                var lazyConstructor = lazyType.GetConstructors().First
-                (
-                    c =>
-                        c.GetParameters().Any() &&
-                        c.GetParameters().Length == 1 &&
-                        c.GetParameters().First().ParameterType == funcType
-                );
-
-                // Use the lambda instead of the function directly.
-                TargetTypeConstructorIL.Emit(OpCodes.Ldftn, lambdaBuilder);
-                TargetTypeConstructorIL.Emit(OpCodes.Newobj, funcConstructor);
-                TargetTypeConstructorIL.Emit(OpCodes.Newobj, lazyConstructor);
+                GenerateLazyLoadedField(lambdaBuilder, typeof(IntPtr));
             }
             else
             {
@@ -167,14 +151,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
                         m.Name == "op_Explicit"
                 );
 
-
                 GenerateSymbolPush(setterIL, propertyFieldBuilder); // Push Symbol address to stack
                 setterIL.Emit(OpCodes.Ldc_I4, 0);                   // Push 0 offset to stack
 
                 setterIL.Emit(OpCodes.Ldarg_1);                     // Push value to stack
                 setterIL.EmitCall(OpCodes.Call, explicitConvertToIntPtrFunc, null); // Explicit Convert Pointer to IntPtr object
             }
-            if (property.PropertyType.IsValueType)
+            else
             {
                 setterIL.Emit(OpCodes.Ldarg_1);
                 GenerateSymbolPush(setterIL, propertyFieldBuilder);

@@ -69,23 +69,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             if (Configuration.UseLazyBinding)
             {
                 var lambdaBuilder = GenerateFunctionLoadingLambda(delegateBuilderType, entrypointName);
-
-                var funcType = typeof(Func<>).MakeGenericType(delegateBuilderType);
-                var lazyType = typeof(Lazy<>).MakeGenericType(delegateBuilderType);
-
-                var funcConstructor = funcType.GetConstructors().First();
-                var lazyConstructor = lazyType.GetConstructors().First
-                (
-                    c =>
-                        c.GetParameters().Any() &&
-                        c.GetParameters().Length == 1 &&
-                        c.GetParameters().First().ParameterType == funcType
-                );
-
-                // Use the lambda instead of the function directly.
-                TargetTypeConstructorIL.Emit(OpCodes.Ldftn, lambdaBuilder);
-                TargetTypeConstructorIL.Emit(OpCodes.Newobj, funcConstructor);
-                TargetTypeConstructorIL.Emit(OpCodes.Newobj, lazyConstructor);
+                GenerateLazyLoadedField(lambdaBuilder, delegateBuilderType);
             }
             else
             {

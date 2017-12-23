@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -56,6 +57,31 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Call, throwMethod);
+        }
+
+        /// <summary>
+        /// Generates a lazy loaded field with the specified value factory.
+        /// </summary>
+        /// <param name="valueFactory">The value factory to use for the lazy loaded field.</param>
+        /// <param name="type">The return type of the lazy field.</param>
+        protected void GenerateLazyLoadedField(MethodBuilder valueFactory, Type type)
+        {
+            var funcType = typeof(Func<>).MakeGenericType(type);
+            var lazyType = typeof(Lazy<>).MakeGenericType(type);
+
+            var funcConstructor = funcType.GetConstructors().First();
+            var lazyConstructor = lazyType.GetConstructors().First
+            (
+                c =>
+                    c.GetParameters().Any() &&
+                    c.GetParameters().Length == 1 &&
+                    c.GetParameters().First().ParameterType == funcType
+            );
+
+            // Use the lambda instead of the function directly.
+            TargetTypeConstructorIL.Emit(OpCodes.Ldftn, valueFactory);
+            TargetTypeConstructorIL.Emit(OpCodes.Newobj, funcConstructor);
+            TargetTypeConstructorIL.Emit(OpCodes.Newobj, lazyConstructor);
         }
 
         /// <summary>
