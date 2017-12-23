@@ -154,6 +154,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             var setterIL = setterMethod.GetILGenerator();
 
+            if (Configuration.GenerateDisposalChecks)
+            {
+                EmitDisposalCheck(setterIL);
+            }
+
             if (property.PropertyType.IsPointer)
             {
                 var explicitConvertToIntPtrFunc = typeof(IntPtr).GetMethods().First
@@ -234,6 +239,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
             }
 
             var getterIL = getterMethod.GetILGenerator();
+
+            if (Configuration.GenerateDisposalChecks)
+            {
+                EmitDisposalCheck(getterIL);
+            }
+
             getterIL.Emit(OpCodes.Ldarg_0);                     // Push this reference so Symbol pointer can be loaded
             GenerateSymbolPush(getterIL, propertyFieldBuilder);
 

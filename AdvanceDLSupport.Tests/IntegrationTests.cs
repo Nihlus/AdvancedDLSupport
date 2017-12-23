@@ -1,3 +1,4 @@
+using System;
 using AdvancedDLSupport;
 using AdvanceDLSupport.Tests.Interfaces;
 using AdvanceDLSupport.Tests.Structures;
@@ -192,6 +193,33 @@ namespace AdvanceDLSupport.Tests
 				() =>
 					library.MissingProperty
 			);
+		}
+
+		[Fact]
+		public void DisposedLibraryWithoutGeneratedChecksDoesNotThrow()
+		{
+			var library = new AnonymousImplementationBuilder().ResolveAndActivateInterface<ITestLibrary>(LibraryName);
+			library.Dispose();
+			library.Multiply(5, 5);
+		}
+
+		[Fact]
+		public void UndisposedLibraryDoesNotThrow()
+		{
+			var config = new ImplementationConfiguration(false, true);
+			var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<ITestLibrary>(LibraryName);
+
+			library.Multiply(5, 5);
+		}
+
+		[Fact]
+		public void DisposedLibraryThrows()
+		{
+			var config = new ImplementationConfiguration(false, true);
+			var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<ITestLibrary>(LibraryName);
+			library.Dispose();
+
+			Assert.Throws<ObjectDisposedException>(() => library.Multiply(5, 5));
 		}
 	}
 }

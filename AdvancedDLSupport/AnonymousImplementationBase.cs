@@ -5,7 +5,7 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Internal base class for library implementations
     /// </summary>
-    public abstract class AnonymousImplementationBase
+    public abstract class AnonymousImplementationBase : IDisposable
     {
         private static readonly IPlatformLoader PlatformLoader;
 
@@ -15,6 +15,11 @@ namespace AdvancedDLSupport
         }
 
         private readonly IntPtr _libraryHandle;
+
+        /// <summary>
+        /// Gets a value indicating whether or not the library has been disposed.
+        /// </summary>
+        protected bool IsDisposed { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AnonymousImplementationBase"/> class.
@@ -41,11 +46,25 @@ namespace AdvancedDLSupport
         protected T LoadFunction<T>(string sym) => PlatformLoader.LoadFunction<T>(_libraryHandle, sym);
 
         /// <summary>
-        /// Unsafe Dispose will free the loaded library handle, if any of the functions or variables are still in use after this library handle is freed,
-        /// segmentation fault will occur and can potentially crash the Runtime. Do note however that Library Handle can be shared between the Runtime and this class,
-        /// so if that library handle is freed then both Runtime and this class will be affected.
-        /// In normal use case, this shouldn't be used at all.
+        /// Throws if the library has been disposed.
         /// </summary>
-        protected void UnsafeDispose() => PlatformLoader.CloseLibrary(_libraryHandle);
+        /// <exception cref="ObjectDisposedException">Thrown if the library has been disposed.</exception>
+        protected void ThrowIfDisposed()
+        {
+            if (IsDisposed)
+            {
+                throw new ObjectDisposedException(GetType().Name, "The library has been disposed.");
+            }
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            if (!IsDisposed)
+            {
+                PlatformLoader.CloseLibrary(_libraryHandle);
+                IsDisposed = true;
+            }
+        }
     }
 }

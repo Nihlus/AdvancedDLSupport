@@ -47,6 +47,18 @@ namespace AdvancedDLSupport.ImplementationGenerators
         public abstract void GenerateImplementation(T member);
 
         /// <summary>
+        /// Emits a call to <see cref="AnonymousImplementationBase.ThrowIfDisposed"/>.
+        /// </summary>
+        /// <param name="il">The IL generator.</param>
+        protected void EmitDisposalCheck(ILGenerator il)
+        {
+            var throwMethod = typeof(AnonymousImplementationBase).GetMethod("ThrowIfDisposed", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Call, throwMethod);
+        }
+
+        /// <summary>
         /// Generates the IL required to push the value of the field to the stack, including the case where the field
         /// is lazily loaded.
         /// </summary>

@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using AdvancedDLSupport.Attributes;
 using AdvanceDLSupport.Tests.Structures;
 
@@ -6,7 +7,7 @@ using AdvanceDLSupport.Tests.Structures;
 
 namespace AdvanceDLSupport.Tests.Interfaces
 {
-    public unsafe interface ITestLibrary
+    public unsafe interface ITestLibrary : IDisposable
     {
         int GlobalVariableA { get; set; }
         int* GlobalPointerVariable { get; set; }

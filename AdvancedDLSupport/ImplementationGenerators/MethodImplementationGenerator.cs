@@ -110,6 +110,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             // Let's create a method that simply invoke the delegate
             var methodIL = methodBuilder.GetILGenerator();
+
+            if (Configuration.GenerateDisposalChecks)
+            {
+                EmitDisposalCheck(methodIL);
+            }
+
             methodIL.Emit(OpCodes.Ldarg_0);
             methodIL.Emit(OpCodes.Ldfld, delegateField);
 
