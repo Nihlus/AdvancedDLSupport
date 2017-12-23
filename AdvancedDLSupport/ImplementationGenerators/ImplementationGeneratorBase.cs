@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.ImplementationGenerators
 {
@@ -17,16 +18,19 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <summary>
         /// Gets the module in which the implementation should be generated.
         /// </summary>
+        [NotNull]
         protected ModuleBuilder TargetModule { get; }
 
         /// <summary>
         /// Gets the type in which the implementation should be generated.
         /// </summary>
+        [NotNull]
         protected TypeBuilder TargetType { get; }
 
         /// <summary>
         /// Gets the IL generator for the constructor of the type in which the implementation should be generated.
         /// </summary>
+        [NotNull]
         protected ILGenerator TargetTypeConstructorIL { get; }
 
         /// <summary>
@@ -36,7 +40,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="targetType">The type in which the implementation should be generated.</param>
         /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
         /// <param name="configuration">The configuration object to use.</param>
-        public ImplementationGeneratorBase(ModuleBuilder targetModule, TypeBuilder targetType, ILGenerator targetTypeConstructorIL, ImplementationConfiguration configuration)
+        protected ImplementationGeneratorBase
+        (
+            [NotNull] ModuleBuilder targetModule,
+            [NotNull] TypeBuilder targetType,
+            [NotNull] ILGenerator targetTypeConstructorIL,
+            ImplementationConfiguration configuration
+        )
         {
             TargetModule = targetModule;
             TargetType = targetType;
@@ -51,7 +61,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// Emits a call to <see cref="AnonymousImplementationBase.ThrowIfDisposed"/>.
         /// </summary>
         /// <param name="il">The IL generator.</param>
-        protected void EmitDisposalCheck(ILGenerator il)
+        protected void EmitDisposalCheck([NotNull] ILGenerator il)
         {
             var throwMethod = typeof(AnonymousImplementationBase).GetMethod("ThrowIfDisposed", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -64,7 +74,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="valueFactory">The value factory to use for the lazy loaded field.</param>
         /// <param name="type">The return type of the lazy field.</param>
-        protected void GenerateLazyLoadedField(MethodBuilder valueFactory, Type type)
+        protected void GenerateLazyLoadedField([NotNull] MethodBuilder valueFactory, [NotNull] Type type)
         {
             var funcType = typeof(Func<>).MakeGenericType(type);
             var lazyType = typeof(Lazy<>).MakeGenericType(type);
@@ -90,7 +100,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="il">The IL generator.</param>
         /// <param name="symbolField">The field to generate the IL for.</param>
-        protected void GenerateSymbolPush(ILGenerator il, FieldInfo symbolField)
+        protected void GenerateSymbolPush([NotNull] ILGenerator il, [NotNull] FieldInfo symbolField)
         {
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldfld, symbolField);
@@ -108,7 +118,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="symbolName">The name of the symbol.</param>
         /// <returns>A method which, when called, will load and return the given symbol.</returns>
-        protected MethodBuilder GenerateSymbolLoadingLambda(string symbolName)
+        [NotNull]
+        protected MethodBuilder GenerateSymbolLoadingLambda([NotNull] string symbolName)
         {
             var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
 
@@ -141,7 +152,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="delegateType">The type of delegate to load.</param>
         /// <param name="functionName">The name of the function.</param>
         /// <returns>A method which, when called, will load and return the given function.</returns>
-        protected MethodBuilder GenerateFunctionLoadingLambda(Type delegateType, string functionName)
+        [NotNull]
+        protected MethodBuilder GenerateFunctionLoadingLambda([NotNull] Type delegateType, [NotNull] string functionName)
         {
             var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
 

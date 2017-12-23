@@ -4,8 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
-using AdvancedDLSupport.Attributes;
+using JetBrains.Annotations;
 
+// ReSharper disable BitwiseOperatorOnEnumWithoutFlags
 namespace AdvancedDLSupport.ImplementationGenerators
 {
     /// <summary>
@@ -20,7 +21,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="targetType">The type in which the method implementation should be generated.</param>
         /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
         /// <param name="configuration">The configuration object to use.</param>
-        public MethodImplementationGenerator(ModuleBuilder targetModule, TypeBuilder targetType, ILGenerator targetTypeConstructorIL, ImplementationConfiguration configuration)
+        public MethodImplementationGenerator
+        (
+            [NotNull] ModuleBuilder targetModule,
+            [NotNull] TypeBuilder targetType,
+            [NotNull] ILGenerator targetTypeConstructorIL,
+            ImplementationConfiguration configuration
+        )
             : base(targetModule, targetType, targetTypeConstructorIL, configuration)
         {
         }
@@ -54,7 +61,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
             AugmentHostingTypeConstructor(method, metadataAttribute, delegateBuilderType, delegateField);
         }
 
-        private void AugmentHostingTypeConstructor(MethodInfo method, NativeFunctionAttribute metadataAttribute, Type delegateBuilderType, FieldInfo delegateField)
+        private void AugmentHostingTypeConstructor
+        (
+            [NotNull] MethodInfo method,
+            [NotNull] NativeFunctionAttribute metadataAttribute,
+            [NotNull] Type delegateBuilderType,
+            [NotNull] FieldInfo delegateField
+        )
         {
             var entrypointName = metadataAttribute.Entrypoint ?? method.Name;
             var loadFunc = typeof(AnonymousImplementationBase).GetMethod
@@ -80,7 +93,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
             TargetTypeConstructorIL.Emit(OpCodes.Stfld, delegateField);
         }
 
-        private void GenerateDelegateInvoker(MethodInfo method, IReadOnlyCollection<ParameterInfo> parameters, FieldInfo delegateField, Type delegateBuilderType)
+        private void GenerateDelegateInvoker
+        (
+            [NotNull] MethodInfo method,
+            [NotNull] IReadOnlyCollection<ParameterInfo> parameters,
+            [NotNull] FieldInfo delegateField,
+            [NotNull] Type delegateBuilderType
+        )
         {
             var methodBuilder = TargetType.DefineMethod
             (
@@ -110,7 +129,14 @@ namespace AdvancedDLSupport.ImplementationGenerators
             methodIL.Emit(OpCodes.Ret);
         }
 
-        private TypeBuilder GenerateDelegateType(MethodInfo method, string uniqueIdentifier, NativeFunctionAttribute metadataAttribute, IEnumerable<ParameterInfo> parameters)
+        [NotNull]
+        private TypeBuilder GenerateDelegateType
+        (
+            [NotNull] MethodInfo method,
+            [NotNull] string uniqueIdentifier,
+            [NotNull] NativeFunctionAttribute metadataAttribute,
+            [NotNull, ItemNotNull] IEnumerable<ParameterInfo> parameters
+        )
         {
             // Declare a delegate type
             var delegateBuilder = TargetModule.DefineType

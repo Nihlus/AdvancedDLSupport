@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.ImplementationGenerators
 {
@@ -26,7 +27,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="targetType">The type in which the property implementation should be generated.</param>
         /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
         /// <param name="configuration">The configuration object to use.</param>
-        public PropertyImplementationGenerator(ModuleBuilder targetModule, TypeBuilder targetType, ILGenerator targetTypeConstructorIL, ImplementationConfiguration configuration)
+        public PropertyImplementationGenerator
+        (
+            [NotNull] ModuleBuilder targetModule,
+            [NotNull] TypeBuilder targetType,
+            [NotNull] ILGenerator targetTypeConstructorIL,
+            ImplementationConfiguration configuration
+        )
             : base(targetModule, targetType, targetTypeConstructorIL, configuration)
         {
         }
@@ -67,7 +74,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
             PropertyInitializationInConstructor(property, propertyFieldBuilder); // This is ok for all 3 types of properties.
         }
 
-        private void PropertyInitializationInConstructor(PropertyInfo property, FieldInfo propertyFieldBuilder)
+        private void PropertyInitializationInConstructor
+        (
+            [NotNull] PropertyInfo property,
+            [NotNull] FieldInfo propertyFieldBuilder
+        )
         {
             var loadSymbolMethod = typeof(AnonymousImplementationBase).GetMethod
             (
@@ -92,7 +103,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
             TargetTypeConstructorIL.Emit(OpCodes.Stfld, propertyFieldBuilder);
         }
 
-        private void GeneratePropertySetter(PropertyInfo property, FieldInfo propertyFieldBuilder, PropertyBuilder propertyBuilder)
+        private void GeneratePropertySetter
+        (
+            [NotNull] PropertyInfo property,
+            [NotNull] FieldInfo propertyFieldBuilder,
+            [NotNull] PropertyBuilder propertyBuilder
+        )
         {
             var actualSetMethod = property.GetSetMethod();
             var setterMethod = TargetType.DefineMethod
@@ -176,7 +192,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
             propertyBuilder.SetSetMethod(setterMethod);
         }
 
-        private void GeneratePropertyGetter(PropertyInfo property, FieldInfo propertyFieldBuilder, PropertyBuilder propertyBuilder)
+        private void GeneratePropertyGetter
+        (
+            [NotNull] PropertyInfo property,
+            [NotNull] FieldInfo propertyFieldBuilder,
+            [NotNull] PropertyBuilder propertyBuilder
+        )
         {
             var actualGetMethod = property.GetGetMethod();
             var getterMethod = TargetType.DefineMethod

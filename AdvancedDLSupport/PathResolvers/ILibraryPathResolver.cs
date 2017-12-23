@@ -1,15 +1,16 @@
 ﻿using System;
 using System.IO;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
 {
     /// <summary>
     /// Resolves library paths.
     /// </summary>
-    public interface ILibraryPathResolver
+    internal interface ILibraryPathResolver
     {
         /// <summary>
-        /// Resolves the absolute path to the given library.
+        /// Resolves the absolute path to the given library. A null return value signifies the main program.
         /// </summary>
         /// <param name="library">The name or path of the library to load.</param>
         /// <returns>The absolute path to the library.</returns>
@@ -17,6 +18,7 @@ namespace AdvancedDLSupport
         /// Thrown if the current platform doesn't have a path
         /// resolver defined.</exception>
         /// <exception cref="FileNotFoundException">Thrown if no library file can be found.</exception>
-        string Resolve(string library);
+        [CanBeNull, Pure]
+        string Resolve([NotNull] string library);
     }
 }

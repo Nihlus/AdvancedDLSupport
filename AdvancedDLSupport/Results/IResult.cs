@@ -1,15 +1,17 @@
 ﻿using System;
+using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Results
+namespace AdvancedDLSupport
 {
     /// <summary>
     /// Represents an attempted action, which may or may not have succeeded.
     /// </summary>
-    public interface IResult
+    internal interface IResult
     {
         /// <summary>
         /// Gets a human-readable reason for the error.
         /// </summary>
+        [CanBeNull]
         string ErrorReason { get; }
 
         /// <summary>
@@ -20,6 +22,7 @@ namespace AdvancedDLSupport.Results
         /// <summary>
         /// Gets the exception which caused the error (if any).
         /// </summary>
+        [CanBeNull]
         Exception Exception { get; }
     }
 }

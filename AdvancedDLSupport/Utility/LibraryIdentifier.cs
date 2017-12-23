@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
 {
@@ -14,7 +15,7 @@ namespace AdvancedDLSupport
         /// <param name="interfaceType">The interface type.</param>
         /// <param name="libraryPath">The path to the library. Will be resolved to an absolute path.</param>
         /// <param name="configuration">The configuration used for the library.</param>
-        public LibraryIdentifier(Type interfaceType, string libraryPath, ImplementationConfiguration configuration)
+        public LibraryIdentifier([NotNull] Type interfaceType, [NotNull] string libraryPath, ImplementationConfiguration configuration)
         {
             _interfaceType = interfaceType;
             _configuration = configuration;

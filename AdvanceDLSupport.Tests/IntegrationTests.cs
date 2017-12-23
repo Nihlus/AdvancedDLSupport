@@ -148,7 +148,7 @@ namespace AdvanceDLSupport.Tests
 		public void LazyLoadingAnInterfaceWithAMissingMethodDoesNotThrow()
 		{
 			var config = new ImplementationConfiguration(useLazyBinding:true);
-			var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<ITestLibraryMissingMethod>(LibraryName);
+			new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<ITestLibraryMissingMethod>(LibraryName);
 		}
 
 		[Fact]
@@ -178,7 +178,7 @@ namespace AdvanceDLSupport.Tests
 		public void LazyLoadingAnInterfaceWithAMissingPropertyDoesNotThrow()
 		{
 			var config = new ImplementationConfiguration(useLazyBinding:true);
-			var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<ITestLibraryMissingProperty>(LibraryName);
+			new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<ITestLibraryMissingProperty>(LibraryName);
 		}
 
 		[Fact]

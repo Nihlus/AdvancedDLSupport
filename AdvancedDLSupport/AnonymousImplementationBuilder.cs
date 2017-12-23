@@ -1,32 +1,34 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Diagnostics.SymbolStore;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using AdvancedDLSupport.ImplementationGenerators;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
 {
     /// <summary>
     /// Builder class for anonymous types that bind to native libraries.
     /// </summary>
+    [PublicAPI]
     public class AnonymousImplementationBuilder
     {
         /// <summary>
         /// Gets the configuration object for this builder.
         /// </summary>
+        [PublicAPI]
         public ImplementationConfiguration Configuration { get; }
 
-        private static readonly ModuleBuilder ModuleBuilder;
+        // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
         private static readonly AssemblyBuilder AssemblyBuilder;
+        private static readonly ModuleBuilder ModuleBuilder;
 
         private static readonly object BuilderLock = new object();
 
         private static readonly ConcurrentDictionary<LibraryIdentifier, object> TypeCache;
-        private static readonly ConcurrentDictionary<LibraryIdentifier, Exception> ErrorCache;
 
         static AnonymousImplementationBuilder()
         {
@@ -47,13 +49,13 @@ namespace AdvancedDLSupport
             ModuleBuilder = AssemblyBuilder.DefineDynamicModule("DLSupportModule");
 
             TypeCache = new ConcurrentDictionary<LibraryIdentifier, object>();
-            ErrorCache = new ConcurrentDictionary<LibraryIdentifier, Exception>();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AnonymousImplementationBuilder"/> class.
         /// </summary>
         /// <param name="configuration">The configuration settings to use for the builder.</param>
+        [PublicAPI]
         public AnonymousImplementationBuilder(ImplementationConfiguration configuration = default)
         {
             Configuration = configuration;
@@ -66,7 +68,8 @@ namespace AdvancedDLSupport
         /// <param name="libraryPath">Path to Native Library to bind interface to.</param>
         /// <typeparam name="T">P/Invoke Interface Type to bind Native Library to.</typeparam>
         /// <returns>Returns a generated type object that binds to native library with provided interface.</returns>
-        public T ResolveAndActivateInterface<T>(string libraryPath) where T : class
+        [NotNull, PublicAPI]
+        public T ResolveAndActivateInterface<T>([NotNull] string libraryPath) where T : class
         {
             var interfaceType = typeof(T);
             if (!interfaceType.IsInterface)
@@ -153,7 +156,7 @@ namespace AdvancedDLSupport
         /// <param name="typeBuilder">Reference to TypeBuilder to define the methods in.</param>
         /// <param name="ctorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
         /// <param name="interfaceType">Type definition of a provided interface.</param>
-        private void ConstructMethods(TypeBuilder typeBuilder, ILGenerator ctorIL, Type interfaceType)
+        private void ConstructMethods([NotNull] TypeBuilder typeBuilder, [NotNull] ILGenerator ctorIL, [NotNull] Type interfaceType)
         {
             var methodGenerator = new MethodImplementationGenerator(ModuleBuilder, typeBuilder, ctorIL, Configuration);
 
@@ -176,7 +179,7 @@ namespace AdvancedDLSupport
         /// <param name="typeBuilder">Reference to TypeBuilder to define the methods in.</param>
         /// <param name="ctorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
         /// <param name="interfaceType">Type definition of a provided interface.</param>
-        private void ConstructProperties(TypeBuilder typeBuilder, ILGenerator ctorIL, Type interfaceType)
+        private void ConstructProperties([NotNull] TypeBuilder typeBuilder, [NotNull] ILGenerator ctorIL, [NotNull] Type interfaceType)
         {
             var propertyGenerator = new PropertyImplementationGenerator(ModuleBuilder, typeBuilder, ctorIL, Configuration);
 

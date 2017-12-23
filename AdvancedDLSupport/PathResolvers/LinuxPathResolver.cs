@@ -7,7 +7,7 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Resolves library paths on Linux (and other unix-like systems).
     /// </summary>
-    public class LinuxPathResolver : ILibraryPathResolver
+    internal sealed class LinuxPathResolver : ILibraryPathResolver
     {
         /// <inheritdoc />
         public string Resolve(string library)

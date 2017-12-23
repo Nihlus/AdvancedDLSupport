@@ -1,10 +1,13 @@
 using System;
+using AdvancedDLSupport.Loaders;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
 {
     /// <summary>
     /// Internal base class for library implementations
     /// </summary>
+    [PublicAPI]
     public abstract class AnonymousImplementationBase : IDisposable
     {
         private static readonly IPlatformLoader PlatformLoader;
@@ -17,15 +20,15 @@ namespace AdvancedDLSupport
         private readonly IntPtr _libraryHandle;
 
         /// <summary>
-        /// Gets a value indicating whether or not the library has been disposed.
+        /// Gets or sets a value indicating whether or not the library has been disposed.
         /// </summary>
-        protected bool IsDisposed { get; private set; }
+        private bool IsDisposed { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AnonymousImplementationBase"/> class.
         /// </summary>
         /// <param name="path">The path to the library.</param>
-        protected AnonymousImplementationBase(string path)
+        protected AnonymousImplementationBase([NotNull] string path)
         {
             _libraryHandle = PlatformLoader.LoadLibrary(path);
         }
@@ -35,7 +38,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="sym">The symbol name.</param>
         /// <returns>A handle to the symbol</returns>
-        protected IntPtr LoadSymbol(string sym) => PlatformLoader.LoadSymbol(_libraryHandle, sym);
+        protected IntPtr LoadSymbol([NotNull] string sym) => PlatformLoader.LoadSymbol(_libraryHandle, sym);
 
         /// <summary>
         /// Forwards the function loading call to the wrapped platform loader.
@@ -43,7 +46,7 @@ namespace AdvancedDLSupport
         /// <param name="sym">The symbol name.</param>
         /// <typeparam name="T">The delegate to load the symbol as.</typeparam>
         /// <returns>A function delegate.</returns>
-        protected T LoadFunction<T>(string sym) => PlatformLoader.LoadFunction<T>(_libraryHandle, sym);
+        protected T LoadFunction<T>([NotNull] string sym) => PlatformLoader.LoadFunction<T>(_libraryHandle, sym);
 
         /// <summary>
         /// Throws if the library has been disposed.
@@ -58,13 +61,16 @@ namespace AdvancedDLSupport
         }
 
         /// <inheritdoc />
+        [PublicAPI]
         public void Dispose()
         {
-            if (!IsDisposed)
+            if (IsDisposed)
             {
-                PlatformLoader.CloseLibrary(_libraryHandle);
-                IsDisposed = true;
+                return;
             }
+
+            PlatformLoader.CloseLibrary(_libraryHandle);
+            IsDisposed = true;
         }
     }
 }

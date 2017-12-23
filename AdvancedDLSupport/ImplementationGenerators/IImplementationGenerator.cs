@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.ImplementationGenerators
 {
@@ -17,6 +18,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// Generates the implementation for the given member.
         /// </summary>
         /// <param name="member">The member to generate the implementation for.</param>
-        void GenerateImplementation(T member);
+        void GenerateImplementation([NotNull] T member);
     }
 }

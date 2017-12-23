@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using AdvancedDLSupport.Attributes;
+using AdvancedDLSupport;
 using AdvanceDLSupport.Tests.Structures;
 
 #pragma warning disable SA1600, CS1591 // Elements should be documented

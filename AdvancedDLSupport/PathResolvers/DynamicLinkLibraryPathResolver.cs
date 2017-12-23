@@ -4,15 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using AdvancedDLSupport.Results;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
 {
     /// <summary>
     /// Resolves dynamic link library paths.
     /// </summary>
-    public class DynamicLinkLibraryPathResolver
+    internal static class DynamicLinkLibraryPathResolver
     {
+        [NotNull]
         private static readonly ILibraryPathResolver PathResolver;
 
         static DynamicLinkLibraryPathResolver()
@@ -20,6 +21,7 @@ namespace AdvancedDLSupport
             PathResolver = SelectPathResolver();
         }
 
+        [NotNull]
         private static ILibraryPathResolver SelectPathResolver()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -55,7 +57,7 @@ namespace AdvancedDLSupport
         /// Thrown if the current platform doesn't have a path
         /// resolver defined.</exception>
         /// <exception cref="FileNotFoundException">Thrown if no library file can be found.</exception>
-        public static ResolvePathResult ResolveAbsolutePath(string library, bool localFirst)
+        public static ResolvePathResult ResolveAbsolutePath([NotNull] string library, bool localFirst)
         {
             var candidates = GenerateLibraryCandidates(library).ToList();
 
@@ -92,7 +94,8 @@ namespace AdvancedDLSupport
             return ResolvePathResult.FromError(new FileNotFoundException("The specified library was not found in any of the loader search paths."));
         }
 
-        private static IEnumerable<string> GenerateLibraryCandidates(string library)
+        [NotNull, ItemNotNull]
+        private static IEnumerable<string> GenerateLibraryCandidates([NotNull] string library)
         {
             var candidates = new List<string>();
             candidates.Add(library);

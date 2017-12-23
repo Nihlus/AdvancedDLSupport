@@ -7,7 +7,7 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Resolves library paths on macOS.
     /// </summary>
-    public class MacOSPathResolver : ILibraryPathResolver
+    internal sealed class MacOSPathResolver : ILibraryPathResolver
     {
         /// <inheritdoc />
         public string Resolve(string library)
