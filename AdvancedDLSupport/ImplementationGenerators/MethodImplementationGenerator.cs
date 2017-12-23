@@ -117,13 +117,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             }
 
             methodIL.Emit(OpCodes.Ldarg_0);
-            methodIL.Emit(OpCodes.Ldfld, delegateField);
-
-            if (Configuration.UseLazyBinding)
-            {
-                var getMethod = typeof(Lazy<>).MakeGenericType(delegateBuilderType).GetMethod("get_Value", BindingFlags.Instance | BindingFlags.Public);
-                methodIL.Emit(OpCodes.Callvirt, getMethod);
-            }
+            GenerateSymbolPush(methodIL, delegateField);
 
             for (int p = 1; p <= parameters.Count; p++)
             {
