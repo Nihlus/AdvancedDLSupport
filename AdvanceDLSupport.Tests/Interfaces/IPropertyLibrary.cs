@@ -1,6 +1,5 @@
 ﻿using System;
 using AdvancedDLSupport;
-using AdvanceDLSupport.Tests.Structures;
 
 namespace AdvanceDLSupport.Tests.Interfaces
 {

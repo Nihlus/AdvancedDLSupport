@@ -2,8 +2,6 @@ using System;
 using System.Runtime.InteropServices;
 using AdvancedDLSupport;
 using AdvanceDLSupport.Tests.Interfaces;
-using AdvanceDLSupport.Tests.Structures;
-using FsCheck.Xunit;
 using Xunit;
 // ReSharper disable ArgumentsStyleLiteral
 
