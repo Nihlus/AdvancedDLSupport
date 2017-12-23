@@ -3,12 +3,18 @@
   <member name="T:AdvancedDLSupport.AnonymousImplementationBase">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.AnonymousImplementationBase.#ctor(System.String)">
+  <member name="M:AdvancedDLSupport.AnonymousImplementationBase.#ctor(System.String,System.Type,AdvancedDLSupport.ImplementationConfiguration)">
     <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="interfaceType">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="M:AdvancedDLSupport.AnonymousImplementationBase.Dispose">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="P:AdvancedDLSupport.AnonymousImplementationBase.IsDisposed">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:AdvancedDLSupport.AnonymousImplementationBase.LoadFunction``1(System.String)">
@@ -85,22 +91,22 @@
   <member name="T:AdvancedDLSupport.Loaders.SymbolFlags">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="T:AdvancedDLSupport.NativeFunctionAttribute">
+  <member name="T:AdvancedDLSupport.NativeSymbolAttribute">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.NativeFunctionAttribute.#ctor">
+  <member name="M:AdvancedDLSupport.NativeSymbolAttribute.#ctor">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.NativeFunctionAttribute.#ctor(System.String)">
+  <member name="M:AdvancedDLSupport.NativeSymbolAttribute.#ctor(System.String)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="entrypoint">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="P:AdvancedDLSupport.NativeFunctionAttribute.CallingConvention">
+  <member name="P:AdvancedDLSupport.NativeSymbolAttribute.CallingConvention">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="P:AdvancedDLSupport.NativeFunctionAttribute.Entrypoint">
+  <member name="P:AdvancedDLSupport.NativeSymbolAttribute.Entrypoint">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="T:AdvancedDLSupport.SymbolLoadingException">

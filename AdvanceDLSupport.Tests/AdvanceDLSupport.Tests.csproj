@@ -17,8 +17,19 @@
   <ItemGroup>
     <ProjectReference Include="..\AdvancedDLSupport\AdvancedDLSupport.csproj" />
   </ItemGroup>
-  <Target Name="CompileTestLibrary" AfterTargets="AfterBuild">
-    <exec Command="clang -std=c99 -shared -fPIC -oc/libTest.so c/src/Test.c" />
-    <Copy SourceFiles="c\libTest.so" DestinationFolder="$(OutDir)" />
+  <PropertyGroup>
+    <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-debug</CMakeBuildDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <CMakeOutputBinaries Include="$(CMakeBuildDir)\lib\*.so" />
+  </ItemGroup>
+  <Target Name="InitCMake" BeforeTargets="CompileTestLibraries" Condition="!Exists('$(CMakeBuildDir)\CMakeCache.txt')">
+    <Exec Command="pwd" />
+    <Exec Command="mkdir -p $(CMakeBuildDir)" />
+    <Exec Command="cmake ../" WorkingDirectory="$(CMakeBuildDir)" />
+  </Target>
+  <Target Name="CompileTestLibraries" AfterTargets="AfterBuild">
+    <Exec Command="cmake --build ." WorkingDirectory="$(CMakeBuildDir)" />
+    <Copy SourceFiles="@(CMakeOutputBinaries)" DestinationFolder="$(OutDir)" />
   </Target>
 </Project>
