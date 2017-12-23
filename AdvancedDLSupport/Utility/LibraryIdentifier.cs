@@ -37,6 +37,12 @@ namespace AdvancedDLSupport
         /// </summary>
         private readonly ImplementationConfiguration _configuration;
 
+        /// <summary>
+        /// Gets the type of interface this key maps to.
+        /// </summary>
+        /// <returns>Thge type of the interface.</returns>
+        public Type GetInterfaceType() => _interfaceType;
+
         /// <inheritdoc />
         public bool Equals(LibraryIdentifier other)
         {

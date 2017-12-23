@@ -28,7 +28,8 @@ namespace AdvancedDLSupport
 
         private static readonly object BuilderLock = new object();
 
-        private static readonly ConcurrentDictionary<LibraryIdentifier, object> TypeCache;
+        private static readonly ConcurrentDictionary<LibraryIdentifier, object> InstanceCache;
+        private static readonly ConcurrentDictionary<LibraryIdentifier, Type> TypeCache;
 
         static AnonymousImplementationBuilder()
         {
@@ -48,7 +49,8 @@ namespace AdvancedDLSupport
 
             ModuleBuilder = AssemblyBuilder.DefineDynamicModule("DLSupportModule");
 
-            TypeCache = new ConcurrentDictionary<LibraryIdentifier, object>();
+            InstanceCache = new ConcurrentDictionary<LibraryIdentifier, object>(new LibraryIdentifierEqualityComparer());
+            TypeCache = new ConcurrentDictionary<LibraryIdentifier, Type>(new LibraryIdentifierEqualityComparer());
         }
 
         /// <summary>
@@ -59,6 +61,25 @@ namespace AdvancedDLSupport
         public AnonymousImplementationBuilder(ImplementationConfiguration configuration = default)
         {
             Configuration = configuration;
+        }
+
+        /// <summary>
+        /// Releases the cached instance of the library identified by the given key.
+        /// </summary>
+        /// <param name="key">The library key.</param>
+        internal static void ReleaseTypeInstance(LibraryIdentifier key)
+        {
+            if (!InstanceCache.TryGetValue(key, out var cachedType))
+            {
+                return;
+            }
+
+            if (cachedType is AnonymousImplementationBase implBase && !implBase.IsDisposed)
+            {
+                implBase.Dispose();
+            }
+
+            InstanceCache.TryUpdate(key, null, cachedType);
         }
 
         /// <summary>
@@ -83,10 +104,20 @@ namespace AdvancedDLSupport
                 throw resolveResult.Exception ?? new FileNotFoundException("The specified library was not found in any of the loader search paths.");
             }
 
+            libraryPath = resolveResult.Path;
+
             var key = new LibraryIdentifier(interfaceType, libraryPath, Configuration);
-            if (TypeCache.TryGetValue(key, out var cachedType))
+            if (InstanceCache.TryGetValue(key, out var cachedType))
             {
-                return (T)cachedType;
+                if (!(cachedType is null))
+                {
+                    return (T)cachedType;
+                }
+
+                var instance = (T)Activator.CreateInstance(TypeCache[key], libraryPath, interfaceType, Configuration);
+                InstanceCache.TryUpdate(key, instance, null);
+
+                return instance;
             }
 
             lock (BuilderLock)
@@ -116,18 +147,26 @@ namespace AdvancedDLSupport
                 (
                     MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.HideBySig,
                     CallingConventions.Standard,
-                    new[] { typeof(string) }
+                    new[] { typeof(string), typeof(Type), typeof(ImplementationConfiguration) }
                 );
 
                 constructorBuilder.DefineParameter(1, ParameterAttributes.In, "libraryPath");
                 var ctorIL = constructorBuilder.GetILGenerator();
                 ctorIL.Emit(OpCodes.Ldarg_0); // Load instance
                 ctorIL.Emit(OpCodes.Ldarg_1); // Load libraryPath parameter
-                ctorIL.Emit(OpCodes.Call, typeof(AnonymousImplementationBase).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).First
+                ctorIL.Emit(OpCodes.Ldarg_2); // Load interface type
+                ctorIL.Emit(OpCodes.Ldarg_3); // Load config parameter
+                ctorIL.Emit
                 (
-                    p =>
-                    p.GetParameters().Length == 1 &&
-                    p.GetParameters()[0].ParameterType == typeof(string))
+                    OpCodes.Call,
+                    typeof(AnonymousImplementationBase).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).First
+                    (
+                        p =>
+                            p.GetParameters().Length == 3 &&
+                            p.GetParameters()[0].ParameterType == typeof(string) &&
+                            p.GetParameters()[1].ParameterType == typeof(Type) &&
+                            p.GetParameters()[2].ParameterType == typeof(ImplementationConfiguration)
+                    )
                 );
 
                 ConstructMethods(typeBuilder, ctorIL, interfaceType);
@@ -137,8 +176,11 @@ namespace AdvancedDLSupport
 
                 try
                 {
-                    var instance = (T)Activator.CreateInstance(typeBuilder.CreateTypeInfo(), libraryPath);
-                    TypeCache.TryAdd(key, instance);
+                    var finalType = typeBuilder.CreateTypeInfo();
+
+                    var instance = (T)Activator.CreateInstance(finalType, libraryPath, interfaceType, Configuration);
+                    InstanceCache.TryAdd(key, instance);
+                    TypeCache.TryAdd(key, finalType);
 
                     return instance;
                 }

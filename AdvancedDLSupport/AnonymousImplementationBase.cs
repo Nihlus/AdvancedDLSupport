@@ -17,20 +17,36 @@ namespace AdvancedDLSupport
             PlatformLoader = PlatformLoaderBase.SelectPlatformLoader();
         }
 
-        private readonly IntPtr _libraryHandle;
+        [NotNull]
+        private readonly string _path;
+
+        [NotNull]
+        private readonly Type _interfaceType;
+        private IntPtr _libraryHandle;
 
         /// <summary>
-        /// Gets or sets a value indicating whether or not the library has been disposed.
+        /// Gets a value indicating whether or not the library has been disposed.
         /// </summary>
-        private bool IsDisposed { get; set; }
+        [PublicAPI]
+        public bool IsDisposed { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether or not the library can be disposed.
+        /// </summary>
+        private ImplementationConfiguration Configuration { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AnonymousImplementationBase"/> class.
         /// </summary>
         /// <param name="path">The path to the library.</param>
-        protected AnonymousImplementationBase([NotNull] string path)
+        /// <param name="interfaceType">The interface type that the anonymous type implements.</param>
+        /// <param name="configuration">Whether or not this library can be disposed.</param>
+        protected AnonymousImplementationBase([NotNull] string path, [NotNull] Type interfaceType, ImplementationConfiguration configuration)
         {
+            Configuration = configuration;
             _libraryHandle = PlatformLoader.LoadLibrary(path);
+            _path = path;
+            _interfaceType = interfaceType;
         }
 
         /// <summary>
@@ -64,13 +80,17 @@ namespace AdvancedDLSupport
         [PublicAPI]
         public void Dispose()
         {
-            if (IsDisposed)
+            if (IsDisposed || !Configuration.GenerateDisposalChecks)
             {
                 return;
             }
 
-            PlatformLoader.CloseLibrary(_libraryHandle);
             IsDisposed = true;
+
+            PlatformLoader.CloseLibrary(_libraryHandle);
+            _libraryHandle = IntPtr.Zero;
+
+            AnonymousImplementationBuilder.ReleaseTypeInstance(new LibraryIdentifier(_interfaceType, _path, Configuration));
         }
     }
 }
