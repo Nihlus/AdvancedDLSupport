@@ -174,22 +174,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 setterIL.Emit(OpCodes.Ldarg_1);                     // Push value to stack
                 setterIL.EmitCall(OpCodes.Call, explicitConvertToIntPtrFunc, null); // Explicit Convert Pointer to IntPtr object
             }
-            else if (property.PropertyType.IsValueType)
+            if (property.PropertyType.IsValueType)
             {
                 setterIL.Emit(OpCodes.Ldarg_1);
                 setterIL.Emit(OpCodes.Ldarg_0);
                 GenerateSymbolPush(setterIL, propertyFieldBuilder);
                 setterIL.Emit(OpCodes.Ldc_I4, 0); // false for deleting structure that is already stored in pointer
-            }
-            else
-            {
-                throw new NotSupportedException(
-                    string.Format
-                    (
-                        "{0} Type is not supported. Only ValueType property or Pointer Property is supported.",
-                        property.PropertyType.FullName
-                    )
-                );
             }
 
             setterIL.EmitCall
@@ -226,7 +216,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                         m.GetParameters().Length == 1
                 );
             }
-            else
+            else if (property.PropertyType.IsValueType)
             {
                 underlyingMethod = typeof(Marshal).GetMethods().First
                 (
@@ -236,6 +226,16 @@ namespace AdvancedDLSupport.ImplementationGenerators
                         m.IsGenericMethod
                 )
                 .MakeGenericMethod(property.PropertyType);
+            }
+            else
+            {
+                throw new NotSupportedException(
+                    string.Format
+                    (
+                        "{0} Type is not supported. Only ValueType property or Pointer Property is supported.",
+                        property.PropertyType.FullName
+                    )
+                );
             }
 
             var getterIL = getterMethod.GetILGenerator();
