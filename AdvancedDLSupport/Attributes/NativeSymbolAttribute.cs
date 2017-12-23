@@ -7,8 +7,8 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Holds metadata for native functions.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method), PublicAPI]
-    public class NativeFunctionAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property), PublicAPI]
+    public class NativeSymbolAttribute : Attribute
     {
         /// <summary>
         /// Gets or sets the name of the function's entrypoint.
@@ -23,19 +23,19 @@ namespace AdvancedDLSupport
         public CallingConvention CallingConvention { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NativeFunctionAttribute"/> class.
+        /// Initializes a new instance of the <see cref="NativeSymbolAttribute"/> class.
         /// </summary>
         [PublicAPI]
-        public NativeFunctionAttribute()
+        public NativeSymbolAttribute()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NativeFunctionAttribute"/> class.
+        /// Initializes a new instance of the <see cref="NativeSymbolAttribute"/> class.
         /// </summary>
         /// <param name="entrypoint">The name of the function's entry point.</param>
         [PublicAPI]
-        public NativeFunctionAttribute([NotNull] string entrypoint)
+        public NativeSymbolAttribute([NotNull] string entrypoint)
         {
             Entrypoint = entrypoint;
         }

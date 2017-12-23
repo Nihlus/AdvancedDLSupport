@@ -38,10 +38,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
             var parameters = method.GetParameters();
 
-            var metadataAttribute = method.GetCustomAttribute<NativeFunctionAttribute>() ??
-                                    new NativeFunctionAttribute(method.Name);
+            var metadataAttribute = method.GetCustomAttribute<NativeSymbolAttribute>() ??
+                                    new NativeSymbolAttribute(method.Name);
 
-            var delegateBuilder = GenerateDelegateType(method, uniqueIdentifier, metadataAttribute, parameters);
+            var delegateBuilder = GenerateDelegateType(method, uniqueIdentifier, metadataAttribute.CallingConvention, parameters);
 
             // Create a delegate field
             var delegateBuilderType = delegateBuilder.CreateTypeInfo();
@@ -58,18 +58,18 @@ namespace AdvancedDLSupport.ImplementationGenerators
             }
 
             GenerateDelegateInvoker(method, parameters, delegateField, delegateBuilderType);
-            AugmentHostingTypeConstructor(method, metadataAttribute, delegateBuilderType, delegateField);
+
+            var entrypointName = metadataAttribute.Entrypoint ?? method.Name;
+            AugmentHostingTypeConstructor(entrypointName, delegateBuilderType, delegateField);
         }
 
         private void AugmentHostingTypeConstructor
         (
-            [NotNull] MethodInfo method,
-            [NotNull] NativeFunctionAttribute metadataAttribute,
+            [NotNull] string entrypointName,
             [NotNull] Type delegateBuilderType,
             [NotNull] FieldInfo delegateField
         )
         {
-            var entrypointName = metadataAttribute.Entrypoint ?? method.Name;
             var loadFunc = typeof(AnonymousImplementationBase).GetMethod
             (
                 "LoadFunction",
@@ -134,7 +134,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         (
             [NotNull] MethodInfo method,
             [NotNull] string uniqueIdentifier,
-            [NotNull] NativeFunctionAttribute metadataAttribute,
+            CallingConvention callingConvention,
             [NotNull, ItemNotNull] IEnumerable<ParameterInfo> parameters
         )
         {
@@ -158,7 +158,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var functionPointerAttributeBuilder = new CustomAttributeBuilder
             (
                 attributeConstructor,
-                new object[] { metadataAttribute.CallingConvention }
+                new object[] { callingConvention }
             );
 
             delegateBuilder.SetCustomAttribute(functionPointerAttributeBuilder);
