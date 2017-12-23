@@ -57,16 +57,15 @@ namespace AdvancedDLSupport.ImplementationGenerators
         private void AugmentHostingTypeConstructor(MethodInfo method, NativeFunctionAttribute metadataAttribute, Type delegateBuilderType, FieldInfo delegateField)
         {
             var entrypointName = metadataAttribute.Entrypoint ?? method.Name;
-            var loadFuncMethod = typeof(AnonymousImplementationBase).GetMethod
+            var loadFunc = typeof(AnonymousImplementationBase).GetMethod
             (
                 "LoadFunction",
                 BindingFlags.NonPublic | BindingFlags.Instance
-            );
+            ).MakeGenericMethod(delegateBuilderType);
 
             TargetTypeConstructorIL.Emit(OpCodes.Ldarg_0); // This is for storing field delegate, it needs the "this" reference
             TargetTypeConstructorIL.Emit(OpCodes.Ldarg_0);
 
-            var loadFunc = loadFuncMethod.MakeGenericMethod(delegateBuilderType);
             if (Configuration.UseLazyBinding)
             {
                 var lambdaBuilder = GenerateFunctionLoadingLambda(delegateBuilderType, entrypointName);
