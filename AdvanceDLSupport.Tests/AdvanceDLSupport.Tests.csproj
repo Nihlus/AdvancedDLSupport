@@ -24,7 +24,6 @@
     <CMakeOutputBinaries Include="$(CMakeBuildDir)\lib\*.so" />
   </ItemGroup>
   <Target Name="InitCMake" BeforeTargets="CompileTestLibraries" Condition="!Exists('$(CMakeBuildDir)\CMakeCache.txt')">
-    <Exec Command="pwd" />
     <Exec Command="mkdir -p $(CMakeBuildDir)" />
     <Exec Command="cmake ../" WorkingDirectory="$(CMakeBuildDir)" />
   </Target>
