@@ -23,7 +23,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="useLazyBinding">Whether or not to use lazy binding.</param>
         /// <param name="generateDisposalChecks">Whether or not to generate disposal checks.</param>
-        public ImplementationConfiguration(bool useLazyBinding, bool generateDisposalChecks)
+        public ImplementationConfiguration(bool useLazyBinding = false, bool generateDisposalChecks = false)
         {
             UseLazyBinding = useLazyBinding;
             GenerateDisposalChecks = generateDisposalChecks;

@@ -4,6 +4,7 @@ using AdvanceDLSupport.Tests.Interfaces;
 using AdvanceDLSupport.Tests.Structures;
 using FsCheck.Xunit;
 using Xunit;
+// ReSharper disable ArgumentsStyleLiteral
 
 namespace AdvanceDLSupport.Tests
 {
@@ -25,6 +26,17 @@ namespace AdvanceDLSupport.Tests
 			var secondLoad = new AnonymousImplementationBuilder().ResolveAndActivateInterface<ITestLibrary>(LibraryName);
 
 			Assert.Same(firstLoad, secondLoad);
+		}
+
+		[Fact]
+		public void LoadingSameInterfaceAndSameFileButWithDifferentOptionsProducesDifferentReferences()
+		{
+			var options = new ImplementationConfiguration(true);
+			var firstLoad = new AnonymousImplementationBuilder(options).ResolveAndActivateInterface<ITestLibrary>(LibraryName);
+
+			var secondLoad = new AnonymousImplementationBuilder().ResolveAndActivateInterface<ITestLibrary>(LibraryName);
+
+			Assert.NotSame(firstLoad, secondLoad);
 		}
 
 		[Property]
@@ -135,14 +147,14 @@ namespace AdvanceDLSupport.Tests
 		[Fact]
 		public void LazyLoadingAnInterfaceWithAMissingMethodDoesNotThrow()
 		{
-			var config = new ImplementationConfiguration(true, false);
+			var config = new ImplementationConfiguration(useLazyBinding:true);
 			var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<ITestLibraryMissingMethod>(LibraryName);
 		}
 
 		[Fact]
 		public void CallingMissingMethodInLazyLoadedInterfaceThrows()
 		{
-			var config = new ImplementationConfiguration(true, false);
+			var config = new ImplementationConfiguration(useLazyBinding:true);
 			var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<ITestLibraryMissingMethod>(LibraryName);
 
 			Assert.Throws<SymbolLoadingException>
@@ -165,14 +177,14 @@ namespace AdvanceDLSupport.Tests
 		[Fact]
 		public void LazyLoadingAnInterfaceWithAMissingPropertyDoesNotThrow()
 		{
-			var config = new ImplementationConfiguration(true, false);
+			var config = new ImplementationConfiguration(useLazyBinding:true);
 			var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<ITestLibraryMissingProperty>(LibraryName);
 		}
 
 		[Fact]
 		public void SettingMissingPropertyInLazyLoadedInterfaceThrows()
 		{
-			var config = new ImplementationConfiguration(true, false);
+			var config = new ImplementationConfiguration(useLazyBinding:true);
 			var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<ITestLibraryMissingProperty>(LibraryName);
 
 			Assert.Throws<SymbolLoadingException>
@@ -185,7 +197,7 @@ namespace AdvanceDLSupport.Tests
 		[Fact]
 		public void GettingMissingPropertyInLazyLoadedInterfaceThrows()
 		{
-			var config = new ImplementationConfiguration(true, false);
+			var config = new ImplementationConfiguration(useLazyBinding:true);
 			var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<ITestLibraryMissingProperty>(LibraryName);
 
 			Assert.Throws<SymbolLoadingException>
@@ -206,7 +218,7 @@ namespace AdvanceDLSupport.Tests
 		[Fact]
 		public void UndisposedLibraryDoesNotThrow()
 		{
-			var config = new ImplementationConfiguration(false, true);
+			var config = new ImplementationConfiguration(generateDisposalChecks:true);
 			var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<ITestLibrary>(LibraryName);
 
 			library.Multiply(5, 5);
@@ -215,7 +227,7 @@ namespace AdvanceDLSupport.Tests
 		[Fact]
 		public void DisposedLibraryThrows()
 		{
-			var config = new ImplementationConfiguration(false, true);
+			var config = new ImplementationConfiguration(generateDisposalChecks:true);
 			var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<ITestLibrary>(LibraryName);
 			library.Dispose();
 
