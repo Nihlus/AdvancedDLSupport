@@ -9,6 +9,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
     internal interface IImplementationGenerator<in T> where T : MemberInfo
     {
         /// <summary>
+        /// Gets the implementation configuration object to use.
+        /// </summary>
+        ImplementationConfiguration Configuration { get; }
+
+        /// <summary>
         /// Generates the implementation for the given member.
         /// </summary>
         /// <param name="member">The member to generate the implementation for.</param>

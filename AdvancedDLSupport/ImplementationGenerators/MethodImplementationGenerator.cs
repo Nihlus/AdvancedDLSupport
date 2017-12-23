@@ -19,8 +19,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="targetModule">The module in which the method implementation should be generated.</param>
         /// <param name="targetType">The type in which the method implementation should be generated.</param>
         /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
-        public MethodImplementationGenerator(ModuleBuilder targetModule, TypeBuilder targetType, ILGenerator targetTypeConstructorIL)
-            : base(targetModule, targetType, targetTypeConstructorIL)
+        /// <param name="configuration">The configuration object to use.</param>
+        public MethodImplementationGenerator(ModuleBuilder targetModule, TypeBuilder targetType, ILGenerator targetTypeConstructorIL, ImplementationConfiguration configuration)
+            : base(targetModule, targetType, targetTypeConstructorIL, configuration)
         {
         }
 
@@ -37,9 +38,19 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             // Create a delegate field
             var delegateBuilderType = delegateBuilder.CreateTypeInfo();
-            var delegateField = TargetType.DefineField($"{method.Name}_dtm_{uniqueIdentifier}", delegateBuilderType, FieldAttributes.Public);
-            GenerateDelegateInvoker(method, parameters, delegateField, delegateBuilderType);
 
+            FieldBuilder delegateField;
+            if (Configuration.UseLazyBinding)
+            {
+                var lazyLoadedType = typeof(Lazy<>).MakeGenericType(delegateBuilderType);
+                delegateField = TargetType.DefineField($"{method.Name}_dtm_{uniqueIdentifier}", lazyLoadedType, FieldAttributes.Public);
+            }
+            else
+            {
+                delegateField = TargetType.DefineField($"{method.Name}_dtm_{uniqueIdentifier}", delegateBuilderType, FieldAttributes.Public);
+            }
+
+            GenerateDelegateInvoker(method, parameters, delegateField, delegateBuilderType);
             AugmentHostingTypeConstructor(method, metadataAttribute, delegateBuilderType, delegateField);
         }
 
@@ -52,11 +63,37 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 BindingFlags.NonPublic | BindingFlags.Instance
             );
 
-            // Assign Delegate from Function Pointer
             TargetTypeConstructorIL.Emit(OpCodes.Ldarg_0); // This is for storing field delegate, it needs the "this" reference
             TargetTypeConstructorIL.Emit(OpCodes.Ldarg_0);
-            TargetTypeConstructorIL.Emit(OpCodes.Ldstr, entrypointName);
-            TargetTypeConstructorIL.EmitCall(OpCodes.Call, loadFuncMethod.MakeGenericMethod(delegateBuilderType), null);
+
+            var loadFunc = loadFuncMethod.MakeGenericMethod(delegateBuilderType);
+            if (Configuration.UseLazyBinding)
+            {
+                var lambdaBuilder = GenerateFunctionLoadingLambda(delegateBuilderType, entrypointName);
+
+                var funcType = typeof(Func<>).MakeGenericType(delegateBuilderType);
+                var lazyType = typeof(Lazy<>).MakeGenericType(delegateBuilderType);
+
+                var funcConstructor = funcType.GetConstructors().First();
+                var lazyConstructor = lazyType.GetConstructors().First
+                (
+                    c =>
+                        c.GetParameters().Any() &&
+                        c.GetParameters().Length == 1 &&
+                        c.GetParameters().First().ParameterType == funcType
+                );
+
+                // Use the lambda instead of the function directly.
+                TargetTypeConstructorIL.Emit(OpCodes.Ldftn, lambdaBuilder);
+                TargetTypeConstructorIL.Emit(OpCodes.Newobj, funcConstructor);
+                TargetTypeConstructorIL.Emit(OpCodes.Newobj, lazyConstructor);
+            }
+            else
+            {
+                TargetTypeConstructorIL.Emit(OpCodes.Ldstr, entrypointName);
+                TargetTypeConstructorIL.EmitCall(OpCodes.Call, loadFunc, null);
+            }
+
             TargetTypeConstructorIL.Emit(OpCodes.Stfld, delegateField);
         }
 
@@ -75,6 +112,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var methodIL = methodBuilder.GetILGenerator();
             methodIL.Emit(OpCodes.Ldarg_0);
             methodIL.Emit(OpCodes.Ldfld, delegateField);
+
+            if (Configuration.UseLazyBinding)
+            {
+                var getMethod = typeof(Lazy<>).MakeGenericType(delegateBuilderType).GetMethod("get_Value", BindingFlags.Instance | BindingFlags.Public);
+                methodIL.Emit(OpCodes.Callvirt, getMethod);
+            }
+
             for (int p = 1; p <= parameters.Count; p++)
             {
                 methodIL.Emit(OpCodes.Ldarg, p);
@@ -94,10 +138,18 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 typeof(MulticastDelegate)
             );
 
-            var attributeConstructors = typeof(UnmanagedFunctionPointerAttribute).GetConstructors();
+            var attributeConstructor = typeof(UnmanagedFunctionPointerAttribute).GetConstructors().First
+            (
+                c =>
+                    c.GetParameters().Any() &&
+                    c.GetParameters().Length == 1 &&
+                    c.GetParameters().First().ParameterType == typeof(CallingConvention)
+
+            );
+
             var functionPointerAttributeBuilder = new CustomAttributeBuilder
             (
-                attributeConstructors[1],
+                attributeConstructor,
                 new object[] { metadataAttribute.CallingConvention }
             );
 

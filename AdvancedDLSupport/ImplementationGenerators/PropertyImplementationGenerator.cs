@@ -25,8 +25,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="targetModule">The module in which the property implementation should be generated.</param>
         /// <param name="targetType">The type in which the property implementation should be generated.</param>
         /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
-        public PropertyImplementationGenerator(ModuleBuilder targetModule, TypeBuilder targetType, ILGenerator targetTypeConstructorIL)
-            : base(targetModule, targetType, targetTypeConstructorIL)
+        /// <param name="configuration">The configuration object to use.</param>
+        public PropertyImplementationGenerator(ModuleBuilder targetModule, TypeBuilder targetType, ILGenerator targetTypeConstructorIL, ImplementationConfiguration configuration)
+            : base(targetModule, targetType, targetTypeConstructorIL, configuration)
         {
         }
 
@@ -36,10 +37,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
 
             // Note, the field is going to have to be a pointer, because it is pointing to global variable
+            var fieldType = Configuration.UseLazyBinding ? typeof(Lazy<IntPtr>) : typeof(IntPtr);
             var propertyFieldBuilder = TargetType.DefineField
             (
                 $"{property.Name}_{uniqueIdentifier}",
-                typeof(IntPtr),
+                fieldType,
                 FieldAttributes.Private
             );
 
@@ -52,43 +54,14 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 property.GetIndexParameters().Select(p => p.ParameterType).ToArray()
             );
 
-            // TODO: Refactor? On one hand, it doesn't take much computational power to process the below
-            // On other hand, it isn't as pretty as other code...
-            if (property.PropertyType.IsPointer)
+            if (property.CanRead)
             {
-                if (property.CanRead)
-                {
-                    // Return a Pointer from Global Variable
-                    GeneratePointerPropertyGetter(property, propertyFieldBuilder, propertyBuilder);
-                }
-
-                if (property.CanWrite)
-                {
-                    // Write new address for Global Variable
-                    GeneratePointerPropertySetter(property, propertyFieldBuilder, propertyBuilder);
-                }
+                GeneratePropertyGetter(property, propertyFieldBuilder, propertyBuilder);
             }
-            else if (!property.PropertyType.IsArray && property.PropertyType.IsValueType)
-            {
-                if (property.CanRead)
-                {
-                    GenerateValueTypePropertyGetter(property, propertyFieldBuilder, propertyBuilder);
-                }
 
-                if (property.CanWrite)
-                {
-                    GenerateValueTypePropertySetter(property, propertyFieldBuilder, propertyBuilder);
-                }
-            }
-            else
+            if (property.CanWrite)
             {
-                throw new NotSupportedException(
-                    string.Format
-                    (
-                        "{0} Type is not supported. Only ValueType property or Pointer Property is supported.",
-                        property.PropertyType.FullName
-                    )
-                );
+                GeneratePropertySetter(property, propertyFieldBuilder, propertyBuilder);
             }
 
             PropertyInitializationInConstructor(property, propertyFieldBuilder); // This is ok for all 3 types of properties.
@@ -104,12 +77,38 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             TargetTypeConstructorIL.Emit(OpCodes.Ldarg_0);
             TargetTypeConstructorIL.Emit(OpCodes.Ldarg_0);
-            TargetTypeConstructorIL.Emit(OpCodes.Ldstr, property.Name);
-            TargetTypeConstructorIL.EmitCall(OpCodes.Call, loadSymbolMethod, null);
+
+            if (Configuration.UseLazyBinding)
+            {
+                var lambdaBuilder = GenerateSymbolLoadingLambda(property.Name);
+
+                var funcType = typeof(Func<>).MakeGenericType(typeof(IntPtr));
+                var lazyType = typeof(Lazy<>).MakeGenericType(typeof(IntPtr));
+
+                var funcConstructor = funcType.GetConstructors().First();
+                var lazyConstructor = lazyType.GetConstructors().First
+                (
+                    c =>
+                        c.GetParameters().Any() &&
+                        c.GetParameters().Length == 1 &&
+                        c.GetParameters().First().ParameterType == funcType
+                );
+
+                // Use the lambda instead of the function directly.
+                TargetTypeConstructorIL.Emit(OpCodes.Ldftn, lambdaBuilder);
+                TargetTypeConstructorIL.Emit(OpCodes.Newobj, funcConstructor);
+                TargetTypeConstructorIL.Emit(OpCodes.Newobj, lazyConstructor);
+            }
+            else
+            {
+                TargetTypeConstructorIL.Emit(OpCodes.Ldstr, property.Name);
+                TargetTypeConstructorIL.EmitCall(OpCodes.Call, loadSymbolMethod, null);
+            }
+
             TargetTypeConstructorIL.Emit(OpCodes.Stfld, propertyFieldBuilder);
         }
 
-        private void GeneratePointerPropertySetter(PropertyInfo property, FieldInfo propertyFieldBuilder, PropertyBuilder propertyBuilder)
+        private void GeneratePropertySetter(PropertyInfo property, FieldInfo propertyFieldBuilder, PropertyBuilder propertyBuilder)
         {
             var actualSetMethod = property.GetSetMethod();
             var setterMethod = TargetType.DefineMethod
@@ -121,31 +120,77 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 actualSetMethod.GetParameters().Select(p => p.ParameterType).ToArray()
             );
 
-            var writeIntPtrFunc = typeof(Marshal).GetMethods().First
-            (
-                m =>
-                    m.Name == nameof(Marshal.WriteIntPtr) &&
-                    m.GetParameters().Length == 3
-            );
-
-            var explicitConvertToIntPtrFunc = typeof(IntPtr).GetMethods().First
-            (
-                m =>
-                    m.Name == "op_Explicit"
-            );
+            MethodInfo underlyingMethod;
+            if (property.PropertyType.IsPointer)
+            {
+                underlyingMethod = typeof(Marshal).GetMethods().First
+                (
+                    m =>
+                        m.Name == nameof(Marshal.WriteIntPtr) &&
+                        m.GetParameters().Length == 3
+                );
+            }
+            else if (property.PropertyType.IsValueType)
+            {
+                underlyingMethod = typeof(Marshal).GetMethods().First
+                (
+                    m =>
+                        m.Name == nameof(Marshal.StructureToPtr) &&
+                        m.GetParameters().Length == 3 &&
+                        m.IsGenericMethod
+                )
+                .MakeGenericMethod(property.PropertyType);
+            }
+            else
+            {
+                throw new NotSupportedException(
+                    string.Format
+                    (
+                        "{0} Type is not supported. Only ValueType property or Pointer Property is supported.",
+                        property.PropertyType.FullName
+                    )
+                );
+            }
 
             var setterIL = setterMethod.GetILGenerator();
-            setterIL.Emit(OpCodes.Ldarg_0);                     // Push this reference to load symbol address
-            setterIL.Emit(OpCodes.Ldfld, propertyFieldBuilder); // Push Symbol address to stack
-            setterIL.Emit(OpCodes.Ldc_I4, 0);                   // Push 0 offset to stack
-            setterIL.Emit(OpCodes.Ldarg_1);                     // Push value to stack
 
-            setterIL.EmitCall(OpCodes.Call, explicitConvertToIntPtrFunc, null); // Explicit Convert Pointer to IntPtr object
+            if (property.PropertyType.IsPointer)
+            {
+                var explicitConvertToIntPtrFunc = typeof(IntPtr).GetMethods().First
+                (
+                    m =>
+                        m.Name == "op_Explicit"
+                );
+
+                setterIL.Emit(OpCodes.Ldarg_0);
+                GenerateSymbolPush(setterIL, propertyFieldBuilder); // Push Symbol address to stack
+                setterIL.Emit(OpCodes.Ldc_I4, 0);                   // Push 0 offset to stack
+
+                setterIL.Emit(OpCodes.Ldarg_1);                     // Push value to stack
+                setterIL.EmitCall(OpCodes.Call, explicitConvertToIntPtrFunc, null); // Explicit Convert Pointer to IntPtr object
+            }
+            else if (property.PropertyType.IsValueType)
+            {
+                setterIL.Emit(OpCodes.Ldarg_1);
+                setterIL.Emit(OpCodes.Ldarg_0);
+                GenerateSymbolPush(setterIL, propertyFieldBuilder);
+                setterIL.Emit(OpCodes.Ldc_I4, 0); // false for deleting structure that is already stored in pointer
+            }
+            else
+            {
+                throw new NotSupportedException(
+                    string.Format
+                    (
+                        "{0} Type is not supported. Only ValueType property or Pointer Property is supported.",
+                        property.PropertyType.FullName
+                    )
+                );
+            }
 
             setterIL.EmitCall
             (
                 OpCodes.Call,
-                writeIntPtrFunc,
+                underlyingMethod,
                 null
             );
 
@@ -154,7 +199,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             propertyBuilder.SetSetMethod(setterMethod);
         }
 
-        private void GeneratePointerPropertyGetter(PropertyInfo property, FieldInfo propertyFieldBuilder, PropertyBuilder propertyBuilder)
+        private void GeneratePropertyGetter(PropertyInfo property, FieldInfo propertyFieldBuilder, PropertyBuilder propertyBuilder)
         {
             var actualGetMethod = property.GetGetMethod();
             var getterMethod = TargetType.DefineMethod
@@ -166,93 +211,36 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 Type.EmptyTypes
             );
 
-            var readIntPtrFunc = typeof(Marshal).GetMethods().First
-            (
-                m =>
-                    m.Name == nameof(Marshal.ReadIntPtr) &&
-                    m.GetParameters().Length == 1
-            );
+            MethodInfo underlyingMethod;
+            if (property.PropertyType.IsPointer)
+            {
+                underlyingMethod = typeof(Marshal).GetMethods().First
+                (
+                    m =>
+                        m.Name == nameof(Marshal.ReadIntPtr) &&
+                        m.GetParameters().Length == 1
+                );
+            }
+            else
+            {
+                underlyingMethod = typeof(Marshal).GetMethods().First
+                (
+                    m =>
+                        m.Name == nameof(Marshal.PtrToStructure) &&
+                        m.GetParameters().Length == 1 &&
+                        m.IsGenericMethod
+                )
+                .MakeGenericMethod(property.PropertyType);
+            }
 
             var getterIL = getterMethod.GetILGenerator();
             getterIL.Emit(OpCodes.Ldarg_0);                     // Push this reference so Symbol pointer can be loaded
-            getterIL.Emit(OpCodes.Ldfld, propertyFieldBuilder); // Push symbol pointer to stack
+            GenerateSymbolPush(getterIL, propertyFieldBuilder);
 
-            getterIL.EmitCall // Dereference the symbol pointer to get pointer information
-            (
-                OpCodes.Call,
-                readIntPtrFunc,
-                null
-            );
-
-            getterIL.Emit(OpCodes.Ret);
-
-            propertyBuilder.SetGetMethod(getterMethod);
-        }
-
-        private void GenerateValueTypePropertySetter(PropertyInfo property, FieldInfo propertyFieldBuilder, PropertyBuilder propertyBuilder)
-        {
-            var actualSetMethod = property.GetSetMethod();
-            var setterMethod = TargetType.DefineMethod
-            (
-                actualSetMethod.Name,
-                PropertyMethodAttributes,
-                actualSetMethod.CallingConvention,
-                typeof(void),
-                actualSetMethod.GetParameters().Select(p => p.ParameterType).ToArray()
-            );
-
-            var structToPtrFunc = typeof(Marshal).GetMethods().First
-            (
-                m =>
-                    m.Name == nameof(Marshal.StructureToPtr) &&
-                    m.GetParameters().Length == 3 &&
-                    m.IsGenericMethod
-            );
-
-            var setterIL = setterMethod.GetILGenerator();
-            setterIL.Emit(OpCodes.Ldarg_1);
-            setterIL.Emit(OpCodes.Ldarg_0);
-            setterIL.Emit(OpCodes.Ldfld, propertyFieldBuilder);
-            setterIL.Emit(OpCodes.Ldc_I4, 0); // false for deleting structure that is already stored in pointer
-            setterIL.EmitCall
-            (
-                OpCodes.Call,
-                structToPtrFunc.MakeGenericMethod(property.PropertyType),
-                null
-            );
-
-            setterIL.Emit(OpCodes.Ret);
-
-            propertyBuilder.SetSetMethod(setterMethod);
-        }
-
-        private void GenerateValueTypePropertyGetter(PropertyInfo property, FieldInfo propertyFieldBuilder, PropertyBuilder propertyBuilder)
-        {
-            var actualGetMethod = property.GetGetMethod();
-            var getterMethod = TargetType.DefineMethod
-            (
-                actualGetMethod.Name,
-                PropertyMethodAttributes,
-                actualGetMethod.CallingConvention,
-                actualGetMethod.ReturnType,
-                Type.EmptyTypes
-            );
-
-            var ptrToStructFunc = typeof(Marshal).GetMethods().First
-            (
-                m =>
-                    m.Name == nameof(Marshal.PtrToStructure) &&
-                    m.GetParameters().Length == 1 &&
-                    m.IsGenericMethod
-            );
-
-            var getterIL = getterMethod.GetILGenerator();
-            getterIL.Emit(OpCodes.Ldarg_0);
-            getterIL.Emit(OpCodes.Ldfld, propertyFieldBuilder);
             getterIL.EmitCall
             (
                 OpCodes.Call,
-                ptrToStructFunc.MakeGenericMethod(property.PropertyType),
+                underlyingMethod,
                 null
             );
 

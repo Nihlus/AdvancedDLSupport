@@ -13,9 +13,11 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="interfaceType">The interface type.</param>
         /// <param name="libraryPath">The path to the library. Will be resolved to an absolute path.</param>
-        public LibraryIdentifier(Type interfaceType, string libraryPath)
+        /// <param name="configuration">The configuration used for the library.</param>
+        public LibraryIdentifier(Type interfaceType, string libraryPath, ImplementationConfiguration configuration)
         {
             _interfaceType = interfaceType;
+            _configuration = configuration;
             _absoluteLibraryPath = Path.GetFullPath(libraryPath);
         }
 
@@ -29,10 +31,17 @@ namespace AdvancedDLSupport
         /// </summary>
         private readonly string _absoluteLibraryPath;
 
+        /// <summary>
+        /// The configuration used for the library at construction time.
+        /// </summary>
+        private readonly ImplementationConfiguration _configuration;
+
         /// <inheritdoc />
         public bool Equals(LibraryIdentifier other)
         {
-            return _interfaceType == other._interfaceType && string.Equals(_absoluteLibraryPath, other._absoluteLibraryPath);
+            return _interfaceType == other._interfaceType &&
+                   string.Equals(_absoluteLibraryPath, other._absoluteLibraryPath) &&
+                   _configuration.Equals(other._configuration);
         }
 
         /// <inheritdoc />
@@ -53,7 +62,8 @@ namespace AdvancedDLSupport
             {
                 return
                 ((_interfaceType != null ? _interfaceType.GetHashCode() : 0) * 397) ^
-                (_absoluteLibraryPath != null ? _absoluteLibraryPath.GetHashCode() : 0);
+                (_absoluteLibraryPath != null ? _absoluteLibraryPath.GetHashCode() : 0) ^
+                (_configuration.GetHashCode() * 397);
             }
         }
     }
