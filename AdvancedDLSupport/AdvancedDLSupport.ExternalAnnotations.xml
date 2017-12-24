@@ -73,7 +73,10 @@
   <member name="T:AdvancedDLSupport.ImplementationConfiguration">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.ImplementationConfiguration.#ctor(System.Boolean,System.Boolean)">
+  <member name="M:AdvancedDLSupport.ImplementationConfiguration.#ctor(System.Boolean,System.Boolean,System.Boolean)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="P:AdvancedDLSupport.ImplementationConfiguration.EnableDllMapSupport">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:AdvancedDLSupport.ImplementationConfiguration.Equals(AdvancedDLSupport.ImplementationConfiguration)">

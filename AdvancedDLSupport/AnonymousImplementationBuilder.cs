@@ -8,6 +8,7 @@ using System.Reflection.Emit;
 using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.ImplementationGenerators;
 using JetBrains.Annotations;
+using Mono.DllMap;
 
 namespace AdvancedDLSupport
 {
@@ -76,6 +77,11 @@ namespace AdvancedDLSupport
             if (!interfaceType.IsInterface)
             {
                 throw new Exception("The generic argument type must be an interface! Please review the documentation on how to use this.");
+            }
+
+            if (Configuration.EnableDllMapSupport)
+            {
+                libraryPath = new DllMapResolver().MapLibraryName(interfaceType, libraryPath);
             }
 
             var resolveResult = DynamicLinkLibraryPathResolver.ResolveAbsolutePath(libraryPath, true);
