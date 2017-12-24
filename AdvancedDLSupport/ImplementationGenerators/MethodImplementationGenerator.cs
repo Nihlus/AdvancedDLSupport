@@ -33,15 +33,14 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <inheritdoc />
-        public override void GenerateImplementation(MethodInfo method)
+        protected override void GenerateImplementation(MethodInfo method, string symbolName, string uniqueMemberIdentifier)
         {
-            var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
             var parameters = method.GetParameters();
 
             var metadataAttribute = method.GetCustomAttribute<NativeSymbolAttribute>() ??
                                     new NativeSymbolAttribute(method.Name);
 
-            var delegateBuilder = GenerateDelegateType(method, uniqueIdentifier, metadataAttribute.CallingConvention, parameters);
+            var delegateBuilder = GenerateDelegateType(method, uniqueMemberIdentifier, metadataAttribute.CallingConvention, parameters);
 
             // Create a delegate field
             var delegateBuilderType = delegateBuilder.CreateTypeInfo();
@@ -50,17 +49,16 @@ namespace AdvancedDLSupport.ImplementationGenerators
             if (Configuration.UseLazyBinding)
             {
                 var lazyLoadedType = typeof(Lazy<>).MakeGenericType(delegateBuilderType);
-                delegateField = TargetType.DefineField($"{method.Name}_dtm_{uniqueIdentifier}", lazyLoadedType, FieldAttributes.Public);
+                delegateField = TargetType.DefineField($"{uniqueMemberIdentifier}_dtm", lazyLoadedType, FieldAttributes.Public);
             }
             else
             {
-                delegateField = TargetType.DefineField($"{method.Name}_dtm_{uniqueIdentifier}", delegateBuilderType, FieldAttributes.Public);
+                delegateField = TargetType.DefineField($"{uniqueMemberIdentifier}_dtm", delegateBuilderType, FieldAttributes.Public);
             }
 
             GenerateDelegateInvoker(method, parameters, delegateField, delegateBuilderType);
 
-            var entrypointName = metadataAttribute.Entrypoint ?? method.Name;
-            AugmentHostingTypeConstructor(entrypointName, delegateBuilderType, delegateField);
+            AugmentHostingTypeConstructor(symbolName, delegateBuilderType, delegateField);
         }
 
         private void AugmentHostingTypeConstructor
@@ -133,7 +131,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         private TypeBuilder GenerateDelegateType
         (
             [NotNull] MethodInfo method,
-            [NotNull] string uniqueIdentifier,
+            [NotNull] string memberIdentifier,
             CallingConvention callingConvention,
             [NotNull, ItemNotNull] IEnumerable<ParameterInfo> parameters
         )
@@ -141,7 +139,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             // Declare a delegate type
             var delegateBuilder = TargetModule.DefineType
             (
-                $"{method.Name}_dt_{uniqueIdentifier}",
+                $"{memberIdentifier}_dt",
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AnsiClass | TypeAttributes.AutoClass,
                 typeof(MulticastDelegate)
             );

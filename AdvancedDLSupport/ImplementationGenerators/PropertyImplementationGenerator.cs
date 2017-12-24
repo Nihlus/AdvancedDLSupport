@@ -39,18 +39,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <inheritdoc />
-        public override void GenerateImplementation(PropertyInfo property)
+        protected override void GenerateImplementation(PropertyInfo property, string symbolName, string uniqueMemberIdentifier)
         {
-            var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
-
-            var metadataAttribute = property.GetCustomAttribute<NativeSymbolAttribute>() ??
-                                    new NativeSymbolAttribute(property.Name);
-
             // Note, the field is going to have to be a pointer, because it is pointing to global variable
             var fieldType = Configuration.UseLazyBinding ? typeof(Lazy<IntPtr>) : typeof(IntPtr);
             var propertyFieldBuilder = TargetType.DefineField
             (
-                $"{property.Name}_{uniqueIdentifier}",
+                uniqueMemberIdentifier,
                 fieldType,
                 FieldAttributes.Private
             );
@@ -74,7 +69,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 GeneratePropertySetter(property, propertyFieldBuilder, propertyBuilder);
             }
 
-            var symbolName = metadataAttribute.Entrypoint ?? property.Name;
             PropertyInitializationInConstructor(symbolName, propertyFieldBuilder); // This is ok for all 3 types of properties.
         }
 

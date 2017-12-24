@@ -55,7 +55,24 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <inheritdoc />
-        public abstract void GenerateImplementation(T member);
+        public void GenerateImplementation(T member)
+        {
+            var metadataAttribute = member.GetCustomAttribute<NativeSymbolAttribute>() ?? new NativeSymbolAttribute(member.Name);
+            var symbolName = metadataAttribute.Entrypoint ?? member.Name;
+
+            var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
+            var memberIdentifier = $"{member.Name}_{uniqueIdentifier}";
+
+            GenerateImplementation(member, symbolName, memberIdentifier);
+        }
+
+        /// <summary>
+        /// Generates the implementation for the given member using the given symbol name and member identifier.
+        /// </summary>
+        /// <param name="member">The member to generate the implementation for.</param>
+        /// <param name="symbolName">The name of the symbol in the native library.</param>
+        /// <param name="uniqueMemberIdentifier">The identifier to use for generated types and methods.</param>
+        protected abstract void GenerateImplementation(T member, string symbolName, string uniqueMemberIdentifier);
 
         /// <summary>
         /// Emits a call to <see cref="AnonymousImplementationBase.ThrowIfDisposed"/>.
