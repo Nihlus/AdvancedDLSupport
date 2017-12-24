@@ -1,8 +1,7 @@
-﻿using AdvancedDLSupport;
-using AdvanceDLSupport.Tests.Data;
+﻿using AdvancedDLSupport.Tests.Data;
 using Xunit;
 
-namespace AdvanceDLSupport.Tests.Integration
+namespace AdvancedDLSupport.Tests.Integration
 {
     public class BaseIntegrationTests
     {

@@ -1,5 +1,5 @@
 ﻿// ReSharper disable UnusedMember.Global
-namespace AdvanceDLSupport.Tests.Data
+namespace AdvancedDLSupport.Tests.Data
 {
     public interface ILazyLoadingLibrary
     {

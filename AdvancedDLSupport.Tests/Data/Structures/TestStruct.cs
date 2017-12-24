@@ -1,6 +1,6 @@
 ﻿#pragma warning disable SA1600, CS1591 // Elements should be documented
 
-namespace AdvanceDLSupport.Tests.Data
+namespace AdvancedDLSupport.Tests.Data
 {
     public struct TestStruct
     {

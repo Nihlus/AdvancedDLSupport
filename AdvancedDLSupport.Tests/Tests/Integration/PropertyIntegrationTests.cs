@@ -1,12 +1,11 @@
 using System;
 using System.Runtime.InteropServices;
-using AdvancedDLSupport;
-using AdvanceDLSupport.Tests.Data;
+using AdvancedDLSupport.Tests.Data;
 using Xunit;
 
 // ReSharper disable ArgumentsStyleLiteral
 
-namespace AdvanceDLSupport.Tests.Integration
+namespace AdvancedDLSupport.Tests.Integration
 {
 	public class PropertyIntegrationTests
 	{

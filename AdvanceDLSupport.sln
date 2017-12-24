@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDLSupport", "Advanc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDLSupport.Example", "AdvancedDLSupport.Example\AdvancedDLSupport.Example.csproj", "{CE54588C-3E60-46F9-BA3E-B1778208A369}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvanceDLSupport.Tests", "AdvanceDLSupport.Tests\AdvanceDLSupport.Tests.csproj", "{BA044617-6B99-4867-AE00-48076DEA38DC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDLSupport.Tests", "AdvancedDLSupport.Tests\AdvancedDLSupport.Tests.csproj", "{BA044617-6B99-4867-AE00-48076DEA38DC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.DllMap", "Mono.DllMap\Mono.DllMap.csproj", "{C2223FB5-DC68-47D8-9460-8CD05DC0CFFF}"
 EndProject

@@ -15,6 +15,12 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Data\AdvancedDLSupport.Tests.dll.config">
+      <Link>AdvancedDLSupport.Tests.dll.config</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\AdvancedDLSupport\AdvancedDLSupport.csproj" />
   </ItemGroup>
   <PropertyGroup>
@@ -24,7 +30,6 @@
     <CMakeOutputBinaries Include="$(CMakeBuildDir)\lib\*.so" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Data" />
     <Folder Include="Tests" />
   </ItemGroup>
   <Target Name="InitCMake" BeforeTargets="CompileTestLibraries" Condition="!Exists('$(CMakeBuildDir)\CMakeCache.txt')">
