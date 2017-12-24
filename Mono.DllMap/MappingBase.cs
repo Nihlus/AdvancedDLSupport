@@ -37,7 +37,7 @@ namespace Mono.DllMap
         public DllMapOS OperatingSystems
         {
             get => DllMapAttributeParser.Parse<DllMapOS>(RawOperatingSystems);
-            internal set => RawOperatingSystems = string.Join(',', value.GetFlags().Select(v => v.ToString().ToLowerInvariant()));
+            internal set => RawOperatingSystems = string.Join(",", value.GetFlags().Select(v => v.ToString().ToLowerInvariant()));
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Mono.DllMap
         public DllMapArchitecture Architecture
         {
             get => DllMapAttributeParser.Parse<DllMapArchitecture>(RawArchitecture);
-            internal set => RawArchitecture = string.Join(',', value.GetFlags().Select(v => v.ToString().ToLowerInvariant()));
+            internal set => RawArchitecture = string.Join(",", value.GetFlags().Select(v => v.ToString().ToLowerInvariant()));
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Mono.DllMap
         public DllMapWordSize WordSize
         {
             get => DllMapAttributeParser.Parse<DllMapWordSize>(RawWordSize);
-            internal set => RawWordSize = string.Join(',', value.GetFlags().Select(v => v.ToString().ToLowerInvariant()));
+            internal set => RawWordSize = string.Join(",", value.GetFlags().Select(v => v.ToString().ToLowerInvariant()));
         }
     }
 }
