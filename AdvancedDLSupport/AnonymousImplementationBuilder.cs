@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.ImplementationGenerators;
 using JetBrains.Annotations;
 
@@ -99,7 +100,7 @@ namespace AdvancedDLSupport
                 // Let's determine a name for our class!
                 var typeName = interfaceType.Name.StartsWith("I") ? interfaceType.Name.Substring(1) : $"Generated_{interfaceType.Name}";
 
-                if (string.IsNullOrWhiteSpace(typeName))
+                if (typeName.IsNullOrWhiteSpace())
                 {
                     typeName = $"Generated_{interfaceType.Name}";
                 }

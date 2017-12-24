@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using AdvancedDLSupport.Extensions;
 
 namespace AdvancedDLSupport
 {
@@ -49,7 +50,7 @@ namespace AdvancedDLSupport
                 return libraryLocation;
             }
 
-            var pathDirs = Environment.GetEnvironmentVariable("PATH").Split(';').Where(p => !string.IsNullOrWhiteSpace(p));
+            var pathDirs = Environment.GetEnvironmentVariable("PATH").Split(';').Where(p => !p.IsNullOrWhiteSpace());
             foreach (var path in pathDirs)
             {
                 libraryLocation = Path.GetFullPath(Path.Combine(path, library));

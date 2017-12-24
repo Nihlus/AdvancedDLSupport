@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using AdvancedDLSupport.Extensions;
 
 namespace AdvancedDLSupport
 {
@@ -12,7 +13,7 @@ namespace AdvancedDLSupport
         /// <inheritdoc />
         public string Resolve(string library)
         {
-            var libraryPaths = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH").Split(':').Where(p => !string.IsNullOrWhiteSpace(p));
+            var libraryPaths = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH").Split(':').Where(p => !p.IsNullOrWhiteSpace());
 
             string libraryLocation;
             foreach (var path in libraryPaths)
