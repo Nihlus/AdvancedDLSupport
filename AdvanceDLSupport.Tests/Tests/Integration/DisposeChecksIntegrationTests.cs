@@ -1,9 +1,9 @@
 ﻿using System;
 using AdvancedDLSupport;
-using AdvanceDLSupport.Tests.Interfaces;
+using AdvanceDLSupport.Tests.Data;
 using Xunit;
 
-namespace AdvanceDLSupport.Tests
+namespace AdvanceDLSupport.Tests.Integration
 {
     public class DisposeChecksIntegrationTests
     {

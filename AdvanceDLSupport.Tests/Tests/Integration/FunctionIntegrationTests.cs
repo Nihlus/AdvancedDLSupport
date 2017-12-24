@@ -1,10 +1,9 @@
 ﻿using AdvancedDLSupport;
-using AdvanceDLSupport.Tests.Interfaces;
-using AdvanceDLSupport.Tests.Structures;
+using AdvanceDLSupport.Tests.Data;
 using FsCheck.Xunit;
 using Xunit;
 
-namespace AdvanceDLSupport.Tests
+namespace AdvanceDLSupport.Tests.Integration
 {
     public class FunctionIntegrationTests
     {

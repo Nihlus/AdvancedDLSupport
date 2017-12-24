@@ -1,7 +1,8 @@
 ﻿using System;
+
 // ReSharper disable UnusedMember.Global
 
-namespace AdvanceDLSupport.Tests.Interfaces
+namespace AdvanceDLSupport.Tests.Data
 {
     public interface IDisposeCheckLibrary : IDisposable
     {

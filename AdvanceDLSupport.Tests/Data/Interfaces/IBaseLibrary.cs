@@ -1,4 +1,4 @@
-﻿namespace AdvanceDLSupport.Tests.Interfaces
+﻿namespace AdvanceDLSupport.Tests.Data
 {
     public interface IBaseLibrary
     {

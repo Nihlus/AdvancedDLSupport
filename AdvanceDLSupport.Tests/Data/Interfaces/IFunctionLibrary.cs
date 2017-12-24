@@ -1,8 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using AdvancedDLSupport;
-using AdvanceDLSupport.Tests.Structures;
 
-namespace AdvanceDLSupport.Tests.Interfaces
+namespace AdvanceDLSupport.Tests.Data
 {
     public interface IFunctionLibrary
     {

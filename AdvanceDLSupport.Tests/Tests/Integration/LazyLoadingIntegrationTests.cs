@@ -1,9 +1,9 @@
 ﻿using AdvancedDLSupport;
-using AdvanceDLSupport.Tests.Interfaces;
+using AdvanceDLSupport.Tests.Data;
 using Xunit;
 
 // ReSharper disable ArgumentsStyleLiteral
-namespace AdvanceDLSupport.Tests
+namespace AdvanceDLSupport.Tests.Integration
 {
     public class LazyLoadingIntegrationTests
     {

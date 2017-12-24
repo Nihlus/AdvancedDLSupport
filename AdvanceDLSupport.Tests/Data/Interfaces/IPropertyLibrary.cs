@@ -1,7 +1,7 @@
 ﻿using System;
 using AdvancedDLSupport;
 
-namespace AdvanceDLSupport.Tests.Interfaces
+namespace AdvanceDLSupport.Tests.Data
 {
     public unsafe interface IPropertyLibrary : IDisposable
     {

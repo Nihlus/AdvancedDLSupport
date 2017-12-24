@@ -23,6 +23,10 @@
   <ItemGroup>
     <CMakeOutputBinaries Include="$(CMakeBuildDir)\lib\*.so" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data" />
+    <Folder Include="Tests" />
+  </ItemGroup>
   <Target Name="InitCMake" BeforeTargets="CompileTestLibraries" Condition="!Exists('$(CMakeBuildDir)\CMakeCache.txt')">
     <Exec Command="mkdir -p $(CMakeBuildDir)" />
     <Exec Command="cmake ../" WorkingDirectory="$(CMakeBuildDir)" />
