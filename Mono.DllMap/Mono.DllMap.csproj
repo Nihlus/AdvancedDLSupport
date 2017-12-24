@@ -1,20 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
     <DefineConstants>$(DefineConstants);JETBRAINS_ANNOTATIONS</DefineConstants>
     <CodeAnalysisRuleSet>..\stylecop.ruleset</CodeAnalysisRuleSet>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <Title>AdvanceDLSupport</Title>
-    <Authors>TheBlackCentipede;Jax</Authors>
+    <Title>Mono.DllMap</Title>
+    <Authors>Jax</Authors>
     <Version>1.0.0</Version>
-    <Description>An alternative approach to your typical P/Invoke.</Description>
+    <Description>Parsing library for Mono DllMaps</Description>
     <Copyright>Copyright 2017</Copyright>
   </PropertyGroup>
   <PropertyGroup>
-    <PackageId>AdvanceDLSupport</PackageId>
+    <PackageId>Mono.DllMap</PackageId>
     <PackageLicenseUrl>https://www.gnu.org/licenses/lgpl-3.0.en.html</PackageLicenseUrl>
     <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
     <PackageTags>p/invoke;cross-platform;mono;netcore;netstandard;native;interop</PackageTags>
@@ -37,13 +37,8 @@
     </AdditionalFiles>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" PrivateAssets="all" />
     <PackageReference Include="JetBrains.Annotations" Version="11.1.0" PrivateAssets="all" />
     <PackageReference Include="JetBrainsAnnotations.Fody" Version="2.0.0" PrivateAssets="all" />
-    <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DllMap\Mono" />
   </ItemGroup>
 </Project>

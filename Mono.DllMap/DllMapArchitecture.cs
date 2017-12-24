@@ -4,10 +4,10 @@ using JetBrains.Annotations;
 // ReSharper disable InconsistentNaming
 #pragma warning disable CS1591, SA1600, SA1602, SA1025, SA1300
 
-namespace AdvancedDLSupport.DllMap.Mono
+namespace Mono.DllMap
 {
     [Flags, PublicAPI]
-    internal enum DllMapArchitecture
+    public enum DllMapArchitecture
     {
         x86    = 1 << 0,
         x86_64 = 1 << 1,
