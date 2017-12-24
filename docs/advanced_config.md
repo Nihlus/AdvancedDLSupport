@@ -31,3 +31,11 @@ disposed, any call to a member will throw an `ObjectDisposedException`.
 If this option is enabled, your interface should inherit from
 `IDisposable`. The base class for the underlying implementation already
 implements this interface.
+
+### Mono DllMaps
+If `ImplementationConfiguration::EnableDllMapSupport` is enabled,
+then Mono [DllMaps](http://www.mono-project.com/docs/advanced/pinvoke/dllmap/)
+will be respected wherever possible. Note that the support is thus far
+only partial, and per-symbol library remapping (e.g, `dllentry`) is
+*not* supported yet. Library remapping via `dllmap` works just fine,
+though.
