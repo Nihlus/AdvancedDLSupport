@@ -15,13 +15,14 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>Mono.DllMap</PackageId>
-    <PackageLicenseUrl>https://www.gnu.org/licenses/lgpl-3.0.en.html</PackageLicenseUrl>
+    <PackageLicenseUrl>https://www.gnu.org/licenses/gpl-3.0.en.html</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
     <PackageTags>p/invoke;cross-platform;mono;netcore;netstandard;native;interop</PackageTags>
     <PackageOutputPath>../nuget</PackageOutputPath>
     <IncludeSymbols>True</IncludeSymbols>
     <IncludeSource>True</IncludeSource>
-    <RepositoryUrl>https://github.com/TheBlackCentipede/AdvanceDLSupport/</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Firwood-Software/AdvanceDLSupport/</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="$(ProjectDir)\..\stylecop.json">

@@ -11,17 +11,18 @@
     <Authors>TheBlackCentipede;Jax</Authors>
     <Version>1.0.0</Version>
     <Description>An alternative approach to your typical P/Invoke.</Description>
-    <Copyright>Copyright 2017</Copyright>
+    <Copyright>Copyright Firwood Software 2017</Copyright>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>AdvanceDLSupport</PackageId>
-    <PackageLicenseUrl>https://www.gnu.org/licenses/lgpl-3.0.en.html</PackageLicenseUrl>
+    <PackageLicenseUrl>https://www.gnu.org/licenses/gpl-3.0.en.html</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
     <PackageTags>p/invoke;cross-platform;mono;netcore;netstandard;native;interop</PackageTags>
     <PackageOutputPath>../nuget</PackageOutputPath>
     <IncludeSymbols>True</IncludeSymbols>
     <IncludeSource>True</IncludeSource>
-    <RepositoryUrl>https://github.com/TheBlackCentipede/AdvanceDLSupport/</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Firwood-Software/AdvanceDLSupport/</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="$(ProjectDir)\..\stylecop.json">
@@ -41,9 +42,6 @@
     <PackageReference Include="JetBrains.Annotations" Version="11.1.0" PrivateAssets="all" />
     <PackageReference Include="JetBrainsAnnotations.Fody" Version="2.0.0" PrivateAssets="all" />
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DllMap\Mono" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.DllMap\Mono.DllMap.csproj" />
