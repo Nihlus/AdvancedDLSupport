@@ -6,13 +6,26 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "metadata", ".\", "{F1A57014
 		README.md = README.md
 		stylecop.json = stylecop.json
 		stylecop.ruleset = stylecop.ruleset
+		.travis.yml = .travis.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", ".\docs", "{96E3AE84-1774-4086-8E07-3B9F842D16DC}"
+	ProjectSection(SolutionItems) = preProject
+		docs\index.md = docs\index.md
+		docs\quickstart.md = docs\quickstart.md
+		docs\supported_constructs.md = docs\supported_constructs.md
+		docs\advanced_config.md = docs\advanced_config.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDLSupport", "AdvancedDLSupport\AdvancedDLSupport.csproj", "{7EDC8F84-DF28-4C3C-AF56-F283B694218A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDLSupport.Example", "AdvancedDLSupport.Example\AdvancedDLSupport.Example.csproj", "{CE54588C-3E60-46F9-BA3E-B1778208A369}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvanceDLSupport.Tests", "AdvanceDLSupport.Tests\AdvanceDLSupport.Tests.csproj", "{BA044617-6B99-4867-AE00-48076DEA38DC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDLSupport.Tests", "AdvancedDLSupport.Tests\AdvancedDLSupport.Tests.csproj", "{BA044617-6B99-4867-AE00-48076DEA38DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.DllMap", "Mono.DllMap\Mono.DllMap.csproj", "{C2223FB5-DC68-47D8-9460-8CD05DC0CFFF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.DllMap.Tests", "Mono.DllMap.Tests\Mono.DllMap.Tests.csproj", "{BAAA6344-0DCF-4DC9-B422-572E8640F8EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,5 +45,13 @@ Global
 		{BA044617-6B99-4867-AE00-48076DEA38DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA044617-6B99-4867-AE00-48076DEA38DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA044617-6B99-4867-AE00-48076DEA38DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2223FB5-DC68-47D8-9460-8CD05DC0CFFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2223FB5-DC68-47D8-9460-8CD05DC0CFFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2223FB5-DC68-47D8-9460-8CD05DC0CFFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2223FB5-DC68-47D8-9460-8CD05DC0CFFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAAA6344-0DCF-4DC9-B422-572E8640F8EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAAA6344-0DCF-4DC9-B422-572E8640F8EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAAA6344-0DCF-4DC9-B422-572E8640F8EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAAA6344-0DCF-4DC9-B422-572E8640F8EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

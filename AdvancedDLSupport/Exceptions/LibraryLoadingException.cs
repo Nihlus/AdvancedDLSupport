@@ -1,15 +1,18 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
 {
     /// <summary>
     /// Represents a failure to load a native library.
     /// </summary>
+    [PublicAPI]
     public class LibraryLoadingException : Exception
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LibraryLoadingException"/> class.
         /// </summary>
+        [PublicAPI]
         public LibraryLoadingException()
         {
         }
@@ -18,7 +21,8 @@ namespace AdvancedDLSupport
         /// Initializes a new instance of the <see cref="LibraryLoadingException"/> class.
         /// </summary>
         /// <param name="message">The message of the exception.</param>
-        public LibraryLoadingException(string message)
+        [PublicAPI]
+        public LibraryLoadingException([NotNull] string message)
             : base(message)
         {
         }
@@ -28,7 +32,8 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="message">The message of the exception.</param>
         /// <param name="inner">The exception which caused this exception.</param>
-        public LibraryLoadingException(string message, Exception inner)
+        [PublicAPI]
+        public LibraryLoadingException([NotNull] string message, [NotNull] Exception inner)
             : base(message, inner)
         {
         }

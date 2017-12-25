@@ -1,8 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport.Loaders
 {
     /// <summary>
     /// Acts as the base for platform loaders.
@@ -17,15 +17,17 @@ namespace AdvancedDLSupport
         public IntPtr LoadLibrary(string path)
         {
             // TODO: make local search first configurable
-            try
+            var resolveResult = DynamicLinkLibraryPathResolver.ResolveAbsolutePath(path, true);
+            if (resolveResult.IsSuccess)
             {
-                var library = DynamicLinkLibraryPathResolver.ResolveAbsolutePath(path, true);
-                return LoadLibraryInternal(library);
+                return LoadLibraryInternal(resolveResult.Path);
             }
-            catch (FileNotFoundException fex)
-            {
-                throw new LibraryLoadingException("Could not find the specified library.", fex);
-            }
+
+            var ex = resolveResult.Exception is null
+                ? new LibraryLoadingException("Could not find the specified library.")
+                : new LibraryLoadingException("Could not find the specified library.", resolveResult.Exception);
+
+            throw ex;
         }
 
         /// <summary>
@@ -34,9 +36,10 @@ namespace AdvancedDLSupport
         /// <param name="path">The path to the library.</param>
         /// <returns>A handle to the library. This value carries no intrinsic meaning.</returns>
         /// <exception cref="LibraryLoadingException">Thrown if the library could not be loaded.</exception>
-        protected abstract IntPtr LoadLibraryInternal(string path);
+        protected abstract IntPtr LoadLibraryInternal([CanBeNull] string path);
 
         /// <inheritdoc />
+        [Pure]
         public abstract IntPtr LoadSymbol(IntPtr library, string symbolName);
 
         /// <inheritdoc />
@@ -47,6 +50,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <returns>A platform loader for the current platform..</returns>
         /// <exception cref="PlatformNotSupportedException">Thrown if the current platform is not supported.</exception>
+        [Pure]
         public static IPlatformLoader SelectPlatformLoader()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

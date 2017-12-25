@@ -1,17 +1,19 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using AdvancedDLSupport.Extensions;
 
 namespace AdvancedDLSupport
 {
     /// <summary>
     /// Resolves library paths on macOS.
     /// </summary>
-    public class MacOSPathResolver : ILibraryPathResolver
+    internal sealed class MacOSPathResolver : ILibraryPathResolver
     {
         /// <inheritdoc />
         public string Resolve(string library)
         {
-            var libraryPaths = Environment.GetEnvironmentVariable("DYLD_FRAMEWORK_PATH").Split(':');
+            var libraryPaths = Environment.GetEnvironmentVariable("DYLD_FRAMEWORK_PATH").Split(':').Where(p => !p.IsNullOrWhiteSpace());
 
             string libraryLocation;
             foreach (var path in libraryPaths)
@@ -23,7 +25,7 @@ namespace AdvancedDLSupport
                 }
             }
 
-            libraryPaths = Environment.GetEnvironmentVariable("DYLD_LIBRARY_PATH").Split(':');
+            libraryPaths = Environment.GetEnvironmentVariable("DYLD_LIBRARY_PATH").Split(':').Where(p => !p.IsNullOrWhiteSpace());
             foreach (var path in libraryPaths)
             {
                 libraryLocation = Path.GetFullPath(Path.Combine(path, library));
@@ -33,7 +35,7 @@ namespace AdvancedDLSupport
                 }
             }
 
-            libraryPaths = Environment.GetEnvironmentVariable("DYLD_FALLBACK_FRAMEWORK_PATH").Split(':');
+            libraryPaths = Environment.GetEnvironmentVariable("DYLD_FALLBACK_FRAMEWORK_PATH").Split(':').Where(p => !p.IsNullOrWhiteSpace());
             foreach (var path in libraryPaths)
             {
                 libraryLocation = Path.GetFullPath(Path.Combine(path, library));
@@ -43,7 +45,7 @@ namespace AdvancedDLSupport
                 }
             }
 
-            libraryPaths = Environment.GetEnvironmentVariable("DYLD_FALLBACK_LIBRARY_PATH").Split(':');
+            libraryPaths = Environment.GetEnvironmentVariable("DYLD_FALLBACK_LIBRARY_PATH").Split(':').Where(p => !p.IsNullOrWhiteSpace());
             foreach (var path in libraryPaths)
             {
                 libraryLocation = Path.GetFullPath(Path.Combine(path, library));

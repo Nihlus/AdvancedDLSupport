@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using static AdvancedDLSupport.SymbolFlags;
+using JetBrains.Annotations;
 
 // ReSharper disable InconsistentNaming
 #pragma warning disable SA1300 // Elements should begin with an uppercase letter
 #pragma warning disable SA1600, CS1591 // Elements should be documented
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport.Loaders
 {
     /// <summary>
     /// Native libdl methods and constants. Unfortunately, the BSD family of operating systems store their dl functions
@@ -19,12 +19,13 @@ namespace AdvancedDLSupport
         private const string LibraryNameUnix = "dl";
         private const string LibraryNameBSD = "c";
 
-        public static IntPtr open(string fileName, SymbolFlags flags = RTLD_DEFAULT, bool useCLibrary = false)
+        public static IntPtr open([CanBeNull] string fileName, SymbolFlags flags = SymbolFlags.RTLD_DEFAULT, bool useCLibrary = false)
         {
             return useCLibrary ? BSD.dlopen(fileName, flags) : Unix.dlopen(fileName, flags);
         }
 
-        public static IntPtr sym(IntPtr handle, string name, bool useCLibrary = false)
+        [Pure]
+        public static IntPtr sym(IntPtr handle, [NotNull] string name, bool useCLibrary = false)
         {
             return useCLibrary ? BSD.dlsym(handle, name) : Unix.dlsym(handle, name);
         }
@@ -37,6 +38,14 @@ namespace AdvancedDLSupport
         public static IntPtr error(bool useCLibrary = false)
         {
             return useCLibrary ? BSD.dlerror() : Unix.dlerror();
+        }
+
+        public static void ResetError(bool useCLibrary = false)
+        {
+            // Clear any outstanding errors by looping until no error is found
+            while (error(useCLibrary) != IntPtr.Zero)
+            {
+            }
         }
 
         private static class Unix

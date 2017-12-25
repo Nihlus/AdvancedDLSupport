@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <dllmap dll="libc">
+    <dllentry dll="libdifferent.so" name="somefunction" target="differentfunction" />
+    <dllentry os="solaris,freebsd" dll="libanother.so" name="somefunction" target="differentfunction" />
+  </dllmap>
+</configuration>

@@ -2,16 +2,21 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport.Loaders
 {
     /// <summary>
     /// Loads libraries on the Windows platform.
     /// </summary>
-    internal class WindowsPlatformLoader : PlatformLoaderBase
+    internal sealed class WindowsPlatformLoader : PlatformLoaderBase
     {
         /// <inheritdoc />
         protected override IntPtr LoadLibraryInternal(string path)
         {
+            if (path is null)
+            {
+                throw new ArgumentNullException(nameof(path), "null library names or paths are not supported on Windows.");
+            }
+
             var libraryHandle = kernel32.LoadLibrary(path);
             if (libraryHandle == IntPtr.Zero)
             {

@@ -4,8 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
-using AdvancedDLSupport.Attributes;
+using JetBrains.Annotations;
 
+// ReSharper disable BitwiseOperatorOnEnumWithoutFlags
 namespace AdvancedDLSupport.ImplementationGenerators
 {
     /// <summary>
@@ -19,48 +20,84 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="targetModule">The module in which the method implementation should be generated.</param>
         /// <param name="targetType">The type in which the method implementation should be generated.</param>
         /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
-        public MethodImplementationGenerator(ModuleBuilder targetModule, TypeBuilder targetType, ILGenerator targetTypeConstructorIL)
-            : base(targetModule, targetType, targetTypeConstructorIL)
+        /// <param name="configuration">The configuration object to use.</param>
+        public MethodImplementationGenerator
+        (
+            [NotNull] ModuleBuilder targetModule,
+            [NotNull] TypeBuilder targetType,
+            [NotNull] ILGenerator targetTypeConstructorIL,
+            ImplementationConfiguration configuration
+        )
+            : base(targetModule, targetType, targetTypeConstructorIL, configuration)
         {
         }
 
         /// <inheritdoc />
-        public override void GenerateImplementation(MethodInfo method)
+        protected override void GenerateImplementation(MethodInfo method, string symbolName, string uniqueMemberIdentifier)
         {
-            var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
             var parameters = method.GetParameters();
 
-            var metadataAttribute = method.GetCustomAttribute<NativeFunctionAttribute>() ??
-                                    new NativeFunctionAttribute(method.Name);
+            var metadataAttribute = method.GetCustomAttribute<NativeSymbolAttribute>() ??
+                                    new NativeSymbolAttribute(method.Name);
 
-            var delegateBuilder = GenerateDelegateType(method, uniqueIdentifier, metadataAttribute, parameters);
+            var delegateBuilder = GenerateDelegateType(method, uniqueMemberIdentifier, metadataAttribute.CallingConvention, parameters);
 
             // Create a delegate field
             var delegateBuilderType = delegateBuilder.CreateTypeInfo();
-            var delegateField = TargetType.DefineField($"{method.Name}_dtm_{uniqueIdentifier}", delegateBuilderType, FieldAttributes.Public);
+
+            FieldBuilder delegateField;
+            if (Configuration.UseLazyBinding)
+            {
+                var lazyLoadedType = typeof(Lazy<>).MakeGenericType(delegateBuilderType);
+                delegateField = TargetType.DefineField($"{uniqueMemberIdentifier}_dtm", lazyLoadedType, FieldAttributes.Public);
+            }
+            else
+            {
+                delegateField = TargetType.DefineField($"{uniqueMemberIdentifier}_dtm", delegateBuilderType, FieldAttributes.Public);
+            }
+
             GenerateDelegateInvoker(method, parameters, delegateField, delegateBuilderType);
 
-            AugmentHostingTypeConstructor(method, metadataAttribute, delegateBuilderType, delegateField);
+            AugmentHostingTypeConstructor(symbolName, delegateBuilderType, delegateField);
         }
 
-        private void AugmentHostingTypeConstructor(MethodInfo method, NativeFunctionAttribute metadataAttribute, Type delegateBuilderType, FieldInfo delegateField)
+        private void AugmentHostingTypeConstructor
+        (
+            [NotNull] string entrypointName,
+            [NotNull] Type delegateBuilderType,
+            [NotNull] FieldInfo delegateField
+        )
         {
-            var entrypointName = metadataAttribute.Entrypoint ?? method.Name;
-            var loadFuncMethod = typeof(AnonymousImplementationBase).GetMethod
+            var loadFunc = typeof(AnonymousImplementationBase).GetMethod
             (
                 "LoadFunction",
                 BindingFlags.NonPublic | BindingFlags.Instance
-            );
+            ).MakeGenericMethod(delegateBuilderType);
 
-            // Assign Delegate from Function Pointer
             TargetTypeConstructorIL.Emit(OpCodes.Ldarg_0); // This is for storing field delegate, it needs the "this" reference
             TargetTypeConstructorIL.Emit(OpCodes.Ldarg_0);
-            TargetTypeConstructorIL.Emit(OpCodes.Ldstr, entrypointName);
-            TargetTypeConstructorIL.EmitCall(OpCodes.Call, loadFuncMethod.MakeGenericMethod(delegateBuilderType), null);
+
+            if (Configuration.UseLazyBinding)
+            {
+                var lambdaBuilder = GenerateFunctionLoadingLambda(delegateBuilderType, entrypointName);
+                GenerateLazyLoadedField(lambdaBuilder, delegateBuilderType);
+            }
+            else
+            {
+                TargetTypeConstructorIL.Emit(OpCodes.Ldstr, entrypointName);
+                TargetTypeConstructorIL.EmitCall(OpCodes.Call, loadFunc, null);
+            }
+
             TargetTypeConstructorIL.Emit(OpCodes.Stfld, delegateField);
         }
 
-        private void GenerateDelegateInvoker(MethodInfo method, IReadOnlyCollection<ParameterInfo> parameters, FieldInfo delegateField, Type delegateBuilderType)
+        private void GenerateDelegateInvoker
+        (
+            [NotNull] MethodInfo method,
+            [NotNull] IReadOnlyCollection<ParameterInfo> parameters,
+            [NotNull] FieldInfo delegateField,
+            [NotNull] Type delegateBuilderType
+        )
         {
             var methodBuilder = TargetType.DefineMethod
             (
@@ -73,8 +110,14 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             // Let's create a method that simply invoke the delegate
             var methodIL = methodBuilder.GetILGenerator();
-            methodIL.Emit(OpCodes.Ldarg_0);
-            methodIL.Emit(OpCodes.Ldfld, delegateField);
+
+            if (Configuration.GenerateDisposalChecks)
+            {
+                EmitDisposalCheck(methodIL);
+            }
+
+            GenerateSymbolPush(methodIL, delegateField);
+
             for (int p = 1; p <= parameters.Count; p++)
             {
                 methodIL.Emit(OpCodes.Ldarg, p);
@@ -84,21 +127,36 @@ namespace AdvancedDLSupport.ImplementationGenerators
             methodIL.Emit(OpCodes.Ret);
         }
 
-        private TypeBuilder GenerateDelegateType(MethodInfo method, string uniqueIdentifier, NativeFunctionAttribute metadataAttribute, IEnumerable<ParameterInfo> parameters)
+        [NotNull]
+        private TypeBuilder GenerateDelegateType
+        (
+            [NotNull] MethodInfo method,
+            [NotNull] string memberIdentifier,
+            CallingConvention callingConvention,
+            [NotNull, ItemNotNull] IEnumerable<ParameterInfo> parameters
+        )
         {
             // Declare a delegate type
             var delegateBuilder = TargetModule.DefineType
             (
-                $"{method.Name}_dt_{uniqueIdentifier}",
+                $"{memberIdentifier}_dt",
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AnsiClass | TypeAttributes.AutoClass,
                 typeof(MulticastDelegate)
             );
 
-            var attributeConstructors = typeof(UnmanagedFunctionPointerAttribute).GetConstructors();
+            var attributeConstructor = typeof(UnmanagedFunctionPointerAttribute).GetConstructors().First
+            (
+                c =>
+                    c.GetParameters().Any() &&
+                    c.GetParameters().Length == 1 &&
+                    c.GetParameters().First().ParameterType == typeof(CallingConvention)
+
+            );
+
             var functionPointerAttributeBuilder = new CustomAttributeBuilder
             (
-                attributeConstructors[1],
-                new object[] { metadataAttribute.CallingConvention }
+                attributeConstructor,
+                new object[] { callingConvention }
             );
 
             delegateBuilder.SetCustomAttribute(functionPointerAttributeBuilder);

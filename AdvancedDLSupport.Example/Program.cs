@@ -8,7 +8,7 @@ namespace AdvancedDLSupport.Example
     {
         private static unsafe void Main()
         {
-            var wrapper = AnonymousImplementationBuilder.ResolveAndActivateInterface<IExample>
+            var wrapper = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IExample>
             (
                 "./libDemo.so"
             );

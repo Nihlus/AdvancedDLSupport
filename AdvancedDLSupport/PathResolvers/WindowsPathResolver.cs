@@ -1,13 +1,15 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using AdvancedDLSupport.Extensions;
 
 namespace AdvancedDLSupport
 {
     /// <summary>
     /// Resolves library paths on Windows.
     /// </summary>
-    public class WindowsPathResolver : ILibraryPathResolver
+    internal sealed class WindowsPathResolver : ILibraryPathResolver
     {
         /// <inheritdoc />
         public string Resolve(string library)
@@ -48,7 +50,7 @@ namespace AdvancedDLSupport
                 return libraryLocation;
             }
 
-            var pathDirs = Environment.GetEnvironmentVariable("PATH").Split(';');
+            var pathDirs = Environment.GetEnvironmentVariable("PATH").Split(';').Where(p => !p.IsNullOrWhiteSpace());
             foreach (var path in pathDirs)
             {
                 libraryLocation = Path.GetFullPath(Path.Combine(path, library));

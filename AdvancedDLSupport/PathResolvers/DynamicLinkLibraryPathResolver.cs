@@ -4,14 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
 {
     /// <summary>
     /// Resolves dynamic link library paths.
     /// </summary>
-    public class DynamicLinkLibraryPathResolver
+    internal static class DynamicLinkLibraryPathResolver
     {
+        [NotNull]
         private static readonly ILibraryPathResolver PathResolver;
 
         static DynamicLinkLibraryPathResolver()
@@ -19,6 +21,7 @@ namespace AdvancedDLSupport
             PathResolver = SelectPathResolver();
         }
 
+        [NotNull]
         private static ILibraryPathResolver SelectPathResolver()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -54,45 +57,45 @@ namespace AdvancedDLSupport
         /// Thrown if the current platform doesn't have a path
         /// resolver defined.</exception>
         /// <exception cref="FileNotFoundException">Thrown if no library file can be found.</exception>
-        public static string ResolveAbsolutePath(string library, bool localFirst)
+        public static ResolvePathResult ResolveAbsolutePath([NotNull] string library, bool localFirst)
         {
-            var candidates = GenerateLibraryCandidates(library);
-            foreach (var candiate in candidates)
+            var candidates = GenerateLibraryCandidates(library).ToList();
+
+            if (localFirst)
             {
+                foreach (var candidate in candidates)
+                {
+                    var executingDir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
+                    var libraryLocation = Path.GetFullPath(Path.Combine(executingDir, candidate));
+                    if (File.Exists(libraryLocation))
+                    {
+                        return ResolvePathResult.FromSuccess(libraryLocation);
+                    }
+                }
+            }
+
+            foreach (var candidate in candidates)
+            {
+                if (Path.IsPathRooted(candidate) && File.Exists(candidate))
+                {
+                    return ResolvePathResult.FromSuccess(Path.GetFullPath(candidate));
+                }
+
                 try
                 {
-                    var result = ResolveCandidate(candiate, localFirst);
-                    return result;
+                    var result = PathResolver.Resolve(candidate);
+                    return ResolvePathResult.FromSuccess(result);
                 }
                 catch (FileNotFoundException)
                 {
                 }
             }
 
-            throw new FileNotFoundException("The specified library was not found in any of the loader search paths.");
+            return ResolvePathResult.FromError(new FileNotFoundException("The specified library was not found in any of the loader search paths."));
         }
 
-        private static string ResolveCandidate(string candidate, bool localFirst)
-        {
-            if (Path.IsPathRooted(candidate) && File.Exists(candidate))
-            {
-                return Path.GetFullPath(candidate);
-            }
-
-            if (localFirst)
-            {
-                var executingDir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
-                var libraryLocation = Path.GetFullPath(Path.Combine(executingDir, candidate));
-                if (File.Exists(libraryLocation))
-                {
-                    return libraryLocation;
-                }
-            }
-
-            return PathResolver.Resolve(candidate);
-        }
-
-        private static IEnumerable<string> GenerateLibraryCandidates(string library)
+        [NotNull, ItemNotNull]
+        private static IEnumerable<string> GenerateLibraryCandidates([NotNull] string library)
         {
             var candidates = new List<string>();
             candidates.Add(library);

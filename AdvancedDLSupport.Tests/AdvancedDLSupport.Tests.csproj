@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FsCheck.Xunit" Version="3.0.0-alpha2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Data\AdvancedDLSupport.Tests.dll.config">
+      <Link>AdvancedDLSupport.Tests.dll.config</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AdvancedDLSupport\AdvancedDLSupport.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-debug</CMakeBuildDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <CMakeOutputBinaries Include="$(CMakeBuildDir)\lib\*.so" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Tests" />
+  </ItemGroup>
+  <Target Name="InitCMake" BeforeTargets="CompileTestLibraries" Condition="!Exists('$(CMakeBuildDir)\CMakeCache.txt')">
+    <Exec Command="mkdir -p $(CMakeBuildDir)" />
+    <Exec Command="cmake ../" WorkingDirectory="$(CMakeBuildDir)" />
+  </Target>
+  <Target Name="CompileTestLibraries" AfterTargets="AfterBuild">
+    <Exec Command="cmake --build ." WorkingDirectory="$(CMakeBuildDir)" />
+    <Copy SourceFiles="@(CMakeOutputBinaries)" DestinationFolder="$(OutDir)" />
+  </Target>
+</Project>

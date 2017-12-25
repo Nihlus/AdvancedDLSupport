@@ -1,18 +1,19 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using AdvancedDLSupport.Extensions;
 
 namespace AdvancedDLSupport
 {
     /// <summary>
     /// Resolves library paths on Linux (and other unix-like systems).
     /// </summary>
-    public class LinuxPathResolver : ILibraryPathResolver
+    internal sealed class LinuxPathResolver : ILibraryPathResolver
     {
         /// <inheritdoc />
         public string Resolve(string library)
         {
-            var libraryPaths = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH").Split(';');
+            var libraryPaths = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH").Split(':').Where(p => !p.IsNullOrWhiteSpace());
 
             string libraryLocation;
             foreach (var path in libraryPaths)
@@ -27,7 +28,13 @@ namespace AdvancedDLSupport
             if (File.Exists("/etc/ld.so.cache"))
             {
                 var cachedLibraries = File.ReadAllText("/etc/ld.so.cache").Split('\0');
-                var cachedMatch = cachedLibraries.FirstOrDefault(l => l.EndsWith(library));
+                var cachedMatch = cachedLibraries.FirstOrDefault
+                (
+                    l =>
+                        l.EndsWith(library) &&
+                        Path.GetFileName(l) == Path.GetFileName(library)
+                );
+
                 if (!(cachedMatch is null))
                 {
                     return cachedMatch;
