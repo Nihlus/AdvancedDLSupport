@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 using JetBrains.Annotations;
+using Mono.DllMap.Extensions;
+using Mono.DllMap.Utility;
 
 namespace Mono.DllMap
 {
@@ -16,6 +19,25 @@ namespace Mono.DllMap
         /// </summary>
         [XmlElement("dllmap")]
         public List<DllMap> Maps { get; set; }
+
+        /// <summary>
+        /// Gets the map entries that are relevant for the current platform.
+        /// </summary>
+        /// <returns>The entries relevant for the current platform.</returns>
+        public IEnumerable<DllMap> GetRelevantMaps()
+        {
+            var currentPlatform = DllConfigurationPlatformHelper.GetCurrentPlatform();
+            var currentArch = DllConfigurationPlatformHelper.GetCurrentRuntimeArchitecture();
+            var currentWordSize = DllConfigurationPlatformHelper.GetRuntimeWordSize();
+
+            return Maps.Where
+            (
+                m =>
+                    m.OperatingSystems.HasFlagFast(currentPlatform) &&
+                    m.Architecture.HasFlagFast(currentArch) &&
+                    m.WordSize.HasFlagFast(currentWordSize)
+            );
+        }
 
         /// <summary>
         /// Parses a DllMap configuration from the given XML document.

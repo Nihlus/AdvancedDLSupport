@@ -1,18 +1,20 @@
 #include <stdlib.h>
+#include "wincomp.h"
+
 #if _MSC_VER
 #include <stdint.h>
 #endif
 
-int32_t GlobalVariable = 5;
-int32_t* GlobalPointerVariable = NULL;
+__declspec(dllexport) int32_t GlobalVariable = 5;
+__declspec(dllexport) int32_t* GlobalPointerVariable = NULL;
 
-void InitializeGlobalPointerVariable()
+__declspec(dllexport) void InitializeGlobalPointerVariable()
 {
     GlobalPointerVariable = (int32_t*)malloc(sizeof(int32_t));
     *GlobalPointerVariable = 20;
 }
 
-void ResetData()
+__declspec(dllexport) void ResetData()
 {
     if (GlobalPointerVariable != NULL)
     {

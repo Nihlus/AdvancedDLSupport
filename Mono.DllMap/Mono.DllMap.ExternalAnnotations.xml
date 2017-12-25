@@ -176,6 +176,17 @@
   <member name="P:Mono.DllMap.MappingBase.WordSize">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="T:Mono.DllMap.Utility.DllConfigurationPlatformHelper">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="M:Mono.DllMap.Utility.DllConfigurationPlatformHelper.GetCurrentPlatform">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="M:Mono.DllMap.Utility.DllConfigurationPlatformHelper.GetCurrentRuntimeArchitecture">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
   <member name="M:Mono.DllMap.Utility.DllMapAttributeParser.Parse``1(System.String)">
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
