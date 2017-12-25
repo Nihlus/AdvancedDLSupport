@@ -91,7 +91,7 @@ namespace AdvancedDLSupport
                 }
             }
 
-            return ResolvePathResult.FromError(new FileNotFoundException("The specified library was not found in any of the loader search paths."));
+            return ResolvePathResult.FromError(new FileNotFoundException("The specified library was not found in any of the loader search paths.", library));
         }
 
         [NotNull, ItemNotNull]

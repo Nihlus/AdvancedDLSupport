@@ -42,7 +42,7 @@ namespace AdvancedDLSupport
                 }
             }
 
-            throw new FileNotFoundException("The specified library was not found in any of the loader search paths.");
+            throw new FileNotFoundException("The specified library was not found in any of the loader search paths.", library);
         }
     }
 }
