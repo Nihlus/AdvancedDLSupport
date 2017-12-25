@@ -26,8 +26,11 @@
   <ItemGroup>
     <ProjectReference Include="..\AdvancedDLSupport\AdvancedDLSupport.csproj" />
   </ItemGroup>
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-debug</CMakeBuildDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-release</CMakeBuildDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(OS)' == 'Unix'">
     <CMakeGenerator>"Unix Makefiles"</CMakeGenerator>

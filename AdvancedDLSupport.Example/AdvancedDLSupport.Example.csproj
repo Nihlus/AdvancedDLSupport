@@ -25,8 +25,11 @@
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" />
   </ItemGroup>
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-debug</CMakeBuildDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-release</CMakeBuildDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(OS)' == 'Unix'">
     <CMakeGenerator>"Unix Makefiles"</CMakeGenerator>
