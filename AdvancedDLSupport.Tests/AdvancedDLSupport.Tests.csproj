@@ -27,10 +27,7 @@
     <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-debug</CMakeBuildDir>
   </PropertyGroup>
   <ItemGroup>
-    <CMakeOutputBinaries Include="$(CMakeBuildDir)\lib\*.so" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Tests" />
+    <CMakeOutputBinaries Include="$(CMakeBuildDir)\lib\*.*" />
   </ItemGroup>
   <Target Name="InitCMake" BeforeTargets="CompileTestLibraries" Condition="!Exists('$(CMakeBuildDir)\CMakeCache.txt')">
     <Exec Command="mkdir -p $(CMakeBuildDir)" />
