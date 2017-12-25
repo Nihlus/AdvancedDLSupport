@@ -87,7 +87,7 @@ namespace AdvancedDLSupport
             var resolveResult = DynamicLinkLibraryPathResolver.ResolveAbsolutePath(libraryPath, true);
             if (!resolveResult.IsSuccess)
             {
-                throw new FileNotFoundException("The specified library was not found in any of the loader search paths.", libraryPath, resolveResult.Exception);
+                throw new FileNotFoundException($"The specified library (\"{libraryPath}\") was not found in any of the loader search paths.", libraryPath, resolveResult.Exception);
             }
 
             libraryPath = resolveResult.Path;
