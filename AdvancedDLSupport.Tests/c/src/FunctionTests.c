@@ -1,8 +1,4 @@
 #include <stdlib.h>
-#if _MSC_VER
-#include <stdint.h>
-#endif
-
 #include "TestStruct.h"
 #include "wincomp.h"
 

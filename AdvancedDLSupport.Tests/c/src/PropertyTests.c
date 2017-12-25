@@ -1,10 +1,6 @@
 #include <stdlib.h>
 #include "wincomp.h"
 
-#if _MSC_VER
-#include <stdint.h>
-#endif
-
 __declspec(dllexport) int32_t GlobalVariable = 5;
 __declspec(dllexport) int32_t* GlobalPointerVariable = NULL;
 
