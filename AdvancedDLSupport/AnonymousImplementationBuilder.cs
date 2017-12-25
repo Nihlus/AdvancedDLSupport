@@ -87,7 +87,9 @@ namespace AdvancedDLSupport
             var resolveResult = DynamicLinkLibraryPathResolver.ResolveAbsolutePath(libraryPath, true);
             if (!resolveResult.IsSuccess)
             {
-                throw new FileNotFoundException($"The specified library (\"{libraryPath}\") was not found in any of the loader search paths.", libraryPath, resolveResult.Exception);
+                var executingDir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
+                var filesInDir = string.Join(", ", Directory.EnumerateFiles(executingDir));
+                throw new FileNotFoundException($"The specified library (\"{libraryPath}\") was not found in any of the loader search paths. Executing dir was {executingDir}, files were {filesInDir}", libraryPath, resolveResult.Exception);
             }
 
             libraryPath = resolveResult.Path;

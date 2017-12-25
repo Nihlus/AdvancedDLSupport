@@ -13,5 +13,7 @@ if ( MSVC )
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 endif()
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/lib)
 add_library(Demo SHARED src/Example.c ${SHARED_HEADERS})
+
+install(TARGETS Demo
+        DESTINATION ${CMAKE_BINARY_DIR}/lib)

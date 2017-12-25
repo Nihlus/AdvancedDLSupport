@@ -13,8 +13,6 @@ if ( MSVC )
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 endif()
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/lib)
-
 include_directories(${CMAKE_SOURCE_DIR})
 
 set(SHARED_HEADERS src/TestStruct.h)
@@ -26,3 +24,6 @@ add_library(FunctionTests SHARED src/FunctionTests.c ${SHARED_HEADERS})
 add_library(LazyLoadingTests SHARED src/LazyLoadingTests.c ${SHARED_HEADERS})
 add_library(PropertyTests SHARED src/PropertyTests.c ${SHARED_HEADERS})
 add_library(RemappingTests SHARED src/RemappingTests.c ${SHARED_HEADERS})
+
+install(TARGETS BaseTests DisposeTests EventTests FunctionTests LazyLoadingTests PropertyTests RemappingTests
+        DESTINATION ${CMAKE_BINARY_DIR}/lib)
