@@ -19,6 +19,13 @@ int32_t DoMath(MyStruct* struc)
     return struc->a;
 }
 
+const MyStruct* GetAllocatedTestStruct()
+{
+    MyStruct* testStruct = (MyStruct*)malloc(sizeof(MyStruct));
+    testStruct->a = 10;
+    return testStruct;
+}
+
 const char* GetString()
 {
     return "Hello from C!";

@@ -47,6 +47,8 @@ namespace AdvancedDLSupport.Tests.Integration
 
             var result = library.GetAllocatedTestStruct();
             Assert.NotNull(result);
+            Assert.Equal(10, result.Value.A);
+            Assert.Equal(20, result.Value.B);
         }
         [Fact]
         public void CanCallFunctionWithNullableReturnValueWhereResultIsNull()

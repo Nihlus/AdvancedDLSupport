@@ -18,6 +18,9 @@ namespace AdvancedDLSupport.Example
             wrapper.MyStructure->A = 25;
 
             Console.WriteLine(wrapper.MyStructure->A);
+
+            var testStruct = wrapper.GetAllocatedTestStruct();
+
             Console.WriteLine(wrapper.GetNullString() is null);
             Console.WriteLine(wrapper.GetString());
         }

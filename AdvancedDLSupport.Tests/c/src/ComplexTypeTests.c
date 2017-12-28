@@ -27,6 +27,9 @@ bool CheckIfStringIsNull(const char* value)
 const TestStruct* GetAllocatedTestStruct()
 {
     TestStruct* testStruct = (TestStruct*)malloc(sizeof(TestStruct));
+    testStruct->A = 10;
+    testStruct->B = 20;
+
     return testStruct;
 }
 

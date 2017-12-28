@@ -120,7 +120,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             il.Emit(OpCodes.Call, loweredMethod);
 
             // Emit return value raising
-            if (MethodDifferentiator.IsComplexType(loweredMethod.ReturnType))
+            if (MethodDifferentiator.IsComplexType(method.ReturnType))
             {
                 EmitValueRaising(il, method.ReturnType, loweredMethod.ReturnType, repoProperty);
             }

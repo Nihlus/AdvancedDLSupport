@@ -13,5 +13,7 @@ namespace AdvancedDLSupport.Example
         string GetString();
 
         string GetNullString();
+
+        MyStruct? GetAllocatedTestStruct();
     }
 }
