@@ -11,5 +11,7 @@ namespace AdvancedDLSupport.Example
         int DoMath(ref MyStruct struc);
 
         string GetString();
+
+        string GetNullString();
     }
 }

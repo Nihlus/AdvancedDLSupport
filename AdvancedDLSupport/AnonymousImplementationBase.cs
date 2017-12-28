@@ -55,7 +55,14 @@ namespace AdvancedDLSupport
         /// <param name="interfaceType">The interface type that the anonymous type implements.</param>
         /// <param name="configuration">Whether or not this library can be disposed.</param>
         /// <param name="transformerRepository">The repository containing type transformers.</param>
-        protected AnonymousImplementationBase([NotNull] string path, [NotNull] Type interfaceType, ImplementationConfiguration configuration, TypeTransformerRepository transformerRepository)
+        [AnonymousConstructor]
+        protected AnonymousImplementationBase
+        (
+            [NotNull] string path,
+            [NotNull] Type interfaceType,
+            ImplementationConfiguration configuration,
+            [NotNull] TypeTransformerRepository transformerRepository
+        )
         {
             Configuration = configuration;
             TransformerRepository = transformerRepository;

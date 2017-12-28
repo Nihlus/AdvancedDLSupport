@@ -24,3 +24,7 @@ const char* GetString()
     return "Hello from C!";
 }
 
+const char* GetNullString()
+{
+    return NULL;
+}

@@ -102,7 +102,7 @@ namespace AdvancedDLSupport
             {
                 if (!(cachedType is null))
                 {
-                    return (T)Activator.CreateInstance(cachedType, libraryPath, interfaceType, Configuration);
+                    return CreateInterfaceInstance<T>(cachedType, libraryPath, Configuration, TransformerRepository);
                 }
             }
 
@@ -129,32 +129,28 @@ namespace AdvancedDLSupport
                 );
 
                 // Now the constructor
+                var anonymousConstructor = typeof(AnonymousImplementationBase)
+                .GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance)
+                .First
+                (
+                    c => c.GetCustomAttribute<AnonymousConstructorAttribute>() != null
+                );
+
                 var constructorBuilder = typeBuilder.DefineConstructor
                 (
                     MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.HideBySig,
                     CallingConventions.Standard,
-                    new[] { typeof(string), typeof(Type), typeof(ImplementationConfiguration), typeof(TypeTransformerRepository) }
+                    anonymousConstructor.GetParameters().Select(p => p.ParameterType).ToArray()
                 );
 
                 constructorBuilder.DefineParameter(1, ParameterAttributes.In, "libraryPath");
                 var ctorIL = constructorBuilder.GetILGenerator();
-                ctorIL.Emit(OpCodes.Ldarg_0); // Load instance
-                ctorIL.Emit(OpCodes.Ldarg_1); // Load libraryPath parameter
-                ctorIL.Emit(OpCodes.Ldarg_2); // Load interface type
-                ctorIL.Emit(OpCodes.Ldarg_3); // Load config parameter
-                ctorIL.Emit
-                (
-                    OpCodes.Call,
-                    typeof(AnonymousImplementationBase).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).First
-                    (
-                        p =>
-                            p.GetParameters().Length == 4 &&
-                            p.GetParameters()[0].ParameterType == typeof(string) &&
-                            p.GetParameters()[1].ParameterType == typeof(Type) &&
-                            p.GetParameters()[2].ParameterType == typeof(ImplementationConfiguration) &&
-                            p.GetParameters()[3].ParameterType == typeof(TypeTransformerRepository)
-                    )
-                );
+                for (int i = 0; i <= anonymousConstructor.GetParameters().Length; ++i)
+                {
+                    ctorIL.Emit(OpCodes.Ldarg, i);
+                }
+
+                ctorIL.Emit(OpCodes.Call, anonymousConstructor);
 
                 ConstructMethods(typeBuilder, ctorIL, interfaceType);
                 ConstructProperties(typeBuilder, ctorIL, interfaceType);
@@ -165,7 +161,7 @@ namespace AdvancedDLSupport
                 {
                     var finalType = typeBuilder.CreateTypeInfo();
 
-                    var instance = (T)Activator.CreateInstance(finalType, libraryPath, interfaceType, Configuration, TransformerRepository);
+                    var instance = CreateInterfaceInstance<T>(finalType, libraryPath, Configuration, TransformerRepository);
                     TypeCache.TryAdd(key, finalType);
 
                     return instance;
@@ -176,6 +172,26 @@ namespace AdvancedDLSupport
                     throw tex.InnerException ?? tex;
                 }
             }
+        }
+
+        /// <summary>
+        /// Creates an instance of the final interface type.
+        /// </summary>
+        /// <param name="anonymousType">The constructed anonymous type.</param>
+        /// <param name="library">The path to or name of the library</param>
+        /// <param name="configuration">The generator configuration.</param>
+        /// <param name="transformerRepository">The type transformer repository.</param>
+        /// <typeparam name="T">The interface type.</typeparam>
+        /// <returns>An instance of the anonymous type implementing <typeparamref name="T"/>.</returns>
+        private T CreateInterfaceInstance<T>
+        (
+            [NotNull] Type anonymousType,
+            [NotNull] string library,
+            ImplementationConfiguration configuration,
+            [NotNull] TypeTransformerRepository transformerRepository
+        )
+        {
+            return (T)Activator.CreateInstance(anonymousType, library, typeof(T), Configuration, TransformerRepository);
         }
 
         /// <summary>

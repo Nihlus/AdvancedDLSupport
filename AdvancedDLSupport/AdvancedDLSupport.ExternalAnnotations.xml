@@ -10,6 +10,9 @@
     <parameter name="interfaceType">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
+    <parameter name="transformerRepository">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
   </member>
   <member name="M:AdvancedDLSupport.AnonymousImplementationBase.Dispose">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />

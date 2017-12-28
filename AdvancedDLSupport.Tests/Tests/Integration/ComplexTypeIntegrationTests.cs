@@ -11,7 +11,8 @@ namespace AdvancedDLSupport.Tests.Integration
         public void CanCallFunctionWithStringReturnValue()
         {
             var library = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IComplexTypeLibrary>(LibraryName);
-            Assert.Equal("Hello from C!", library.GetString());
+            var actual = library.GetString();
+            Assert.Equal("Hello from C!", actual);
         }
 
         [Fact]
