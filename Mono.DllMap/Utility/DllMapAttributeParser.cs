@@ -46,6 +46,8 @@ namespace Mono.DllMap.Utility
             }
 
             bool isInverse = false;
+
+            // ReSharper disable once PossibleNullReferenceException
             var parsingString = content.Replace('-', '_');
             if (parsingString.First() == '!')
             {
