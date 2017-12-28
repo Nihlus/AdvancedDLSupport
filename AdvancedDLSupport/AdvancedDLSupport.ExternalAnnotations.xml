@@ -46,6 +46,37 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
+  <member name="T:AdvancedDLSupport.ComplexTypeHelper">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="M:AdvancedDLSupport.ComplexTypeHelper.HasComplexParameters(System.Reflection.MethodBase)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+    <parameter name="method">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.ComplexTypeHelper.HasComplexReturnValue(System.Reflection.MethodInfo)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+    <parameter name="methodInfo">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.ComplexTypeHelper.IsComplexMethod(System.Reflection.MethodInfo)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+    <parameter name="method">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.ComplexTypeHelper.IsComplexType(System.Type)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+    <parameter name="type">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
   <member name="M:AdvancedDLSupport.Extensions.StringExtensions.Contains(System.String,System.String,System.StringComparison)">
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <parameter name="this">
@@ -149,37 +180,6 @@
   </member>
   <member name="T:AdvancedDLSupport.Loaders.SymbolFlags">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="T:AdvancedDLSupport.MethodDifferentiator">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="M:AdvancedDLSupport.MethodDifferentiator.HasComplexParameters(System.Reflection.MethodBase)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <parameter name="method">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.MethodDifferentiator.HasComplexReturnValue(System.Reflection.MethodInfo)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <parameter name="methodInfo">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.MethodDifferentiator.IsComplexMethod(System.Reflection.MethodInfo)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <parameter name="method">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.MethodDifferentiator.IsComplexType(System.Type)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <parameter name="type">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
   </member>
   <member name="T:AdvancedDLSupport.NativeSymbolAttribute">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />

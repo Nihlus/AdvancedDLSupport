@@ -97,8 +97,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var loweredParameterTypes = loweredMethodParameterTypes;
             var repoProperty = typeof(AnonymousImplementationBase).GetProperty
             (
-                "TransformerRepository",
-                BindingFlags.NonPublic | BindingFlags.Instance
+                nameof(AnonymousImplementationBase.TransformerRepository),
+                BindingFlags.Public | BindingFlags.Instance
             );
 
             // Emit lowered parameters
@@ -130,14 +130,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
         private void EmitValueLowering(ILGenerator il, Type complexType, Type simpleType, PropertyInfo typeTransformerRepository, int parameterIndex)
         {
-            var getTransformerFunc = typeof(TypeTransformerRepository).GetMethod(nameof(TypeTransformerRepository.GetComplexTransformer));
-            var lowerValueFunc = typeof(ITypeTransformer<,>).MakeGenericType(complexType, simpleType).GetMethod("LowerValue");
+            var lowerValueFunc = typeof(ITypeTransformer<,>).MakeGenericType(complexType, simpleType).GetMethod(nameof(ITypeTransformer<object, object>.LowerValue));
 
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Call, typeTransformerRepository.GetMethod); // Get the type transformer repository
-
-            EmitTypeOf(il, complexType);
-            il.Emit(OpCodes.Callvirt, getTransformerFunc); // Get the relevant type transformer
+            EmitGetComplexTransformerCall(il, complexType);
 
             il.Emit(OpCodes.Ldarg, parameterIndex); // Load the complex argument
             il.Emit(OpCodes.Callvirt, lowerValueFunc); // Lower it
@@ -146,22 +141,31 @@ namespace AdvancedDLSupport.ImplementationGenerators
         private void EmitValueRaising(ILGenerator il, Type complexType, Type simpleType, PropertyInfo typeTransformerRepository)
         {
             var transformerType = typeof(ITypeTransformer<,>).MakeGenericType(complexType, simpleType);
-            var getTransformerFunc = typeof(TypeTransformerRepository).GetMethod(nameof(TypeTransformerRepository.GetComplexTransformer));
-            var raiseValueFunc = transformerType.GetMethod("RaiseValue");
+            var raiseValueFunc = transformerType.GetMethod(nameof(ITypeTransformer<object, object>.RaiseValue));
 
             il.DeclareLocal(simpleType);
             il.Emit(OpCodes.Stloc_0); // Store the result from the lowered method call
 
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Call, typeTransformerRepository.GetMethod); // Get the type transformer repository
-
-            EmitTypeOf(il, complexType);
-            il.Emit(OpCodes.Callvirt, getTransformerFunc); // Get the relevant type transformer
-
-            il.Emit(OpCodes.Castclass, transformerType); // Cast it over to the specific interface
+            EmitGetComplexTransformerCall(il, complexType);
 
             il.Emit(OpCodes.Ldloc_0); // Load the result again
             il.Emit(OpCodes.Callvirt, raiseValueFunc); // Raise it
+        }
+
+        private void EmitGetComplexTransformerCall(ILGenerator il, Type complexType)
+        {
+            var getTransformerFunc = typeof(TypeTransformerRepository).GetMethod(nameof(TypeTransformerRepository.GetComplexTransformer));
+            var repoProperty = typeof(AnonymousImplementationBase).GetProperty
+            (
+                nameof(AnonymousImplementationBase.TransformerRepository),
+                BindingFlags.Public | BindingFlags.Instance
+            );
+
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Call, repoProperty.GetMethod); // Get the type transformer repository
+
+            EmitTypeOf(il, complexType);
+            il.Emit(OpCodes.Callvirt, getTransformerFunc); // Get the relevant type transformer
         }
 
         private void EmitTypeOf(ILGenerator il, Type type)

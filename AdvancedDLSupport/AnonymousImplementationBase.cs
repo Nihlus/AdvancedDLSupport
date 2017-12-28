@@ -35,7 +35,7 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Gets the type transformer repository.
         /// </summary>
-        protected TypeTransformerRepository TransformerRepository { get; }
+        public TypeTransformerRepository TransformerRepository { get; }
 
         /// <summary>
         /// Gets a value indicating whether or not the library has been disposed.
