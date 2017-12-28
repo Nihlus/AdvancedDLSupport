@@ -29,6 +29,7 @@ add_library(FunctionTests SHARED src/FunctionTests.c ${SHARED_HEADERS})
 add_library(LazyLoadingTests SHARED src/LazyLoadingTests.c ${SHARED_HEADERS})
 add_library(PropertyTests SHARED src/PropertyTests.c ${SHARED_HEADERS})
 add_library(RemappingTests SHARED src/RemappingTests.c ${SHARED_HEADERS})
+add_library(ComplexTypeTests SHARED src/ComplexTypeTests.c ${SHARED_HEADERS})
 
 get_filename_component(INSTALL_PATH_ABSOLUTE "${PROJECT_PATH}/${OUTPUT_PATH}" ABSOLUTE)
 
