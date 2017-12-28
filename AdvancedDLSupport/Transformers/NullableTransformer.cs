@@ -19,6 +19,7 @@ namespace AdvancedDLSupport
                 return IntPtr.Zero;
             }
 
+            // TODO: Add a way to free this memory after use
             var ptr = Marshal.AllocHGlobal(Marshal.SizeOf<T>());
             Marshal.StructureToPtr(value.Value, ptr, false);
 
