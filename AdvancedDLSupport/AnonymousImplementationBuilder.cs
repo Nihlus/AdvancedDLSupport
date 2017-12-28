@@ -31,6 +31,7 @@ namespace AdvancedDLSupport
         private static readonly object BuilderLock = new object();
 
         private static readonly ConcurrentDictionary<LibraryIdentifier, Type> TypeCache;
+        private static readonly TypeTransformerRepository TransformerRepository;
 
         static AnonymousImplementationBuilder()
         {
@@ -51,6 +52,8 @@ namespace AdvancedDLSupport
             ModuleBuilder = AssemblyBuilder.DefineDynamicModule("DLSupportModule");
 
             TypeCache = new ConcurrentDictionary<LibraryIdentifier, Type>(new LibraryIdentifierEqualityComparer());
+            TransformerRepository = new TypeTransformerRepository()
+                .WithTypeTransformer(typeof(string), new StringTransformer());
         }
 
         /// <summary>
@@ -130,7 +133,7 @@ namespace AdvancedDLSupport
                 (
                     MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.HideBySig,
                     CallingConventions.Standard,
-                    new[] { typeof(string), typeof(Type), typeof(ImplementationConfiguration) }
+                    new[] { typeof(string), typeof(Type), typeof(ImplementationConfiguration), typeof(TypeTransformerRepository) }
                 );
 
                 constructorBuilder.DefineParameter(1, ParameterAttributes.In, "libraryPath");
@@ -145,10 +148,11 @@ namespace AdvancedDLSupport
                     typeof(AnonymousImplementationBase).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).First
                     (
                         p =>
-                            p.GetParameters().Length == 3 &&
+                            p.GetParameters().Length == 4 &&
                             p.GetParameters()[0].ParameterType == typeof(string) &&
                             p.GetParameters()[1].ParameterType == typeof(Type) &&
-                            p.GetParameters()[2].ParameterType == typeof(ImplementationConfiguration)
+                            p.GetParameters()[2].ParameterType == typeof(ImplementationConfiguration) &&
+                            p.GetParameters()[3].ParameterType == typeof(TypeTransformerRepository)
                     )
                 );
 
@@ -161,7 +165,7 @@ namespace AdvancedDLSupport
                 {
                     var finalType = typeBuilder.CreateTypeInfo();
 
-                    var instance = (T)Activator.CreateInstance(finalType, libraryPath, interfaceType, Configuration);
+                    var instance = (T)Activator.CreateInstance(finalType, libraryPath, interfaceType, Configuration, TransformerRepository);
                     TypeCache.TryAdd(key, finalType);
 
                     return instance;
@@ -183,6 +187,7 @@ namespace AdvancedDLSupport
         private void ConstructMethods([NotNull] TypeBuilder typeBuilder, [NotNull] ILGenerator ctorIL, [NotNull] Type interfaceType)
         {
             var methodGenerator = new MethodImplementationGenerator(ModuleBuilder, typeBuilder, ctorIL, Configuration);
+            var complexMethodGenerator = new ComplexMethodImplementationGenerator(ModuleBuilder, typeBuilder, ctorIL, Configuration, TransformerRepository);
 
             // Let's define our methods!
             foreach (var method in interfaceType.GetMethods())
@@ -193,7 +198,14 @@ namespace AdvancedDLSupport
                     continue;
                 }
 
-                methodGenerator.GenerateImplementation(method);
+                if (MethodDifferentiator.IsComplexMethod(method))
+                {
+                    complexMethodGenerator.GenerateImplementation(method);
+                }
+                else
+                {
+                    methodGenerator.GenerateImplementation(method);
+                }
             }
         }
 
