@@ -10,7 +10,7 @@ namespace AdvancedDLSupport
     /// lowered before generating the native signature.
     /// </summary>
     [PublicAPI]
-    public static class MethodDifferentiator
+    public static class ComplexTypeHelper
     {
         /// <summary>
         /// Determines whether or not the given method is complex,

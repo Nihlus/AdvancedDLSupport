@@ -214,7 +214,7 @@ namespace AdvancedDLSupport
                     continue;
                 }
 
-                if (MethodDifferentiator.IsComplexMethod(method))
+                if (ComplexTypeHelper.IsComplexMethod(method))
                 {
                     complexMethodGenerator.GenerateImplementation(method);
                 }

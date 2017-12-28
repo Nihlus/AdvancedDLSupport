@@ -105,7 +105,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             for (var i = 1; i <= parameters.Length; ++i)
             {
                 var parameter = parameters[i - 1];
-                if (MethodDifferentiator.IsComplexType(parameter.ParameterType))
+                if (ComplexTypeHelper.IsComplexType(parameter.ParameterType))
                 {
                     var loweredParameterType = loweredParameterTypes[i - 1];
                     EmitValueLowering(il, parameter.ParameterType, loweredParameterType, repoProperty, i);
@@ -120,7 +120,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             il.Emit(OpCodes.Call, loweredMethod);
 
             // Emit return value raising
-            if (MethodDifferentiator.IsComplexType(method.ReturnType))
+            if (ComplexTypeHelper.IsComplexType(method.ReturnType))
             {
                 EmitValueRaising(il, method.ReturnType, loweredMethod.ReturnType, repoProperty);
             }
@@ -195,7 +195,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
         private Type LowerTypeIfRequired(Type type)
         {
-            if (MethodDifferentiator.IsComplexType(type))
+            if (ComplexTypeHelper.IsComplexType(type))
             {
                 var transformer = _transformerRepository.GetComplexTransformer(type);
                 type = transformer.LowerType();
