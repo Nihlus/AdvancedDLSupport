@@ -33,5 +33,14 @@ add_library(ComplexTypeTests SHARED src/ComplexTypeTests.c ${SHARED_HEADERS})
 
 get_filename_component(INSTALL_PATH_ABSOLUTE "${PROJECT_PATH}/${OUTPUT_PATH}" ABSOLUTE)
 
-install(TARGETS BaseTests DisposeTests EventTests FunctionTests LazyLoadingTests PropertyTests RemappingTests
-        DESTINATION ${INSTALL_PATH_ABSOLUTE})
+install(TARGETS
+            BaseTests
+            DisposeTests
+            EventTests
+            FunctionTests
+            LazyLoadingTests
+            PropertyTests
+            RemappingTests
+            ComplexTypeTests
+        DESTINATION
+            ${INSTALL_PATH_ABSOLUTE})
