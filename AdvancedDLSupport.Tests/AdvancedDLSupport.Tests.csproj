@@ -19,22 +19,32 @@
       <Link>AdvancedDLSupport.Tests.dll.config</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AdvancedDLSupport\AdvancedDLSupport.csproj" />
   </ItemGroup>
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-debug</CMakeBuildDir>
   </PropertyGroup>
-  <ItemGroup>
-    <CMakeOutputBinaries Include="$(CMakeBuildDir)\lib\*.*" />
-  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-release</CMakeBuildDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(OS)' == 'Unix'">
+    <CMakeGenerator>"Unix Makefiles"</CMakeGenerator>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+    <CMakeGenerator>"Visual Studio 15 2017 Win64"</CMakeGenerator>
+  </PropertyGroup>
   <Target Name="InitCMake" BeforeTargets="CompileTestLibraries" Condition="!Exists('$(CMakeBuildDir)\CMakeCache.txt')">
     <Exec Command="mkdir -p $(CMakeBuildDir)" />
-    <Exec Command="cmake ../" WorkingDirectory="$(CMakeBuildDir)" />
+    <Exec Command="cmake -G $(CMakeGenerator) -DOUTPUT_PATH=$(OutDir) -DPROJECT_PATH=$(MSBuildProjectDirectory) .."
+          WorkingDirectory="$(CMakeBuildDir)" />
   </Target>
   <Target Name="CompileTestLibraries" AfterTargets="AfterBuild">
-    <Exec Command="cmake --build ." WorkingDirectory="$(CMakeBuildDir)" />
-    <Copy SourceFiles="@(CMakeOutputBinaries)" DestinationFolder="$(OutDir)" />
+    <Exec Command="cmake --build . --target install" WorkingDirectory="$(CMakeBuildDir)" Condition="'$(OS)' == 'Unix'"/>
+    <Exec Command="cmake --build . --target INSTALL" WorkingDirectory="$(CMakeBuildDir)" Condition="'$(OS)' == 'Windows_NT'"/>
   </Target>
 </Project>

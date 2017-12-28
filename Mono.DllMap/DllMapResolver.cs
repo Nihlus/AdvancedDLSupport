@@ -62,7 +62,7 @@ namespace Mono.DllMap
         [Pure, NotNull, PublicAPI]
         public string MapLibraryName(DllConfiguration configuration, string libraryName)
         {
-            var mapEntry = configuration.Maps.FirstOrDefault(m => m.SourceLibrary == libraryName);
+            var mapEntry = configuration.GetRelevantMaps().FirstOrDefault(m => m.SourceLibrary == libraryName);
             if (mapEntry is null)
             {
                 return libraryName;

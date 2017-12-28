@@ -91,7 +91,7 @@ namespace AdvancedDLSupport
                 }
             }
 
-            return ResolvePathResult.FromError(new FileNotFoundException("The specified library was not found in any of the loader search paths."));
+            return ResolvePathResult.FromError(new FileNotFoundException("The specified library was not found in any of the loader search paths.", library));
         }
 
         [NotNull, ItemNotNull]
@@ -105,34 +105,28 @@ namespace AdvancedDLSupport
                 candidates.Add($"{library}.dll");
             }
 
-            /*
-                Temporary hack until BSD is added to RuntimeInformation. OSDescription should contain the output from
-                "uname -srv", which will report something along the lines of FreeBSD or OpenBSD plus some more info.
-            */
             bool isBSD = RuntimeInformation.OSDescription.ToUpperInvariant().Contains("BSD");
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || isBSD)
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || isBSD || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                var noSuffix = !library.EndsWith(".so");
-                var noPrefix = !Path.GetFileName(library).StartsWith("lib");
+                var prefix = "lib";
+                var suffix = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? ".dylib" : ".so";
+
+                var noSuffix = !library.EndsWith(suffix);
+                var noPrefix = !Path.GetFileName(library).StartsWith(prefix);
                 if (noSuffix)
                 {
-                    candidates.Add($"{library}.so");
+                    candidates.Add($"{library}{suffix}");
                 }
 
                 if (noPrefix)
                 {
-                    candidates.Add($"lib{library}");
+                    candidates.Add($"{prefix}{library}");
                 }
 
                 if (noPrefix && noSuffix)
                 {
-                    candidates.Add($"lib{library}.so");
+                    candidates.Add($"{prefix}{library}{suffix}");
                 }
-            }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && !library.EndsWith(".dylib"))
-            {
-                candidates.Add($"{library}.dylib");
             }
 
             return candidates;

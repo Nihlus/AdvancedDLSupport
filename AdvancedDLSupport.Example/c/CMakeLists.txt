@@ -18,19 +18,8 @@ endif()
 set(OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib" CACHE STRING "The path where the output binaries should be installed.")
 set(PROJECT_PATH "${CMAKE_BINARY_DIR}/lib" CACHE STRING "The path where the output binaries should be installed.")
 
-include_directories(${CMAKE_SOURCE_DIR})
-
-set(SHARED_HEADERS src/TestStruct.h src/wincomp.h)
-
-add_library(BaseTests SHARED src/BaseTests.c ${SHARED_HEADERS})
-add_library(DisposeTests SHARED src/DisposeTests.c ${SHARED_HEADERS})
-add_library(EventTests SHARED src/EventTests.c ${SHARED_HEADERS})
-add_library(FunctionTests SHARED src/FunctionTests.c ${SHARED_HEADERS})
-add_library(LazyLoadingTests SHARED src/LazyLoadingTests.c ${SHARED_HEADERS})
-add_library(PropertyTests SHARED src/PropertyTests.c ${SHARED_HEADERS})
-add_library(RemappingTests SHARED src/RemappingTests.c ${SHARED_HEADERS})
+add_library(Demo SHARED src/Example.c ${SHARED_HEADERS})
 
 get_filename_component(INSTALL_PATH_ABSOLUTE "${PROJECT_PATH}/${OUTPUT_PATH}" ABSOLUTE)
-
-install(TARGETS BaseTests DisposeTests EventTests FunctionTests LazyLoadingTests PropertyTests RemappingTests
+install(TARGETS Demo
         DESTINATION ${INSTALL_PATH_ABSOLUTE})

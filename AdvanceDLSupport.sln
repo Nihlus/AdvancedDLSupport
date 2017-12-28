@@ -7,6 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "metadata", ".\", "{F1A57014
 		stylecop.json = stylecop.json
 		stylecop.ruleset = stylecop.ruleset
 		.travis.yml = .travis.yml
+		appveyor.yml = appveyor.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", ".\docs", "{96E3AE84-1774-4086-8E07-3B9F842D16DC}"

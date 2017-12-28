@@ -1,7 +1,7 @@
 #include <stdlib.h>
-#include <stdint.h>
+#include "wincomp.h"
 
-int32_t Multiply(int value, int multiplier)
+__declspec(dllexport) int32_t Multiply(int value, int multiplier)
 {
     return value * multiplier;
 }

@@ -1,2 +1,2 @@
 #include <stdlib.h>
-#include <stdint.h>
+#include "wincomp.h"

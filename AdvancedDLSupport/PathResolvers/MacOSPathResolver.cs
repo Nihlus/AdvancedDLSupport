@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AdvancedDLSupport.Extensions;
@@ -10,52 +11,38 @@ namespace AdvancedDLSupport
     /// </summary>
     internal sealed class MacOSPathResolver : ILibraryPathResolver
     {
+        private static readonly IReadOnlyList<string> EnvironmentVariables = new[]
+        {
+            "DYLD_FRAMEWORK_PATH",
+            "DYLD_LIBRARY_PATH",
+            "DYLD_FALLBACK_FRAMEWORK_PATH",
+            "DYLD_FALLBACK_LIBRARY_PATH",
+            "DYLD_FALLBACK_LIBRARY_PATH"
+        };
+
         /// <inheritdoc />
         public string Resolve(string library)
         {
-            var libraryPaths = Environment.GetEnvironmentVariable("DYLD_FRAMEWORK_PATH").Split(':').Where(p => !p.IsNullOrWhiteSpace());
-
-            string libraryLocation;
-            foreach (var path in libraryPaths)
+            foreach (var variable in EnvironmentVariables)
             {
-                libraryLocation = Path.GetFullPath(Path.Combine(path, library));
-                if (File.Exists(libraryLocation))
+                var libraryPaths = Environment.GetEnvironmentVariable(variable)?.Split(':').Where(p => !p.IsNullOrWhiteSpace());
+
+                if (libraryPaths is null)
                 {
-                    return libraryLocation;
+                    continue;
+                }
+
+                foreach (var path in libraryPaths)
+                {
+                    var libraryLocation = Path.GetFullPath(Path.Combine(path, library));
+                    if (File.Exists(libraryLocation))
+                    {
+                        return libraryLocation;
+                    }
                 }
             }
 
-            libraryPaths = Environment.GetEnvironmentVariable("DYLD_LIBRARY_PATH").Split(':').Where(p => !p.IsNullOrWhiteSpace());
-            foreach (var path in libraryPaths)
-            {
-                libraryLocation = Path.GetFullPath(Path.Combine(path, library));
-                if (File.Exists(libraryLocation))
-                {
-                    return libraryLocation;
-                }
-            }
-
-            libraryPaths = Environment.GetEnvironmentVariable("DYLD_FALLBACK_FRAMEWORK_PATH").Split(':').Where(p => !p.IsNullOrWhiteSpace());
-            foreach (var path in libraryPaths)
-            {
-                libraryLocation = Path.GetFullPath(Path.Combine(path, library));
-                if (File.Exists(libraryLocation))
-                {
-                    return libraryLocation;
-                }
-            }
-
-            libraryPaths = Environment.GetEnvironmentVariable("DYLD_FALLBACK_LIBRARY_PATH").Split(':').Where(p => !p.IsNullOrWhiteSpace());
-            foreach (var path in libraryPaths)
-            {
-                libraryLocation = Path.GetFullPath(Path.Combine(path, library));
-                if (File.Exists(libraryLocation))
-                {
-                    return libraryLocation;
-                }
-            }
-
-            throw new FileNotFoundException("The specified library was not found in any of the loader search paths.");
+            throw new FileNotFoundException("The specified library was not found in any of the loader search paths.", library);
         }
     }
 }
