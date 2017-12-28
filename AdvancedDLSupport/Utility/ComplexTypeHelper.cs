@@ -49,6 +49,7 @@ namespace AdvancedDLSupport
         {
             return
                 type == typeof(string) ||
+                type == typeof(bool) ||
                 (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
         }
 

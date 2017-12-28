@@ -64,7 +64,7 @@ namespace AdvancedDLSupport.Tests.Integration
         {
             var library = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IComplexTypeLibrary>(LibraryName);
 
-            Assert.False(library.CheckIfStructIsNull(new TestStruct()));
+            Assert.False(library.CheckIfStructIsNull(new TestStruct{ A = 10, B = 20 }));
         }
 
         [Fact]

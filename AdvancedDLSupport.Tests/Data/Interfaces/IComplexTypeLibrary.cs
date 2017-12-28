@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime.InteropServices;
+
 // ReSharper disable UnusedMember.Global
 
 namespace AdvancedDLSupport.Tests.Data
@@ -7,6 +9,7 @@ namespace AdvancedDLSupport.Tests.Data
     {
         string GetString();
         string GetNullString();
+
         bool CheckIfStringIsNull(string value);
         UIntPtr StringLength(string value);
         TestStruct? GetAllocatedTestStruct();
