@@ -5,12 +5,12 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Handles transformation of boolean values.
     /// </summary>
-    public class BooleanTransformer : ITypeTransformer<bool, int>
+    public class BooleanTransformer : ITypeTransformer<bool, byte>
     {
         /// <inheritdoc />
         public Type LowerType()
         {
-            return typeof(int);
+            return typeof(byte);
         }
 
         /// <inheritdoc />
@@ -20,13 +20,13 @@ namespace AdvancedDLSupport
         }
 
         /// <inheritdoc />
-        public int LowerValue(bool value)
+        public byte LowerValue(bool value)
         {
-            return value ? 1 : 0;
+            return value ? (byte)1 : (byte)0;
         }
 
         /// <inheritdoc />
-        public bool RaiseValue(int value)
+        public bool RaiseValue(byte value)
         {
             return value > 0;
         }
