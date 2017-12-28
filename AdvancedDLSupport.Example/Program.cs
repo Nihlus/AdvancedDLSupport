@@ -18,6 +18,7 @@ namespace AdvancedDLSupport.Example
             wrapper.MyStructure->A = 25;
 
             Console.WriteLine(wrapper.MyStructure->A);
+            Console.WriteLine(wrapper.GetString());
         }
     }
 }

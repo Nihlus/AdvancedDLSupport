@@ -19,3 +19,8 @@ int32_t DoMath(MyStruct* struc)
     return struc->a;
 }
 
+const char* GetString()
+{
+    return "Hello from C!";
+}
+

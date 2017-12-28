@@ -9,5 +9,7 @@ namespace AdvancedDLSupport.Example
         void InitializeMyStructure();
 
         int DoMath(ref MyStruct struc);
+
+        string GetString();
     }
 }
