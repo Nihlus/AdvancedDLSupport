@@ -3,28 +3,29 @@
 #include <memory.h>
 #include <stdbool.h>
 #include "TestStruct.h"
+#include "wincomp.h"
 
-const char* GetString()
+__declspec(dllexport) const char* GetString()
 {
     return "Hello from C!";
 }
 
-const char* GetNullString()
+__declspec(dllexport) const char* GetNullString()
 {
     return NULL;
 }
 
-size_t StringLength(const char* value)
+__declspec(dllexport) size_t StringLength(const char* value)
 {
     return strlen(value);
 }
 
-bool CheckIfStringIsNull(const char* value)
+__declspec(dllexport) bool CheckIfStringIsNull(const char* value)
 {
     return value == NULL;
 }
 
-const TestStruct* GetAllocatedTestStruct()
+__declspec(dllexport) const TestStruct* GetAllocatedTestStruct()
 {
     TestStruct* testStruct = (TestStruct*)malloc(sizeof(TestStruct));
     testStruct->A = 10;
@@ -33,12 +34,12 @@ const TestStruct* GetAllocatedTestStruct()
     return testStruct;
 }
 
-const TestStruct* GetNullTestStruct()
+__declspec(dllexport) const TestStruct* GetNullTestStruct()
 {
     return NULL;
 }
 
-bool CheckIfStructIsNull(const TestStruct* testStruct)
+__declspec(dllexport) bool CheckIfStructIsNull(const TestStruct* testStruct)
 {
     return testStruct == NULL;
 }
