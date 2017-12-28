@@ -100,7 +100,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="method">The method to invoke.</param>
         /// <param name="delegateBuilderType">The type of the method delegate.</param>
         /// <param name="delegateField">The delegate field.</param>
-        protected virtual void GenerateDelegateInvoker
+        protected void GenerateDelegateInvoker
         (
             [NotNull] MethodInfo method,
             [NotNull] Type delegateBuilderType,
@@ -125,7 +125,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="parameterTypes">The parameter types of the method.</param>
         /// <param name="delegateBuilderType">The type of the method delegate.</param>
         /// <param name="delegateField">The delegate field.</param>
-        protected virtual void GenerateDelegateInvoker
+        protected void GenerateDelegateInvoker
         (
             [NotNull] string methodName,
             [NotNull] Type returnType,
@@ -153,7 +153,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="parameterTypes">The parameter types of the method.</param>
         /// <param name="delegateBuilderType">The type of the method delegate.</param>
         /// <param name="delegateField">The delegate field.</param>
-        protected virtual void GenerateDelegateInvokerBody
+        protected void GenerateDelegateInvokerBody
         (
             [NotNull] MethodBuilder method,
             [NotNull] Type[] parameterTypes,

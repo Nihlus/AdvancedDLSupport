@@ -79,7 +79,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="complexInterfaceMethod">The complex method definition.</param>
         /// <param name="loweredMethod">The lowered method definition.</param>
         /// <param name="loweredMethodParameterTypes">The parameter types of the lowered method definition.</param>
-        private void GenerateComplexMethodBody(MethodInfo complexInterfaceMethod, MethodInfo loweredMethod, Type[] loweredMethodParameterTypes)
+        private void GenerateComplexMethodBody
+        (
+            [NotNull] MethodInfo complexInterfaceMethod,
+            [NotNull] MethodInfo loweredMethod,
+            [NotNull, ItemNotNull] Type[] loweredMethodParameterTypes
+        )
         {
             var methodBuilder = TargetType.DefineMethod
             (
@@ -136,7 +141,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="complexType">The complex type that the parameter starts off as.</param>
         /// <param name="simpleType">The simple type that the parameter is to be lowered to.</param>
         /// <param name="parameterIndex">The index of the parameter.</param>
-        private void EmitParameterValueLowering(ILGenerator il, Type complexType, Type simpleType, int parameterIndex)
+        private void EmitParameterValueLowering
+        (
+            [NotNull] ILGenerator il,
+            [NotNull] Type complexType,
+            [NotNull] Type simpleType,
+            int parameterIndex
+        )
         {
             var transformerType = typeof(ITypeTransformer<,>).MakeGenericType(complexType, simpleType);
             var lowerValueFunc = transformerType.GetMethod(nameof(ITypeTransformer<object, object>.LowerValue));
@@ -154,7 +165,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="il">The generator where the IL is to be emitted.</param>
         /// <param name="complexType">The complex type that the value should be raised to.</param>
         /// <param name="simpleType">The simple type that the value starts off as.</param>
-        private void EmitValueRaising(ILGenerator il, Type complexType, Type simpleType)
+        private void EmitValueRaising
+        (
+            [NotNull] ILGenerator il,
+            [NotNull] Type complexType,
+            [NotNull] Type simpleType
+        )
         {
             var transformerType = typeof(ITypeTransformer<,>).MakeGenericType(complexType, simpleType);
             var raiseValueFunc = transformerType.GetMethod(nameof(ITypeTransformer<object, object>.RaiseValue));
@@ -174,7 +190,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="il">The generator where the IL is to be emitted.</param>
         /// <param name="complexType">The complex type which the transformer should handle.</param>
-        private void EmitGetComplexTransformerCall(ILGenerator il, Type complexType)
+        private void EmitGetComplexTransformerCall([NotNull] ILGenerator il, [NotNull] Type complexType)
         {
             var getTransformerFunc = typeof(TypeTransformerRepository).GetMethod(nameof(TypeTransformerRepository.GetComplexTransformer));
             var repoProperty = typeof(AnonymousImplementationBase).GetProperty
@@ -196,7 +212,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="il">The generator where the IL is to be emitted.</param>
         /// <param name="type">The type to be emitted.</param>
-        private void EmitTypeOf(ILGenerator il, Type type)
+        private void EmitTypeOf([NotNull] ILGenerator il, [NotNull] Type type)
         {
             var getTypeFromHandleFunc = typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle));
             il.Emit(OpCodes.Ldtoken, type);
@@ -208,10 +224,14 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="complexInterfaceMethod">The complex interface method.</param>
         /// <param name="memberIdentifier">The unique member identifier to use.</param>
-        /// <returns>
+        /// <returns>(
         /// A <see cref="ValueTuple{T1, T2}"/>, containing the generated method builder and its paramete types.
         /// </returns>
-        private (MethodBuilder LoweredMethod, Type[] ParameterTypes) GenerateLoweredMethod(MethodInfo complexInterfaceMethod, string memberIdentifier)
+        private (MethodBuilder LoweredMethod, Type[] ParameterTypes) GenerateLoweredMethod
+        (
+            [NotNull] MethodInfo complexInterfaceMethod,
+            [NotNull] string memberIdentifier
+        )
         {
             var newReturnType = LowerTypeIfRequired(complexInterfaceMethod.ReturnType);
 
@@ -238,7 +258,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="type">The type to lower.</param>
         /// <returns>The type, lowered by its transformer, or the original value.</returns>
-        private Type LowerTypeIfRequired(Type type)
+        [NotNull]
+        private Type LowerTypeIfRequired([NotNull] Type type)
         {
             if (ComplexTypeHelper.IsComplexType(type))
             {
