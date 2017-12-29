@@ -226,7 +226,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var getReturnParamFunc = typeof(MethodInfo).GetProperty(nameof(MethodInfo.ReturnParameter), BindingFlags.Public | BindingFlags.Instance).GetMethod;
 
             il.Emit(OpCodes.Call, getCurrentMethodFunc);
-            il.Emit(OpCodes.Castclass, typeof(MethodInfo));
             il.Emit(OpCodes.Callvirt, getReturnParamFunc);
         }
 
