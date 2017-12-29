@@ -27,7 +27,7 @@ namespace AdvancedDLSupport.Extensions
     /// <summary>
     /// Extension methods for <see cref="string"/>.
     /// </summary>
-    public static class StringExtensions
+    internal static class StringExtensions
     {
         /// <summary>
         /// Determines whether or not the given string is a valid path. This does not neccesarily indicate that

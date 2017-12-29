@@ -27,7 +27,7 @@ namespace AdvancedDLSupport.Extensions
     /// <summary>
     /// Extension methods for the <see cref="MethodInfo"/> class.
     /// </summary>
-    public static class MethodInfoExtensions
+    internal static class MethodInfoExtensions
     {
         /// <summary>
         /// Determines whether or not the given method requires a set of permutations to deal with

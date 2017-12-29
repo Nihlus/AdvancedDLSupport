@@ -25,7 +25,7 @@ namespace AdvancedDLSupport.Extensions
     /// <summary>
     /// Extension methods for the <see cref="Type"/> class.
     /// </summary>
-    public static class TypeExtensions
+    internal static class TypeExtensions
     {
         /// <summary>
         /// Determines whether or not the given type requires lowering to a more primitive type when being marshalled.
@@ -37,7 +37,6 @@ namespace AdvancedDLSupport.Extensions
         {
             return
                 @this == typeof(string) ||
-                @this == typeof(bool) ||
                 @this.IsNonRefNullable();
         }
 

@@ -75,8 +75,7 @@ namespace AdvancedDLSupport
 
             TypeCache = new ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type>(new LibraryIdentifierEqualityComparer());
             TransformerRepository = new TypeTransformerRepository()
-                .WithTypeTransformer(typeof(string), new StringTransformer())
-                .WithTypeTransformer(typeof(bool), new BooleanTransformer());
+                .WithTypeTransformer(typeof(string), new StringTransformer());
         }
 
         /// <summary>

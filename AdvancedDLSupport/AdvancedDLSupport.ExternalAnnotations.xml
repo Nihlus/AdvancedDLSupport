@@ -3,7 +3,7 @@
   <member name="T:AdvancedDLSupport.AnonymousImplementationBase">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.AnonymousImplementationBase.#ctor(System.String,System.Type,AdvancedDLSupport.ImplementationOptions,AdvancedDLSupport.TypeTransformerRepository)">
+  <member name="M:AdvancedDLSupport.AnonymousImplementationBase.#ctor(System.String,System.Type,AdvancedDLSupport.ImplementationConfiguration,AdvancedDLSupport.TypeTransformerRepository)">
     <parameter name="path">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
@@ -33,18 +33,11 @@
   <member name="T:AdvancedDLSupport.AnonymousImplementationBuilder">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.AnonymousImplementationBuilder.#ctor(AdvancedDLSupport.ImplementationOptions,AdvancedDLSupport.ILibraryPathResolver)">
+  <member name="M:AdvancedDLSupport.AnonymousImplementationBuilder.#ctor(AdvancedDLSupport.ImplementationConfiguration)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="P:AdvancedDLSupport.AnonymousImplementationBuilder.Options">
+  <member name="P:AdvancedDLSupport.AnonymousImplementationBuilder.Configuration">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="M:AdvancedDLSupport.AnonymousImplementationBuilder.ResolveAndActivateClass``2(System.String)">
-    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <parameter name="libraryPath">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
   </member>
   <member name="M:AdvancedDLSupport.AnonymousImplementationBuilder.ResolveAndActivateInterface``1(System.String)">
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
@@ -53,158 +46,32 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.Extensions.MethodInfoExtensions.ParametersRequireLowering(System.Reflection.MethodBase)">
+  <member name="T:AdvancedDLSupport.ImplementationConfiguration">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <parameter name="this">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.Extensions.MethodInfoExtensions.RequiresLowering(System.Reflection.MethodInfo)">
+  <member name="M:AdvancedDLSupport.ImplementationConfiguration.#ctor(System.Boolean,System.Boolean,System.Boolean)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <parameter name="this">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.Extensions.MethodInfoExtensions.ReturnValueRequiresLowering(System.Reflection.MethodInfo)">
+  <member name="P:AdvancedDLSupport.ImplementationConfiguration.EnableDllMapSupport">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="M:AdvancedDLSupport.ImplementationConfiguration.Equals(AdvancedDLSupport.ImplementationConfiguration)">
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <parameter name="this">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.Extensions.StringExtensions.Contains(System.String,System.String,System.StringComparison)">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
-      <argument>this:null =&gt; false; search:null =&gt; false</argument>
-    </attribute>
-    <parameter name="this">
-      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="search">
-      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.Extensions.StringExtensions.IsNullOrEmpty(System.String)">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
-      <argument>this:null =&gt; true</argument>
-    </attribute>
-    <parameter name="this">
-      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.Extensions.StringExtensions.IsNullOrWhiteSpace(System.String)">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
-      <argument>this:null =&gt; true</argument>
-    </attribute>
-    <parameter name="this">
-      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.Extensions.StringExtensions.IsValidPath(System.String)">
-    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
-      <argument>this:null =&gt; false</argument>
-    </attribute>
-    <parameter name="this">
-      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.Extensions.TypeExtensions.RequiresLowering(System.Type)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="M:AdvancedDLSupport.ImplementationConfiguration.Equals(System.Object)">
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <parameter name="this">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.ILibraryPathResolver.Resolve(System.String)">
+  <member name="P:AdvancedDLSupport.ImplementationConfiguration.GenerateDisposalChecks">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="M:AdvancedDLSupport.ImplementationConfiguration.GetHashCode">
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <parameter name="library">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.#ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.Emit.TypeBuilder,System.Reflection.Emit.ILGenerator,AdvancedDLSupport.ImplementationOptions)">
-    <parameter name="targetModule">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="targetType">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="targetTypeConstructorIL">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.EmitDisposalCheck(System.Reflection.Emit.ILGenerator)">
-    <parameter name="il">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateFunctionLoadingLambda(System.Type,System.String)">
-    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    <parameter name="delegateType">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="functionName">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateImplementation(`0,System.String,System.String)">
-    <parameter name="member">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="symbolName">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="uniqueMemberIdentifier">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateLazyLoadedField(System.Reflection.Emit.MethodBuilder,System.Type)">
-    <parameter name="valueFactory">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="type">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateSymbolLoadingLambda(System.String)">
-    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    <parameter name="symbolName">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateSymbolPush(System.Reflection.Emit.ILGenerator,System.Reflection.FieldInfo)">
-    <parameter name="il">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="symbolField">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="P:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.TargetModule">
-    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-  </member>
-  <member name="P:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.TargetType">
-    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-  </member>
-  <member name="P:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.TargetTypeConstructorIL">
-    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-  </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.RefPermutationImplementationGenerator.#ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.Emit.TypeBuilder,System.Reflection.Emit.ILGenerator,AdvancedDLSupport.ImplementationOptions,AdvancedDLSupport.TypeTransformerRepository)">
-    <parameter name="targetModule">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="targetType">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="targetTypeConstructorIL">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="transformerRepository">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
+  <member name="P:AdvancedDLSupport.ImplementationConfiguration.UseLazyBinding">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="T:AdvancedDLSupport.ITypeTransformer">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
@@ -218,48 +85,45 @@
   <member name="T:AdvancedDLSupport.ITypeTransformer`2">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.ITypeTransformer`2.LowerValue(`0)">
+  <member name="M:AdvancedDLSupport.ITypeTransformer`2.LowerValue(`0,System.Reflection.ParameterInfo)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     <parameter name="value">
       <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     </parameter>
+    <parameter name="parameter">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.ITypeTransformer`2.RaiseValue(`1)">
+  <member name="M:AdvancedDLSupport.ITypeTransformer`2.RaiseValue(`1,System.Reflection.ParameterInfo)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     <parameter name="value">
       <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="parameter">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="T:AdvancedDLSupport.LibraryLoadingException">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="M:AdvancedDLSupport.LibraryLoadingException.#ctor">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
   <member name="M:AdvancedDLSupport.LibraryLoadingException.#ctor(System.String)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="message">
-      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.LibraryLoadingException.#ctor(System.String,System.Exception,System.String)">
+  <member name="M:AdvancedDLSupport.LibraryLoadingException.#ctor(System.String,System.Exception)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="message">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
     <parameter name="inner">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="libraryName">
-      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.LibraryLoadingException.#ctor(System.String,System.String)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <parameter name="message">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="libraryName">
-      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="T:AdvancedDLSupport.Loaders.SymbolFlags">
@@ -289,25 +153,13 @@
   <member name="T:AdvancedDLSupport.PointerTransformer`1">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.ResolvePathResult.FromError(System.Exception)">
-    <parameter name="exception">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.ResolvePathResult.FromError(System.String)">
-    <parameter name="errorReason">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.ResolvePathResult.FromSuccess(System.String)">
-    <parameter name="resolvedPath">
-      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
-    </parameter>
-  </member>
   <member name="T:AdvancedDLSupport.StringTransformer">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="T:AdvancedDLSupport.SymbolLoadingException">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="M:AdvancedDLSupport.SymbolLoadingException.#ctor">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:AdvancedDLSupport.SymbolLoadingException.#ctor(System.String)">
@@ -316,24 +168,12 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.SymbolLoadingException.#ctor(System.String,System.Exception,System.String)">
+  <member name="M:AdvancedDLSupport.SymbolLoadingException.#ctor(System.String,System.Exception)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="message">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
     <parameter name="inner">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="symbolName">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.SymbolLoadingException.#ctor(System.String,System.String)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <parameter name="message">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="symbolName">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>

@@ -70,13 +70,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             var delegateBuilder = GenerateDelegateType
             (
-                loweredMethod.LoweredMethod.ReturnType,
-                loweredMethod.ParameterTypes,
+                loweredMethod.MethodInfo,
                 uniqueMemberIdentifier,
                 metadataAttribute.CallingConvention
             );
 
-            // Create a delegate field
             var delegateBuilderType = delegateBuilder.CreateTypeInfo();
 
             var delegateField = Options.HasFlagFast(UseLazyBinding) ?
@@ -103,7 +101,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         (
             [NotNull] MethodInfo complexInterfaceMethod,
             [NotNull] MethodInfo loweredMethod,
-            [NotNull, ItemNotNull] Type[] loweredMethodParameterTypes
+            [NotNull, ItemNotNull] IReadOnlyList<Type> loweredMethodParameterTypes
         )
         {
             var methodBuilder = TargetType.DefineMethod
@@ -162,13 +160,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="il">The generator where the IL is to be emitted.</param>
         /// <param name="complexType">The complex type that the parameter starts off as.</param>
         /// <param name="simpleType">The simple type that the parameter is to be lowered to.</param>
-        /// <param name="parameterIndex">The index of the parameter.</param>
+        /// <param name="argumentIndex">The index of the parameter.</param>
         private void EmitParameterValueLowering
         (
             [NotNull] ILGenerator il,
             [NotNull] Type complexType,
             [NotNull] Type simpleType,
-            int parameterIndex
+            int argumentIndex
         )
         {
             var transformerType = typeof(ITypeTransformer<,>).MakeGenericType(complexType, simpleType);
@@ -176,8 +174,60 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             EmitGetComplexTransformerCall(il, complexType);
 
-            il.Emit(OpCodes.Ldarg, parameterIndex); // Load the complex argument
+            il.Emit(OpCodes.Ldarg, argumentIndex); // Load the complex argument
+            EmitGetArgumentParameterInfoByIndex(il, argumentIndex); // Load the relevant parameter
+
             il.Emit(OpCodes.Callvirt, lowerValueFunc); // Lower it
+        }
+
+        /// <summary>
+        /// Emits a set of IL instructions which will retrieve the current method, and get the argument specified by the
+        /// given index, pushing it as a <see cref="ParameterInfo"/> onto the evaluation stack.
+        /// </summary>
+        /// <param name="il">The generator where the IL is to be emitted.</param>
+        /// <param name="argumentIndex">The index of the argument to get.</param>
+        private void EmitGetArgumentParameterInfoByIndex([NotNull] ILGenerator il, int argumentIndex)
+        {
+            if (argumentIndex == 0)
+            {
+                EmitGetMethodReturnParameter(il);
+            }
+            else
+            {
+                EmitGetParameterInfoByIndex(il, argumentIndex - 1);
+            }
+        }
+
+        /// <summary>
+        /// Emits a set of IL instructions which will retrieve the current method, get its parameters, and then get the
+        /// parameter at the given index, pushing it onto the evaluation stack.
+        /// </summary>
+        /// <param name="il">The generator where the IL is to be emitted.</param>
+        /// <param name="parameterIndex">The index of the parameter to get in the parameter array.</param>
+        private void EmitGetParameterInfoByIndex([NotNull] ILGenerator il, int parameterIndex)
+        {
+            var getCurrentMethodFunc = typeof(MethodBase).GetMethod(nameof(MethodBase.GetCurrentMethod), BindingFlags.Public | BindingFlags.Static);
+            var getParametersFunc = typeof(MethodBase).GetMethod(nameof(MethodBase.GetParameters), BindingFlags.Public | BindingFlags.Instance);
+
+            il.Emit(OpCodes.Call, getCurrentMethodFunc);
+            il.Emit(OpCodes.Callvirt, getParametersFunc);
+            il.Emit(OpCodes.Ldc_I4, parameterIndex);
+            il.Emit(OpCodes.Ldelem_Ref);
+        }
+
+        /// <summary>
+        /// Emits a set of IL instructions which will retrieve the current method, get its return value parameter, and
+        /// push it onto the evaluation stack.
+        /// </summary>
+        /// <param name="il">The generator where the IL is to be emitted.</param>
+        private void EmitGetMethodReturnParameter([NotNull] ILGenerator il)
+        {
+            var getCurrentMethodFunc = typeof(MethodBase).GetMethod(nameof(MethodBase.GetCurrentMethod), BindingFlags.Public | BindingFlags.Static);
+            var getReturnParamFunc = typeof(MethodInfo).GetProperty(nameof(MethodInfo.ReturnParameter), BindingFlags.Public | BindingFlags.Instance).GetMethod;
+
+            il.Emit(OpCodes.Call, getCurrentMethodFunc);
+            il.Emit(OpCodes.Castclass, typeof(MethodInfo));
+            il.Emit(OpCodes.Callvirt, getReturnParamFunc);
         }
 
         /// <summary>
@@ -187,11 +237,15 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="il">The generator where the IL is to be emitted.</param>
         /// <param name="complexType">The complex type that the value should be raised to.</param>
         /// <param name="simpleType">The simple type that the value starts off as.</param>
+        /// <param name="argumentIndex">
+        /// The index of the argument that is being raised. Typically 0 for the return value.
+        /// </param>
         private void EmitValueRaising
         (
             [NotNull] ILGenerator il,
             [NotNull] Type complexType,
-            [NotNull] Type simpleType
+            [NotNull] Type simpleType,
+            int argumentIndex = 0
         )
         {
             var transformerType = typeof(ITypeTransformer<,>).MakeGenericType(complexType, simpleType);
@@ -203,6 +257,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
             EmitGetComplexTransformerCall(il, complexType);
 
             il.Emit(OpCodes.Ldloc_0); // Load the result again
+            EmitGetArgumentParameterInfoByIndex(il, argumentIndex);
+
             il.Emit(OpCodes.Callvirt, raiseValueFunc); // Raise it
         }
 
@@ -249,7 +305,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <returns>(
         /// A <see cref="ValueTuple{T1, T2}"/>, containing the generated method builder and its paramete types.
         /// </returns>
-        private (MethodBuilder LoweredMethod, Type[] ParameterTypes) GenerateLoweredMethod
+        private (TransientMethodInfo MethodInfo, MethodBuilder Builder) GenerateLoweredMethod
         (
             [NotNull] MethodInfo complexInterfaceMethod,
             [NotNull] string memberIdentifier
@@ -263,7 +319,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 newParameterTypes.Add(LowerTypeIfRequired(parameter.ParameterType));
             }
 
-            var loweredMethod = TargetType.DefineMethod
+            var loweredMethodBuilder = TargetType.DefineMethod
             (
                 $"{memberIdentifier}_lowered",
                 Public | Final | Virtual | HideBySig | NewSlot,
@@ -272,7 +328,21 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 newParameterTypes.ToArray()
             );
 
-            return (loweredMethod, newParameterTypes.ToArray());
+            loweredMethodBuilder.CopyCustomAttributesFrom(complexInterfaceMethod, newReturnType, newParameterTypes);
+
+            var transientInfo = new TransientMethodInfo
+            (
+                loweredMethodBuilder,
+                newParameterTypes,
+                new List<CustomAttributeData>(complexInterfaceMethod.GetCustomAttributesData()),
+                complexInterfaceMethod.ReturnParameter.Attributes,
+                complexInterfaceMethod.GetParameters().Select(p => p.Name).ToList(),
+                complexInterfaceMethod.GetParameters().Select(p => p.Attributes).ToList(),
+                new List<CustomAttributeData>(complexInterfaceMethod.ReturnParameter.GetCustomAttributesData()),
+                complexInterfaceMethod.GetParameters().Select(p => new List<CustomAttributeData>(p.GetCustomAttributesData())).ToList()
+            );
+
+            return (transientInfo, loweredMethodBuilder);
         }
 
         /// <summary>
