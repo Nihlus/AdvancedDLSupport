@@ -3,7 +3,7 @@
 #include <memory.h>
 #include <stdbool.h>
 #include "TestStruct.h"
-#include "wincomp.h"
+#include "comp.h"
 
 __declspec(dllexport) const char* GetString()
 {

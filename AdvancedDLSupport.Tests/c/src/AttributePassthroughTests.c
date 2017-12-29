@@ -1,7 +1,6 @@
 #include <memory.h>
 #include <stdbool.h>
-#include <uchar.h>
-#include "wincomp.h"
+#include "comp.h"
 
 __declspec(dllexport) bool CheckIfGreaterThanZero(int value)
 {

@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "TestStruct.h"
-#include "wincomp.h"
+#include "comp.h"
 
 __declspec(dllexport) int32_t DoStructMath(TestStruct* struc, int multiplier)
 {

@@ -1,4 +1,4 @@
 #include <stdint.h>
-#include "wincomp.h"
+#include "comp.h"
 
 __declspec(dllexport) int32_t GlobalVariable;
