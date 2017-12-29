@@ -14,4 +14,15 @@
 #define __stdcall
 #endif
 
+
+#if __APPLE__ && __MACH__
+#include <stddef.h>
+#include <stdint.h>
+
+typedef uint16_t char16_t;
+typedef uint32_t char32_t;
+#else
+#include <uchar.h>
+#endif
+
 #endif //C_WINCOMP_H

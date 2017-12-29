@@ -20,7 +20,7 @@ set(PROJECT_PATH "${CMAKE_BINARY_DIR}/lib" CACHE STRING "The path where the outp
 
 include_directories(${CMAKE_SOURCE_DIR})
 
-set(SHARED_HEADERS src/TestStruct.h src/wincomp.h)
+set(SHARED_HEADERS src/TestStruct.h src/comp.h)
 
 add_library(BaseTests SHARED src/BaseTests.c ${SHARED_HEADERS})
 add_library(DisposeTests SHARED src/DisposeTests.c ${SHARED_HEADERS})
