@@ -6,7 +6,7 @@ namespace AdvancedDLSupport.Extensions
     /// <summary>
     /// Extension methods for <see cref="string"/>.
     /// </summary>
-    public static class StringExtensions
+    internal static class StringExtensions
     {
         /// <summary>
         /// Determines whether or not a string is null or consists entirely of whitespace characters.

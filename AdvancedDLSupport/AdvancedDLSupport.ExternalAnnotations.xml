@@ -46,64 +46,6 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="T:AdvancedDLSupport.ComplexTypeHelper">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="M:AdvancedDLSupport.ComplexTypeHelper.HasComplexParameters(System.Reflection.MethodBase)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <parameter name="method">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.ComplexTypeHelper.HasComplexReturnValue(System.Reflection.MethodInfo)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <parameter name="methodInfo">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.ComplexTypeHelper.IsComplexMethod(System.Reflection.MethodInfo)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <parameter name="method">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.ComplexTypeHelper.IsComplexType(System.Type)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <parameter name="type">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.Extensions.StringExtensions.Contains(System.String,System.String,System.StringComparison)">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <parameter name="this">
-      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="search">
-      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.Extensions.StringExtensions.IsNullOrEmpty(System.String)">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
-      <argument>source:null =&gt; true</argument>
-    </attribute>
-    <parameter name="source">
-      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.Extensions.StringExtensions.IsNullOrWhiteSpace(System.String)">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
-      <argument>source:null =&gt; true</argument>
-    </attribute>
-    <parameter name="source">
-      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
-    </parameter>
-  </member>
   <member name="T:AdvancedDLSupport.ImplementationConfiguration">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
@@ -143,18 +85,24 @@
   <member name="T:AdvancedDLSupport.ITypeTransformer`2">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.ITypeTransformer`2.LowerValue(`0)">
+  <member name="M:AdvancedDLSupport.ITypeTransformer`2.LowerValue(`0,System.Reflection.ParameterInfo)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     <parameter name="value">
       <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     </parameter>
+    <parameter name="parameter">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.ITypeTransformer`2.RaiseValue(`1)">
+  <member name="M:AdvancedDLSupport.ITypeTransformer`2.RaiseValue(`1,System.Reflection.ParameterInfo)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     <parameter name="value">
       <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="parameter">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="T:AdvancedDLSupport.LibraryLoadingException">

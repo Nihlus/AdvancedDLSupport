@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
@@ -12,7 +13,7 @@ namespace AdvancedDLSupport
     public class NullableTransformer<T> : PointerTransformer<T?> where T : struct
     {
         /// <inheritdoc />
-        public override IntPtr LowerValue(T? value)
+        public override IntPtr LowerValue(T? value, ParameterInfo parameter)
         {
             if (!value.HasValue)
             {
@@ -27,7 +28,7 @@ namespace AdvancedDLSupport
         }
 
         /// <inheritdoc />
-        public override T? RaiseValue(IntPtr value)
+        public override T? RaiseValue(IntPtr value, ParameterInfo parameter)
         {
             if (value == IntPtr.Zero)
             {

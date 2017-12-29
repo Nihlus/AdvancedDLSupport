@@ -1,6 +1,5 @@
 ﻿using System;
-
-// ReSharper disable UnusedMember.Global
+using System.Runtime.InteropServices;
 
 namespace AdvancedDLSupport.Tests.Data
 {
@@ -9,10 +8,14 @@ namespace AdvancedDLSupport.Tests.Data
         string GetString();
         string GetNullString();
 
+        [return: MarshalAs(UnmanagedType.I1)]
         bool CheckIfStringIsNull(string value);
+
         UIntPtr StringLength(string value);
         TestStruct? GetAllocatedTestStruct();
         TestStruct? GetNullTestStruct();
+
+        [return: MarshalAs(UnmanagedType.I1)]
         bool CheckIfStructIsNull(TestStruct? testStruct);
     }
 }

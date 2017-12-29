@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
@@ -11,10 +12,10 @@ namespace AdvancedDLSupport
     public abstract class PointerTransformer<T> : ITypeTransformer<T, IntPtr>
     {
         /// <inheritdoc />
-        public abstract IntPtr LowerValue(T value);
+        public abstract IntPtr LowerValue(T value, ParameterInfo parameter);
 
         /// <inheritdoc />
-        public abstract T RaiseValue(IntPtr value);
+        public abstract T RaiseValue(IntPtr value, ParameterInfo parameter);
 
         /// <inheritdoc />
         public Type LowerType()

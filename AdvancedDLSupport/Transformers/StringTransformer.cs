@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using static System.Runtime.InteropServices.UnmanagedType;
@@ -15,8 +16,6 @@ namespace AdvancedDLSupport
     [PublicAPI]
     public class StringTransformer : PointerTransformer<string>
     {
-        private readonly UnmanagedType _unmanagedType;
-
         private readonly IReadOnlyList<UnmanagedType> _supportedTypes = new[]
         {
             BStr,
@@ -25,30 +24,27 @@ namespace AdvancedDLSupport
             LPWStr
         };
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StringTransformer"/> class.
-        /// </summary>
-        /// <param name="unmanagedType">The unmanaged type to marshal strings as.</param>
-        public StringTransformer(UnmanagedType unmanagedType = LPStr)
-        {
-            if (!_supportedTypes.Contains(unmanagedType))
-            {
-                throw new ArgumentException("The given unmanaged type was not a string type.", nameof(unmanagedType));
-            }
-
-            _unmanagedType = unmanagedType;
-        }
-
         /// <inheritdoc />
-        public override IntPtr LowerValue(string value)
+        public override IntPtr LowerValue(string value, ParameterInfo parameter)
         {
             if (value == null)
             {
                 return IntPtr.Zero;
             }
 
+            var unmanagedType = LPStr;
+            var marshalAsAttribute = parameter.GetCustomAttribute<MarshalAsAttribute>();
+            if (!(marshalAsAttribute is null))
+            {
+                var customUnmanagedType = marshalAsAttribute.Value;
+                if (_supportedTypes.Contains(customUnmanagedType))
+                {
+                    unmanagedType = customUnmanagedType;
+                }
+            }
+
             IntPtr ptr;
-            switch (_unmanagedType)
+            switch (unmanagedType)
             {
                 case BStr:
                 {
@@ -80,15 +76,26 @@ namespace AdvancedDLSupport
         }
 
         /// <inheritdoc />
-        public override string RaiseValue(IntPtr value)
+        public override string RaiseValue(IntPtr value, ParameterInfo parameter)
         {
             if (value == IntPtr.Zero)
             {
                 return null;
             }
 
+            var unmanagedType = LPStr;
+            var marshalAsAttribute = parameter.GetCustomAttribute<MarshalAsAttribute>();
+            if (!(marshalAsAttribute is null))
+            {
+                var customUnmanagedType = marshalAsAttribute.Value;
+                if (_supportedTypes.Contains(customUnmanagedType))
+                {
+                    unmanagedType = customUnmanagedType;
+                }
+            }
+
             string val;
-            switch (_unmanagedType)
+            switch (unmanagedType)
             {
                 case BStr:
                 {
