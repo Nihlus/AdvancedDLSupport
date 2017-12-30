@@ -72,7 +72,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="member">The member to generate the implementation for.</param>
         /// <param name="symbolName">The name of the symbol in the native library.</param>
         /// <param name="uniqueMemberIdentifier">The identifier to use for generated types and methods.</param>
-        protected abstract void GenerateImplementation(T member, string symbolName, string uniqueMemberIdentifier);
+        protected abstract void GenerateImplementation([NotNull] T member, [NotNull] string symbolName, [NotNull] string uniqueMemberIdentifier);
 
         /// <summary>
         /// Emits a call to <see cref="AnonymousImplementationBase.ThrowIfDisposed"/>.

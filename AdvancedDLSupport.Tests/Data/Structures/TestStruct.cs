@@ -5,5 +5,6 @@ namespace AdvancedDLSupport.Tests.Data
     public struct TestStruct
     {
         public int A;
+        public int B;
     }
 }

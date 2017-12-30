@@ -33,6 +33,11 @@ namespace AdvancedDLSupport
         private IntPtr _libraryHandle;
 
         /// <summary>
+        /// Gets the type transformer repository.
+        /// </summary>
+        public TypeTransformerRepository TransformerRepository { get; }
+
+        /// <summary>
         /// Gets a value indicating whether or not the library has been disposed.
         /// </summary>
         [PublicAPI]
@@ -49,9 +54,18 @@ namespace AdvancedDLSupport
         /// <param name="path">The path to the library.</param>
         /// <param name="interfaceType">The interface type that the anonymous type implements.</param>
         /// <param name="configuration">Whether or not this library can be disposed.</param>
-        protected AnonymousImplementationBase([NotNull] string path, [NotNull] Type interfaceType, ImplementationConfiguration configuration)
+        /// <param name="transformerRepository">The repository containing type transformers.</param>
+        [AnonymousConstructor]
+        protected AnonymousImplementationBase
+        (
+            [NotNull] string path,
+            [NotNull] Type interfaceType,
+            ImplementationConfiguration configuration,
+            [NotNull] TypeTransformerRepository transformerRepository
+        )
         {
             Configuration = configuration;
+            TransformerRepository = transformerRepository;
             _libraryHandle = PlatformLoader.LoadLibrary(path);
             _path = path;
             _interfaceType = interfaceType;

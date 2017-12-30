@@ -31,6 +31,7 @@ namespace AdvancedDLSupport
         private static readonly object BuilderLock = new object();
 
         private static readonly ConcurrentDictionary<LibraryIdentifier, Type> TypeCache;
+        private static readonly TypeTransformerRepository TransformerRepository;
 
         static AnonymousImplementationBuilder()
         {
@@ -51,6 +52,9 @@ namespace AdvancedDLSupport
             ModuleBuilder = AssemblyBuilder.DefineDynamicModule("DLSupportModule");
 
             TypeCache = new ConcurrentDictionary<LibraryIdentifier, Type>(new LibraryIdentifierEqualityComparer());
+            TransformerRepository = new TypeTransformerRepository()
+                .WithTypeTransformer(typeof(string), new StringTransformer())
+                .WithTypeTransformer(typeof(bool), new BooleanTransformer());
         }
 
         /// <summary>
@@ -99,7 +103,7 @@ namespace AdvancedDLSupport
             {
                 if (!(cachedType is null))
                 {
-                    return (T)Activator.CreateInstance(cachedType, libraryPath, interfaceType, Configuration);
+                    return CreateInterfaceInstance<T>(cachedType, libraryPath, Configuration, TransformerRepository);
                 }
             }
 
@@ -126,31 +130,28 @@ namespace AdvancedDLSupport
                 );
 
                 // Now the constructor
+                var anonymousConstructor = typeof(AnonymousImplementationBase)
+                .GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance)
+                .First
+                (
+                    c => c.GetCustomAttribute<AnonymousConstructorAttribute>() != null
+                );
+
                 var constructorBuilder = typeBuilder.DefineConstructor
                 (
                     MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.HideBySig,
                     CallingConventions.Standard,
-                    new[] { typeof(string), typeof(Type), typeof(ImplementationConfiguration) }
+                    anonymousConstructor.GetParameters().Select(p => p.ParameterType).ToArray()
                 );
 
                 constructorBuilder.DefineParameter(1, ParameterAttributes.In, "libraryPath");
                 var ctorIL = constructorBuilder.GetILGenerator();
-                ctorIL.Emit(OpCodes.Ldarg_0); // Load instance
-                ctorIL.Emit(OpCodes.Ldarg_1); // Load libraryPath parameter
-                ctorIL.Emit(OpCodes.Ldarg_2); // Load interface type
-                ctorIL.Emit(OpCodes.Ldarg_3); // Load config parameter
-                ctorIL.Emit
-                (
-                    OpCodes.Call,
-                    typeof(AnonymousImplementationBase).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).First
-                    (
-                        p =>
-                            p.GetParameters().Length == 3 &&
-                            p.GetParameters()[0].ParameterType == typeof(string) &&
-                            p.GetParameters()[1].ParameterType == typeof(Type) &&
-                            p.GetParameters()[2].ParameterType == typeof(ImplementationConfiguration)
-                    )
-                );
+                for (int i = 0; i <= anonymousConstructor.GetParameters().Length; ++i)
+                {
+                    ctorIL.Emit(OpCodes.Ldarg, i);
+                }
+
+                ctorIL.Emit(OpCodes.Call, anonymousConstructor);
 
                 ConstructMethods(typeBuilder, ctorIL, interfaceType);
                 ConstructProperties(typeBuilder, ctorIL, interfaceType);
@@ -161,7 +162,7 @@ namespace AdvancedDLSupport
                 {
                     var finalType = typeBuilder.CreateTypeInfo();
 
-                    var instance = (T)Activator.CreateInstance(finalType, libraryPath, interfaceType, Configuration);
+                    var instance = CreateInterfaceInstance<T>(finalType, libraryPath, Configuration, TransformerRepository);
                     TypeCache.TryAdd(key, finalType);
 
                     return instance;
@@ -175,6 +176,26 @@ namespace AdvancedDLSupport
         }
 
         /// <summary>
+        /// Creates an instance of the final interface type.
+        /// </summary>
+        /// <param name="anonymousType">The constructed anonymous type.</param>
+        /// <param name="library">The path to or name of the library</param>
+        /// <param name="configuration">The generator configuration.</param>
+        /// <param name="transformerRepository">The type transformer repository.</param>
+        /// <typeparam name="T">The interface type.</typeparam>
+        /// <returns>An instance of the anonymous type implementing <typeparamref name="T"/>.</returns>
+        private T CreateInterfaceInstance<T>
+        (
+            [NotNull] Type anonymousType,
+            [NotNull] string library,
+            ImplementationConfiguration configuration,
+            [NotNull] TypeTransformerRepository transformerRepository
+        )
+        {
+            return (T)Activator.CreateInstance(anonymousType, library, typeof(T), Configuration, TransformerRepository);
+        }
+
+        /// <summary>
         /// Constructs the implementations for all normal methods.
         /// </summary>
         /// <param name="typeBuilder">Reference to TypeBuilder to define the methods in.</param>
@@ -183,6 +204,7 @@ namespace AdvancedDLSupport
         private void ConstructMethods([NotNull] TypeBuilder typeBuilder, [NotNull] ILGenerator ctorIL, [NotNull] Type interfaceType)
         {
             var methodGenerator = new MethodImplementationGenerator(ModuleBuilder, typeBuilder, ctorIL, Configuration);
+            var complexMethodGenerator = new ComplexMethodImplementationGenerator(ModuleBuilder, typeBuilder, ctorIL, Configuration, TransformerRepository);
 
             // Let's define our methods!
             foreach (var method in interfaceType.GetMethods())
@@ -193,7 +215,14 @@ namespace AdvancedDLSupport
                     continue;
                 }
 
-                methodGenerator.GenerateImplementation(method);
+                if (method.IsComplexMethod())
+                {
+                    complexMethodGenerator.GenerateImplementation(method);
+                }
+                else
+                {
+                    methodGenerator.GenerateImplementation(method);
+                }
             }
         }
 

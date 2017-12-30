@@ -1,5 +1,6 @@
 ﻿using System;
 
+// ReSharper disable UnusedVariable
 #pragma warning disable SA1600, CS1591 // Elements should be documented
 
 namespace AdvancedDLSupport.Example
@@ -18,6 +19,11 @@ namespace AdvancedDLSupport.Example
             wrapper.MyStructure->A = 25;
 
             Console.WriteLine(wrapper.MyStructure->A);
+
+            var testStruct = wrapper.GetAllocatedTestStruct();
+
+            Console.WriteLine(wrapper.GetNullString() is null);
+            Console.WriteLine(wrapper.GetString());
         }
     }
 }
