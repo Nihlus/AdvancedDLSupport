@@ -11,7 +11,7 @@ namespace AdvancedDLSupport.Example
         {
             var wrapper = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IExample>
             (
-                "./libDemo.so"
+                "Demo"
             );
             wrapper.InitializeMyStructure();
             *wrapper.MyStructure = new MyStruct(24);
@@ -24,6 +24,7 @@ namespace AdvancedDLSupport.Example
 
             Console.WriteLine(wrapper.GetNullString() is null);
             Console.WriteLine(wrapper.GetString());
+            Console.ReadLine();
         }
     }
 }

@@ -7,31 +7,31 @@ typedef struct {
     int32_t a;
 } MyStruct;
 
-MyStruct* MyStructure;
+__declspec(dllexport) MyStruct* MyStructure;
 
-void InitializeMyStructure()
+__declspec(dllexport) void InitializeMyStructure()
 {
     MyStructure = (MyStruct*) malloc(sizeof(MyStruct));
 }
 
-int32_t DoMath(MyStruct* struc)
+__declspec(dllexport) int32_t DoMath(MyStruct* struc)
 {
     return struc->a;
 }
 
-const MyStruct* GetAllocatedTestStruct()
+__declspec(dllexport) const MyStruct* GetAllocatedTestStruct()
 {
     MyStruct* testStruct = (MyStruct*)malloc(sizeof(MyStruct));
     testStruct->a = 10;
     return testStruct;
 }
 
-const char* GetString()
+__declspec(dllexport) const char* GetString()
 {
     return "Hello from C!";
 }
 
-const char* GetNullString()
+__declspec(dllexport) const char* GetNullString()
 {
     return NULL;
 }
