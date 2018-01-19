@@ -18,6 +18,8 @@ endif()
 set(OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib" CACHE STRING "The path where the output binaries should be installed.")
 set(PROJECT_PATH "${CMAKE_BINARY_DIR}/lib" CACHE STRING "The path where the output binaries should be installed.")
 
+set(SHARED_HEADERS src/wincomp.h)
+
 add_library(Demo SHARED src/Example.c ${SHARED_HEADERS})
 
 get_filename_component(INSTALL_PATH_ABSOLUTE "${PROJECT_PATH}/${OUTPUT_PATH}" ABSOLUTE)
