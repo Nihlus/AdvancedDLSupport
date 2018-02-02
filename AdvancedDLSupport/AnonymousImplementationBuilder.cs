@@ -78,18 +78,13 @@ namespace AdvancedDLSupport
         /// <exception cref="ArgumentException">Thrown if either of the type arguments are incompatible.</exception>
         [NotNull, PublicAPI]
         public TClass ResolvedAndActivateClass<TClass, TInterface>([NotNull] string libraryPath)
-            where TClass : class
+            where TClass : AnonymousImplementationBase
             where TInterface : class
         {
             var classType = typeof(TClass);
             if (!classType.IsAbstract)
             {
                 throw new ArgumentException("The class to active must be abstract.", nameof(TClass));
-            }
-
-            if (!classType.IsSubclassOf(typeof(AnonymousImplementationBase)) && classType != typeof(AnonymousImplementationBase))
-            {
-                throw new ArgumentException($"The class to activate must inherit from {nameof(AnonymousImplementationBase)}.", nameof(TClass));
             }
 
             var interfaceType = typeof(TInterface);

@@ -20,16 +20,6 @@ namespace AdvancedDLSupport.Tests.Integration
 		}
 
 		[Fact]
-		public void ThrowsIfClassDoesNotInheritFromAnonymousImplementationBase()
-		{
-			Assert.Throws<ArgumentException>
-			(
-				() =>
-					Builder.ResolvedAndActivateClass<MixedModeClassThatDoesNotInheritFromAnonymousBase, IMixedModeLibrary>(LibraryName)
-			);
-		}
-
-		[Fact]
 		public void ThrowsIfClassIsNotAbstract()
 		{
 			Assert.Throws<ArgumentException>
