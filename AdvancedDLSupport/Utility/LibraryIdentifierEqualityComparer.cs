@@ -5,16 +5,16 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Compares library identifiers for equality.
     /// </summary>
-    internal class LibraryIdentifierEqualityComparer : IEqualityComparer<LibraryIdentifier>
+    internal class LibraryIdentifierEqualityComparer : IEqualityComparer<GeneratedImplementationTypeIdentifier>
     {
         /// <inheritdoc />
-        public bool Equals(LibraryIdentifier x, LibraryIdentifier y)
+        public bool Equals(GeneratedImplementationTypeIdentifier x, GeneratedImplementationTypeIdentifier y)
         {
             return x.Equals(y);
         }
 
         /// <inheritdoc />
-        public int GetHashCode(LibraryIdentifier obj)
+        public int GetHashCode(GeneratedImplementationTypeIdentifier obj)
         {
             return obj.GetHashCode();
         }

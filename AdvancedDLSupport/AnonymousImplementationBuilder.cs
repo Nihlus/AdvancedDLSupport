@@ -31,7 +31,7 @@ namespace AdvancedDLSupport
 
         private static readonly object BuilderLock = new object();
 
-        private static readonly ConcurrentDictionary<LibraryIdentifier, Type> TypeCache;
+        private static readonly ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type> TypeCache;
         private static readonly TypeTransformerRepository TransformerRepository;
 
         static AnonymousImplementationBuilder()
@@ -52,7 +52,7 @@ namespace AdvancedDLSupport
 
             ModuleBuilder = AssemblyBuilder.DefineDynamicModule("DLSupportModule");
 
-            TypeCache = new ConcurrentDictionary<LibraryIdentifier, Type>(new LibraryIdentifierEqualityComparer());
+            TypeCache = new ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type>(new LibraryIdentifierEqualityComparer());
             TransformerRepository = new TypeTransformerRepository()
                 .WithTypeTransformer(typeof(string), new StringTransformer())
                 .WithTypeTransformer(typeof(bool), new BooleanTransformer());
@@ -103,7 +103,7 @@ namespace AdvancedDLSupport
 
             libraryPath = resolveResult.Path;
 
-            var key = new LibraryIdentifier(interfaceType, libraryPath, Configuration);
+            var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, libraryPath, Configuration);
             if (TypeCache.TryGetValue(key, out var cachedType))
             {
                 if (!(cachedType is null))
@@ -121,6 +121,7 @@ namespace AdvancedDLSupport
                     var finalType = GenerateInterfaceImplementationType(classType, interfaceType);
 
                     var anonymousInstance = CreateAnonymousImplementationInstance<TInterface>(finalType, libraryPath, Configuration, TransformerRepository);
+
                     TypeCache.TryAdd(key, finalType);
 
                     return anonymousInstance as TClass ?? throw new InvalidOperationException("The resulting instance was not convertible to an instance of the class.");
@@ -138,15 +139,15 @@ namespace AdvancedDLSupport
         /// and return a new instance of the said class. This approach does not resolve any C++ implication such as name manglings.
         /// </summary>
         /// <param name="libraryPath">Path to Native Library to bind interface to.</param>
-        /// <typeparam name="T">P/Invoke Interface Type to bind Native Library to.</typeparam>
+        /// <typeparam name="TInterface">P/Invoke Interface Type to bind Native Library to.</typeparam>
         /// <returns>Returns a generated type object that binds to native library with provided interface.</returns>
         [NotNull, PublicAPI]
-        public T ResolveAndActivateInterface<T>([NotNull] string libraryPath) where T : class
+        public TInterface ResolveAndActivateInterface<TInterface>([NotNull] string libraryPath) where TInterface : class
         {
-            var interfaceType = typeof(T);
+            var interfaceType = typeof(TInterface);
             if (!interfaceType.IsInterface)
             {
-                throw new Exception("The generic argument type must be an interface! Please review the documentation on how to use this.");
+                throw new ArgumentException($"The generic type argument {nameof(TInterface)} must be an interface.");
             }
 
             if (Configuration.EnableDllMapSupport)
@@ -154,8 +155,8 @@ namespace AdvancedDLSupport
                 libraryPath = new DllMapResolver().MapLibraryName(interfaceType, libraryPath);
             }
 
-            var anonymousInstance = ResolvedAndActivateClass<AnonymousImplementationBase, T>(libraryPath);
-            return anonymousInstance as T ?? throw new InvalidOperationException("The resulting instance was not convertible to an instance of the interface.");
+            var anonymousInstance = ResolvedAndActivateClass<AnonymousImplementationBase, TInterface>(libraryPath);
+            return anonymousInstance as TInterface ?? throw new InvalidOperationException("The resulting instance was not convertible to an instance of the interface.");
         }
 
         private Type GenerateInterfaceImplementationType(Type baseClassType, Type interfaceType)
