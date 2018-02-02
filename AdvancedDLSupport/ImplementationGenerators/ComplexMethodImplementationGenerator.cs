@@ -68,7 +68,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
             }
 
             GenerateDelegateInvokerBody(loweredMethod.LoweredMethod, loweredMethod.ParameterTypes, delegateBuilderType, delegateField);
-            GenerateComplexMethodBody(method, loweredMethod.LoweredMethod, loweredMethod.ParameterTypes);
+            var implementation = GenerateComplexMethodBody(method, loweredMethod.LoweredMethod, loweredMethod.ParameterTypes);
+
+            this.TargetType.DefineMethodOverride(implementation, method);
 
             AugmentHostingTypeConstructor(symbolName, delegateBuilderType, delegateField);
         }
@@ -80,7 +82,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="complexInterfaceMethod">The complex method definition.</param>
         /// <param name="loweredMethod">The lowered method definition.</param>
         /// <param name="loweredMethodParameterTypes">The parameter types of the lowered method definition.</param>
-        private void GenerateComplexMethodBody
+        /// <returns>The generated invoker.</returns>
+        private MethodInfo GenerateComplexMethodBody
         (
             [NotNull] MethodInfo complexInterfaceMethod,
             [NotNull] MethodInfo loweredMethod,
@@ -132,6 +135,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
             }
 
             il.Emit(OpCodes.Ret);
+
+            return methodBuilder;
         }
 
         /// <summary>
