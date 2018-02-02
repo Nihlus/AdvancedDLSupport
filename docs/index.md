@@ -4,4 +4,5 @@ below.
 1. [Quickstart](quickstart.md)
 2. [Supported Constructs](supported_constructs.md)
 3. [Advanced Configuration](advanced_config.md)
-3. [Complex Types](complex_types.md)
+4. [Complex Types](complex_types.md)
+5. [Mixed-Mode Classes](mixed_mode_classes.md)
