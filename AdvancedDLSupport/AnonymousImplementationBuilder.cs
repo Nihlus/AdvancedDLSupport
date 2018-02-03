@@ -25,6 +25,8 @@ namespace AdvancedDLSupport
         [PublicAPI]
         public ImplementationConfiguration Configuration { get; }
 
+        private ILibraryPathResolver PathResolver { get; }
+
         // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
         private static readonly AssemblyBuilder AssemblyBuilder;
         private static readonly ModuleBuilder ModuleBuilder;
@@ -66,6 +68,7 @@ namespace AdvancedDLSupport
         public AnonymousImplementationBuilder(ImplementationConfiguration configuration = default)
         {
             Configuration = configuration;
+            PathResolver = Configuration?.PathResolver ?? new DynamicLinkLibraryPathResolver();
         }
 
         /// <summary>
@@ -93,7 +96,7 @@ namespace AdvancedDLSupport
                 throw new ArgumentException("The interface to activate on the class must be an interface type.", nameof(TInterface));
             }
 
-            var resolveResult = DynamicLinkLibraryPathResolver.ResolveAbsolutePath(libraryPath, true);
+            var resolveResult = PathResolver.Resolve(libraryPath);
             if (!resolveResult.IsSuccess)
             {
                 var executingDir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;

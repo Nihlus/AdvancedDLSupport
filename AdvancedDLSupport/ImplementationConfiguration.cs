@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
@@ -7,46 +8,42 @@ namespace AdvancedDLSupport
     /// Holds configuration options for library binding generations.
     /// </summary>
     [PublicAPI]
-    public struct ImplementationConfiguration : IEquatable<ImplementationConfiguration>
+    public class ImplementationConfiguration : IEquatable<ImplementationConfiguration>
     {
         /// <summary>
         /// Gets a value indicating whether or not to use lazy binding for symbols.
         /// </summary>
         [PublicAPI]
-        public bool UseLazyBinding { get; }
+        public bool UseLazyBinding { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether or not to generate per-call checks that the library has not been
         /// disposed.
         /// </summary>
         [PublicAPI]
-        public bool GenerateDisposalChecks { get; }
+        public bool GenerateDisposalChecks { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether support for Mono's DllMap system should be enabled.
         /// </summary>
         [PublicAPI]
-        public bool EnableDllMapSupport { get; }
+        public bool EnableDllMapSupport { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImplementationConfiguration"/> struct.
+        /// Gets the path resolver to use.
         /// </summary>
-        /// <param name="useLazyBinding">Whether or not to use lazy binding.</param>
-        /// <param name="generateDisposalChecks">Whether or not to generate disposal checks.</param>
-        /// <param name="enableDllMapSupport">Whether or not to enable DllMap support.</param>
-        [PublicAPI]
-        public ImplementationConfiguration(bool useLazyBinding = false, bool generateDisposalChecks = false, bool enableDllMapSupport = false)
-        {
-            UseLazyBinding = useLazyBinding;
-            GenerateDisposalChecks = generateDisposalChecks;
-            EnableDllMapSupport = enableDllMapSupport;
-        }
+        [PublicAPI, CanBeNull]
+        public ILibraryPathResolver PathResolver { get; set; }
 
         /// <inheritdoc />
         [Pure, PublicAPI]
         public bool Equals(ImplementationConfiguration other)
         {
-            return UseLazyBinding == other.UseLazyBinding && GenerateDisposalChecks == other.GenerateDisposalChecks && EnableDllMapSupport == other.EnableDllMapSupport;
+            return
+                UseLazyBinding == other.UseLazyBinding &&
+                GenerateDisposalChecks == other.GenerateDisposalChecks &&
+                EnableDllMapSupport == other.EnableDllMapSupport &&
+                PathResolver == other.PathResolver;
         }
 
         /// <inheritdoc />
@@ -70,6 +67,7 @@ namespace AdvancedDLSupport
                 var hashCode = UseLazyBinding.GetHashCode();
                 hashCode = (hashCode * 397) ^ GenerateDisposalChecks.GetHashCode();
                 hashCode = (hashCode * 397) ^ EnableDllMapSupport.GetHashCode();
+                hashCode = (hashCode * 397) ^ (PathResolver is null ? 0 : PathResolver.GetHashCode());
                 return hashCode;
             }
         }
