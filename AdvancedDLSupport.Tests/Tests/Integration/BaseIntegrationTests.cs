@@ -26,7 +26,11 @@ namespace AdvancedDLSupport.Tests.Integration
         [Fact]
         public void LoadingSameInterfaceAndSameFileButWithDifferentOptionsProducesDifferentReferences()
         {
-            var options = new ImplementationConfiguration(true);
+            var options = new ImplementationConfiguration()
+            {
+                UseLazyBinding = true
+            };
+
             var firstLoad = new AnonymousImplementationBuilder(options).ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
 
             var secondLoad = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IBaseLibrary>(LibraryName);

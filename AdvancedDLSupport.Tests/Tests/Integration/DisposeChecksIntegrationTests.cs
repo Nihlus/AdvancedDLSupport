@@ -19,7 +19,10 @@ namespace AdvancedDLSupport.Tests.Integration
         [Fact]
         public void UndisposedLibraryDoesNotThrow()
         {
-            var config = new ImplementationConfiguration(generateDisposalChecks:true);
+            var config = new ImplementationConfiguration
+            {
+                GenerateDisposalChecks = true
+            };
             var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<IDisposeCheckLibrary>(LibraryName);
 
             library.Multiply(5, 5);
@@ -28,7 +31,10 @@ namespace AdvancedDLSupport.Tests.Integration
         [Fact]
         public void DisposedLibraryThrows()
         {
-            var config = new ImplementationConfiguration(generateDisposalChecks:true);
+            var config = new ImplementationConfiguration
+            {
+                GenerateDisposalChecks = true
+            };
             var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<IDisposeCheckLibrary>(LibraryName);
             library.Dispose();
 
@@ -38,7 +44,10 @@ namespace AdvancedDLSupport.Tests.Integration
         [Fact]
         public void CanGetNewInstanceOfInterfaceAfterDisposalOfExistingInstance()
         {
-            var config = new ImplementationConfiguration(generateDisposalChecks:true);
+            var config = new ImplementationConfiguration
+            {
+                GenerateDisposalChecks = true
+            };
             var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<IDisposeCheckLibrary>(LibraryName);
             library.Dispose();
 
