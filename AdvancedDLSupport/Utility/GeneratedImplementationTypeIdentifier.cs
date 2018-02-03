@@ -7,20 +7,27 @@ namespace AdvancedDLSupport
     /// <summary>
     /// A key struct for ConcurrentDictionary TypeCache for all generated types provided by DLSupportConstructor.
     /// </summary>
-    internal struct LibraryIdentifier : IEquatable<LibraryIdentifier>
+    internal struct GeneratedImplementationTypeIdentifier : IEquatable<GeneratedImplementationTypeIdentifier>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LibraryIdentifier"/> struct.
+        /// Initializes a new instance of the <see cref="GeneratedImplementationTypeIdentifier"/> struct.
         /// </summary>
+        /// <param name="baseClassType">The base class of the library.</param>
         /// <param name="interfaceType">The interface type.</param>
         /// <param name="libraryPath">The path to the library. Will be resolved to an absolute path.</param>
         /// <param name="configuration">The configuration used for the library.</param>
-        public LibraryIdentifier([NotNull] Type interfaceType, [NotNull] string libraryPath, ImplementationConfiguration configuration)
+        public GeneratedImplementationTypeIdentifier([NotNull] Type baseClassType, [NotNull] Type interfaceType, [NotNull] string libraryPath, ImplementationConfiguration configuration)
         {
+            _baseClassType = baseClassType;
             _interfaceType = interfaceType;
             _configuration = configuration;
             _absoluteLibraryPath = Path.GetFullPath(libraryPath);
         }
+
+        /// <summary>
+        /// The base class type of the library.
+        /// </summary>
+        private readonly Type _baseClassType;
 
         /// <summary>
         /// The interface type for the library.
@@ -44,11 +51,13 @@ namespace AdvancedDLSupport
         public Type GetInterfaceType() => _interfaceType;
 
         /// <inheritdoc />
-        public bool Equals(LibraryIdentifier other)
+        public bool Equals(GeneratedImplementationTypeIdentifier other)
         {
-            return _interfaceType == other._interfaceType &&
-                   string.Equals(_absoluteLibraryPath, other._absoluteLibraryPath) &&
-                   _configuration.Equals(other._configuration);
+            return
+                _baseClassType == other._baseClassType &&
+                _interfaceType == other._interfaceType &&
+                string.Equals(_absoluteLibraryPath, other._absoluteLibraryPath) &&
+                _configuration.Equals(other._configuration);
         }
 
         /// <inheritdoc />
@@ -59,7 +68,7 @@ namespace AdvancedDLSupport
                 return false;
             }
 
-            return obj is LibraryIdentifier identifier && Equals(identifier);
+            return obj is GeneratedImplementationTypeIdentifier identifier && Equals(identifier);
         }
 
         /// <inheritdoc />
@@ -68,9 +77,10 @@ namespace AdvancedDLSupport
             unchecked
             {
                 return
-                ((_interfaceType != null ? _interfaceType.GetHashCode() : 0) * 397) ^
-                (_absoluteLibraryPath != null ? _absoluteLibraryPath.GetHashCode() : 0) ^
-                (_configuration.GetHashCode() * 397);
+                    ((_baseClassType != null ? _interfaceType.GetHashCode() : 0) * 397) ^
+                    (_interfaceType != null ? _interfaceType.GetHashCode() : 0) * 397 ^
+                    (_absoluteLibraryPath != null ? _absoluteLibraryPath.GetHashCode() : 0) ^
+                    (_configuration.GetHashCode() * 397);
             }
         }
     }

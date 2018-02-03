@@ -53,7 +53,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 delegateField = TargetType.DefineField($"{uniqueMemberIdentifier}_dtm", delegateBuilderType, FieldAttributes.Public);
             }
 
-            GenerateDelegateInvoker(method, delegateBuilderType, delegateField);
+            var implementation = GenerateDelegateInvoker(method, delegateBuilderType, delegateField);
+            this.TargetType.DefineMethodOverride(implementation, method);
 
             AugmentHostingTypeConstructor(symbolName, delegateBuilderType, delegateField);
         }
@@ -100,14 +101,15 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="method">The method to invoke.</param>
         /// <param name="delegateBuilderType">The type of the method delegate.</param>
         /// <param name="delegateField">The delegate field.</param>
-        protected void GenerateDelegateInvoker
+        /// <returns>The generated invoker.</returns>
+        protected MethodInfo GenerateDelegateInvoker
         (
             [NotNull] MethodInfo method,
             [NotNull] Type delegateBuilderType,
             [NotNull] FieldInfo delegateField
         )
         {
-            GenerateDelegateInvoker
+            return GenerateDelegateInvoker
             (
                 method.Name,
                 method.ReturnType,
@@ -125,7 +127,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="parameterTypes">The parameter types of the method.</param>
         /// <param name="delegateBuilderType">The type of the method delegate.</param>
         /// <param name="delegateField">The delegate field.</param>
-        protected void GenerateDelegateInvoker
+        /// <returns>The generated invoker.</returns>
+        protected MethodInfo GenerateDelegateInvoker
         (
             [NotNull] string methodName,
             [NotNull] Type returnType,
@@ -144,6 +147,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
             );
 
             GenerateDelegateInvokerBody(methodBuilder, parameterTypes, delegateBuilderType, delegateField);
+
+            return methodBuilder;
         }
 
         /// <summary>

@@ -40,11 +40,10 @@
   </PropertyGroup>
   <Target Name="InitCMake" BeforeTargets="CompileTestLibraries" Condition="!Exists('$(CMakeBuildDir)\CMakeCache.txt')">
     <Exec Command="mkdir -p $(CMakeBuildDir)" />
-    <Exec Command="cmake -G $(CMakeGenerator) -DOUTPUT_PATH=$(OutDir) -DPROJECT_PATH=$(MSBuildProjectDirectory) .."
-          WorkingDirectory="$(CMakeBuildDir)" />
+    <Exec Command="cmake -G $(CMakeGenerator) -DOUTPUT_PATH=$(OutDir) -DPROJECT_PATH=$(MSBuildProjectDirectory) .." WorkingDirectory="$(CMakeBuildDir)" />
   </Target>
   <Target Name="CompileTestLibraries" AfterTargets="AfterBuild">
-    <Exec Command="cmake --build . --target install" WorkingDirectory="$(CMakeBuildDir)" Condition="'$(OS)' == 'Unix'"/>
-    <Exec Command="cmake --build . --target INSTALL" WorkingDirectory="$(CMakeBuildDir)" Condition="'$(OS)' == 'Windows_NT'"/>
+    <Exec Command="cmake --build . --target install" WorkingDirectory="$(CMakeBuildDir)" Condition="'$(OS)' == 'Unix'" />
+    <Exec Command="cmake --build . --target INSTALL" WorkingDirectory="$(CMakeBuildDir)" Condition="'$(OS)' == 'Windows_NT'" />
   </Target>
 </Project>
