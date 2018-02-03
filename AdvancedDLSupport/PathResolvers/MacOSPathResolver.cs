@@ -16,12 +16,11 @@ namespace AdvancedDLSupport
             "DYLD_FRAMEWORK_PATH",
             "DYLD_LIBRARY_PATH",
             "DYLD_FALLBACK_FRAMEWORK_PATH",
-            "DYLD_FALLBACK_LIBRARY_PATH",
             "DYLD_FALLBACK_LIBRARY_PATH"
         };
 
         /// <inheritdoc />
-        public string Resolve(string library)
+        public ResolvePathResult Resolve(string library)
         {
             foreach (var variable in EnvironmentVariables)
             {
@@ -37,12 +36,12 @@ namespace AdvancedDLSupport
                     var libraryLocation = Path.GetFullPath(Path.Combine(path, library));
                     if (File.Exists(libraryLocation))
                     {
-                        return libraryLocation;
+                        return ResolvePathResult.FromSuccess(libraryLocation);
                     }
                 }
             }
 
-            throw new FileNotFoundException("The specified library was not found in any of the loader search paths.", library);
+            return ResolvePathResult.FromError(new FileNotFoundException("The specified library was not found in any of the loader search paths.", library));
         }
     }
 }
