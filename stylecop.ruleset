@@ -180,7 +180,7 @@
     <Rule Id="SA1626" Action="Error" /> <!-- Single-line comments must not use documentation style slashes -->
     <Rule Id="SA1627" Action="Error" /> <!-- Documentation text must not be empty -->
     <Rule Id="SA1629" Action="Error" /> <!-- Documentation text must end with a period -->
-    <Rule Id="SA1633" Action="None" /> <!-- File must have header -->
+    <Rule Id="SA1633" Action="Error" /> <!-- File must have header -->
     <Rule Id="SA1634" Action="Error" /> <!-- File header must show copyright -->
     <Rule Id="SA1635" Action="Error" /> <!-- File header must have copyright text -->
     <Rule Id="SA1636" Action="Error" Intentional="true" /> <!-- File header copyright text must match -->
