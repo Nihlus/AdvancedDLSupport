@@ -63,16 +63,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
             // Create a delegate field
             var delegateBuilderType = delegateBuilder.CreateTypeInfo();
 
-            FieldBuilder delegateField;
-            if (Options.HasFlagFast(UseLazyBinding))
-            {
-                var lazyLoadedType = typeof(Lazy<>).MakeGenericType(delegateBuilderType);
-                delegateField = TargetType.DefineField($"{uniqueMemberIdentifier}_dtm", lazyLoadedType, FieldAttributes.Public);
-            }
-            else
-            {
-                delegateField = TargetType.DefineField($"{uniqueMemberIdentifier}_dtm", delegateBuilderType, FieldAttributes.Public);
-            }
+            var delegateField = Options.HasFlagFast(UseLazyBinding) ?
+                TargetType.DefineField($"{uniqueMemberIdentifier}_dt", typeof(Lazy<>).MakeGenericType(delegateBuilderType), FieldAttributes.Public) :
+                TargetType.DefineField($"{uniqueMemberIdentifier}_dt", delegateBuilderType, FieldAttributes.Public);
 
             var implementation = GenerateDelegateInvoker(method, delegateBuilderType, delegateField);
             this.TargetType.DefineMethodOverride(implementation, method);
