@@ -39,3 +39,8 @@ will be respected wherever possible. Note that the support is thus far
 only partial, and per-symbol library remapping (e.g, `dllentry`) is
 *not* supported yet. Library remapping via `dllmap` works just fine,
 though.
+
+### Path Resolvers
+You can override the algorithms used to resolve the path to the library
+that DLSupport will load by assigning an `ILibraryPathResolver` to the
+configuration object.
