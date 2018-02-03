@@ -11,26 +11,26 @@ namespace AdvancedDLSupport
     public class ImplementationConfiguration : IEquatable<ImplementationConfiguration>
     {
         /// <summary>
-        /// Gets a value indicating whether or not to use lazy binding for symbols.
+        /// Gets or sets a value indicating whether or not to use lazy binding for symbols.
         /// </summary>
         [PublicAPI]
         public bool UseLazyBinding { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether or not to generate per-call checks that the library has not been
+        /// Gets or sets a value indicating whether or not to generate per-call checks that the library has not been
         /// disposed.
         /// </summary>
         [PublicAPI]
         public bool GenerateDisposalChecks { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether support for Mono's DllMap system should be enabled.
+        /// Gets or sets a value indicating whether support for Mono's DllMap system should be enabled.
         /// </summary>
         [PublicAPI]
         public bool EnableDllMapSupport { get; set; }
 
         /// <summary>
-        /// Gets the path resolver to use.
+        /// Gets or sets the path resolver to use.
         /// </summary>
         [PublicAPI, CanBeNull]
         public ILibraryPathResolver PathResolver { get; set; }

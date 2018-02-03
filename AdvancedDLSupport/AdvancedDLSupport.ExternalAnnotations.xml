@@ -113,10 +113,13 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="T:AdvancedDLSupport.ImplementationConfiguration">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  <member name="M:AdvancedDLSupport.ILibraryPathResolver.Resolve(System.String)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+    <parameter name="library">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.ImplementationConfiguration.#ctor(System.Boolean,System.Boolean,System.Boolean)">
+  <member name="T:AdvancedDLSupport.ImplementationConfiguration">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="P:AdvancedDLSupport.ImplementationConfiguration.EnableDllMapSupport">
@@ -136,6 +139,10 @@
   <member name="M:AdvancedDLSupport.ImplementationConfiguration.GetHashCode">
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="P:AdvancedDLSupport.ImplementationConfiguration.PathResolver">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
   </member>
   <member name="P:AdvancedDLSupport.ImplementationConfiguration.UseLazyBinding">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
@@ -213,6 +220,21 @@
   </member>
   <member name="T:AdvancedDLSupport.PointerTransformer`1">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="M:AdvancedDLSupport.ResolvePathResult.FromError(System.Exception)">
+    <parameter name="exception">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.ResolvePathResult.FromError(System.String)">
+    <parameter name="errorReason">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.ResolvePathResult.FromSuccess(System.String)">
+    <parameter name="resolvedPath">
+      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
+    </parameter>
   </member>
   <member name="T:AdvancedDLSupport.StringTransformer">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
