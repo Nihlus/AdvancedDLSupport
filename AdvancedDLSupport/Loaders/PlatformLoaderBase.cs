@@ -14,21 +14,7 @@ namespace AdvancedDLSupport.Loaders
             Marshal.GetDelegateForFunctionPointer<T>(LoadSymbol(library, symbolName));
 
         /// <inheritdoc />
-        public IntPtr LoadLibrary(string path)
-        {
-            // TODO: make local search first configurable
-            var resolveResult = DynamicLinkLibraryPathResolver.ResolveAbsolutePath(path, true);
-            if (resolveResult.IsSuccess)
-            {
-                return LoadLibraryInternal(resolveResult.Path);
-            }
-
-            var ex = resolveResult.Exception is null
-                ? new LibraryLoadingException("Could not find the specified library.")
-                : new LibraryLoadingException("Could not find the specified library.", resolveResult.Exception);
-
-            throw ex;
-        }
+        public IntPtr LoadLibrary(string path) => LoadLibraryInternal(path);
 
         /// <summary>
         /// Load the given library.
