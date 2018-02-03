@@ -64,11 +64,12 @@ namespace AdvancedDLSupport
         /// Initializes a new instance of the <see cref="AnonymousImplementationBuilder"/> class.
         /// </summary>
         /// <param name="configuration">The configuration settings to use for the builder.</param>
+        /// <param name="pathResolver">The path resolver to use.</param>
         [PublicAPI]
-        public AnonymousImplementationBuilder(ImplementationConfiguration configuration = default)
+        public AnonymousImplementationBuilder(ImplementationConfiguration configuration = default, ILibraryPathResolver pathResolver = default )
         {
-            Configuration = configuration;
-            PathResolver = Configuration?.PathResolver ?? new DynamicLinkLibraryPathResolver();
+            Configuration = configuration ?? ImplementationConfiguration.Default;
+            PathResolver = pathResolver ?? new DynamicLinkLibraryPathResolver();
         }
 
         /// <summary>

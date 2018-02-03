@@ -33,7 +33,7 @@
   <member name="T:AdvancedDLSupport.AnonymousImplementationBuilder">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.AnonymousImplementationBuilder.#ctor(AdvancedDLSupport.ImplementationConfiguration)">
+  <member name="M:AdvancedDLSupport.AnonymousImplementationBuilder.#ctor(AdvancedDLSupport.ImplementationConfiguration,AdvancedDLSupport.ILibraryPathResolver)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="P:AdvancedDLSupport.AnonymousImplementationBuilder.Configuration">
@@ -139,10 +139,6 @@
   <member name="M:AdvancedDLSupport.ImplementationConfiguration.GetHashCode">
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="P:AdvancedDLSupport.ImplementationConfiguration.PathResolver">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
   </member>
   <member name="P:AdvancedDLSupport.ImplementationConfiguration.UseLazyBinding">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />

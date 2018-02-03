@@ -30,10 +30,14 @@ namespace AdvancedDLSupport
         public bool EnableDllMapSupport { get; set; }
 
         /// <summary>
-        /// Gets or sets the path resolver to use.
+        /// Gets a configuration instance filled with default values.
         /// </summary>
-        [PublicAPI, CanBeNull]
-        public ILibraryPathResolver PathResolver { get; set; }
+        public static ImplementationConfiguration Default => new ImplementationConfiguration
+        {
+            UseLazyBinding = false,
+            GenerateDisposalChecks = false,
+            EnableDllMapSupport = false
+        };
 
         /// <inheritdoc />
         [Pure, PublicAPI]
@@ -42,8 +46,7 @@ namespace AdvancedDLSupport
             return
                 UseLazyBinding == other.UseLazyBinding &&
                 GenerateDisposalChecks == other.GenerateDisposalChecks &&
-                EnableDllMapSupport == other.EnableDllMapSupport &&
-                PathResolver == other.PathResolver;
+                EnableDllMapSupport == other.EnableDllMapSupport;
         }
 
         /// <inheritdoc />
@@ -67,7 +70,6 @@ namespace AdvancedDLSupport
                 var hashCode = UseLazyBinding.GetHashCode();
                 hashCode = (hashCode * 397) ^ GenerateDisposalChecks.GetHashCode();
                 hashCode = (hashCode * 397) ^ EnableDllMapSupport.GetHashCode();
-                hashCode = (hashCode * 397) ^ (PathResolver is null ? 0 : PathResolver.GetHashCode());
                 return hashCode;
             }
         }
