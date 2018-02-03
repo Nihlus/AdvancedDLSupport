@@ -4,8 +4,8 @@ namespace AdvancedDLSupport.Tests.Data.Classes
 {
 	public abstract class MixedModeClass : AnonymousImplementationBase, IMixedModeLibrary
 	{
-		public MixedModeClass(string path, Type interfaceType, ImplementationConfiguration configuration, TypeTransformerRepository transformerRepository)
-			: base(path, interfaceType, configuration, transformerRepository)
+		public MixedModeClass(string path, Type interfaceType, ImplementationOptions options, TypeTransformerRepository transformerRepository)
+			: base(path, interfaceType, options, transformerRepository)
 		{
 		}
 

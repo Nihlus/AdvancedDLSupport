@@ -24,9 +24,31 @@ namespace AdvancedDLSupport.Tests.Integration
         }
 
         [Fact]
+        public void LoadingSameInterfaceAndSameFileTwiceUsesSameGeneratedType()
+        {
+            var firstLoad = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
+            var secondLoad = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
+
+            Assert.IsType(firstLoad.GetType(), secondLoad);
+        }
+
+        [Fact]
+        public void LoadingSameInterfaceAndSameFileButWithDifferentOptionsDoesNotUseSameGeneratedType()
+        {
+            var options = ImplementationOptions.UseLazyBinding;
+
+            var firstLoad = new AnonymousImplementationBuilder(options).ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
+
+            var secondLoad = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
+
+            Assert.IsNotType(firstLoad.GetType(), secondLoad);
+        }
+
+        [Fact]
         public void LoadingSameInterfaceAndSameFileButWithDifferentOptionsProducesDifferentReferences()
         {
-            var options = new ImplementationConfiguration(true);
+            var options = ImplementationOptions.UseLazyBinding;
+
             var firstLoad = new AnonymousImplementationBuilder(options).ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
 
             var secondLoad = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IBaseLibrary>(LibraryName);

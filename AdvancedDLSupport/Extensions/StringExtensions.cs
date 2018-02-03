@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.Extensions
@@ -8,6 +10,33 @@ namespace AdvancedDLSupport.Extensions
     /// </summary>
     public static class StringExtensions
     {
+        /// <summary>
+        /// Determines whether or not the given string is a valid path. This does not neccesarily indicate that
+        /// the path exists.
+        /// </summary>
+        /// <param name="source">The string to inspect.</param>
+        /// <returns>true if the string is a valid path; otherwise, false.</returns>
+        public static bool IsValidPath([CanBeNull] this string source)
+        {
+            if (source.IsNullOrWhiteSpace())
+            {
+                return false;
+            }
+
+            if (source.Any(c => Path.GetInvalidPathChars().Contains(c)))
+            {
+                return false;
+            }
+
+            var parentDirectory = Path.GetDirectoryName(source);
+            if (parentDirectory.IsNullOrWhiteSpace())
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// Determines whether or not a string is null or consists entirely of whitespace characters.
         /// </summary>

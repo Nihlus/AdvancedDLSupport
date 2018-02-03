@@ -6,7 +6,7 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Represents an attempt to resolve a path.
     /// </summary>
-    internal struct ResolvePathResult : IResult
+    public struct ResolvePathResult : IResult
     {
         /// <summary>
         /// Gets the resolved path.

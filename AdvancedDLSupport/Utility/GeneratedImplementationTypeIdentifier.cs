@@ -15,12 +15,18 @@ namespace AdvancedDLSupport
         /// <param name="baseClassType">The base class of the library.</param>
         /// <param name="interfaceType">The interface type.</param>
         /// <param name="libraryPath">The path to the library. Will be resolved to an absolute path.</param>
-        /// <param name="configuration">The configuration used for the library.</param>
-        public GeneratedImplementationTypeIdentifier([NotNull] Type baseClassType, [NotNull] Type interfaceType, [NotNull] string libraryPath, ImplementationConfiguration configuration)
+        /// <param name="options">The configuration used for the library.</param>
+        public GeneratedImplementationTypeIdentifier
+        (
+            [NotNull] Type baseClassType,
+            [NotNull] Type interfaceType,
+            [NotNull] string libraryPath,
+            ImplementationOptions options
+        )
         {
             _baseClassType = baseClassType;
             _interfaceType = interfaceType;
-            _configuration = configuration;
+            _options = options;
             _absoluteLibraryPath = Path.GetFullPath(libraryPath);
         }
 
@@ -42,7 +48,7 @@ namespace AdvancedDLSupport
         /// <summary>
         /// The configuration used for the library at construction time.
         /// </summary>
-        private readonly ImplementationConfiguration _configuration;
+        private readonly ImplementationOptions _options;
 
         /// <summary>
         /// Gets the type of interface this key maps to.
@@ -57,7 +63,7 @@ namespace AdvancedDLSupport
                 _baseClassType == other._baseClassType &&
                 _interfaceType == other._interfaceType &&
                 string.Equals(_absoluteLibraryPath, other._absoluteLibraryPath) &&
-                _configuration.Equals(other._configuration);
+                _options == other._options;
         }
 
         /// <inheritdoc />
@@ -80,7 +86,7 @@ namespace AdvancedDLSupport
                     ((_baseClassType != null ? _interfaceType.GetHashCode() : 0) * 397) ^
                     (_interfaceType != null ? _interfaceType.GetHashCode() : 0) * 397 ^
                     (_absoluteLibraryPath != null ? _absoluteLibraryPath.GetHashCode() : 0) ^
-                    (_configuration.GetHashCode() * 397);
+                    ((int)_options * 397);
             }
         }
     }

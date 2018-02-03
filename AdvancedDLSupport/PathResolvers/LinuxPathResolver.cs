@@ -11,7 +11,7 @@ namespace AdvancedDLSupport
     internal sealed class LinuxPathResolver : ILibraryPathResolver
     {
         /// <inheritdoc />
-        public string Resolve(string library)
+        public ResolvePathResult Resolve(string library)
         {
             var libraryPaths = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH")?.Split(':').Where(p => !p.IsNullOrWhiteSpace());
 
@@ -24,7 +24,7 @@ namespace AdvancedDLSupport
                     libraryLocation = Path.GetFullPath(Path.Combine(path, library));
                     if (File.Exists(libraryLocation))
                     {
-                        return libraryLocation;
+                        return ResolvePathResult.FromSuccess(libraryLocation);
                     }
                 }
             }
@@ -41,29 +41,23 @@ namespace AdvancedDLSupport
 
                 if (!(cachedMatch is null))
                 {
-                    return cachedMatch;
+                    return ResolvePathResult.FromSuccess(cachedMatch);
                 }
             }
 
             libraryLocation = Path.GetFullPath(Path.Combine("/lib", library));
             if (File.Exists(libraryLocation))
             {
-                return libraryLocation;
+                return ResolvePathResult.FromSuccess(libraryLocation);
             }
 
             libraryLocation = Path.GetFullPath(Path.Combine("/usr/lib", library));
             if (File.Exists(libraryLocation))
             {
-                return libraryLocation;
+                return ResolvePathResult.FromSuccess(libraryLocation);
             }
 
-            if (!(Type.GetType("Mono.Runtime") is null) && library == "__Internal")
-            {
-                // Mono extension: Search the main program
-                return null;
-            }
-
-            throw new FileNotFoundException("The specified library was not found in any of the loader search paths.", library);
+            return ResolvePathResult.FromError(new FileNotFoundException("The specified library was not found in any of the loader search paths.", library));
         }
     }
 }
