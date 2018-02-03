@@ -4,6 +4,8 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
+using Mono.DllMap.Extensions;
+using static AdvancedDLSupport.ImplementationOptions;
 
 // ReSharper disable BitwiseOperatorOnEnumWithoutFlags
 namespace AdvancedDLSupport.ImplementationGenerators
@@ -19,15 +21,15 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="targetModule">The module in which the method implementation should be generated.</param>
         /// <param name="targetType">The type in which the method implementation should be generated.</param>
         /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
-        /// <param name="configuration">The configuration object to use.</param>
+        /// <param name="options">The configuration object to use.</param>
         public MethodImplementationGenerator
         (
             [NotNull] ModuleBuilder targetModule,
             [NotNull] TypeBuilder targetType,
             [NotNull] ILGenerator targetTypeConstructorIL,
-            ImplementationConfiguration configuration
+            ImplementationOptions options
         )
-            : base(targetModule, targetType, targetTypeConstructorIL, configuration)
+            : base(targetModule, targetType, targetTypeConstructorIL, options)
         {
         }
 
@@ -43,7 +45,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var delegateBuilderType = delegateBuilder.CreateTypeInfo();
 
             FieldBuilder delegateField;
-            if (Configuration.UseLazyBinding)
+            if (Options.HasFlagFast(UseLazyBinding))
             {
                 var lazyLoadedType = typeof(Lazy<>).MakeGenericType(delegateBuilderType);
                 delegateField = TargetType.DefineField($"{uniqueMemberIdentifier}_dtm", lazyLoadedType, FieldAttributes.Public);
@@ -81,7 +83,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             TargetTypeConstructorIL.Emit(OpCodes.Ldarg_0); // This is for storing field delegate, it needs the "this" reference
             TargetTypeConstructorIL.Emit(OpCodes.Ldarg_0);
 
-            if (Configuration.UseLazyBinding)
+            if (Options.HasFlagFast(UseLazyBinding))
             {
                 var lambdaBuilder = GenerateFunctionLoadingLambda(delegateBuilderType, entrypointName);
                 GenerateLazyLoadedField(lambdaBuilder, delegateBuilderType);
@@ -169,7 +171,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             // Let's create a method that simply invoke the delegate
             var methodIL = method.GetILGenerator();
 
-            if (Configuration.GenerateDisposalChecks)
+            if (Options.HasFlagFast(GenerateDisposalChecks))
             {
                 EmitDisposalCheck(methodIL);
             }

@@ -5,6 +5,8 @@ using System.Reflection;
 using System.Reflection.Emit;
 using AdvancedDLSupport.Extensions;
 using JetBrains.Annotations;
+using Mono.DllMap.Extensions;
+using static AdvancedDLSupport.ImplementationOptions;
 
 namespace AdvancedDLSupport.ImplementationGenerators
 {
@@ -22,17 +24,17 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="targetModule">The module in which the method implementation should be generated.</param>
         /// <param name="targetType">The type in which the method implementation should be generated.</param>
         /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
-        /// <param name="configuration">The configuration object to use.</param>
+        /// <param name="options">The configuration object to use.</param>
         /// <param name="transformerRepository">The repository where type transformers are stored.</param>
         public ComplexMethodImplementationGenerator
         (
             [NotNull] ModuleBuilder targetModule,
             [NotNull] TypeBuilder targetType,
             [NotNull] ILGenerator targetTypeConstructorIL,
-            ImplementationConfiguration configuration,
+            ImplementationOptions options,
             [NotNull] TypeTransformerRepository transformerRepository
         )
-            : base(targetModule, targetType, targetTypeConstructorIL, configuration)
+            : base(targetModule, targetType, targetTypeConstructorIL, options)
         {
             _transformerRepository = transformerRepository;
         }
@@ -57,7 +59,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var delegateBuilderType = delegateBuilder.CreateTypeInfo();
 
             FieldBuilder delegateField;
-            if (Configuration.UseLazyBinding)
+            if (Options.HasFlagFast(UseLazyBinding))
             {
                 var lazyLoadedType = typeof(Lazy<>).MakeGenericType(delegateBuilderType);
                 delegateField = TargetType.DefineField($"{uniqueMemberIdentifier}_dtm", lazyLoadedType, FieldAttributes.Public);
@@ -101,7 +103,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             var il = methodBuilder.GetILGenerator();
 
-            if (Configuration.GenerateDisposalChecks)
+            if (Options.HasFlagFast(GenerateDisposalChecks))
             {
                 EmitDisposalCheck(il);
             }

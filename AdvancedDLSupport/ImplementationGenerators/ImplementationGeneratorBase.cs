@@ -3,6 +3,8 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using JetBrains.Annotations;
+using Mono.DllMap.Extensions;
+using static AdvancedDLSupport.ImplementationOptions;
 
 namespace AdvancedDLSupport.ImplementationGenerators
 {
@@ -13,7 +15,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
     internal abstract class ImplementationGeneratorBase<T> : IImplementationGenerator<T> where T : MemberInfo
     {
         /// <inheritdoc />
-        public ImplementationConfiguration Configuration { get; }
+        public ImplementationOptions Options { get; }
 
         /// <summary>
         /// Gets the module in which the implementation should be generated.
@@ -39,19 +41,19 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="targetModule">The module where the implementation should be generated.</param>
         /// <param name="targetType">The type in which the implementation should be generated.</param>
         /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
-        /// <param name="configuration">The configuration object to use.</param>
+        /// <param name="options">The configuration object to use.</param>
         protected ImplementationGeneratorBase
         (
             [NotNull] ModuleBuilder targetModule,
             [NotNull] TypeBuilder targetType,
             [NotNull] ILGenerator targetTypeConstructorIL,
-            ImplementationConfiguration configuration
+            ImplementationOptions options
         )
         {
             TargetModule = targetModule;
             TargetType = targetType;
             TargetTypeConstructorIL = targetTypeConstructorIL;
-            Configuration = configuration;
+            Options = options;
         }
 
         /// <inheritdoc />
@@ -121,7 +123,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldfld, symbolField);
-            if (!Configuration.UseLazyBinding)
+            if (!Options.HasFlagFast(UseLazyBinding))
             {
                 return;
             }

@@ -35,10 +35,7 @@ namespace AdvancedDLSupport.Tests.Integration
         [Fact]
         public void LoadingSameInterfaceAndSameFileButWithDifferentOptionsDoesNotUseSameGeneratedType()
         {
-            var options = new ImplementationConfiguration()
-            {
-                UseLazyBinding = true
-            };
+            var options = ImplementationOptions.UseLazyBinding;
 
             var firstLoad = new AnonymousImplementationBuilder(options).ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
 
@@ -50,10 +47,7 @@ namespace AdvancedDLSupport.Tests.Integration
         [Fact]
         public void LoadingSameInterfaceAndSameFileButWithDifferentOptionsProducesDifferentReferences()
         {
-            var options = new ImplementationConfiguration()
-            {
-                UseLazyBinding = true
-            };
+            var options = ImplementationOptions.UseLazyBinding;
 
             var firstLoad = new AnonymousImplementationBuilder(options).ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
 

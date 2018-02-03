@@ -1,6 +1,8 @@
 using System;
 using AdvancedDLSupport.Loaders;
 using JetBrains.Annotations;
+using Mono.DllMap.Extensions;
+using static AdvancedDLSupport.ImplementationOptions;
 
 namespace AdvancedDLSupport
 {
@@ -46,25 +48,25 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Gets or sets a value indicating whether or not the library can be disposed.
         /// </summary>
-        private ImplementationConfiguration Configuration { get; set; }
+        private ImplementationOptions Options { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AnonymousImplementationBase"/> class.
         /// </summary>
         /// <param name="path">The path to the library.</param>
         /// <param name="interfaceType">The interface type that the anonymous type implements.</param>
-        /// <param name="configuration">Whether or not this library can be disposed.</param>
+        /// <param name="options">Whether or not this library can be disposed.</param>
         /// <param name="transformerRepository">The repository containing type transformers.</param>
         [AnonymousConstructor]
         protected AnonymousImplementationBase
         (
             [NotNull] string path,
             [NotNull] Type interfaceType,
-            ImplementationConfiguration configuration,
+            ImplementationOptions options,
             [NotNull] TypeTransformerRepository transformerRepository
         )
         {
-            Configuration = configuration;
+            Options = options;
             TransformerRepository = transformerRepository;
             _libraryHandle = PlatformLoader.LoadLibrary(path);
             _path = path;
@@ -102,7 +104,7 @@ namespace AdvancedDLSupport
         [PublicAPI]
         public void Dispose()
         {
-            if (IsDisposed || !Configuration.GenerateDisposalChecks)
+            if (IsDisposed || !Options.HasFlagFast(GenerateDisposalChecks))
             {
                 return;
             }

@@ -12,7 +12,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <summary>
         /// Gets the implementation configuration object to use.
         /// </summary>
-        ImplementationConfiguration Configuration { get; }
+        ImplementationOptions Options { get; }
 
         /// <summary>
         /// Generates the implementation for the given member.

@@ -10,10 +10,7 @@ namespace AdvancedDLSupport.Tests.Integration
         [Fact]
         void RemappedLibraryMapsToCorrectLibrary()
         {
-            var config = new ImplementationConfiguration
-            {
-                EnableDllMapSupport = true
-            };
+            var config = ImplementationOptions.EnableDllMapSupport;
             var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<IRemappedLibrary>(LibraryName);
 
             Assert.Equal(25, library.Multiply(5, 5));

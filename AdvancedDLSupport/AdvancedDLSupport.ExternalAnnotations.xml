@@ -3,7 +3,7 @@
   <member name="T:AdvancedDLSupport.AnonymousImplementationBase">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.AnonymousImplementationBase.#ctor(System.String,System.Type,AdvancedDLSupport.ImplementationConfiguration,AdvancedDLSupport.TypeTransformerRepository)">
+  <member name="M:AdvancedDLSupport.AnonymousImplementationBase.#ctor(System.String,System.Type,AdvancedDLSupport.ImplementationOptions,AdvancedDLSupport.TypeTransformerRepository)">
     <parameter name="path">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
@@ -33,10 +33,10 @@
   <member name="T:AdvancedDLSupport.AnonymousImplementationBuilder">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.AnonymousImplementationBuilder.#ctor(AdvancedDLSupport.ImplementationConfiguration,AdvancedDLSupport.ILibraryPathResolver)">
+  <member name="M:AdvancedDLSupport.AnonymousImplementationBuilder.#ctor(AdvancedDLSupport.ImplementationOptions,AdvancedDLSupport.ILibraryPathResolver)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="P:AdvancedDLSupport.AnonymousImplementationBuilder.Configuration">
+  <member name="P:AdvancedDLSupport.AnonymousImplementationBuilder.Options">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:AdvancedDLSupport.AnonymousImplementationBuilder.ResolveAndActivateInterface``1(System.String)">
@@ -118,30 +118,6 @@
     <parameter name="library">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
-  </member>
-  <member name="T:AdvancedDLSupport.ImplementationConfiguration">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="P:AdvancedDLSupport.ImplementationConfiguration.EnableDllMapSupport">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="M:AdvancedDLSupport.ImplementationConfiguration.Equals(AdvancedDLSupport.ImplementationConfiguration)">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="M:AdvancedDLSupport.ImplementationConfiguration.Equals(System.Object)">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="P:AdvancedDLSupport.ImplementationConfiguration.GenerateDisposalChecks">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="M:AdvancedDLSupport.ImplementationConfiguration.GetHashCode">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="P:AdvancedDLSupport.ImplementationConfiguration.UseLazyBinding">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="T:AdvancedDLSupport.ITypeTransformer">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />

@@ -21,20 +21,14 @@ namespace AdvancedDLSupport.Tests.Integration
 		[Fact]
 		public void LazyLoadingAnInterfaceWithAMissingMethodDoesNotThrow()
 		{
-			var config = new ImplementationConfiguration
-			{
-				UseLazyBinding = true
-			};
+			var config = ImplementationOptions.UseLazyBinding;
 			new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<ILazyLoadingLibrary>(LibraryName);
 		}
 
 		[Fact]
 		public void CallingMissingMethodInLazyLoadedInterfaceThrows()
 		{
-			var config = new ImplementationConfiguration
-			{
-				UseLazyBinding = true
-			};
+			var config = ImplementationOptions.UseLazyBinding;
 			var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<ILazyLoadingLibrary>(LibraryName);
 
 			Assert.Throws<SymbolLoadingException>
@@ -57,20 +51,14 @@ namespace AdvancedDLSupport.Tests.Integration
 		[Fact]
 		public void LazyLoadingAnInterfaceWithAMissingPropertyDoesNotThrow()
 		{
-			var config = new ImplementationConfiguration
-			{
-				UseLazyBinding = true
-			};
+			var config = ImplementationOptions.UseLazyBinding;
 			new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<ILazyLoadingLibrary>(LibraryName);
 		}
 
 		[Fact]
 		public void SettingMissingPropertyInLazyLoadedInterfaceThrows()
 		{
-			var config = new ImplementationConfiguration
-			{
-				UseLazyBinding = true
-			};
+			var config = ImplementationOptions.UseLazyBinding;
 			var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<ILazyLoadingLibrary>(LibraryName);
 
 			Assert.Throws<SymbolLoadingException>
@@ -83,10 +71,7 @@ namespace AdvancedDLSupport.Tests.Integration
 		[Fact]
 		public void GettingMissingPropertyInLazyLoadedInterfaceThrows()
 		{
-			var config = new ImplementationConfiguration
-			{
-				UseLazyBinding = true
-			};
+			var config = ImplementationOptions.UseLazyBinding;
 			var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<ILazyLoadingLibrary>(LibraryName);
 
 			Assert.Throws<SymbolLoadingException>

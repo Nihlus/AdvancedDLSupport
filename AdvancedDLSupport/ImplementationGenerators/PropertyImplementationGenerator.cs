@@ -4,6 +4,8 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
+using Mono.DllMap.Extensions;
+using static AdvancedDLSupport.ImplementationOptions;
 
 namespace AdvancedDLSupport.ImplementationGenerators
 {
@@ -26,15 +28,15 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="targetModule">The module in which the property implementation should be generated.</param>
         /// <param name="targetType">The type in which the property implementation should be generated.</param>
         /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
-        /// <param name="configuration">The configuration object to use.</param>
+        /// <param name="options">The configuration object to use.</param>
         public PropertyImplementationGenerator
         (
             [NotNull] ModuleBuilder targetModule,
             [NotNull] TypeBuilder targetType,
             [NotNull] ILGenerator targetTypeConstructorIL,
-            ImplementationConfiguration configuration
+            ImplementationOptions options
         )
-            : base(targetModule, targetType, targetTypeConstructorIL, configuration)
+            : base(targetModule, targetType, targetTypeConstructorIL, options)
         {
         }
 
@@ -42,7 +44,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         protected override void GenerateImplementation(PropertyInfo property, string symbolName, string uniqueMemberIdentifier)
         {
             // Note, the field is going to have to be a pointer, because it is pointing to global variable
-            var fieldType = Configuration.UseLazyBinding ? typeof(Lazy<IntPtr>) : typeof(IntPtr);
+            var fieldType = Options.HasFlagFast(UseLazyBinding) ? typeof(Lazy<IntPtr>) : typeof(IntPtr);
             var propertyFieldBuilder = TargetType.DefineField
             (
                 uniqueMemberIdentifier,
@@ -87,7 +89,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             TargetTypeConstructorIL.Emit(OpCodes.Ldarg_0);
             TargetTypeConstructorIL.Emit(OpCodes.Ldarg_0);
 
-            if (Configuration.UseLazyBinding)
+            if (Options.HasFlagFast(UseLazyBinding))
             {
                 var lambdaBuilder = GenerateSymbolLoadingLambda(symbolName);
                 GenerateLazyLoadedField(lambdaBuilder, typeof(IntPtr));
@@ -152,7 +154,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             var setterIL = setterMethod.GetILGenerator();
 
-            if (Configuration.GenerateDisposalChecks)
+            if (Options.HasFlagFast(GenerateDisposalChecks))
             {
                 EmitDisposalCheck(setterIL);
             }
@@ -244,7 +246,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             var getterIL = getterMethod.GetILGenerator();
 
-            if (Configuration.GenerateDisposalChecks)
+            if (Options.HasFlagFast(GenerateDisposalChecks))
             {
                 EmitDisposalCheck(getterIL);
             }

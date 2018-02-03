@@ -5,11 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.InteropServices.ComTypes;
 using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.ImplementationGenerators;
 using JetBrains.Annotations;
 using Mono.DllMap;
+using Mono.DllMap.Extensions;
 
 namespace AdvancedDLSupport
 {
@@ -23,7 +23,7 @@ namespace AdvancedDLSupport
         /// Gets the configuration object for this builder.
         /// </summary>
         [PublicAPI]
-        public ImplementationConfiguration Configuration { get; }
+        public ImplementationOptions Options { get; }
 
         private ILibraryPathResolver PathResolver { get; }
 
@@ -63,12 +63,12 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Initializes a new instance of the <see cref="AnonymousImplementationBuilder"/> class.
         /// </summary>
-        /// <param name="configuration">The configuration settings to use for the builder.</param>
+        /// <param name="options">The configuration settings to use for the builder.</param>
         /// <param name="pathResolver">The path resolver to use.</param>
         [PublicAPI]
-        public AnonymousImplementationBuilder(ImplementationConfiguration configuration = default, ILibraryPathResolver pathResolver = default )
+        public AnonymousImplementationBuilder(ImplementationOptions options = default, ILibraryPathResolver pathResolver = default )
         {
-            Configuration = configuration ?? ImplementationConfiguration.Default;
+            Options = options;
             PathResolver = pathResolver ?? new DynamicLinkLibraryPathResolver();
         }
 
@@ -107,12 +107,12 @@ namespace AdvancedDLSupport
 
             libraryPath = resolveResult.Path;
 
-            var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, libraryPath, Configuration);
+            var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, libraryPath, Options);
             if (TypeCache.TryGetValue(key, out var cachedType))
             {
                 if (!(cachedType is null))
                 {
-                    var anonymousInstance = CreateAnonymousImplementationInstance<TInterface>(cachedType, libraryPath, Configuration, TransformerRepository);
+                    var anonymousInstance = CreateAnonymousImplementationInstance<TInterface>(cachedType, libraryPath, Options, TransformerRepository);
 
                     return anonymousInstance as TClass ?? throw new InvalidOperationException("The resulting instance was not convertible to an instance of the class.");
                 }
@@ -124,7 +124,7 @@ namespace AdvancedDLSupport
                 {
                     var finalType = GenerateInterfaceImplementationType(classType, interfaceType);
 
-                    var anonymousInstance = CreateAnonymousImplementationInstance<TInterface>(finalType, libraryPath, Configuration, TransformerRepository);
+                    var anonymousInstance = CreateAnonymousImplementationInstance<TInterface>(finalType, libraryPath, Options, TransformerRepository);
 
                     TypeCache.TryAdd(key, finalType);
 
@@ -154,7 +154,7 @@ namespace AdvancedDLSupport
                 throw new ArgumentException($"The generic type argument {nameof(TInterface)} must be an interface.");
             }
 
-            if (Configuration.EnableDllMapSupport)
+            if (Options.HasFlagFast(ImplementationOptions.EnableDllMapSupport))
             {
                 libraryPath = new DllMapResolver().MapLibraryName(interfaceType, libraryPath);
             }
@@ -250,11 +250,11 @@ namespace AdvancedDLSupport
         (
             [NotNull] Type anonymousType,
             [NotNull] string library,
-            ImplementationConfiguration configuration,
+            ImplementationOptions configuration,
             [NotNull] TypeTransformerRepository transformerRepository
         )
         {
-            return (T)Activator.CreateInstance(anonymousType, library, typeof(T), Configuration, TransformerRepository);
+            return (T)Activator.CreateInstance(anonymousType, library, typeof(T), Options, TransformerRepository);
         }
 
         /// <summary>
@@ -272,8 +272,8 @@ namespace AdvancedDLSupport
             [NotNull] Type interfaceType
         )
         {
-            var methodGenerator = new MethodImplementationGenerator(ModuleBuilder, typeBuilder, ctorIL, Configuration);
-            var complexMethodGenerator = new ComplexMethodImplementationGenerator(ModuleBuilder, typeBuilder, ctorIL, Configuration, TransformerRepository);
+            var methodGenerator = new MethodImplementationGenerator(ModuleBuilder, typeBuilder, ctorIL, Options);
+            var complexMethodGenerator = new ComplexMethodImplementationGenerator(ModuleBuilder, typeBuilder, ctorIL, Options, TransformerRepository);
 
             // Let's define our methods!
             foreach (var method in interfaceType.GetMethods())
@@ -324,7 +324,7 @@ namespace AdvancedDLSupport
             [NotNull] Type interfaceType
         )
         {
-            var propertyGenerator = new PropertyImplementationGenerator(ModuleBuilder, typeBuilder, ctorIL, Configuration);
+            var propertyGenerator = new PropertyImplementationGenerator(ModuleBuilder, typeBuilder, ctorIL, Options);
 
             foreach (var property in interfaceType.GetProperties())
             {

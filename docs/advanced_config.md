@@ -3,18 +3,17 @@ Advanced Configuration
 
 AdvancedDLSupport supports some alternate generation options for more
 advanced use cases. These are enabled by passing an
-`ImplementationConfiguration` object to the
-`AnonymousImplementationBuilder`.
+`ImplementationOptions` flag set to the `AnonymousImplementationBuilder`.
 
 ```cs
-var config = new ImplementationConfiguration(useLazyBinding:true, generateDisposalChecks:true);
+var config = ImplementationOptions.UseLazyBinding | ImplementationOptions.GenerateDisposalChecks;
 var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<IMyLibrary>(LibraryName);
 ```
 
 At the moment, the following options are available.
 
 ### Lazy Loaded Symbols
-If `ImplementationConfiguration::UseLazyBinding` is enabled, then no
+If `ImplementationOptions::UseLazyBinding` is enabled, then no
 symbol pointers are loaded until you actually access the corresponding
 member. This allows more general implementations which have methods
 that may be missing at runtime - for instance, OpenGL extensions.
@@ -23,7 +22,7 @@ If you attempt to access a symbol that is not available, a
 `SymbolLoadingException` will be thrown.
 
 ### Disposal Checking
-If `ImplementationConfiguration::GenerateDisposalChecks` is enabled,
+If `ImplementationOptions::GenerateDisposalChecks` is enabled,
 then all methods, property getters, and property setters have a disposal
 check injected at the start of the method. If the library object is
 disposed, any call to a member will throw an `ObjectDisposedException`.
@@ -33,7 +32,7 @@ If this option is enabled, your interface should inherit from
 implements this interface.
 
 ### Mono DllMaps
-If `ImplementationConfiguration::EnableDllMapSupport` is enabled,
+If `ImplementationOptions::EnableDllMapSupport` is enabled,
 then Mono [DllMaps](http://www.mono-project.com/docs/advanced/pinvoke/dllmap/)
 will be respected wherever possible. Note that the support is thus far
 only partial, and per-symbol library remapping (e.g, `dllentry`) is
@@ -42,5 +41,5 @@ though.
 
 ### Path Resolvers
 You can override the algorithms used to resolve the path to the library
-that DLSupport will load by assigning an `ILibraryPathResolver` to the
-configuration object.
+that DLSupport will load by passing an `ILibraryPathResolver` to the 
+implementation builder.
