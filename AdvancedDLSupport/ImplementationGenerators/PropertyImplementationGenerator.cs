@@ -122,7 +122,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             TargetTypeConstructorIL.Emit(OpCodes.Stfld, propertyFieldBuilder);
         }
 
-        private MethodBuilder GeneratePropertySetter
+        private void GeneratePropertySetter
         (
             [NotNull] PropertyInfo property,
             [NotNull] FieldInfo propertyFieldBuilder,
@@ -210,11 +210,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             propertyBuilder.SetSetMethod(setterMethod);
             TargetType.DefineMethodOverride(setterMethod, actualSetMethod);
-
-            return setterMethod;
         }
 
-        private MethodBuilder GeneratePropertyGetter
+        private void GeneratePropertyGetter
         (
             [NotNull] PropertyInfo property,
             [NotNull] FieldInfo propertyFieldBuilder,
@@ -283,8 +281,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             propertyBuilder.SetGetMethod(getterMethod);
             TargetType.DefineMethodOverride(getterMethod, actualGetMethod);
-
-            return getterMethod;
         }
     }
 }
