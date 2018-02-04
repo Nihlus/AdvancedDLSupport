@@ -84,7 +84,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             GenerateDelegateInvokerBody(loweredMethod.LoweredMethod, loweredMethod.ParameterTypes, delegateBuilderType, delegateField);
             var implementation = GenerateComplexMethodBody(method, loweredMethod.LoweredMethod, loweredMethod.ParameterTypes);
 
-            this.TargetType.DefineMethodOverride(implementation, method);
+            TargetType.DefineMethodOverride(implementation, method);
 
             AugmentHostingTypeConstructor(symbolName, delegateBuilderType, delegateField);
         }

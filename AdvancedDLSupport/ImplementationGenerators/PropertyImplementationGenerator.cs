@@ -209,7 +209,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             setterIL.Emit(OpCodes.Ret);
 
             propertyBuilder.SetSetMethod(setterMethod);
-            this.TargetType.DefineMethodOverride(setterMethod, actualSetMethod);
+            TargetType.DefineMethodOverride(setterMethod, actualSetMethod);
 
             return setterMethod;
         }
@@ -282,7 +282,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             getterIL.Emit(OpCodes.Ret);
 
             propertyBuilder.SetGetMethod(getterMethod);
-            this.TargetType.DefineMethodOverride(getterMethod, actualGetMethod);
+            TargetType.DefineMethodOverride(getterMethod, actualGetMethod);
 
             return getterMethod;
         }

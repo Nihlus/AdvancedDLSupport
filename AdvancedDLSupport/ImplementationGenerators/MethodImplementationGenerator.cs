@@ -68,7 +68,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 TargetType.DefineField($"{uniqueMemberIdentifier}_dt", delegateBuilderType, FieldAttributes.Public);
 
             var implementation = GenerateDelegateInvoker(method, delegateBuilderType, delegateField);
-            this.TargetType.DefineMethodOverride(implementation, method);
+            TargetType.DefineMethodOverride(implementation, method);
 
             AugmentHostingTypeConstructor(symbolName, delegateBuilderType, delegateField);
         }
