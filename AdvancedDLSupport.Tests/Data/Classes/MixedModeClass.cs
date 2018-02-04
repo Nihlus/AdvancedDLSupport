@@ -22,7 +22,7 @@ namespace AdvancedDLSupport.Tests.Data.Classes
 		{
 			get => 32;
 
-			set => this.RanManagedSetter = true;
+			set => RanManagedSetter = true;
 		}
 
 		public abstract int NativeProperty { get; set; }
