@@ -23,8 +23,9 @@ using System.Reflection;
 using System.Reflection.Emit;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
-using static System.Reflection.MethodAttributes;
+
 using static AdvancedDLSupport.ImplementationOptions;
+using static System.Reflection.MethodAttributes;
 
 namespace AdvancedDLSupport.ImplementationGenerators
 {

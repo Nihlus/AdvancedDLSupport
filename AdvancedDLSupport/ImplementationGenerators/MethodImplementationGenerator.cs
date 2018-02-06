@@ -24,10 +24,11 @@ using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
+
+using static AdvancedDLSupport.ImplementationOptions;
 using static System.Reflection.CallingConventions;
 using static System.Reflection.MethodAttributes;
 using static System.Reflection.MethodImplAttributes;
-using static AdvancedDLSupport.ImplementationOptions;
 
 // ReSharper disable BitwiseOperatorOnEnumWithoutFlags
 namespace AdvancedDLSupport.ImplementationGenerators

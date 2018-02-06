@@ -291,7 +291,7 @@ namespace AdvancedDLSupport
         /// <param name="constructorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
         /// <typeparam name="TBaseClass">The base class of the type to generate methods for.</typeparam>
         /// <typeparam name="TInterface">The interface where the methods originate.</typeparam>
-        private void ConstructMethods<TBaseClass, TInterface> ([NotNull] TypeBuilder typeBuilder, [NotNull] ILGenerator constructorIL)
+        private void ConstructMethods<TBaseClass, TInterface>([NotNull] TypeBuilder typeBuilder, [NotNull] ILGenerator constructorIL)
             where TBaseClass : AnonymousImplementationBase
             where TInterface : class
         {

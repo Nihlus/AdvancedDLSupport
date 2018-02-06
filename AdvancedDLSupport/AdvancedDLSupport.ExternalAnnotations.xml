@@ -76,6 +76,9 @@
   </member>
   <member name="M:AdvancedDLSupport.Extensions.StringExtensions.Contains(System.String,System.String,System.StringComparison)">
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>this:null =&gt; false; search:null =&gt; false</argument>
+    </attribute>
     <parameter name="this">
       <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     </parameter>
@@ -86,23 +89,26 @@
   <member name="M:AdvancedDLSupport.Extensions.StringExtensions.IsNullOrEmpty(System.String)">
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
-      <argument>@this:null =&gt; true</argument>
+      <argument>this:null =&gt; true</argument>
     </attribute>
-    <parameter name="@this">
+    <parameter name="this">
       <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="M:AdvancedDLSupport.Extensions.StringExtensions.IsNullOrWhiteSpace(System.String)">
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
-      <argument>@this:null =&gt; true</argument>
+      <argument>this:null =&gt; true</argument>
     </attribute>
-    <parameter name="@this">
+    <parameter name="this">
       <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="M:AdvancedDLSupport.Extensions.StringExtensions.IsValidPath(System.String)">
-    <parameter name="@this">
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>this:null =&gt; false</argument>
+    </attribute>
+    <parameter name="this">
       <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     </parameter>
   </member>
