@@ -39,14 +39,14 @@
   <member name="P:AdvancedDLSupport.AnonymousImplementationBuilder.Options">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.AnonymousImplementationBuilder.ResolveAndActivateInterface``1(System.String)">
+  <member name="M:AdvancedDLSupport.AnonymousImplementationBuilder.ResolveAndActivateClass``2(System.String)">
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="libraryPath">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.AnonymousImplementationBuilder.ResolvedAndActivateClass``2(System.String)">
+  <member name="M:AdvancedDLSupport.AnonymousImplementationBuilder.ResolveAndActivateInterface``1(System.String)">
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="libraryPath">

@@ -100,7 +100,7 @@ namespace AdvancedDLSupport
         /// <returns>An instance of the class.</returns>
         /// <exception cref="ArgumentException">Thrown if either of the type arguments are incompatible.</exception>
         [NotNull, PublicAPI]
-        public TClass ResolvedAndActivateClass<TClass, TInterface>([NotNull] string libraryPath)
+        public TClass ResolveAndActivateClass<TClass, TInterface>([NotNull] string libraryPath)
             where TClass : AnonymousImplementationBase
             where TInterface : class
         {
@@ -178,7 +178,7 @@ namespace AdvancedDLSupport
                 libraryPath = new DllMapResolver().MapLibraryName(interfaceType, libraryPath);
             }
 
-            var anonymousInstance = ResolvedAndActivateClass<AnonymousImplementationBase, TInterface>(libraryPath);
+            var anonymousInstance = ResolveAndActivateClass<AnonymousImplementationBase, TInterface>(libraryPath);
             return anonymousInstance as TInterface ?? throw new InvalidOperationException("The resulting instance was not convertible to an instance of the interface.");
         }
 
