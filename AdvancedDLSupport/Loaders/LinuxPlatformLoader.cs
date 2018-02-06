@@ -48,10 +48,10 @@ namespace AdvancedDLSupport.Loaders
             var errorPtr = dl.error();
             if (errorPtr == IntPtr.Zero)
             {
-                throw new LibraryLoadingException("Library could not be loaded, and error information from dl library could not be found.");
+                throw new LibraryLoadingException("Library could not be loaded, and error information from dl library could not be found.", path);
             }
 
-            throw new LibraryLoadingException(string.Format("Library could not be loaded: {0}", Marshal.PtrToStringAnsi(errorPtr)));
+            throw new LibraryLoadingException(string.Format("Library could not be loaded: {0}", Marshal.PtrToStringAnsi(errorPtr)), path);
         }
 
         /// <inheritdoc />
@@ -71,11 +71,11 @@ namespace AdvancedDLSupport.Loaders
             var errorPtr = dl.error();
             if (errorPtr == IntPtr.Zero)
             {
-                throw new SymbolLoadingException("Symbol could not be loaded, and error information from dl could not be found.");
+                throw new SymbolLoadingException("Symbol could not be loaded, and error information from dl could not be found.", symbolName);
             }
 
             var msg = Marshal.PtrToStringAnsi(errorPtr);
-            throw new SymbolLoadingException(string.Format("Symbol could not be loaded: {0}", msg));
+            throw new SymbolLoadingException(string.Format("Symbol could not be loaded: {0}", msg), symbolName);
         }
 
         /// <inheritdoc />

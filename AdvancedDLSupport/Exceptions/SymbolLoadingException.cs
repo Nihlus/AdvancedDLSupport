@@ -29,12 +29,9 @@ namespace AdvancedDLSupport
     public class SymbolLoadingException : Exception
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+        /// Gets the name of the symbol that failed to load.
         /// </summary>
-        [PublicAPI]
-        public SymbolLoadingException()
-        {
-        }
+        public string SymbolName { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
@@ -50,11 +47,25 @@ namespace AdvancedDLSupport
         /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
         /// </summary>
         /// <param name="message">The message of the exception.</param>
-        /// <param name="inner">The exception which caused this exception.</param>
+        /// <param name="symbolName">The name of the symbol that failed to load.</param>
         [PublicAPI]
-        public SymbolLoadingException([NotNull] string message, [NotNull] Exception inner)
+        public SymbolLoadingException([NotNull] string message, [NotNull] string symbolName)
+            : base(message)
+        {
+            SymbolName = symbolName;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+        /// </summary>
+        /// <param name="message">The message of the exception.</param>
+        /// <param name="inner">The exception which caused this exception.</param>
+        /// <param name="symbolName">The name of the symbol that failed to load.</param>
+        [PublicAPI]
+        public SymbolLoadingException([NotNull] string message, [NotNull] Exception inner, [NotNull] string symbolName)
             : base(message, inner)
         {
+            SymbolName = symbolName;
         }
     }
 }
