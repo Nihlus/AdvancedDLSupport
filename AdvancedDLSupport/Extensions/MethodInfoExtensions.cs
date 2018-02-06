@@ -29,7 +29,8 @@ namespace AdvancedDLSupport.Extensions
     public static class MethodInfoExtensions
     {
         /// <summary>
-        /// Determines whether or not the given method is complex,
+        /// Determines whether or not the given method is complex, that is, whether or not any of the types encompassed
+        /// in its definition is considered complex.
         /// </summary>
         /// <param name="this">The method to check.</param>
         /// <returns>true if the method is complex; otherwise, false.</returns>

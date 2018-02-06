@@ -234,8 +234,8 @@ namespace AdvancedDLSupport
 
             ctorIL.Emit(OpCodes.Call, anonymousConstructor);
 
-            ConstructMethods(typeBuilder, baseClassType, ctorIL, interfaceType);
-            ConstructProperties(typeBuilder, baseClassType, ctorIL, interfaceType);
+            ConstructMethods<TBaseClass, TInterface>(typeBuilder, ctorIL);
+            ConstructProperties<TBaseClass, TInterface>(typeBuilder, ctorIL);
 
             ctorIL.Emit(OpCodes.Ret);
             return typeBuilder.CreateTypeInfo();
@@ -266,43 +266,39 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Creates an instance of the final implementation type.
         /// </summary>
-        /// <param name="anonymousType">The constructed anonymous type.</param>
+        /// <param name="finalType">The constructed anonymous type.</param>
         /// <param name="library">The path to or name of the library</param>
         /// <param name="options">The generator options.</param>
         /// <param name="transformerRepository">The type transformer repository.</param>
-        /// <typeparam name="T">The interface type.</typeparam>
-        /// <returns>An instance of the anonymous type implementing <typeparamref name="T"/>.</returns>
+        /// <typeparam name="TInterface">The interface type.</typeparam>
+        /// <returns>An instance of the anonymous type implementing <typeparamref name="TInterface"/>.</returns>
         [NotNull, Pure]
-        private T CreateAnonymousImplementationInstance<T>
+        private TInterface CreateAnonymousImplementationInstance<TInterface>
         (
-            [NotNull] Type anonymousType,
+            [NotNull] Type finalType,
             [NotNull] string library,
             ImplementationOptions options,
             [NotNull] TypeTransformerRepository transformerRepository
         )
         {
-            return (T)Activator.CreateInstance(anonymousType, library, typeof(T), options, transformerRepository);
+            return (TInterface)Activator.CreateInstance(finalType, library, typeof(TInterface), options, transformerRepository);
         }
 
         /// <summary>
         /// Constructs the implementations for all normal methods.
         /// </summary>
         /// <param name="typeBuilder">Reference to TypeBuilder to define the methods in.</param>
-        /// <param name="baseClassType">The type of the base class.</param>
         /// <param name="constructorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
-        /// <param name="interfaceType">Type definition of a provided interface.</param>
-        private void ConstructMethods
-        (
-            [NotNull] TypeBuilder typeBuilder,
-            Type baseClassType,
-            [NotNull] ILGenerator constructorIL,
-            [NotNull] Type interfaceType
-        )
+        /// <typeparam name="TBaseClass">The base class of the type to generate methods for.</typeparam>
+        /// <typeparam name="TInterface">The interface where the methods originate.</typeparam>
+        private void ConstructMethods<TBaseClass, TInterface> ([NotNull] TypeBuilder typeBuilder, [NotNull] ILGenerator constructorIL)
+            where TBaseClass : AnonymousImplementationBase
+            where TInterface : class
         {
             var methodGenerator = new MethodImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options);
             var complexMethodGenerator = new ComplexMethodImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options, TransformerRepository);
 
-            foreach (var method in interfaceType.GetMethods())
+            foreach (var method in typeof(TInterface).GetMethods())
             {
                 var targetMethod = method;
 
@@ -313,7 +309,7 @@ namespace AdvancedDLSupport
                 }
 
                 // Skip methods with a managed implementation in the base class
-                var baseClassMethod = baseClassType.GetMethod(method.Name, method.GetParameters().Select(p => p.ParameterType).ToArray());
+                var baseClassMethod = typeof(TBaseClass).GetMethod(method.Name, method.GetParameters().Select(p => p.ParameterType).ToArray());
                 if (!(baseClassMethod is null))
                 {
                     if (!baseClassMethod.IsAbstract)
@@ -339,26 +335,22 @@ namespace AdvancedDLSupport
         /// Constructs the implementations for all properties.
         /// </summary>
         /// <param name="typeBuilder">Reference to TypeBuilder to define the methods in.</param>
-        /// <param name="baseClassType">The type of the base class.</param>
         /// <param name="constructorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
-        /// <param name="interfaceType">Type definition of a provided interface.</param>
+        /// <typeparam name="TBaseClass">The base class of the type to generator properties for.</typeparam>
+        /// <typeparam name="TInterface">The interface where the properties originate.</typeparam>
         /// <exception cref="InvalidOperationException">Thrown if any property is declared as partially abstract.</exception>
-        private void ConstructProperties
-        (
-            [NotNull] TypeBuilder typeBuilder,
-            Type baseClassType,
-            [NotNull] ILGenerator constructorIL,
-            [NotNull] Type interfaceType
-        )
+        private void ConstructProperties<TBaseClass, TInterface>([NotNull] TypeBuilder typeBuilder, [NotNull] ILGenerator constructorIL)
+            where TBaseClass : AnonymousImplementationBase
+            where TInterface : class
         {
             var propertyGenerator = new PropertyImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options);
 
-            foreach (var property in interfaceType.GetProperties())
+            foreach (var property in typeof(TInterface).GetProperties())
             {
                 var targetProperty = property;
 
                 // Skip properties with a managed implementation
-                var baseClassProperty = baseClassType.GetProperty(property.Name, property.PropertyType);
+                var baseClassProperty = typeof(TBaseClass).GetProperty(property.Name, property.PropertyType);
                 if (!(baseClassProperty is null))
                 {
                     var isFullyManaged = !baseClassProperty.GetGetMethod().IsAbstract &&
