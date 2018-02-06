@@ -86,23 +86,23 @@
   <member name="M:AdvancedDLSupport.Extensions.StringExtensions.IsNullOrEmpty(System.String)">
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
-      <argument>source:null =&gt; true</argument>
+      <argument>@this:null =&gt; true</argument>
     </attribute>
-    <parameter name="source">
+    <parameter name="@this">
       <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="M:AdvancedDLSupport.Extensions.StringExtensions.IsNullOrWhiteSpace(System.String)">
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
-      <argument>source:null =&gt; true</argument>
+      <argument>@this:null =&gt; true</argument>
     </attribute>
-    <parameter name="source">
+    <parameter name="@this">
       <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="M:AdvancedDLSupport.Extensions.StringExtensions.IsValidPath(System.String)">
-    <parameter name="source">
+    <parameter name="@this">
       <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     </parameter>
   </member>

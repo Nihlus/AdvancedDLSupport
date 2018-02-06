@@ -33,21 +33,22 @@ namespace AdvancedDLSupport.Extensions
         /// Determines whether or not the given string is a valid path. This does not neccesarily indicate that
         /// the path exists.
         /// </summary>
-        /// <param name="source">The string to inspect.</param>
+        /// <param name="this">The string to inspect.</param>
         /// <returns>true if the string is a valid path; otherwise, false.</returns>
-        public static bool IsValidPath([CanBeNull] this string source)
+        [ContractAnnotation("this:null => false")]
+        public static bool IsValidPath([CanBeNull] this string @this)
         {
-            if (source.IsNullOrWhiteSpace())
+            if (@this.IsNullOrWhiteSpace())
             {
                 return false;
             }
 
-            if (source.Any(c => Path.GetInvalidPathChars().Contains(c)))
+            if (@this.Any(c => Path.GetInvalidPathChars().Contains(c)))
             {
                 return false;
             }
 
-            var parentDirectory = Path.GetDirectoryName(source);
+            var parentDirectory = Path.GetDirectoryName(@this);
             if (parentDirectory.IsNullOrWhiteSpace())
             {
                 return false;
@@ -59,25 +60,25 @@ namespace AdvancedDLSupport.Extensions
         /// <summary>
         /// Determines whether or not a string is null or consists entirely of whitespace characters.
         /// </summary>
-        /// <param name="source">The string to check.</param>
+        /// <param name="this">The string to check.</param>
         /// <returns>true if the string is null or whitespace; otherwise, false.</returns>
         [Pure]
-        [ContractAnnotation("source:null => true")]
-        public static bool IsNullOrWhiteSpace([CanBeNull] this string source)
+        [ContractAnnotation("this:null => true")]
+        public static bool IsNullOrWhiteSpace([CanBeNull] this string @this)
         {
-            return string.IsNullOrWhiteSpace(source);
+            return string.IsNullOrWhiteSpace(@this);
         }
 
         /// <summary>
         /// Determines whether or not a string is null or has no characters.
         /// </summary>
-        /// <param name="source">The string to check.</param>
+        /// <param name="this">The string to check.</param>
         /// <returns>true if the string is null or empty; otherwise, false.</returns>
         [Pure]
-        [ContractAnnotation("source:null => true")]
-        public static bool IsNullOrEmpty([CanBeNull] this string source)
+        [ContractAnnotation("this:null => true")]
+        public static bool IsNullOrEmpty([CanBeNull] this string @this)
         {
-            return string.IsNullOrEmpty(source);
+            return string.IsNullOrEmpty(@this);
         }
 
         /// <summary>
@@ -88,6 +89,7 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="comparer">The string comparer to use.</param>
         /// <returns>true if the string contains the other string; otherwise, false.</returns>
         [Pure]
+        [ContractAnnotation("this:null => false; search:null => false")]
         public static bool Contains([CanBeNull] this string @this, [CanBeNull] string search, StringComparison comparer)
         {
             return @this != null && search != null && @this.IndexOf(search, comparer) >= 0;
