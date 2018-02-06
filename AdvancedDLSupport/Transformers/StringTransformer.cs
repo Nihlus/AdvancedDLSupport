@@ -62,7 +62,7 @@ namespace AdvancedDLSupport
         /// <inheritdoc />
         public override IntPtr LowerValue(string value)
         {
-            if (value == null)
+            if (value is null)
             {
                 return IntPtr.Zero;
             }

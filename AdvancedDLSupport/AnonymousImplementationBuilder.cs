@@ -209,11 +209,11 @@ namespace AdvancedDLSupport
 
             // Now the constructor
             var anonymousConstructor = typeof(AnonymousImplementationBase)
-                .GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance)
-                .First
-                (
-                    c => c.GetCustomAttribute<AnonymousConstructorAttribute>() != null
-                );
+            .GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance)
+            .First
+            (
+                c => c.HasCustomAttribute<AnonymousConstructorAttribute>()
+            );
 
             var constructorBuilder = typeBuilder.DefineConstructor
             (
