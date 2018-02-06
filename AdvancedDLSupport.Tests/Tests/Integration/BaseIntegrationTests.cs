@@ -1,35 +1,37 @@
 ﻿using AdvancedDLSupport.Tests.Data;
+using AdvancedDLSupport.Tests.TestBases;
 using Xunit;
 
 namespace AdvancedDLSupport.Tests.Integration
 {
-    public class BaseIntegrationTests
+    public class BaseIntegrationTests : LibraryTestBase<IBaseLibrary>
     {
         private const string LibraryName = "BaseTests";
+
+        public BaseIntegrationTests() : base(LibraryName)
+        {
+        }
 
         [Fact]
         public void CanLoadLibrary()
         {
-            var library = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
-            Assert.NotNull(library);
+            Assert.NotNull(_library);
         }
 
         [Fact]
         public void LoadingSameInterfaceAndSameFileTwiceProducesDifferentReferences()
         {
-            var firstLoad = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
             var secondLoad = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
 
-            Assert.NotSame(firstLoad, secondLoad);
+            Assert.NotSame(_library, secondLoad);
         }
 
         [Fact]
         public void LoadingSameInterfaceAndSameFileTwiceUsesSameGeneratedType()
         {
-            var firstLoad = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
             var secondLoad = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
 
-            Assert.IsType(firstLoad.GetType(), secondLoad);
+            Assert.IsType(_library.GetType(), secondLoad);
         }
 
         [Fact]
@@ -37,11 +39,9 @@ namespace AdvancedDLSupport.Tests.Integration
         {
             var options = ImplementationOptions.UseLazyBinding;
 
-            var firstLoad = new AnonymousImplementationBuilder(options).ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
+            var secondLoad = new AnonymousImplementationBuilder(options).ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
 
-            var secondLoad = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
-
-            Assert.IsNotType(firstLoad.GetType(), secondLoad);
+            Assert.IsNotType(_library.GetType(), secondLoad);
         }
 
         [Fact]
@@ -49,11 +49,9 @@ namespace AdvancedDLSupport.Tests.Integration
         {
             var options = ImplementationOptions.UseLazyBinding;
 
-            var firstLoad = new AnonymousImplementationBuilder(options).ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
+            var secondLoad = new AnonymousImplementationBuilder(options).ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
 
-            var secondLoad = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
-
-            Assert.NotSame(firstLoad, secondLoad);
+            Assert.NotSame(_library, secondLoad);
         }
     }
 }

@@ -1,12 +1,22 @@
 ﻿using System;
 using AdvancedDLSupport.Tests.Data;
+using AdvancedDLSupport.Tests.TestBases;
 using Xunit;
 
 namespace AdvancedDLSupport.Tests.Integration
 {
-    public class DisposeChecksIntegrationTests
+    public class DisposeChecksIntegrationTests : LibraryTestBase<IDisposeCheckLibrary>
     {
         private const string LibraryName = "DisposeTests";
+
+        public DisposeChecksIntegrationTests() : base(LibraryName)
+        {
+        }
+
+        protected override ImplementationOptions GetImplementationOptions()
+        {
+            return ImplementationOptions.GenerateDisposalChecks;
+        }
 
         [Fact]
         public void DisposedLibraryWithoutGeneratedChecksDoesNotThrow()
@@ -19,33 +29,26 @@ namespace AdvancedDLSupport.Tests.Integration
         [Fact]
         public void UndisposedLibraryDoesNotThrow()
         {
-            var config = ImplementationOptions.GenerateDisposalChecks;
-            var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<IDisposeCheckLibrary>(LibraryName);
-
-            library.Multiply(5, 5);
+            _library.Multiply(5, 5);
         }
 
         [Fact]
         public void DisposedLibraryThrows()
         {
-            var config = ImplementationOptions.GenerateDisposalChecks;
-            var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<IDisposeCheckLibrary>(LibraryName);
-            library.Dispose();
+            _library.Dispose();
 
-            Assert.Throws<ObjectDisposedException>(() => library.Multiply(5, 5));
+            Assert.Throws<ObjectDisposedException>(() => _library.Multiply(5, 5));
         }
 
         [Fact]
         public void CanGetNewInstanceOfInterfaceAfterDisposalOfExistingInstance()
         {
-            var config = ImplementationOptions.GenerateDisposalChecks;
-            var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<IDisposeCheckLibrary>(LibraryName);
-            library.Dispose();
+            _library.Dispose();
 
-            var newLibrary = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<IDisposeCheckLibrary>(LibraryName);
+            var newLibrary = new AnonymousImplementationBuilder(_config).ResolveAndActivateInterface<IDisposeCheckLibrary>(LibraryName);
 
             newLibrary.Multiply(5, 5);
-            Assert.NotSame(library, newLibrary);
+            Assert.NotSame(_library, newLibrary);
         }
     }
 }
