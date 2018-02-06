@@ -99,6 +99,8 @@ namespace AdvancedDLSupport
         /// <typeparam name="TInterface">The interface to implement.</typeparam>
         /// <returns>An instance of the class.</returns>
         /// <exception cref="ArgumentException">Thrown if either of the type arguments are incompatible.</exception>
+        /// <exception cref="FileNotFoundException">Thrown if the specified library can't be found in any of the loader paths.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if the resulting instance can't be cast to the expected class. Should never occur in user code.</exception>
         [NotNull, PublicAPI]
         public TClass ResolveAndActivateClass<TClass, TInterface>([NotNull] string libraryPath)
             where TClass : AnonymousImplementationBase
@@ -119,9 +121,7 @@ namespace AdvancedDLSupport
             var resolveResult = PathResolver.Resolve(libraryPath);
             if (!resolveResult.IsSuccess)
             {
-                var executingDir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
-                var filesInDir = string.Join(", ", Directory.EnumerateFiles(executingDir));
-                throw new FileNotFoundException($"The specified library (\"{libraryPath}\") was not found in any of the loader search paths. Executing dir was {executingDir}, files were {filesInDir}", libraryPath, resolveResult.Exception);
+                throw new FileNotFoundException($"The specified library (\"{libraryPath}\") was not found in any of the loader search paths.", libraryPath, resolveResult.Exception);
             }
 
             libraryPath = resolveResult.Path;
@@ -164,6 +164,9 @@ namespace AdvancedDLSupport
         /// <param name="libraryPath">Path to Native Library to bind interface to.</param>
         /// <typeparam name="TInterface">P/Invoke Interface Type to bind Native Library to.</typeparam>
         /// <returns>Returns a generated type object that binds to native library with provided interface.</returns>
+        /// <exception cref="ArgumentException">Thrown if either of the type arguments are incompatible.</exception>
+        /// <exception cref="FileNotFoundException">Thrown if the specified library can't be found in any of the loader paths.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if the resulting instance can't be cast to the expected class. Should never occur in user code.</exception>
         [NotNull, PublicAPI]
         public TInterface ResolveAndActivateInterface<TInterface>([NotNull] string libraryPath) where TInterface : class
         {
@@ -335,6 +338,7 @@ namespace AdvancedDLSupport
         /// <param name="baseClassType">The type of the base class.</param>
         /// <param name="ctorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
         /// <param name="interfaceType">Type definition of a provided interface.</param>
+        /// <exception cref="InvalidOperationException">Thrown if any property is declared as partially abstract.</exception>
         private void ConstructProperties
         (
             [NotNull] TypeBuilder typeBuilder,

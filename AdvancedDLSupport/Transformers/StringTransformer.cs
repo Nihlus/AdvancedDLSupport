@@ -48,6 +48,7 @@ namespace AdvancedDLSupport
         /// Initializes a new instance of the <see cref="StringTransformer"/> class.
         /// </summary>
         /// <param name="unmanagedType">The unmanaged type to marshal strings as.</param>
+        /// <exception cref="ArgumentException">Thrown if the unmanaged type is not a string type.</exception>
         public StringTransformer(UnmanagedType unmanagedType = LPStr)
         {
             if (!_supportedTypes.Contains(unmanagedType))
