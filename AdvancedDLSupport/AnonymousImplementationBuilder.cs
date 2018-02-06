@@ -136,11 +136,13 @@ namespace AdvancedDLSupport
                 throw new ArgumentException("The interface to activate on the class must be an interface type.", nameof(TInterface));
             }
 
+            // Check for remapping
             if (Options.HasFlagFast(ImplementationOptions.EnableDllMapSupport))
             {
                 libraryPath = new DllMapResolver().MapLibraryName(interfaceType, libraryPath);
             }
 
+            // Attempt to resolve a name or path for the given library
             var resolveResult = PathResolver.Resolve(libraryPath);
             if (!resolveResult.IsSuccess)
             {
@@ -149,9 +151,11 @@ namespace AdvancedDLSupport
 
             libraryPath = resolveResult.Path;
 
+            // Check if we've already generated a type for this configuration
             var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, libraryPath, Options);
             if (TypeCache.TryGetValue(key, out var cachedType))
             {
+                // If so, use it instead of generating a new one
                 if (!(cachedType is null))
                 {
                     var anonymousInstance = CreateAnonymousImplementationInstance<TInterface>(cachedType, libraryPath, Options, TransformerRepository);
@@ -298,7 +302,6 @@ namespace AdvancedDLSupport
             var methodGenerator = new MethodImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options);
             var complexMethodGenerator = new ComplexMethodImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options, TransformerRepository);
 
-            // Let's define our methods!
             foreach (var method in interfaceType.GetMethods())
             {
                 var targetMethod = method;
