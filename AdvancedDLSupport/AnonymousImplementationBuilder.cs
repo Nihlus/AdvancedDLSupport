@@ -110,11 +110,6 @@ namespace AdvancedDLSupport
                 throw new ArgumentException($"The generic type argument {nameof(TInterface)} must be an interface.");
             }
 
-            if (Options.HasFlagFast(ImplementationOptions.EnableDllMapSupport))
-            {
-                libraryPath = new DllMapResolver().MapLibraryName(interfaceType, libraryPath);
-            }
-
             var anonymousInstance = ResolveAndActivateClass<AnonymousImplementationBase, TInterface>(libraryPath);
             return anonymousInstance as TInterface ?? throw new InvalidOperationException("The resulting instance was not convertible to an instance of the interface.");
         }
@@ -145,6 +140,11 @@ namespace AdvancedDLSupport
             if (!interfaceType.IsInterface)
             {
                 throw new ArgumentException("The interface to activate on the class must be an interface type.", nameof(TInterface));
+            }
+
+            if (Options.HasFlagFast(ImplementationOptions.EnableDllMapSupport))
+            {
+                libraryPath = new DllMapResolver().MapLibraryName(interfaceType, libraryPath);
             }
 
             var resolveResult = PathResolver.Resolve(libraryPath);
