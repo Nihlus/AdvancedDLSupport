@@ -193,7 +193,7 @@ namespace AdvancedDLSupport
         /// <typeparam name="TBaseClass">The base class of the type to generate.</typeparam>
         /// <typeparam name="TInterface">The interface that the type should implement.</typeparam>
         /// <returns>The type.</returns>
-        /// <exception cref="ArgumentException">Thrown if </exception>
+        [NotNull, Pure]
         private Type GenerateInterfaceImplementationType<TBaseClass, TInterface>()
             where TBaseClass : AnonymousImplementationBase
             where TInterface : class
@@ -248,7 +248,8 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="type">The type to generate the name for.</param>
         /// <returns>The name.</returns>
-        private static string GenerateTypeName(Type type)
+        [NotNull, Pure]
+        private static string GenerateTypeName([NotNull] Type type)
         {
             var typeName = type.Name.StartsWith("I")
                 ? type.Name.Substring(1)
@@ -273,6 +274,7 @@ namespace AdvancedDLSupport
         /// <param name="transformerRepository">The type transformer repository.</param>
         /// <typeparam name="T">The interface type.</typeparam>
         /// <returns>An instance of the anonymous type implementing <typeparamref name="T"/>.</returns>
+        [NotNull, Pure]
         private T CreateAnonymousImplementationInstance<T>
         (
             [NotNull] Type anonymousType,
@@ -289,18 +291,18 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="typeBuilder">Reference to TypeBuilder to define the methods in.</param>
         /// <param name="baseClassType">The type of the base class.</param>
-        /// <param name="ctorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
+        /// <param name="constructorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
         /// <param name="interfaceType">Type definition of a provided interface.</param>
         private void ConstructMethods
         (
             [NotNull] TypeBuilder typeBuilder,
             Type baseClassType,
-            [NotNull] ILGenerator ctorIL,
+            [NotNull] ILGenerator constructorIL,
             [NotNull] Type interfaceType
         )
         {
-            var methodGenerator = new MethodImplementationGenerator(ModuleBuilder, typeBuilder, ctorIL, Options);
-            var complexMethodGenerator = new ComplexMethodImplementationGenerator(ModuleBuilder, typeBuilder, ctorIL, Options, TransformerRepository);
+            var methodGenerator = new MethodImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options);
+            var complexMethodGenerator = new ComplexMethodImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options, TransformerRepository);
 
             // Let's define our methods!
             foreach (var method in interfaceType.GetMethods())
@@ -341,18 +343,18 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="typeBuilder">Reference to TypeBuilder to define the methods in.</param>
         /// <param name="baseClassType">The type of the base class.</param>
-        /// <param name="ctorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
+        /// <param name="constructorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
         /// <param name="interfaceType">Type definition of a provided interface.</param>
         /// <exception cref="InvalidOperationException">Thrown if any property is declared as partially abstract.</exception>
         private void ConstructProperties
         (
             [NotNull] TypeBuilder typeBuilder,
             Type baseClassType,
-            [NotNull] ILGenerator ctorIL,
+            [NotNull] ILGenerator constructorIL,
             [NotNull] Type interfaceType
         )
         {
-            var propertyGenerator = new PropertyImplementationGenerator(ModuleBuilder, typeBuilder, ctorIL, Options);
+            var propertyGenerator = new PropertyImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options);
 
             foreach (var property in interfaceType.GetProperties())
             {
