@@ -92,9 +92,38 @@ namespace AdvancedDLSupport
         }
 
         /// <summary>
-        /// Attempts to resolve a mixed-mode class, implementing a C function interface.
+        /// Resolves a C function interface to an anonymous class that implements it, making the native functions
+        /// available for use.
         /// </summary>
-        /// <param name="libraryPath">The path to the native library to bind to.</param>
+        /// <param name="libraryPath">The name of or path to the library.</param>
+        /// <typeparam name="TInterface">The interface type.</typeparam>
+        /// <returns>A generated class that implements the given interface.</returns>
+        /// <exception cref="ArgumentException">Thrown if either of the type arguments are incompatible.</exception>
+        /// <exception cref="FileNotFoundException">Thrown if the specified library can't be found in any of the loader paths.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if the resulting instance can't be cast to the expected class. Should never occur in user code.</exception>
+        [NotNull, PublicAPI]
+        public TInterface ResolveAndActivateInterface<TInterface>([NotNull] string libraryPath) where TInterface : class
+        {
+            var interfaceType = typeof(TInterface);
+            if (!interfaceType.IsInterface)
+            {
+                throw new ArgumentException($"The generic type argument {nameof(TInterface)} must be an interface.");
+            }
+
+            if (Options.HasFlagFast(ImplementationOptions.EnableDllMapSupport))
+            {
+                libraryPath = new DllMapResolver().MapLibraryName(interfaceType, libraryPath);
+            }
+
+            var anonymousInstance = ResolveAndActivateClass<AnonymousImplementationBase, TInterface>(libraryPath);
+            return anonymousInstance as TInterface ?? throw new InvalidOperationException("The resulting instance was not convertible to an instance of the interface.");
+        }
+
+        /// <summary>
+        /// Resolves a mixed-mode class that implementing a C function interface, making the native functions available
+        /// for use.
+        /// </summary>
+        /// <param name="libraryPath">The name of or path to the library.</param>
         /// <typeparam name="TClass">The base class for the implementation to generate.</typeparam>
         /// <typeparam name="TInterface">The interface to implement.</typeparam>
         /// <returns>An instance of the class.</returns>
@@ -141,7 +170,7 @@ namespace AdvancedDLSupport
             {
                 try
                 {
-                    var finalType = GenerateInterfaceImplementationType(classType, interfaceType);
+                    var finalType = GenerateInterfaceImplementationType<TClass, TInterface>();
 
                     var anonymousInstance = CreateAnonymousImplementationInstance<TInterface>(finalType, libraryPath, Options, TransformerRepository);
 
@@ -158,43 +187,19 @@ namespace AdvancedDLSupport
         }
 
         /// <summary>
-        /// Attempts to resolve interface to C Library via C# Interface by dynamically creating C# Class during runtime
-        /// and return a new instance of the said class. This approach does not resolve any C++ implication such as name manglings.
+        /// Generates a type inheriting from the given class and implementing the given interface, setting it up to bind
+        /// the interface functions to native C code.
         /// </summary>
-        /// <param name="libraryPath">Path to Native Library to bind interface to.</param>
-        /// <typeparam name="TInterface">P/Invoke Interface Type to bind Native Library to.</typeparam>
-        /// <returns>Returns a generated type object that binds to native library with provided interface.</returns>
-        /// <exception cref="ArgumentException">Thrown if either of the type arguments are incompatible.</exception>
-        /// <exception cref="FileNotFoundException">Thrown if the specified library can't be found in any of the loader paths.</exception>
-        /// <exception cref="InvalidOperationException">Thrown if the resulting instance can't be cast to the expected class. Should never occur in user code.</exception>
-        [NotNull, PublicAPI]
-        public TInterface ResolveAndActivateInterface<TInterface>([NotNull] string libraryPath) where TInterface : class
+        /// <typeparam name="TBaseClass">The base class of the type to generate.</typeparam>
+        /// <typeparam name="TInterface">The interface that the type should implement.</typeparam>
+        /// <returns>The type.</returns>
+        /// <exception cref="ArgumentException">Thrown if </exception>
+        private Type GenerateInterfaceImplementationType<TBaseClass, TInterface>()
+            where TBaseClass : AnonymousImplementationBase
+            where TInterface : class
         {
+            var baseClassType = typeof(TBaseClass);
             var interfaceType = typeof(TInterface);
-            if (!interfaceType.IsInterface)
-            {
-                throw new ArgumentException($"The generic type argument {nameof(TInterface)} must be an interface.");
-            }
-
-            if (Options.HasFlagFast(ImplementationOptions.EnableDllMapSupport))
-            {
-                libraryPath = new DllMapResolver().MapLibraryName(interfaceType, libraryPath);
-            }
-
-            var anonymousInstance = ResolveAndActivateClass<AnonymousImplementationBase, TInterface>(libraryPath);
-            return anonymousInstance as TInterface ?? throw new InvalidOperationException("The resulting instance was not convertible to an instance of the interface.");
-        }
-
-        private Type GenerateInterfaceImplementationType(Type baseClassType, Type interfaceType)
-        {
-            if (!baseClassType.IsSubclassOf(typeof(AnonymousImplementationBase)) && baseClassType != typeof(AnonymousImplementationBase))
-            {
-                throw new ArgumentException
-                (
-                    $"The base class of the implementation type must be either {nameof(AnonymousImplementationBase)} or a subclass thereof.",
-                    nameof(baseClassType)
-                );
-            }
 
             var typeName = GenerateTypeName(interfaceType);
 
