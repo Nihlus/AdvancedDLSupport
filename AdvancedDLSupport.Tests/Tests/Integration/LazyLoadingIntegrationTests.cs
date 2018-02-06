@@ -35,7 +35,7 @@ namespace AdvancedDLSupport.Tests.Integration
 			Assert.Throws<SymbolLoadingException>
 			(
 				() =>
-					_library.MissingMethod(0, 0)
+					Library.MissingMethod(0, 0)
 			);
 		}
 
@@ -55,7 +55,7 @@ namespace AdvancedDLSupport.Tests.Integration
 			Assert.Throws<SymbolLoadingException>
 			(
 				() =>
-					_library.MissingProperty = 0
+					Library.MissingProperty = 0
 			);
 		}
 
@@ -65,7 +65,7 @@ namespace AdvancedDLSupport.Tests.Integration
 			Assert.Throws<SymbolLoadingException>
 			(
 				() =>
-					_library.MissingProperty
+					Library.MissingProperty
 			);
 		}
     }

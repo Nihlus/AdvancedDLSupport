@@ -19,69 +19,69 @@ namespace AdvancedDLSupport.Tests.Integration
 		[Fact]
 		public void CanGetGlobalVariableAsProperty()
 		{
-			_library.ResetData();
+			Library.ResetData();
 
-			Assert.Equal(5, _library.GlobalVariable);
+			Assert.Equal(5, Library.GlobalVariable);
 		}
 
 		[Fact]
 		public void CanSetGlobalVariableAsProperty()
 		{
-			_library.ResetData();
+			Library.ResetData();
 
-			_library.GlobalVariable = 1;
-			Assert.Equal(1, _library.GlobalVariable);
+			Library.GlobalVariable = 1;
+			Assert.Equal(1, Library.GlobalVariable);
 		}
 
 		[Fact]
 		public void CanGetGlobalVariableAsGetOnlyProperty()
 		{
-			_library.ResetData();
+			Library.ResetData();
 
-			Assert.Equal(5, _library.GlobalVariableGetOnly);
+			Assert.Equal(5, Library.GlobalVariableGetOnly);
 		}
 
 		[Fact]
 		public void CanSetGlobalVariableAsSetOnlyProperty()
 		{
-			_library.ResetData();
+			Library.ResetData();
 
-			_library.GlobalVariableSetOnly = 1;
-			Assert.Equal(1, _library.GlobalVariable);
+			Library.GlobalVariableSetOnly = 1;
+			Assert.Equal(1, Library.GlobalVariable);
 		}
 
 		[Fact]
 		public unsafe void CanGetGlobalPointerVariableAsProperty()
 		{
-			_library.ResetData();
+			Library.ResetData();
 
-			Assert.Equal(20, *_library.GlobalPointerVariable);
+			Assert.Equal(20, *Library.GlobalPointerVariable);
 		}
 
 		[Fact]
 		public unsafe void CanSetGlobalPointerVariableAsProperty()
 		{
-			_library.ResetData();
+			Library.ResetData();
 
-			*_library.GlobalPointerVariable = 25;
-			Assert.Equal(25, *_library.GlobalPointerVariable);
+			*Library.GlobalPointerVariable = 25;
+			Assert.Equal(25, *Library.GlobalPointerVariable);
 		}
 
 		[Fact]
 		public unsafe void CanGetGlobalPointerVariableAsGetOnlyProperty()
 		{
-			_library.ResetData();
+			Library.ResetData();
 
-			Assert.Equal(20, *_library.GlobalPointerVariableGetOnly);
+			Assert.Equal(20, *Library.GlobalPointerVariableGetOnly);
 		}
 
 		[Fact]
 		public unsafe void CanSetGlobalPointerVariableAsSetOnlyProperty()
 		{
-			_library.ResetData();
+			Library.ResetData();
 
-			Marshal.StructureToPtr(25, new IntPtr(_library.GlobalPointerVariableGetOnly), false);
-			Assert.Equal(25, *_library.GlobalPointerVariable);
+			Marshal.StructureToPtr(25, new IntPtr(Library.GlobalPointerVariableGetOnly), false);
+			Assert.Equal(25, *Library.GlobalPointerVariable);
 		}
 	}
 }

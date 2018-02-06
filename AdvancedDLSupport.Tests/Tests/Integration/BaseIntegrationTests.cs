@@ -15,7 +15,7 @@ namespace AdvancedDLSupport.Tests.Integration
         [Fact]
         public void CanLoadLibrary()
         {
-            Assert.NotNull(_library);
+            Assert.NotNull(Library);
         }
 
         [Fact]
@@ -23,7 +23,7 @@ namespace AdvancedDLSupport.Tests.Integration
         {
             var secondLoad = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
 
-            Assert.NotSame(_library, secondLoad);
+            Assert.NotSame(Library, secondLoad);
         }
 
         [Fact]
@@ -31,7 +31,7 @@ namespace AdvancedDLSupport.Tests.Integration
         {
             var secondLoad = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
 
-            Assert.IsType(_library.GetType(), secondLoad);
+            Assert.IsType(Library.GetType(), secondLoad);
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace AdvancedDLSupport.Tests.Integration
 
             var secondLoad = new AnonymousImplementationBuilder(options).ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
 
-            Assert.IsNotType(_library.GetType(), secondLoad);
+            Assert.IsNotType(Library.GetType(), secondLoad);
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace AdvancedDLSupport.Tests.Integration
 
             var secondLoad = new AnonymousImplementationBuilder(options).ResolveAndActivateInterface<IBaseLibrary>(LibraryName);
 
-            Assert.NotSame(_library, secondLoad);
+            Assert.NotSame(Library, secondLoad);
         }
     }
 }

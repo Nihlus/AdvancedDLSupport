@@ -19,7 +19,7 @@ namespace AdvancedDLSupport.Tests.Integration
             var strct =  new TestStruct { A = value };
 
             var expected = value * multiplier;
-            var actual = _library.DoStructMath(ref strct, multiplier);
+            var actual = Library.DoStructMath(ref strct, multiplier);
 
             Assert.Equal(expected, actual);
         }
@@ -28,7 +28,7 @@ namespace AdvancedDLSupport.Tests.Integration
         public void CanCallFunctionWithSimpleParameter(int value, int multiplier)
         {
             var expected = value * multiplier;
-            var actual = _library.Multiply(value, multiplier);
+            var actual = Library.Multiply(value, multiplier);
 
             Assert.Equal(expected, actual);
         }
@@ -39,7 +39,7 @@ namespace AdvancedDLSupport.Tests.Integration
             var strct =  new TestStruct { A = value };
 
             var expected = value * multiplier;
-            var actual = _library.Multiply(ref strct, multiplier);
+            var actual = Library.Multiply(ref strct, multiplier);
 
             Assert.Equal(expected, actual);
         }
@@ -48,7 +48,7 @@ namespace AdvancedDLSupport.Tests.Integration
         public void CanCallFunctionWithDifferentCallingConvention(int value, int other)
         {
             var expected = value - other;
-            var actual = _library.STDCALLSubtract(value, other);
+            var actual = Library.STDCALLSubtract(value, other);
 
             Assert.Equal(expected, actual);
         }
@@ -57,7 +57,7 @@ namespace AdvancedDLSupport.Tests.Integration
         public void CanCallDuplicateFunction(int value, int other)
         {
             var expected = value - other;
-            var actual = _library.DuplicateSubtract(value, other);
+            var actual = Library.DuplicateSubtract(value, other);
 
             Assert.Equal(expected, actual);
         }

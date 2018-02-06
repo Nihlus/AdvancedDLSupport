@@ -29,26 +29,26 @@ namespace AdvancedDLSupport.Tests.Integration
         [Fact]
         public void UndisposedLibraryDoesNotThrow()
         {
-            _library.Multiply(5, 5);
+            Library.Multiply(5, 5);
         }
 
         [Fact]
         public void DisposedLibraryThrows()
         {
-            _library.Dispose();
+            Library.Dispose();
 
-            Assert.Throws<ObjectDisposedException>(() => _library.Multiply(5, 5));
+            Assert.Throws<ObjectDisposedException>(() => Library.Multiply(5, 5));
         }
 
         [Fact]
         public void CanGetNewInstanceOfInterfaceAfterDisposalOfExistingInstance()
         {
-            _library.Dispose();
+            Library.Dispose();
 
-            var newLibrary = new AnonymousImplementationBuilder(_config).ResolveAndActivateInterface<IDisposeCheckLibrary>(LibraryName);
+            var newLibrary = new AnonymousImplementationBuilder(Config).ResolveAndActivateInterface<IDisposeCheckLibrary>(LibraryName);
 
             newLibrary.Multiply(5, 5);
-            Assert.NotSame(_library, newLibrary);
+            Assert.NotSame(Library, newLibrary);
         }
     }
 }
