@@ -107,7 +107,7 @@ namespace AdvancedDLSupport
             var classType = typeof(TClass);
             if (!classType.IsAbstract)
             {
-                throw new ArgumentException("The class to active must be abstract.", nameof(TClass));
+                throw new ArgumentException("The class to activate must be abstract.", nameof(TClass));
             }
 
             var interfaceType = typeof(TInterface);
