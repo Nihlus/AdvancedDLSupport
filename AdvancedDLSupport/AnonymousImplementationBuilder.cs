@@ -264,7 +264,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="anonymousType">The constructed anonymous type.</param>
         /// <param name="library">The path to or name of the library</param>
-        /// <param name="configuration">The generator configuration.</param>
+        /// <param name="options">The generator options.</param>
         /// <param name="transformerRepository">The type transformer repository.</param>
         /// <typeparam name="T">The interface type.</typeparam>
         /// <returns>An instance of the anonymous type implementing <typeparamref name="T"/>.</returns>
@@ -272,11 +272,11 @@ namespace AdvancedDLSupport
         (
             [NotNull] Type anonymousType,
             [NotNull] string library,
-            ImplementationOptions configuration,
+            ImplementationOptions options,
             [NotNull] TypeTransformerRepository transformerRepository
         )
         {
-            return (T)Activator.CreateInstance(anonymousType, library, typeof(T), Options, TransformerRepository);
+            return (T)Activator.CreateInstance(anonymousType, library, typeof(T), options, transformerRepository);
         }
 
         /// <summary>
