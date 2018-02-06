@@ -104,12 +104,6 @@ namespace AdvancedDLSupport
         [NotNull, PublicAPI]
         public TInterface ResolveAndActivateInterface<TInterface>([NotNull] string libraryPath) where TInterface : class
         {
-            var interfaceType = typeof(TInterface);
-            if (!interfaceType.IsInterface)
-            {
-                throw new ArgumentException($"The generic type argument {nameof(TInterface)} must be an interface.");
-            }
-
             var anonymousInstance = ResolveAndActivateClass<AnonymousImplementationBase, TInterface>(libraryPath);
             return anonymousInstance as TInterface ?? throw new InvalidOperationException("The resulting instance was not convertible to an instance of the interface.");
         }
