@@ -24,6 +24,7 @@ using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
+using static System.Reflection.MethodAttributes;
 using static AdvancedDLSupport.ImplementationOptions;
 
 namespace AdvancedDLSupport.ImplementationGenerators
@@ -34,12 +35,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
     internal class PropertyImplementationGenerator : ImplementationGeneratorBase<PropertyInfo>
     {
         private const MethodAttributes PropertyMethodAttributes =
-            MethodAttributes.PrivateScope |
-            MethodAttributes.Public |
-            MethodAttributes.Virtual |
-            MethodAttributes.HideBySig |
-            MethodAttributes.VtableLayoutMask |
-            MethodAttributes.SpecialName;
+            PrivateScope |
+            Public |
+            Virtual |
+            HideBySig |
+            VtableLayoutMask |
+            SpecialName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyImplementationGenerator"/> class.

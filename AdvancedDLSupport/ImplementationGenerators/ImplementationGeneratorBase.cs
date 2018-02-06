@@ -23,6 +23,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
+using static System.Reflection.MethodAttributes;
 using static AdvancedDLSupport.ImplementationOptions;
 
 namespace AdvancedDLSupport.ImplementationGenerators
@@ -171,7 +172,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var lambdaBuilder = TargetType.DefineMethod
             (
                 $"{symbolName}_{uniqueIdentifier}_lazy",
-                MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Final,
+                Private | HideBySig | Final,
                 typeof(IntPtr),
                 null
             );
@@ -207,7 +208,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var lambdaBuilder = TargetType.DefineMethod
             (
                 $"{delegateType.Name}_{uniqueIdentifier}_lazy",
-                MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Final,
+                Private | HideBySig | Final,
                 delegateType,
                 null
             );

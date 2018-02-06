@@ -24,6 +24,9 @@ using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
+using static System.Reflection.CallingConventions;
+using static System.Reflection.MethodAttributes;
+using static System.Reflection.MethodImplAttributes;
 using static AdvancedDLSupport.ImplementationOptions;
 
 // ReSharper disable BitwiseOperatorOnEnumWithoutFlags
@@ -154,8 +157,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var methodBuilder = TargetType.DefineMethod
             (
                 methodName,
-                MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.Virtual | MethodAttributes.HideBySig | MethodAttributes.NewSlot,
-                CallingConventions.Standard,
+                Public | Final | Virtual | HideBySig | NewSlot,
+                Standard,
                 returnType,
                 parameterTypes
             );
@@ -267,22 +270,22 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             var delegateCtorBuilder = delegateBuilder.DefineConstructor
             (
-                MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public,
-                CallingConventions.Standard,
+                RTSpecialName | HideBySig | Public,
+                Standard,
                 new[] { typeof(object), typeof(IntPtr) }
             );
 
-            delegateCtorBuilder.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
+            delegateCtorBuilder.SetImplementationFlags(Runtime | Managed);
 
             var delegateMethodBuilder = delegateBuilder.DefineMethod
             (
                 "Invoke",
-                MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual,
+                Public | HideBySig | NewSlot | Virtual,
                 methodReturnType,
                 methodParameterTypes
             );
 
-            delegateMethodBuilder.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
+            delegateMethodBuilder.SetImplementationFlags(Runtime | Managed);
             return delegateBuilder;
         }
     }

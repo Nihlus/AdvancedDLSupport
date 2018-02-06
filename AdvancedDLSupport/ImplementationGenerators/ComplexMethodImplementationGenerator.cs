@@ -25,6 +25,7 @@ using System.Reflection.Emit;
 using AdvancedDLSupport.Extensions;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
+using static System.Reflection.MethodAttributes;
 using static AdvancedDLSupport.ImplementationOptions;
 
 namespace AdvancedDLSupport.ImplementationGenerators
@@ -107,7 +108,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var methodBuilder = TargetType.DefineMethod
             (
                 complexInterfaceMethod.Name,
-                MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.Virtual | MethodAttributes.HideBySig | MethodAttributes.NewSlot,
+                Public | Final | Virtual | HideBySig | NewSlot,
                 CallingConventions.Standard,
                 complexInterfaceMethod.ReturnType,
                 complexInterfaceMethod.GetParameters().Select(p => p.ParameterType).ToArray()
@@ -264,7 +265,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var loweredMethod = TargetType.DefineMethod
             (
                 $"{memberIdentifier}_lowered",
-                MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.Virtual | MethodAttributes.HideBySig | MethodAttributes.NewSlot,
+                Public | Final | Virtual | HideBySig | NewSlot,
                 CallingConventions.Standard,
                 newReturnType,
                 newParameterTypes.ToArray()
