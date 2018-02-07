@@ -181,15 +181,17 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
                 var permutationTypes = permutations[i].ToList();
 
-                for (int argumentIndex = 0; argumentIndex < permutationTypes.Count; ++argumentIndex)
+                methodIL.Emit(OpCodes.Ldarg_0);
+                for (int argumentIndex = 1; argumentIndex < permutationTypes.Count + 1; ++argumentIndex)
                 {
-                    var permutationParameterType = permutationTypes[argumentIndex];
-                    if (permutationParameterType.IsRefNullable())
+                    var originalParameterType = parameterTypes[argumentIndex - 1];
+                    var permutationParameterType = permutationTypes[argumentIndex - 1];
+                    if (originalParameterType.IsRefNullable() && permutationParameterType != typeof(IntPtr))
                     {
-                        var wrappedType = parameterTypes[argumentIndex].GetElementType();
+                        var wrappedType = originalParameterType.GetElementType().GetGenericArguments().First();
                         EmitNullableValueRef(methodIL, argumentIndex, ref nextFreeLocalSlot, wrappedType);
                     }
-                    else if (permutationParameterType == typeof(IntPtr) && parameterTypes[argumentIndex].IsRefNullable())
+                    else if (permutationParameterType == typeof(IntPtr) && parameterTypes[argumentIndex - 1].IsRefNullable())
                     {
                         // We know that this is null
                         var zeroPointerField = typeof(IntPtr).GetField
@@ -246,10 +248,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var localIndex = nextFreeLocalSlot;
             ++nextFreeLocalSlot;
 
-            il.DeclareLocal(typeof(byte).MakeByRefType(), true);
+            il.DeclareLocal(typeof(int*), true);
 
             // Now, we load the nullable as a pointer
-            EmitGetPinnedAddressOfNullable(wrappedType, il, argumentIndex);
+            EmitGetPinnedAddressOfNullable(typeof(Nullable<>).MakeGenericType(wrappedType), il, argumentIndex);
 
             // Store the value so that it gets pinned
             il.Emit(OpCodes.Stloc, localIndex);
@@ -263,14 +265,21 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// Emits a set of IL instructions that loads the argument at the given index,
         /// treating it as a <see cref="Nullable{T}"/>, and gets a pinned pointer to it, pushing it onto the evaluation stack.
         /// </summary>
-        /// <param name="wrappedType">The type that the nullable wraps.</param>
+        /// <param name="nullableType">The type that the nullable wraps.</param>
         /// <param name="il">The IL generator where the instructions should be emitted.</param>
         /// <param name="argumentIndex">The argument index to load.</param>
-        private static void EmitGetPinnedAddressOfNullable(Type wrappedType, ILGenerator il, int argumentIndex)
+        private static void EmitGetPinnedAddressOfNullable(Type nullableType, ILGenerator il, int argumentIndex)
         {
             il.Emit(OpCodes.Ldarg, argumentIndex);
 
-            var unsafeAsMethod = typeof(Unsafe).GetMethod(nameof(Unsafe.As)).MakeGenericMethod(wrappedType, typeof(byte));
+            var unsafeAsMethod = typeof(Unsafe).GetMethods().First
+            (
+                m =>
+                    m.Name == nameof(Unsafe.As) &&
+                    m.GetParameters().First().ParameterType.IsByRef
+            )
+            .MakeGenericMethod(nullableType, typeof(int));
+
             il.Emit(OpCodes.Call, unsafeAsMethod);
         }
 
@@ -301,7 +310,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             // Create a new BitArray to use as the mask
             var bitArrayConstructor = typeof(BitArray).GetConstructor(new[] { typeof(bool[]) });
-            il.Emit(OpCodes.Call, bitArrayConstructor);
+            il.Emit(OpCodes.Newobj, bitArrayConstructor);
 
             var bitArrayToInteger = typeof(BitArrayExtensions).GetMethod(nameof(BitArrayExtensions.ToInt32));
             il.Emit(OpCodes.Call, bitArrayToInteger);
@@ -329,7 +338,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             ).Select
             (
                 p =>
-                    (Index: parameters.IndexOf(p), Value: p)
+                    (Index: parameters.IndexOf(p) + 1, Value: p)
             ).ToList();
 
             var refNullableCount = refNullableParameters.Count;

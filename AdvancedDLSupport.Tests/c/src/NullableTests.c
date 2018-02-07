@@ -18,6 +18,11 @@ __declspec(dllexport) const TestStruct* GetNullTestStruct()
     return NULL;
 }
 
+__declspec(dllexport) int64_t GetStructPtrValue(TestStruct* testStruct)
+{
+    return (int64_t)testStruct;
+}
+
 __declspec(dllexport) bool CheckIfStructIsNull(const TestStruct* testStruct)
 {
     return testStruct == NULL;

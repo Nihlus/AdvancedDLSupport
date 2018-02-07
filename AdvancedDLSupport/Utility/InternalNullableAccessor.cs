@@ -34,7 +34,7 @@ namespace AdvancedDLSupport
         /// <param name="nullablePtr">A pointer to a pinned nullable.</param>
         /// <typeparam name="T">The type of underlying value to access.</typeparam>
         /// <returns>The underlying value, passed by reference.</returns>
-        public static unsafe ref T AccessUnderlyingValue<T>(byte* nullablePtr) where T : struct
+        public static unsafe ref T AccessUnderlyingValue<T>(int* nullablePtr) where T : struct
         {
             // HACK: Working around weird memory layout in .NET Core vs Mono/FX
             var desc = RuntimeInformation.FrameworkDescription;
