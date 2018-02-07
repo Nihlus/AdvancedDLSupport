@@ -92,13 +92,18 @@ namespace AdvancedDLSupport.ImplementationGenerators
             // Generate native implementations for the permutations
             foreach (var permutation in generatedMethods)
             {
+                var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
+                var memberIdentifier = $"{member.Name}_{uniqueIdentifier}";
+
+                uniqueMemberIdentifier = memberIdentifier;
+
                 if (permutation.RequiresLowering())
                 {
-                    _loweredMethodGenerator.GenerateImplementation(permutation);
+                    _loweredMethodGenerator.GenerateImplementationForDefinition(permutation, symbolName, uniqueMemberIdentifier);
                 }
                 else
                 {
-                    _methodGenerator.GenerateImplementation(permutation);
+                    _methodGenerator.GenerateImplementationForDefinition(permutation, symbolName, uniqueMemberIdentifier);
                 }
             }
 
@@ -112,6 +117,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             );
 
             GenerateTopLevelMethodImplementation(member, topLevelMethod, permutations, generatedMethods);
+            TargetType.DefineMethodOverride(topLevelMethod, member.GetWrappedMember());
         }
 
         /// <summary>

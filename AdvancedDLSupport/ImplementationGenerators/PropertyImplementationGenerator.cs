@@ -65,15 +65,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <inheritdoc />
         protected override void GenerateImplementation(IntrospectivePropertyInfo property, string symbolName, string uniqueMemberIdentifier)
         {
-            // Note, the field is going to have to be a pointer, because it is pointing to global variable
-            var fieldType = Options.HasFlagFast(UseLazyBinding) ? typeof(Lazy<IntPtr>) : typeof(IntPtr);
-            var propertyFieldBuilder = TargetType.DefineField
-            (
-                uniqueMemberIdentifier,
-                fieldType,
-                FieldAttributes.Private
-            );
-
             var propertyBuilder = TargetType.DefineProperty
             (
                 property.Name,
@@ -81,6 +72,15 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 CallingConventions.HasThis,
                 property.PropertyType,
                 property.IndexParameterTypes.ToArray()
+            );
+
+            // Note, the field is going to have to be a pointer, because it is pointing to global variable
+            var fieldType = Options.HasFlagFast(UseLazyBinding) ? typeof(Lazy<IntPtr>) : typeof(IntPtr);
+            var propertyFieldBuilder = TargetType.DefineField
+            (
+                uniqueMemberIdentifier,
+                fieldType,
+                FieldAttributes.Private
             );
 
             if (property.CanRead)

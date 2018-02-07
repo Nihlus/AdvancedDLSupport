@@ -34,7 +34,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         ImplementationOptions Options { get; }
 
         /// <summary>
-        /// Generates the implementation for the given member.
+        /// Generates a definition and implementation for the given member.
         /// </summary>
         /// <param name="member">The member to generate the implementation for.</param>
         void GenerateImplementation([NotNull] TAccepted member);

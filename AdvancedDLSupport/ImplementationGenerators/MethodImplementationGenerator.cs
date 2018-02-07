@@ -63,6 +63,14 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             var definition = GenerateDelegateInvokerDefinition(method);
 
+            GenerateImplementationForDefinition(definition, symbolName, uniqueMemberIdentifier);
+
+            TargetType.DefineMethodOverride(definition.GetWrappedMember(), method.GetWrappedMember());
+        }
+
+        /// <inheritdoc />
+        public override void GenerateImplementationForDefinition(IntrospectiveMethodInfo definition, string symbolName, string uniqueMemberIdentifier)
+        {
             var metadataAttribute = definition.GetCustomAttribute<NativeSymbolAttribute>() ??
                                     new NativeSymbolAttribute(definition.Name);
 
@@ -78,8 +86,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
             AugmentHostingTypeConstructor(symbolName, delegateBuilderType, delegateField);
 
             GenerateDelegateInvokerBody(definition, delegateBuilderType, delegateField);
-
-            TargetType.DefineMethodOverride(definition.GetWrappedMember(), method.GetWrappedMember());
         }
 
         /// <summary>
