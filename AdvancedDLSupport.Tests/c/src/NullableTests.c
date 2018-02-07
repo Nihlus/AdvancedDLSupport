@@ -1,29 +1,8 @@
 #include <stdlib.h>
-#include <stdint.h>
 #include <memory.h>
 #include <stdbool.h>
 #include "TestStruct.h"
 #include "comp.h"
-
-__declspec(dllexport) const char* GetString()
-{
-    return "Hello from C!";
-}
-
-__declspec(dllexport) const char* GetNullString()
-{
-    return NULL;
-}
-
-__declspec(dllexport) size_t StringLength(const char* value)
-{
-    return strlen(value);
-}
-
-__declspec(dllexport) bool CheckIfStringIsNull(const char* value)
-{
-    return value == NULL;
-}
 
 __declspec(dllexport) const TestStruct* GetAllocatedTestStruct()
 {
@@ -42,4 +21,14 @@ __declspec(dllexport) const TestStruct* GetNullTestStruct()
 __declspec(dllexport) bool CheckIfStructIsNull(const TestStruct* testStruct)
 {
     return testStruct == NULL;
+}
+
+__declspec(dllexport) int32_t GetValueInNullableRefStruct(const TestStruct* testStruct)
+{
+    return testStruct->A;
+}
+
+__declspec(dllexport) void SetValueInNullableRefStruct(TestStruct* testStruct)
+{
+    testStruct->A = 15;
 }
