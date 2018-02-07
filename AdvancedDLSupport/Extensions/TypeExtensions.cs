@@ -40,5 +40,23 @@ namespace AdvancedDLSupport.Extensions
                 @this == typeof(bool) ||
                 (@this.IsGenericType && @this.GetGenericTypeDefinition() == typeof(Nullable<>));
         }
+
+        /// <summary>
+        /// Determines whether or not the given type is a <see cref="Nullable{T}"/> passed by reference.
+        /// </summary>
+        /// <param name="this">The type.</param>
+        /// <returns>true if it is a nullable passed by reference; otherwise, false.</returns>
+        public static bool IsRefNullable(this Type @this)
+        {
+            if (!@this.IsByRef)
+            {
+                return false;
+            }
+
+            var underlying = @this.GetElementType();
+
+            return underlying.IsGenericType &&
+                   underlying.GetGenericTypeDefinition() == typeof(Nullable<>);
+        }
     }
 }
