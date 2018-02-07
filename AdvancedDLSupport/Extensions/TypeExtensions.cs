@@ -18,6 +18,8 @@
 //
 
 using System;
+using System.Collections.Generic;
+using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.Extensions
@@ -27,6 +29,33 @@ namespace AdvancedDLSupport.Extensions
     /// </summary>
     internal static class TypeExtensions
     {
+        /// <summary>
+        /// Gets the methods defined in the given type as wrapped introspective methods.
+        /// </summary>
+        /// <param name="this">The type to inspect.</param>
+        /// <returns>The methods.</returns>
+        public static IEnumerable<IntrospectiveMethodInfo> GetIntrospectiveMethods(this Type @this)
+        {
+            var methods = @this.GetMethods();
+            foreach (var method in methods)
+            {
+                yield return new IntrospectiveMethodInfo(method);
+            }
+        }
+
+        /// <summary>
+        /// Gets a method defined in the given type by its name and parameter types.
+        /// </summary>
+        /// <param name="this">The type to inspect.</param>
+        /// <param name="name">The name of the method.</param>
+        /// <param name="parameterTypes">The parameter types of the method.</param>
+        /// <returns>The method.</returns>
+        public static IntrospectiveMethodInfo GetIntrospectiveMethod(this Type @this, string name, Type[] parameterTypes)
+        {
+            var method = @this.GetMethod(name, parameterTypes);
+            return method is null ? null : new IntrospectiveMethodInfo(method);
+        }
+
         /// <summary>
         /// Determines whether or not the given type requires lowering to a more primitive type when being marshalled.
         /// </summary>

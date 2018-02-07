@@ -6,7 +6,9 @@ namespace AdvancedDLSupport.Tests.Integration
 {
     public class NullableStructTests : LibraryTestBase<INullableLibrary>
     {
-        public NullableStructTests(string libraryLocation) : base(libraryLocation)
+        private const string LibraryName = "NullableTests";
+
+        public NullableStructTests() : base(LibraryName)
         {
         }
 

@@ -25,6 +25,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using AdvancedDLSupport.Extensions;
+using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using static System.Reflection.MethodAttributes;
 
@@ -34,10 +35,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// Generates a set of method permutations, based on a method with <see cref="Nullable{T}"/> parameters passed by
     /// reference.
     /// </summary>
-    public class RefPermutationImplementationGenerator : ImplementationGeneratorBase<MethodInfo>
+    public class RefPermutationImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
         private readonly PermutationGenerator _permutationGenerator;
-        private readonly List<MethodBuilder> _generatedMethods;
+        private readonly List<IntrospectiveMethodInfo> _generatedMethods;
 
         private readonly MethodImplementationGenerator _methodGenerator;
         private readonly LoweredMethodImplementationGenerator _loweredMethodGenerator;
@@ -61,14 +62,14 @@ namespace AdvancedDLSupport.ImplementationGenerators
             : base(targetModule, targetType, targetTypeConstructorIL, options)
         {
             _permutationGenerator = new PermutationGenerator();
-            _generatedMethods = new List<MethodBuilder>();
+            _generatedMethods = new List<IntrospectiveMethodInfo>();
 
             _methodGenerator = new MethodImplementationGenerator(targetModule, targetType, targetTypeConstructorIL, options);
             _loweredMethodGenerator = new LoweredMethodImplementationGenerator(targetModule, targetType, targetTypeConstructorIL, options, transformerRepository);
         }
 
         /// <inheritdoc />
-        protected override void GenerateImplementation(MethodInfo member, string symbolName, string uniqueMemberIdentifier)
+        protected override void GenerateImplementation(IntrospectiveMethodInfo member, string symbolName, string uniqueMemberIdentifier)
         {
             // Generate permutation definitions
             var permutations = _permutationGenerator.Generate(member);
@@ -83,7 +84,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
                     permutation.ToArray()
                 );
 
-                _generatedMethods.Add(method);
+                var methodInfo = new IntrospectiveMethodInfo(method, permutation, member.ReturnType);
+                _generatedMethods.Add(methodInfo);
             }
 
             // Generate native implementations for the permutations
@@ -105,7 +107,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 symbolName,
                 Public | Final | Virtual | HideBySig | NewSlot,
                 member.ReturnType,
-                member.GetParameters().Select(p => p.ParameterType).ToArray()
+                member.ParameterTypes.ToArray()
             );
 
             GenerateTopLevelMethodImplementation(member, topLevelMethod, permutations);
@@ -118,12 +120,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="baseMemberDefinition">The <see cref="MethodInfo"/> describing the base definition of the method.</param>
         /// <param name="topLevelMethod">The <see cref="MethodBuilder"/> to implement the body for.</param>
         /// <param name="permutations">The posssible parameter list permutations.</param>
-        private void GenerateTopLevelMethodImplementation(MethodInfo baseMemberDefinition, MethodBuilder topLevelMethod, IReadOnlyList<IReadOnlyList<Type>> permutations)
+        private void GenerateTopLevelMethodImplementation(IntrospectiveMethodInfo baseMemberDefinition, MethodBuilder topLevelMethod, IReadOnlyList<IReadOnlyList<Type>> permutations)
         {
             var returnValueLocalIndex = 0;
             var nextFreeLocalSlot = 0;
 
-            var parameters = baseMemberDefinition.GetParameters().ToList();
+            var parameterTypes = baseMemberDefinition.ParameterTypes.ToList();
             var methodIL = topLevelMethod.GetILGenerator();
 
             // If we have a return value, declare a local to hold it later
@@ -136,7 +138,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             }
 
             // Create a boolean array to store the data pertaining to which parameters have values
-            var hasValueArrayIndex = EmitHasValueArray(methodIL, ref nextFreeLocalSlot, parameters);
+            var hasValueArrayIndex = EmitHasValueArray(methodIL, ref nextFreeLocalSlot, parameterTypes);
 
             methodIL.Emit(OpCodes.Ldloc, hasValueArrayIndex);
             EmitPermutationIndex(methodIL);
@@ -169,13 +171,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 {
                     var argumentIndex = permutationTypesInReverse.Count - j;
 
-                    var parameterType = permutationTypesInReverse[j];
-                    if (parameterType.IsRefNullable())
+                    var permutationParameterType = permutationTypesInReverse[j];
+                    if (permutationParameterType.IsRefNullable())
                     {
-                        var wrappedType = parameters[argumentIndex].ParameterType.GetElementType();
+                        var wrappedType = parameterTypes[argumentIndex].GetElementType();
                         EmitNullableValueRef(methodIL, argumentIndex, ref nextFreeLocalSlot, wrappedType);
                     }
-                    else if (parameterType == typeof(IntPtr) && parameters[argumentIndex].ParameterType.IsRefNullable())
+                    else if (permutationParameterType == typeof(IntPtr) && parameterTypes[argumentIndex].IsRefNullable())
                     {
                         // We know that this is null
                         var zeroPointerField = typeof(IntPtr).GetField
@@ -193,7 +195,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 }
 
                 // Call the permutation
-                methodIL.Emit(OpCodes.Call, _generatedMethods[i]);
+                methodIL.Emit(OpCodes.Call, _generatedMethods[i].GetWrappedMember());
 
                 // Store the return value if we have one
                 if (baseMemberDefinition.ReturnType != typeof(void))
@@ -302,7 +304,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="nextFreeLocalSlot">The next unused local variable index.</param>
         /// <param name="parameters">The method parameters.</param>
         /// <returns>The index of the local variable used for the array.</returns>
-        private static int EmitHasValueArray(ILGenerator il, ref int nextFreeLocalSlot, IList<ParameterInfo> parameters)
+        private static int EmitHasValueArray(ILGenerator il, ref int nextFreeLocalSlot, IList<Type> parameters)
         {
             var localIndex = nextFreeLocalSlot;
             ++nextFreeLocalSlot;
@@ -311,7 +313,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var refNullableParameters = parameters.Where
             (
                 p =>
-                    p.ParameterType.IsRefNullable()
+                    p.IsRefNullable()
             ).Select
             (
                 p =>
@@ -359,11 +361,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="methodIL">The IL generator where the instructions should be emitted.</param>
         /// <param name="parameter">A <see cref="ValueTuple"/> containing the parameter index, and its associated <see cref="ParameterInfo"/>.</param>
-        private static void EmitNullableGetHasValue(ILGenerator methodIL, (int Index, ParameterInfo Value) parameter)
+        private static void EmitNullableGetHasValue(ILGenerator methodIL, (int Index, Type Type) parameter)
         {
             methodIL.Emit(OpCodes.Ldarg, parameter.Index);
 
-            var getHasValueMethod = parameter.Value.ParameterType
+            var getHasValueMethod = parameter.Type
                 .GetElementType()
                 .GetProperty(nameof(Nullable<int>.HasValue))
                 .GetGetMethod();

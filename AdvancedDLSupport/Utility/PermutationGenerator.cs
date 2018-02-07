@@ -21,8 +21,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using AdvancedDLSupport.Extensions;
+using AdvancedDLSupport.Reflection;
 
 namespace AdvancedDLSupport
 {
@@ -38,13 +38,13 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="baseMethod">The method to generate permutatations of.</param>
         /// <returns>The permutations.</returns>
-        public IReadOnlyList<IReadOnlyList<Type>> Generate(MethodInfo baseMethod)
+        public IReadOnlyList<IReadOnlyList<Type>> Generate(IntrospectiveMethodInfo baseMethod)
         {
-            var parameters = baseMethod.GetParameters();
+            var parameters = baseMethod.ParameterTypes;
 
             // First, we calculate the total number of possible combinations, given that we can have either a
             // concrete type or an IntPtr, and refNullableParameterCount instances thereof.
-            var refNullableParameterCount = parameters.Count(p => p.ParameterType.IsRefNullable());
+            var refNullableParameterCount = parameters.Count(p => p.IsRefNullable());
             var permutationCount = Math.Pow
             (
                 2,
@@ -52,7 +52,6 @@ namespace AdvancedDLSupport
             );
 
             // Then, we take the types used in the base method and generate combinations from it.
-            var baseParameterList = parameters.Select(p => p.ParameterType).ToList();
             var permutations = new List<IReadOnlyList<Type>>();
             for (int i = 0; i < permutationCount; ++i)
             {
@@ -60,7 +59,7 @@ namespace AdvancedDLSupport
                 // parameter, we can piggyback on the permutation count and use it as a bitmask which determines
                 // what to flip each parameter to.
                 var bits = new BitArray(new[] { i });
-                permutations.Add(GeneratePermutation(baseParameterList, bits));
+                permutations.Add(GeneratePermutation(parameters, bits));
             }
 
             return permutations;

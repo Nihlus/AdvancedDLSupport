@@ -21,6 +21,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
 
@@ -80,7 +81,17 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <inheritdoc />
         public void GenerateImplementation(T member)
         {
-            var metadataAttribute = member.GetCustomAttribute<NativeSymbolAttribute>() ?? new NativeSymbolAttribute(member.Name);
+            NativeSymbolAttribute metadataAttribute;
+            // HACK: Working around weird casting behaviour in the CLR
+            if (member is IIntrospectiveMember introspective)
+            {
+                metadataAttribute = introspective.GetCustomAttribute<NativeSymbolAttribute>() ?? new NativeSymbolAttribute(member.Name);
+            }
+            else
+            {
+                metadataAttribute = member.GetCustomAttribute<NativeSymbolAttribute>() ?? new NativeSymbolAttribute(member.Name);
+            }
+
             var symbolName = metadataAttribute.Entrypoint ?? member.Name;
 
             var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
