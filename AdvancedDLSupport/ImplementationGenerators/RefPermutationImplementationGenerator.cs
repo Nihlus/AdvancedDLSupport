@@ -85,7 +85,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                     permutation.ToArray()
                 );
 
-                var methodInfo = new IntrospectiveMethodInfo(method, permutation, member.ReturnType);
+                var methodInfo = new IntrospectiveMethodInfo(method, member.ReturnType, permutation);
                 generatedMethods.Add(methodInfo);
             }
 

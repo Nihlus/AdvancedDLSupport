@@ -64,10 +64,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <inheritdoc />
         protected override void GenerateImplementation(IntrospectiveMethodInfo method, string symbolName, string uniqueMemberIdentifier)
         {
-            var metadataAttribute = method.GetCustomAttribute<NativeSymbolAttribute>() ??
-                                    new NativeSymbolAttribute(method.Name);
+            var complexMethodDefinition = GenerateComplexMethodDefinition(method);
 
-            var loweredMethod = GenerateLoweredMethod(method, uniqueMemberIdentifier);
+            var loweredMethod = GenerateLoweredMethod(complexMethodDefinition, uniqueMemberIdentifier);
+
+            var metadataAttribute = complexMethodDefinition.GetCustomAttribute<NativeSymbolAttribute>() ??
+                                    new NativeSymbolAttribute(complexMethodDefinition.Name);
 
             var delegateBuilder = GenerateDelegateType
             (
@@ -83,48 +85,60 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 TargetType.DefineField($"{uniqueMemberIdentifier}_dt", typeof(Lazy<>).MakeGenericType(delegateBuilderType), FieldAttributes.Public) :
                 TargetType.DefineField($"{uniqueMemberIdentifier}_dt", delegateBuilderType, FieldAttributes.Public);
 
-            var loweredMethodBuilder =
-                loweredMethod.GetWrappedMember() as MethodBuilder ??
-               throw new ArgumentNullException(nameof(loweredMethod), $"The lowered method did not wrap a {nameof(MethodBuilder)}.");
-
-            GenerateDelegateInvokerBody(loweredMethodBuilder, loweredMethod.ParameterTypes.ToArray(), delegateBuilderType, delegateField);
-            var implementation = GenerateComplexMethodBody(method, loweredMethod);
-
-            TargetType.DefineMethodOverride(implementation, method.GetWrappedMember());
-
             AugmentHostingTypeConstructor(symbolName, delegateBuilderType, delegateField);
+
+            GenerateDelegateInvokerBody(loweredMethod, delegateBuilderType, delegateField);
+
+            var implementation = GenerateComplexMethodBody(complexMethodDefinition, loweredMethod);
+
+            TargetType.DefineMethodOverride(implementation.GetWrappedMember(), method.GetWrappedMember());
+        }
+
+        /// <summary>
+        /// Generates the definition of the complex method.
+        /// </summary>
+        /// <param name="interfaceDefinition">The interface definition to base it on.</param>
+        /// <returns>An introspective method info for the definition.</returns>
+        private IntrospectiveMethodInfo GenerateComplexMethodDefinition([NotNull] IntrospectiveMethodInfo interfaceDefinition)
+        {
+            var methodBuilder = TargetType.DefineMethod
+            (
+                interfaceDefinition.Name,
+                Public | Final | Virtual | HideBySig | NewSlot,
+                CallingConventions.Standard,
+                interfaceDefinition.ReturnType,
+                interfaceDefinition.ParameterTypes.ToArray()
+            );
+
+            return new IntrospectiveMethodInfo(methodBuilder, interfaceDefinition.ReturnType, interfaceDefinition.ParameterTypes);
         }
 
         /// <summary>
         /// Generates the method body for the complex method implementation. This method will lower all required
         /// arguments and call the lowered method, then raise the return value if required.
         /// </summary>
-        /// <param name="complexInterfaceMethod">The complex method definition.</param>
+        /// <param name="complexDefinition">The complex method definition.</param>
         /// <param name="loweredMethod">The lowered method definition.</param>
         /// <returns>The generated invoker.</returns>
-        private MethodInfo GenerateComplexMethodBody
+        private IntrospectiveMethodInfo GenerateComplexMethodBody
         (
-            [NotNull] IntrospectiveMethodInfo complexInterfaceMethod,
+            [NotNull] IntrospectiveMethodInfo complexDefinition,
             [NotNull] IntrospectiveMethodInfo loweredMethod
         )
         {
-            var methodBuilder = TargetType.DefineMethod
-            (
-                complexInterfaceMethod.Name,
-                Public | Final | Virtual | HideBySig | NewSlot,
-                CallingConventions.Standard,
-                complexInterfaceMethod.ReturnType,
-                complexInterfaceMethod.ParameterTypes.ToArray()
-            );
+            if (!(complexDefinition.GetWrappedMember() is MethodBuilder builder))
+            {
+                throw new ArgumentNullException(nameof(complexDefinition), "Could not unwrap introspective method to method builder.");
+            }
 
-            var il = methodBuilder.GetILGenerator();
+            var il = builder.GetILGenerator();
 
             if (Options.HasFlagFast(GenerateDisposalChecks))
             {
                 EmitDisposalCheck(il);
             }
 
-            var parameterTypes = complexInterfaceMethod.ParameterTypes;
+            var parameterTypes = complexDefinition.ParameterTypes;
             var loweredParameterTypes = loweredMethod.ParameterTypes;
 
             // Emit lowered parameters
@@ -147,14 +161,14 @@ namespace AdvancedDLSupport.ImplementationGenerators
             il.Emit(OpCodes.Call, loweredMethod.GetWrappedMember());
 
             // Emit return value raising
-            if (complexInterfaceMethod.ReturnValueRequiresLowering())
+            if (complexDefinition.ReturnValueRequiresLowering())
             {
-                EmitValueRaising(il, complexInterfaceMethod.ReturnType, loweredMethod.ReturnType);
+                EmitValueRaising(il, complexDefinition.ReturnType, loweredMethod.ReturnType);
             }
 
             il.Emit(OpCodes.Ret);
 
-            return methodBuilder;
+            return complexDefinition;
         }
 
         /// <summary>
@@ -331,7 +345,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 newParameterTypes.ToArray()
             );
 
-            return new IntrospectiveMethodInfo(loweredMethod, newParameterTypes, newReturnType);
+            return new IntrospectiveMethodInfo(loweredMethod, newReturnType, newParameterTypes);
         }
 
         /// <summary>

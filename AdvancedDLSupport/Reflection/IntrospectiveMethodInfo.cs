@@ -74,16 +74,15 @@ namespace AdvancedDLSupport.Reflection
         /// Initializes a new instance of the <see cref="IntrospectiveMethodInfo"/> class.
         /// </summary>
         /// <param name="builder">The method builder to wrap.</param>
-        /// <param name="parameterTypes">The parameter types of the method.</param>
         /// <param name="returnType">The return type of the method.</param>
+        /// <param name="parameterTypes">The parameter types of the method.</param>
         /// <param name="customAttributeDatas">The custom attributes applied to the method.</param>
         public IntrospectiveMethodInfo
         (
             MethodBuilder builder,
-            IEnumerable<Type> parameterTypes,
             Type returnType,
-            IEnumerable<CustomAttributeData> customAttributeDatas = default
-        )
+            IEnumerable<Type> parameterTypes,
+            IEnumerable<CustomAttributeData> customAttributeDatas = default)
             : base(builder, customAttributeDatas)
         {
             ReturnType = returnType;
