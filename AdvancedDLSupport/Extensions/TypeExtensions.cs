@@ -28,17 +28,33 @@ namespace AdvancedDLSupport.Extensions
     public static class TypeExtensions
     {
         /// <summary>
-        /// Determines whether or not the given type is a complex type.
+        /// Determines whether or not the given type requires lowering to a more primitive type when being marshalled.
         /// </summary>
         /// <param name="this">The type.</param>
-        /// <returns>true if the type is complex; otherwise, false.</returns>
+        /// <returns>true if the type requires lowering; otherwise, false.</returns>
         [PublicAPI, Pure]
-        public static bool IsComplexType([NotNull] this Type @this)
+        public static bool RequiresLowering([NotNull] this Type @this)
         {
             return
                 @this == typeof(string) ||
                 @this == typeof(bool) ||
-                (@this.IsGenericType && @this.GetGenericTypeDefinition() == typeof(Nullable<>));
+                @this.IsNonRefNullable();
+        }
+
+        /// <summary>
+        /// Determines whether or not the given type is a <see cref="Nullable{T}"/> that is not passed by reference.
+        /// </summary>
+        /// <param name="this">The type.</param>
+        /// <returns>true if it is a nullable that is not passed by reference; otherwise, false.</returns>
+        public static bool IsNonRefNullable(this Type @this)
+        {
+            if (@this.IsByRef)
+            {
+                return false;
+            }
+
+            return @this.IsGenericType &&
+                   @this.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
 
         /// <summary>

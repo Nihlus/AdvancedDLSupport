@@ -296,7 +296,9 @@ namespace AdvancedDLSupport
             where TInterface : class
         {
             var methodGenerator = new MethodImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options);
-            var complexMethodGenerator = new ComplexMethodImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options, TransformerRepository);
+            var loweredGenerator = new LoweredMethodImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options, TransformerRepository);
+
+            var refPermutationGenerator = new RefPermutationImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options, TransformerRepository);
 
             foreach (var method in typeof(TInterface).GetMethods())
             {
@@ -320,13 +322,20 @@ namespace AdvancedDLSupport
                     targetMethod = baseClassMethod;
                 }
 
-                if (method.IsComplexMethod())
+                if (method.RequiresRefPermutations())
                 {
-                    complexMethodGenerator.GenerateImplementation(targetMethod);
+                    refPermutationGenerator.GenerateImplementation(method);
                 }
                 else
                 {
-                    methodGenerator.GenerateImplementation(targetMethod);
+                    if (method.RequiresLowering())
+                    {
+                        loweredGenerator.GenerateImplementation(targetMethod);
+                    }
+                    else
+                    {
+                        methodGenerator.GenerateImplementation(targetMethod);
+                    }
                 }
             }
         }

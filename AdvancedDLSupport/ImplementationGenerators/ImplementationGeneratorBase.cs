@@ -33,7 +33,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// Base class for implementation generators.
     /// </summary>
     /// <typeparam name="T">The type of member to generate the implementation for.</typeparam>
-    internal abstract class ImplementationGeneratorBase<T> : IImplementationGenerator<T> where T : MemberInfo
+    public abstract class ImplementationGeneratorBase<T> : IImplementationGenerator<T> where T : MemberInfo
     {
         /// <inheritdoc />
         public ImplementationOptions Options { get; }

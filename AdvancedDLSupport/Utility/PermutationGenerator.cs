@@ -1,5 +1,5 @@
 ﻿//
-//  NullableRefMethodPermutationGenerator.cs
+//  PermutationGenerator.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -30,7 +30,7 @@ namespace AdvancedDLSupport
     /// Helper class for generating parameter permutations for methods with <see cref="Nullable{T}"/> parameters that
     /// are passed by reference.
     /// </summary>
-    public class NullableRefMethodPermutationGenerator
+    public class PermutationGenerator
     {
         /// <summary>
         /// Generates all possible permutations of either a raw struct passed by reference, or an IntPtr, given a
@@ -59,7 +59,7 @@ namespace AdvancedDLSupport
                 // Due to the fact that we only need to flip between two states for each instance of a nullable
                 // parameter, we can piggyback on the permutation count and use it as a bitmask which determines
                 // what to flip each parameter to.
-                var bits = new BitArray(new []{ i });
+                var bits = new BitArray(new[] { i });
                 permutations.Add(GeneratePermutation(baseParameterList, bits));
             }
 

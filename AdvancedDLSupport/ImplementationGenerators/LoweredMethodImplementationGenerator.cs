@@ -1,5 +1,5 @@
 ﻿//
-//  ComplexMethodImplementationGenerator.cs
+//  LoweredMethodImplementationGenerator.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -34,20 +34,20 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// <summary>
     /// Generates method implementations for methods involving complex types.
     /// </summary>
-    internal class ComplexMethodImplementationGenerator : MethodImplementationGenerator
+    internal class LoweredMethodImplementationGenerator : MethodImplementationGenerator
     {
         [NotNull]
         private readonly TypeTransformerRepository _transformerRepository;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ComplexMethodImplementationGenerator"/> class.
+        /// Initializes a new instance of the <see cref="LoweredMethodImplementationGenerator"/> class.
         /// </summary>
         /// <param name="targetModule">The module in which the method implementation should be generated.</param>
         /// <param name="targetType">The type in which the method implementation should be generated.</param>
         /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
         /// <param name="options">The configuration object to use.</param>
         /// <param name="transformerRepository">The repository where type transformers are stored.</param>
-        public ComplexMethodImplementationGenerator
+        public LoweredMethodImplementationGenerator
         (
             [NotNull] ModuleBuilder targetModule,
             [NotNull] TypeBuilder targetType,
@@ -130,7 +130,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             for (var i = 1; i <= parameters.Length; ++i)
             {
                 var parameter = parameters[i - 1];
-                if (parameter.ParameterType.IsComplexType())
+                if (parameter.ParameterType.RequiresLowering())
                 {
                     var loweredParameterType = loweredParameterTypes[i - 1];
                     EmitParameterValueLowering(il, parameter.ParameterType, loweredParameterType, i);
@@ -145,7 +145,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             il.Emit(OpCodes.Call, loweredMethod);
 
             // Emit return value raising
-            if (complexInterfaceMethod.HasComplexReturnValue())
+            if (complexInterfaceMethod.ReturnValueRequiresLowering())
             {
                 EmitValueRaising(il, complexInterfaceMethod.ReturnType, loweredMethod.ReturnType);
             }
@@ -283,7 +283,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         [NotNull]
         private Type LowerTypeIfRequired([NotNull] Type type)
         {
-            if (type.IsComplexType())
+            if (type.RequiresLowering())
             {
                 var transformer = _transformerRepository.GetComplexTransformer(type);
                 type = transformer.LowerType();
