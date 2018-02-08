@@ -47,22 +47,25 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The builder to copy the attributes to.</param>
         /// <param name="source">The method to copy the attributes from.</param>
-        /// <param name="targetReturnParameterType">The return type of the target method.</param>
-        /// <param name="targetParameterTypes">The parameter types of the target method.</param>
+        /// <param name="newReturnParameterType">The return type of the target method.</param>
+        /// <param name="newParameterTypes">The parameter types of the target method.</param>
         [PublicAPI]
-        public static void CopyCustomAttributesFrom
+        public static void ApplyCustomAttributesFrom
         (
             [NotNull] this MethodBuilder @this,
             [NotNull] MethodInfo source,
-            [NotNull] Type targetReturnParameterType,
-            [NotNull, ItemNotNull] IReadOnlyList<Type> targetParameterTypes
+            [CanBeNull] Type newReturnParameterType = null,
+            [CanBeNull, ItemNotNull] IReadOnlyList<Type> newParameterTypes = null
         )
         {
+            newReturnParameterType = newReturnParameterType ?? source.ReturnType;
+            newParameterTypes = newParameterTypes ?? source.GetParameters().Select(p => p.ParameterType).ToList();
+
             // Pass through all applied attributes
             var returnValueBuilder = @this.DefineParameter(0, source.ReturnParameter.Attributes, null);
             foreach (var attribute in CustomAttributeData.GetCustomAttributes(source.ReturnParameter))
             {
-                if (AttributeBlacklist.ContainsKey(targetReturnParameterType) && AttributeBlacklist[targetReturnParameterType].Contains(attribute.AttributeType))
+                if (AttributeBlacklist.ContainsKey(newReturnParameterType) && AttributeBlacklist[newReturnParameterType].Contains(attribute.AttributeType))
                 {
                     continue;
                 }
@@ -75,7 +78,7 @@ namespace AdvancedDLSupport.Extensions
             {
                 for (var i = 1; i <= methodParameters.Length; ++i)
                 {
-                    var targetParameterType = targetParameterTypes[i - 1];
+                    var targetParameterType = newParameterTypes[i - 1];
                     var methodParameter = methodParameters[i - 1];
 
                     var parameterBuilder = @this.DefineParameter(i, methodParameter.Attributes, methodParameter.Name);
@@ -103,22 +106,24 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The builder to copy the attributes to.</param>
         /// <param name="source">The method to copy the attributes from.</param>
-        /// <param name="targetReturnParameterType">The return type of the target method.</param>
-        /// <param name="targetParameterTypes">The parameter types of the target method.</param>
-        public static void CopyCustomAttributesFrom
+        /// <param name="newReturnParameterType">The return type of the target method.</param>
+        /// <param name="newParameterTypes">The parameter types of the target method.</param>
+        public static void ApplyCustomAttributesFrom
         (
             [NotNull] this MethodBuilder @this,
             [NotNull] IntrospectiveMethodInfo source,
-            [NotNull] Type targetReturnParameterType,
-            [NotNull, ItemNotNull] IReadOnlyList<Type> targetParameterTypes
+            [CanBeNull] Type newReturnParameterType = null,
+            [CanBeNull, ItemNotNull] IReadOnlyList<Type> newParameterTypes = null
         )
         {
-            /*
+            newReturnParameterType = newReturnParameterType ?? source.ReturnType;
+            newParameterTypes = newParameterTypes ?? source.ParameterTypes;
+
             // Pass through all applied attributes
             var returnValueBuilder = @this.DefineParameter(0, source.ReturnParameterAttributes, null);
-            foreach (var attribute in source.CustomReturnParameterAttributes)
+            foreach (var attribute in source.ReturnParameterCustomAttributes)
             {
-                if (AttributeBlacklist.ContainsKey(targetReturnParameterType) && AttributeBlacklist[targetReturnParameterType].Contains(attribute.AttributeType))
+                if (AttributeBlacklist.ContainsKey(newReturnParameterType) && AttributeBlacklist[newReturnParameterType].Contains(attribute.AttributeType))
                 {
                     continue;
                 }
@@ -128,14 +133,14 @@ namespace AdvancedDLSupport.Extensions
 
             if (source.ParameterTypes.Any())
             {
-                for (var i = 1; i <= source.ParameterTypes.Count; ++i)
+                for (var i = 0; i < source.ParameterTypes.Count; ++i)
                 {
-                    var targetParameterType = targetParameterTypes[i - 1];
-                    var methodParameterCustomAttributes = source.CustomParameterAttributes[i - 1];
-                    var methodParameterAttributes = source.ParameterAttributes[i - 1];
-                    var methodParameterName = source.ParameterNames[i - 1];
+                    var targetParameterType = newParameterTypes[i];
+                    var methodParameterCustomAttributes = source.ParameterCustomAttributes[i];
+                    var methodParameterAttributes = source.ParameterAttributes[i];
+                    var methodParameterName = source.ParameterNames[i];
 
-                    var parameterBuilder = @this.DefineParameter(i, methodParameterAttributes, methodParameterName);
+                    var parameterBuilder = @this.DefineParameter(i + 1, methodParameterAttributes, methodParameterName);
                     foreach (var attribute in methodParameterCustomAttributes)
                     {
                         if (AttributeBlacklist.ContainsKey(targetParameterType) && AttributeBlacklist[targetParameterType].Contains(attribute.AttributeType))
@@ -152,7 +157,6 @@ namespace AdvancedDLSupport.Extensions
             {
                 @this.SetCustomAttribute(attribute.GetAttributeBuilder());
             }
-            */
         }
     }
 }

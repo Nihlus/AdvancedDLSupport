@@ -6,10 +6,13 @@ namespace AdvancedDLSupport.Tests.Data
     {
         TestStruct? GetAllocatedTestStruct();
         TestStruct? GetNullTestStruct();
+
+        [return: MarshalAs(UnmanagedType.I1)]
         bool CheckIfStructIsNull(TestStruct? testStruct);
 
         long GetStructPtrValue(ref TestStruct? testStruct);
 
+        [return: MarshalAs(UnmanagedType.I1)]
         [NativeSymbol(nameof(CheckIfStructIsNull))]
         bool CheckIfRefStructIsNull(ref TestStruct? testStruct);
 

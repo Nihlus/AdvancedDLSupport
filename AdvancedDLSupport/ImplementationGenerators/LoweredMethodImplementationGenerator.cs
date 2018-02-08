@@ -109,7 +109,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 interfaceDefinition.ParameterTypes.ToArray()
             );
 
-            return new IntrospectiveMethodInfo(methodBuilder, interfaceDefinition.ReturnType, interfaceDefinition.ParameterTypes);
+            return new IntrospectiveMethodInfo(methodBuilder, interfaceDefinition.ReturnType, interfaceDefinition.ParameterTypes, interfaceDefinition);
         }
 
         /// <summary>
@@ -344,7 +344,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 newParameterTypes.ToArray()
             );
 
-            return new IntrospectiveMethodInfo(loweredMethodBuilder, newReturnType, newParameterTypes);
+            return new IntrospectiveMethodInfo(loweredMethodBuilder, newReturnType, newParameterTypes, complexInterfaceMethod);
         }
 
         /// <summary>

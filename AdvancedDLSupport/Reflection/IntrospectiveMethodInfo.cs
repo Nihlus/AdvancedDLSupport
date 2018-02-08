@@ -52,11 +52,41 @@ namespace AdvancedDLSupport.Reflection
         public bool IsAbstract { get; }
 
         /// <summary>
+        /// Gets the method attributes of the definition.
+        /// </summary>
+        public MethodAttributes Attributes { get; }
+
+        /// <summary>
+        /// Gets the parameter attributes of the return parameter.
+        /// </summary>
+        public ParameterAttributes ReturnParameterAttributes { get; }
+
+        /// <summary>
+        /// Gets the names of the parameters.
+        /// </summary>
+        public IReadOnlyList<string> ParameterNames { get; }
+
+        /// <summary>
+        /// Gets the parameter attributes of the parameter definitions.
+        /// </summary>
+        public IReadOnlyList<ParameterAttributes> ParameterAttributes { get; }
+
+        /// <summary>
+        /// Gets the custom attributes applied to the return value parameter.
+        /// </summary>
+        public IReadOnlyList<CustomAttributeData> ReturnParameterCustomAttributes { get; }
+
+        /// <summary>
+        /// Gets the custom attributes applied to the parameters.
+        /// </summary>
+        public IReadOnlyList<IReadOnlyList<CustomAttributeData>> ParameterCustomAttributes { get; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectiveMethodInfo"/> class.
         /// </summary>
         /// <param name="methodInfo">The <see cref="MethodInfo"/> to wrap.</param>
         public IntrospectiveMethodInfo(MethodInfo methodInfo)
-            : base(methodInfo)
+            : base(methodInfo, methodInfo.CustomAttributes)
         {
             if (methodInfo is MethodBuilder)
             {
@@ -68,6 +98,25 @@ namespace AdvancedDLSupport.Reflection
 
             IsSpecialName = methodInfo.IsSpecialName;
             IsAbstract = methodInfo.IsAbstract;
+
+            Attributes = methodInfo.Attributes;
+
+            var parameterNames = new List<string>();
+            var parameterAttributes = new List<ParameterAttributes>();
+            var parameterCustomAttributes = new List<IEnumerable<CustomAttributeData>>();
+            foreach (var parameter in methodInfo.GetParameters())
+            {
+                parameterNames.Add(parameter.Name);
+                parameterCustomAttributes.Add(parameter.GetCustomAttributesData() ?? new List<CustomAttributeData>());
+                parameterAttributes.Add(parameter.Attributes);
+            }
+
+            ParameterNames = parameterNames;
+            ParameterAttributes = parameterAttributes;
+            ParameterCustomAttributes = parameterCustomAttributes.Select(pl => pl.ToList()).ToList();
+
+            ReturnParameterAttributes = methodInfo.ReturnParameter.Attributes;
+            ReturnParameterCustomAttributes = methodInfo.ReturnParameter.GetCustomAttributesData().ToList() ?? new List<CustomAttributeData>();
         }
 
         /// <summary>
@@ -76,14 +125,14 @@ namespace AdvancedDLSupport.Reflection
         /// <param name="builder">The method builder to wrap.</param>
         /// <param name="returnType">The return type of the method.</param>
         /// <param name="parameterTypes">The parameter types of the method.</param>
-        /// <param name="customAttributeDatas">The custom attributes applied to the method.</param>
+        /// <param name="definitionToCopyAttributesFrom">The definition to copy custom attributes from.</param>
         public IntrospectiveMethodInfo
         (
             MethodBuilder builder,
             Type returnType,
             IEnumerable<Type> parameterTypes,
-            IEnumerable<CustomAttributeData> customAttributeDatas = default)
-            : base(builder, customAttributeDatas)
+            IntrospectiveMethodInfo definitionToCopyAttributesFrom = null)
+            : base(builder, definitionToCopyAttributesFrom?.CustomAttributes)
         {
             ReturnType = returnType;
             ParameterTypes = parameterTypes.ToList();
@@ -91,6 +140,19 @@ namespace AdvancedDLSupport.Reflection
             // TODO: Pass in or determine if they are available
             IsSpecialName = builder.IsSpecialName;
             IsAbstract = builder.IsAbstract;
+
+            if (!(definitionToCopyAttributesFrom is null))
+            {
+                // Copy attributes
+                Attributes = definitionToCopyAttributesFrom.Attributes;
+
+                ParameterNames = definitionToCopyAttributesFrom.ParameterNames;
+                ParameterAttributes = definitionToCopyAttributesFrom.ParameterAttributes;
+                ParameterCustomAttributes = definitionToCopyAttributesFrom.ParameterCustomAttributes;
+
+                ReturnParameterAttributes = definitionToCopyAttributesFrom.ReturnParameterAttributes;
+                ReturnParameterCustomAttributes = definitionToCopyAttributesFrom.ReturnParameterCustomAttributes;
+            }
         }
     }
 }
