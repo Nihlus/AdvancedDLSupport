@@ -226,7 +226,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="argumentIndex">The argument index to load.</param>
         /// <param name="nextFreeLocalSlot">The next unused local variable index.</param>
         /// <param name="wrappedType">The type wrapped by the nullable.</param>
-        /// <returns>The local variable index of the generated pinned nullable.</returns>
         private static void EmitNullableValueRef(ILGenerator il, int argumentIndex, ref int nextFreeLocalSlot, Type wrappedType)
         {
             // Declare a pinned pointer local
