@@ -21,9 +21,12 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
+
 using static AdvancedDLSupport.ImplementationOptions;
+using static System.Reflection.MethodAttributes;
 
 namespace AdvancedDLSupport.ImplementationGenerators
 {
@@ -31,7 +34,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// Base class for implementation generators.
     /// </summary>
     /// <typeparam name="T">The type of member to generate the implementation for.</typeparam>
-    internal abstract class ImplementationGeneratorBase<T> : IImplementationGenerator<T> where T : MemberInfo
+    public abstract class ImplementationGeneratorBase<T> : IImplementationGenerator<T> where T : MemberInfo
     {
         /// <inheritdoc />
         public ImplementationOptions Options { get; }
@@ -78,22 +81,54 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <inheritdoc />
         public void GenerateImplementation(T member)
         {
-            var metadataAttribute = member.GetCustomAttribute<NativeSymbolAttribute>() ?? new NativeSymbolAttribute(member.Name);
+            var symbolInfo = GetSymbolNameAndIdentifier(member);
+
+            GenerateImplementation(member, symbolInfo.SymbolName, symbolInfo.MemberIdentifier);
+        }
+
+        private static (string SymbolName, string MemberIdentifier) GetSymbolNameAndIdentifier(T member)
+        {
+            NativeSymbolAttribute metadataAttribute;
+            // HACK: Working around weird casting behaviour in the CLR
+            if (member is IIntrospectiveMember introspective)
+            {
+                metadataAttribute = introspective.GetCustomAttribute<NativeSymbolAttribute>() ??
+                                    new NativeSymbolAttribute(member.Name);
+            }
+            else
+            {
+                metadataAttribute =
+                    member.GetCustomAttribute<NativeSymbolAttribute>() ?? new NativeSymbolAttribute(member.Name);
+            }
+
             var symbolName = metadataAttribute.Entrypoint ?? member.Name;
 
             var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
             var memberIdentifier = $"{member.Name}_{uniqueIdentifier}";
 
-            GenerateImplementation(member, symbolName, memberIdentifier);
+            return (symbolName, memberIdentifier);
         }
 
         /// <summary>
-        /// Generates the implementation for the given member using the given symbol name and member identifier.
+        /// Generates a definition and implementation for the given member info, using the given symbol name and member
+        /// identifier.
         /// </summary>
-        /// <param name="member">The member to generate the implementation for.</param>
+        /// <param name="member">The undefined member.</param>
         /// <param name="symbolName">The name of the symbol in the native library.</param>
         /// <param name="uniqueMemberIdentifier">The identifier to use for generated types and methods.</param>
         protected abstract void GenerateImplementation([NotNull] T member, [NotNull] string symbolName, [NotNull] string uniqueMemberIdentifier);
+
+        /// <summary>
+        /// Generates an implementation for the given member info, which is already defined, using the given symbol name
+        /// and member identifier.
+        /// </summary>
+        /// <param name="member">The defined member.</param>
+        /// <param name="symbolName">The name of the symbol in the native library.</param>
+        /// <param name="uniqueMemberIdentifier">The identifier to use for generated types and methods.</param>
+        public virtual void GenerateImplementationForDefinition([NotNull] T member, [NotNull] string symbolName, [NotNull] string uniqueMemberIdentifier)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Emits a call to <see cref="AnonymousImplementationBase.ThrowIfDisposed"/>.
@@ -171,7 +206,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var lambdaBuilder = TargetType.DefineMethod
             (
                 $"{symbolName}_{uniqueIdentifier}_lazy",
-                MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Final,
+                Private | HideBySig | Final,
                 typeof(IntPtr),
                 null
             );
@@ -207,7 +242,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var lambdaBuilder = TargetType.DefineMethod
             (
                 $"{delegateType.Name}_{uniqueIdentifier}_lazy",
-                MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Final,
+                Private | HideBySig | Final,
                 delegateType,
                 null
             );

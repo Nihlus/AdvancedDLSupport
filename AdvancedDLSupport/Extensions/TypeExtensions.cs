@@ -18,6 +18,8 @@
 //
 
 using System;
+using System.Collections.Generic;
+using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.Extensions
@@ -25,20 +27,80 @@ namespace AdvancedDLSupport.Extensions
     /// <summary>
     /// Extension methods for the <see cref="Type"/> class.
     /// </summary>
-    public static class TypeExtensions
+    internal static class TypeExtensions
     {
         /// <summary>
-        /// Determines whether or not the given type is a complex type.
+        /// Gets the methods defined in the given type as wrapped introspective methods.
+        /// </summary>
+        /// <param name="this">The type to inspect.</param>
+        /// <returns>The methods.</returns>
+        public static IEnumerable<IntrospectiveMethodInfo> GetIntrospectiveMethods(this Type @this)
+        {
+            var methods = @this.GetMethods();
+            foreach (var method in methods)
+            {
+                yield return new IntrospectiveMethodInfo(method);
+            }
+        }
+
+        /// <summary>
+        /// Gets a method defined in the given type by its name and parameter types.
+        /// </summary>
+        /// <param name="this">The type to inspect.</param>
+        /// <param name="name">The name of the method.</param>
+        /// <param name="parameterTypes">The parameter types of the method.</param>
+        /// <returns>The method.</returns>
+        public static IntrospectiveMethodInfo GetIntrospectiveMethod(this Type @this, string name, Type[] parameterTypes)
+        {
+            var method = @this.GetMethod(name, parameterTypes);
+            return method is null ? null : new IntrospectiveMethodInfo(method);
+        }
+
+        /// <summary>
+        /// Determines whether or not the given type requires lowering to a more primitive type when being marshalled.
         /// </summary>
         /// <param name="this">The type.</param>
-        /// <returns>true if the type is complex; otherwise, false.</returns>
+        /// <returns>true if the type requires lowering; otherwise, false.</returns>
         [PublicAPI, Pure]
-        public static bool IsComplexType([NotNull] this Type @this)
+        public static bool RequiresLowering([NotNull] this Type @this)
         {
             return
                 @this == typeof(string) ||
-                @this == typeof(bool) ||
-                (@this.IsGenericType && @this.GetGenericTypeDefinition() == typeof(Nullable<>));
+                @this.IsNonRefNullable();
+        }
+
+        /// <summary>
+        /// Determines whether or not the given type is a <see cref="Nullable{T}"/> that is not passed by reference.
+        /// </summary>
+        /// <param name="this">The type.</param>
+        /// <returns>true if it is a nullable that is not passed by reference; otherwise, false.</returns>
+        public static bool IsNonRefNullable(this Type @this)
+        {
+            if (@this.IsByRef)
+            {
+                return false;
+            }
+
+            return @this.IsGenericType &&
+                   @this.GetGenericTypeDefinition() == typeof(Nullable<>);
+        }
+
+        /// <summary>
+        /// Determines whether or not the given type is a <see cref="Nullable{T}"/> passed by reference.
+        /// </summary>
+        /// <param name="this">The type.</param>
+        /// <returns>true if it is a nullable passed by reference; otherwise, false.</returns>
+        public static bool IsRefNullable(this Type @this)
+        {
+            if (!@this.IsByRef)
+            {
+                return false;
+            }
+
+            var underlying = @this.GetElementType();
+
+            return underlying.IsGenericType &&
+                   underlying.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
     }
 }

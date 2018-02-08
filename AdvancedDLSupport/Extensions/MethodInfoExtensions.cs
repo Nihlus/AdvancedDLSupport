@@ -17,8 +17,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
 using System.Linq;
 using System.Reflection;
+using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.Extensions
@@ -26,44 +28,56 @@ namespace AdvancedDLSupport.Extensions
     /// <summary>
     /// Extension methods for the <see cref="MethodInfo"/> class.
     /// </summary>
-    public static class MethodInfoExtensions
+    internal static class MethodInfoExtensions
     {
         /// <summary>
-        /// Determines whether or not the given method is complex,
+        /// Determines whether or not the given method requires a set of permutations to deal with
+        /// <see cref="Nullable{T}"/> parameters passed by reference.
+        /// </summary>
+        /// <param name="this">The method.</param>
+        /// <returns>true if the method requires permutations; otherwise, false.</returns>
+        public static bool RequiresRefPermutations(this IntrospectiveMethodInfo @this)
+        {
+            return @this.ParameterTypes.Any(p => p.IsRefNullable());
+        }
+
+        /// <summary>
+        /// Determines whether or not the given method requires lowering, that is, whether or not any of its involved
+        /// types require lowering.
         /// </summary>
         /// <param name="this">The method to check.</param>
         /// <returns>true if the method is complex; otherwise, false.</returns>
         [PublicAPI, Pure]
-        public static bool IsComplexMethod([NotNull] this MethodInfo @this)
+        public static bool RequiresLowering([NotNull] this IntrospectiveMethodInfo @this)
         {
-            return HasComplexParameters(@this) || HasComplexReturnValue(@this);
+            return ParametersRequireLowering(@this) || ReturnValueRequiresLowering(@this);
         }
 
         /// <summary>
-        /// Determines whether or not the method has complex parameters.
+        /// Determines whether or not the method's parameters require lowering.
         /// </summary>
         /// <param name="this">The method.</param>
-        /// <returns>true if the method has complex parameters; otherwise, false.</returns>
+        /// <returns>true if the method has parameters that require lowering; otherwise, false.</returns>
         [PublicAPI, Pure]
-        public static bool HasComplexParameters([NotNull] this MethodBase @this)
+        public static bool ParametersRequireLowering([NotNull] this IntrospectiveMethodInfo @this)
         {
-            var parameters = @this.GetParameters();
+            var parameters = @this.ParameterTypes;
             return parameters.Any
             (
                 p =>
-                    p.ParameterType.IsComplexType()
+                    p.RequiresLowering()
             );
         }
 
         /// <summary>
-        /// Determines whether or not the given method has a complex return type.
+        /// Determines whether or not the given method has a return value that requires lowering.
         /// </summary>
         /// <param name="this">The method.</param>
-        /// <returns>true if the method has a complex return value; otherwise, false.</returns>
+        /// <returns>true if the method has a return value that requires lowering; otherwise, false.</returns>
         [PublicAPI, Pure]
-        public static bool HasComplexReturnValue([NotNull] this MethodInfo @this)
+        public static bool ReturnValueRequiresLowering([NotNull] this IntrospectiveMethodInfo @this)
         {
-            return @this.ReturnType.IsComplexType();
+            return @this.ReturnType.RequiresLowering();
         }
     }
 }

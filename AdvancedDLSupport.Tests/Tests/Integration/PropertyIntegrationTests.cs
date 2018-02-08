@@ -1,90 +1,87 @@
 using System;
 using System.Runtime.InteropServices;
 using AdvancedDLSupport.Tests.Data;
+using AdvancedDLSupport.Tests.TestBases;
 using Xunit;
 
 // ReSharper disable ArgumentsStyleLiteral
 
 namespace AdvancedDLSupport.Tests.Integration
 {
-	public class PropertyIntegrationTests
+	public class PropertyIntegrationTests : LibraryTestBase<IPropertyLibrary>
 	{
 		private const string LibraryName = "PropertyTests";
+
+		public PropertyIntegrationTests() : base(LibraryName)
+		{
+		}
 
 		[Fact]
 		public void CanGetGlobalVariableAsProperty()
 		{
-			var library = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IPropertyLibrary>(LibraryName);
-			library.ResetData();
+			Library.ResetData();
 
-			Assert.Equal(5, library.GlobalVariable);
+			Assert.Equal(5, Library.GlobalVariable);
 		}
 
 		[Fact]
 		public void CanSetGlobalVariableAsProperty()
 		{
-			var library = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IPropertyLibrary>(LibraryName);
-			library.ResetData();
+			Library.ResetData();
 
-			library.GlobalVariable = 1;
-			Assert.Equal(1, library.GlobalVariable);
+			Library.GlobalVariable = 1;
+			Assert.Equal(1, Library.GlobalVariable);
 		}
 
 		[Fact]
 		public void CanGetGlobalVariableAsGetOnlyProperty()
 		{
-			var library = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IPropertyLibrary>(LibraryName);
-			library.ResetData();
+			Library.ResetData();
 
-			Assert.Equal(5, library.GlobalVariableGetOnly);
+			Assert.Equal(5, Library.GlobalVariableGetOnly);
 		}
 
 		[Fact]
 		public void CanSetGlobalVariableAsSetOnlyProperty()
 		{
-			var library = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IPropertyLibrary>(LibraryName);
-			library.ResetData();
+			Library.ResetData();
 
-			library.GlobalVariableSetOnly = 1;
-			Assert.Equal(1, library.GlobalVariable);
+			Library.GlobalVariableSetOnly = 1;
+			Assert.Equal(1, Library.GlobalVariable);
 		}
 
 		[Fact]
 		public unsafe void CanGetGlobalPointerVariableAsProperty()
 		{
-			var library = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IPropertyLibrary>(LibraryName);
-			library.ResetData();
+			Library.ResetData();
 
-			Assert.Equal(20, *library.GlobalPointerVariable);
+			Assert.Equal(20, *Library.GlobalPointerVariable);
 		}
 
 		[Fact]
 		public unsafe void CanSetGlobalPointerVariableAsProperty()
 		{
-			var library = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IPropertyLibrary>(LibraryName);
-			library.ResetData();
+			Library.ResetData();
 
-			*library.GlobalPointerVariable = 25;
-			Assert.Equal(25, *library.GlobalPointerVariable);
+			*Library.GlobalPointerVariable = 25;
+			Assert.Equal(25, *Library.GlobalPointerVariable);
 		}
 
 		[Fact]
 		public unsafe void CanGetGlobalPointerVariableAsGetOnlyProperty()
 		{
-			var library = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IPropertyLibrary>(LibraryName);
-			library.ResetData();
+			Library.ResetData();
 
-			Assert.Equal(20, *library.GlobalPointerVariableGetOnly);
+			Assert.Equal(20, *Library.GlobalPointerVariableGetOnly);
 		}
 
 		[Fact]
 		public unsafe void CanSetGlobalPointerVariableAsSetOnlyProperty()
 		{
-			var library = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IPropertyLibrary>(LibraryName);
-			library.ResetData();
+			Library.ResetData();
 
-			Marshal.StructureToPtr(25, new IntPtr(library.GlobalPointerVariableGetOnly), false);
-			Assert.Equal(25, *library.GlobalPointerVariable);
+			Marshal.StructureToPtr(25, new IntPtr(Library.GlobalPointerVariableGetOnly), false);
+			Assert.Equal(25, *Library.GlobalPointerVariable);
 		}
 	}
 }

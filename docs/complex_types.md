@@ -53,7 +53,7 @@ int pa_simple_flush(pa_simple *s, int *error);
 ```cs
 public interface IPulseSimple
 {
-    ref pa_simple? pa_simple_new
+    IntPtr pa_simple_new
     (
         string server,
         string name,
@@ -66,25 +66,27 @@ public interface IPulseSimple
         out int error
     );
 
-    void pa_simple_free(ref pa_simple s);
+    void pa_simple_free(IntPtr s);
 
-    int pa_simple_write(ref pa_simple s, IntPtr data, UIntPtr bytes, out int error);
+    int pa_simple_write(IntPtr s, byte[] data, UIntPtr bytes, out int error);
 
-    int pa_simple_drain(ref pa_simple s, out int error);
+    int pa_simple_drain(IntPtr s, out int error);
 
     int pa_simple_read
     (
-        ref pa_simple s,
-        ref IntPtr data,
+        IntPtr s,
+        byte[] data,
         UIntPtr bytes,
         out int error;
     );
 
-    ulong pa_simple_get_latency(ref pa_simple s, out int error);
+    ulong pa_simple_get_latency(IntPtr s, out int error);
 
-    int pa_simple_flush(ref pa_simple s, out int error);
+    int pa_simple_flush(IntPtr s, out int error);
 }
 ```
 
+One important thing to note is that `Nullable<T>` does not yet support the `ref` or `out` modifier.
+
 [1]: https://freedesktop.org/software/pulseaudio/doxygen/simple_8h_source.html
-[2]: http://mattwarren.org/2017/05/25/Lowering-in-the-C-Compiler/
+[2]: http://mattwarren.org/2017/05/25/Lowering-in-the-C-Compiler

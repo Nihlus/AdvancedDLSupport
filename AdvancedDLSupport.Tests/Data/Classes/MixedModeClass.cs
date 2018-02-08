@@ -1,4 +1,5 @@
 ﻿using System;
+// ReSharper disable ValueParameterNotUsed
 
 namespace AdvancedDLSupport.Tests.Data.Classes
 {

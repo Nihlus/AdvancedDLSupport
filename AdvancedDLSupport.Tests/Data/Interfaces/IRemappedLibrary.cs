@@ -1,5 +1,4 @@
-﻿// ReSharper disable UnusedMember.Global
-namespace AdvancedDLSupport.Tests.Data
+﻿namespace AdvancedDLSupport.Tests.Data
 {
     public interface IRemappedLibrary
     {

@@ -1,19 +1,26 @@
 ﻿using AdvancedDLSupport.Tests.Data;
+using AdvancedDLSupport.Tests.TestBases;
 using Xunit;
 
 namespace AdvancedDLSupport.Tests.Integration
 {
-    public class DllMapTests
+    public class DllMapTests : LibraryTestBase<IRemappedLibrary>
     {
         private const string LibraryName = "OriginalLibraryName";
+
+        public DllMapTests() : base(LibraryName)
+        {
+        }
+
+        protected override ImplementationOptions GetImplementationOptions()
+        {
+            return ImplementationOptions.EnableDllMapSupport;
+        }
 
         [Fact]
         void RemappedLibraryMapsToCorrectLibrary()
         {
-            var config = ImplementationOptions.EnableDllMapSupport;
-            var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<IRemappedLibrary>(LibraryName);
-
-            Assert.Equal(25, library.Multiply(5, 5));
+            Assert.Equal(25, Library.Multiply(5, 5));
         }
     }
 }

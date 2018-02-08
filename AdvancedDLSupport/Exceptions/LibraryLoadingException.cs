@@ -29,19 +29,16 @@ namespace AdvancedDLSupport
     public class LibraryLoadingException : Exception
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LibraryLoadingException"/> class.
+        /// Gets the name of the library that failed to load.
         /// </summary>
-        [PublicAPI]
-        public LibraryLoadingException()
-        {
-        }
+        public string LibraryName { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LibraryLoadingException"/> class.
         /// </summary>
         /// <param name="message">The message of the exception.</param>
         [PublicAPI]
-        public LibraryLoadingException([NotNull] string message)
+        public LibraryLoadingException([CanBeNull] string message)
             : base(message)
         {
         }
@@ -50,11 +47,25 @@ namespace AdvancedDLSupport
         /// Initializes a new instance of the <see cref="LibraryLoadingException"/> class.
         /// </summary>
         /// <param name="message">The message of the exception.</param>
-        /// <param name="inner">The exception which caused this exception.</param>
+        /// <param name="libraryName">The name of the library that failed to load.</param>
         [PublicAPI]
-        public LibraryLoadingException([NotNull] string message, [NotNull] Exception inner)
+        public LibraryLoadingException([NotNull] string message, [CanBeNull] string libraryName)
+            : base(message)
+        {
+            LibraryName = libraryName;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LibraryLoadingException"/> class.
+        /// </summary>
+        /// <param name="message">The message of the exception.</param>
+        /// <param name="inner">The exception which caused this exception.</param>
+        /// <param name="libraryName">The name of the library that failed to load.</param>
+        [PublicAPI]
+        public LibraryLoadingException([NotNull] string message, [NotNull] Exception inner, [CanBeNull] string libraryName)
             : base(message, inner)
         {
+            LibraryName = libraryName;
         }
     }
 }

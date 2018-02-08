@@ -1,5 +1,5 @@
 ﻿//
-//  MyStruct.cs
+//  MemberInfoExtensions.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -17,17 +17,25 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#pragma warning disable SA1600, CS1591 // Elements should be documented
+using System;
+using System.Reflection;
 
-namespace AdvancedDLSupport.Example
+namespace AdvancedDLSupport.Extensions
 {
-    public struct MyStruct
+    /// <summary>
+    /// Extension methods for the <see cref="MemberInfo"/> class.
+    /// </summary>
+    public static class MemberInfoExtensions
     {
-        public MyStruct(int a = 25)
+        /// <summary>
+        /// Determines whether or not the given member has a custom attribute of the given type.
+        /// </summary>
+        /// <param name="this">The member info.</param>
+        /// <typeparam name="T">The attribute type.</typeparam>
+        /// <returns>true if it has one; otherwise, false.</returns>
+        public static bool HasCustomAttribute<T>(this MemberInfo @this) where T : Attribute
         {
-            A = a;
+            return !(@this.GetCustomAttribute<T>() is null);
         }
-
-        public int A;
     }
 }

@@ -1,4 +1,4 @@
-﻿//
+//
 //  ITypeTransformer.cs
 //
 //  Copyright (c) 2018 Firwood Software
@@ -18,6 +18,7 @@
 //
 
 using System;
+using System.Reflection;
 using JetBrains.Annotations;
 
 #pragma warning disable SA1402
@@ -58,16 +59,18 @@ namespace AdvancedDLSupport
         /// Lowers a value of type <typeparamref name="T1"/> to a value of type <typeparamref name="T2"/>.
         /// </summary>
         /// <param name="value">The value to lower.</param>
+        /// <param name="parameter">The parameter that the value originated from.</param>
         /// <returns>A lowered value.</returns>
         [PublicAPI, CanBeNull]
-        T2 LowerValue([CanBeNull] T1 value);
+        T2 LowerValue([CanBeNull] T1 value, [NotNull] ParameterInfo parameter);
 
         /// <summary>
         /// Raises a value of type <typeparamref name="T2"/> to a value of type <typeparamref name="T1"/>.
         /// </summary>
         /// <param name="value">The value to raise.</param>
+        /// <param name="parameter">The parameter that the value is headed to.</param>
         /// <returns>A raised value.</returns>
         [PublicAPI, CanBeNull]
-        T1 RaiseValue([CanBeNull] T2 value);
+        T1 RaiseValue([CanBeNull] T2 value, [NotNull] ParameterInfo parameter);
     }
 }

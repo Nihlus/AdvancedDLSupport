@@ -1,5 +1,5 @@
 ﻿//
-//  IExample.cs
+//  IIntrospectiveMember.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -17,22 +17,20 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#pragma warning disable SA1600, CS1591 // Elements should be documented
+using System;
 
-namespace AdvancedDLSupport.Example
+namespace AdvancedDLSupport.Reflection
 {
-    public unsafe interface IExample
+    /// <summary>
+    /// Introspective member interface.
+    /// </summary>
+    public interface IIntrospectiveMember
     {
-        MyStruct* MyStructure { get; set; }
-
-        void InitializeMyStructure();
-
-        int DoMath(ref MyStruct struc);
-
-        string GetString();
-
-        string GetNullString();
-
-        MyStruct? GetAllocatedTestStruct();
+        /// <summary>
+        /// Gets a custom attribute of <typeparamref name="TAttribute"/>, or null if none can be found.
+        /// </summary>
+        /// <typeparam name="TAttribute">The type of attribute to get.</typeparam>
+        /// <returns>The attribute, or null.</returns>
+        TAttribute GetCustomAttribute<TAttribute>() where TAttribute : Attribute;
     }
 }

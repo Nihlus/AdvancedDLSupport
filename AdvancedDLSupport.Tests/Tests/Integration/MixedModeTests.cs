@@ -16,7 +16,7 @@ namespace AdvancedDLSupport.Tests.Integration
 		{
 			_builder = new AnonymousImplementationBuilder();
 
-			_mixedModeClass = _builder.ResolvedAndActivateClass<MixedModeClass, IMixedModeLibrary>(LibraryName);
+			_mixedModeClass = _builder.ResolveAndActivateClass<MixedModeClass, IMixedModeLibrary>(LibraryName);
 		}
 
 		[Fact]
@@ -25,7 +25,7 @@ namespace AdvancedDLSupport.Tests.Integration
 			Assert.Throws<ArgumentException>
 			(
 				() =>
-					_builder.ResolvedAndActivateClass<MixedModeClassThatIsNotAbstract, IMixedModeLibrary>(LibraryName)
+					_builder.ResolveAndActivateClass<MixedModeClassThatIsNotAbstract, IMixedModeLibrary>(LibraryName)
 			);
 		}
 
