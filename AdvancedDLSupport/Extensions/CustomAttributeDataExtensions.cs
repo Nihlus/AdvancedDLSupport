@@ -1,5 +1,5 @@
 ﻿//
-//  IImplementationGenerator.cs
+//  CustomAttributeDataExtensions.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -17,26 +17,31 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.ImplementationGenerators
+namespace AdvancedDLSupport.Extensions
 {
     /// <summary>
-    /// Interface for classes that generate anonymous implementations for members.
+    /// Extension methods for the <see cref="CustomAttributeData"/> class.
     /// </summary>
-    /// <typeparam name="TAccepted">The type of member that the class will generate for.</typeparam>
-    internal interface IImplementationGenerator<in TAccepted> where TAccepted : MemberInfo
+    internal static class CustomAttributeDataExtensions
     {
         /// <summary>
-        /// Gets the implementation configuration object to use.
+        /// Gets an attribute builder for the given attribute data instance.
         /// </summary>
-        ImplementationOptions Options { get; }
-
-        /// <summary>
-        /// Generates a definition and implementation for the given member.
-        /// </summary>
-        /// <param name="member">The member to generate the implementation for.</param>
-        void GenerateImplementation([NotNull] TAccepted member);
+        /// <param name="this">The attribute data to create a builder for.</param>
+        /// <returns>An attribute builder.</returns>
+        [NotNull, Pure]
+        public static CustomAttributeBuilder GetAttributeBuilder([NotNull] this CustomAttributeData @this)
+        {
+            return new CustomAttributeBuilder
+            (
+                @this.Constructor,
+                @this.ConstructorArguments.Select(a => a.Value).ToArray()
+            );
+        }
     }
 }

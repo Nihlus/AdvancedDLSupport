@@ -1,5 +1,5 @@
 ﻿//
-//  IImplementationGenerator.cs
+//  IIntrospectiveMember.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -17,26 +17,20 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Reflection;
-using JetBrains.Annotations;
+using System;
 
-namespace AdvancedDLSupport.ImplementationGenerators
+namespace AdvancedDLSupport.Reflection
 {
     /// <summary>
-    /// Interface for classes that generate anonymous implementations for members.
+    /// Introspective member interface.
     /// </summary>
-    /// <typeparam name="TAccepted">The type of member that the class will generate for.</typeparam>
-    internal interface IImplementationGenerator<in TAccepted> where TAccepted : MemberInfo
+    public interface IIntrospectiveMember
     {
         /// <summary>
-        /// Gets the implementation configuration object to use.
+        /// Gets a custom attribute of <typeparamref name="TAttribute"/>, or null if none can be found.
         /// </summary>
-        ImplementationOptions Options { get; }
-
-        /// <summary>
-        /// Generates a definition and implementation for the given member.
-        /// </summary>
-        /// <param name="member">The member to generate the implementation for.</param>
-        void GenerateImplementation([NotNull] TAccepted member);
+        /// <typeparam name="TAttribute">The type of attribute to get.</typeparam>
+        /// <returns>The attribute, or null.</returns>
+        TAttribute GetCustomAttribute<TAttribute>() where TAttribute : Attribute;
     }
 }

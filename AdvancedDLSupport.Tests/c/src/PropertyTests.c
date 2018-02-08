@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "wincomp.h"
+#include "comp.h"
 
 __declspec(dllexport) int32_t GlobalVariable = 5;
 __declspec(dllexport) int32_t* GlobalPointerVariable = NULL;

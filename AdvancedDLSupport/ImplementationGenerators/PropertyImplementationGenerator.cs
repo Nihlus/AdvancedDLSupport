@@ -22,6 +22,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
+using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
 
@@ -33,7 +34,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// <summary>
     /// Generates implementations for properties.
     /// </summary>
-    internal class PropertyImplementationGenerator : ImplementationGeneratorBase<PropertyInfo>
+    internal class PropertyImplementationGenerator : ImplementationGeneratorBase<IntrospectivePropertyInfo>
     {
         private const MethodAttributes PropertyMethodAttributes =
             PrivateScope |
@@ -62,8 +63,17 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <inheritdoc />
-        protected override void GenerateImplementation(PropertyInfo property, string symbolName, string uniqueMemberIdentifier)
+        protected override void GenerateImplementation(IntrospectivePropertyInfo property, string symbolName, string uniqueMemberIdentifier)
         {
+            var propertyBuilder = TargetType.DefineProperty
+            (
+                property.Name,
+                PropertyAttributes.None,
+                CallingConventions.HasThis,
+                property.PropertyType,
+                property.IndexParameterTypes.ToArray()
+            );
+
             // Note, the field is going to have to be a pointer, because it is pointing to global variable
             var fieldType = Options.HasFlagFast(UseLazyBinding) ? typeof(Lazy<IntPtr>) : typeof(IntPtr);
             var propertyFieldBuilder = TargetType.DefineField
@@ -71,15 +81,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 uniqueMemberIdentifier,
                 fieldType,
                 FieldAttributes.Private
-            );
-
-            var propertyBuilder = TargetType.DefineProperty
-            (
-                property.Name,
-                PropertyAttributes.None,
-                CallingConventions.HasThis,
-                property.PropertyType,
-                property.GetIndexParameters().Select(p => p.ParameterType).ToArray()
             );
 
             if (property.CanRead)
@@ -126,12 +127,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
         private void GeneratePropertySetter
         (
-            [NotNull] PropertyInfo property,
+            [NotNull] IntrospectivePropertyInfo property,
             [NotNull] FieldInfo propertyFieldBuilder,
             [NotNull] PropertyBuilder propertyBuilder
         )
         {
-            var actualSetMethod = property.GetSetMethod();
+            var wrappedProperty = property.GetWrappedMember();
+            var actualSetMethod = wrappedProperty.GetSetMethod();
             var setterMethod = TargetType.DefineMethod
             (
                 actualSetMethod.Name,
@@ -216,12 +218,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
         private void GeneratePropertyGetter
         (
-            [NotNull] PropertyInfo property,
+            [NotNull] IntrospectivePropertyInfo property,
             [NotNull] FieldInfo propertyFieldBuilder,
             [NotNull] PropertyBuilder propertyBuilder
         )
         {
-            var actualGetMethod = property.GetGetMethod();
+            var wrappedProperty = property.GetWrappedMember();
+            var actualGetMethod = wrappedProperty.GetGetMethod();
             var getterMethod = TargetType.DefineMethod
             (
                 actualGetMethod.Name,

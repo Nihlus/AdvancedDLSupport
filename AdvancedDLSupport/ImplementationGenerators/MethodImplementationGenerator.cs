@@ -22,6 +22,9 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
+
+using AdvancedDLSupport.Extensions;
+using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
 
@@ -36,7 +39,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// <summary>
     /// Generates implementations for methods.
     /// </summary>
-    internal class MethodImplementationGenerator : ImplementationGeneratorBase<MethodInfo>
+    internal class MethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MethodImplementationGenerator"/> class.
@@ -57,12 +60,22 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <inheritdoc />
-        protected override void GenerateImplementation(MethodInfo method, string symbolName, string uniqueMemberIdentifier)
+        protected override void GenerateImplementation(IntrospectiveMethodInfo method, string symbolName, string uniqueMemberIdentifier)
         {
-            var metadataAttribute = method.GetCustomAttribute<NativeSymbolAttribute>() ??
-                                    new NativeSymbolAttribute(method.Name);
+            var definition = GenerateDelegateInvokerDefinition(method);
 
-            var delegateBuilder = GenerateDelegateType(method, uniqueMemberIdentifier, metadataAttribute.CallingConvention);
+            GenerateImplementationForDefinition(definition, symbolName, uniqueMemberIdentifier);
+
+            TargetType.DefineMethodOverride(definition.GetWrappedMember(), method.GetWrappedMember());
+        }
+
+        /// <inheritdoc />
+        public override void GenerateImplementationForDefinition(IntrospectiveMethodInfo definition, string symbolName, string uniqueMemberIdentifier)
+        {
+            var metadataAttribute = definition.GetCustomAttribute<NativeSymbolAttribute>() ??
+                                    new NativeSymbolAttribute(definition.Name);
+
+            var delegateBuilder = GenerateDelegateType(definition, uniqueMemberIdentifier, metadataAttribute.CallingConvention);
 
             // Create a delegate field
             var delegateBuilderType = delegateBuilder.CreateTypeInfo();
@@ -71,10 +84,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 TargetType.DefineField($"{uniqueMemberIdentifier}_dt", typeof(Lazy<>).MakeGenericType(delegateBuilderType), FieldAttributes.Public) :
                 TargetType.DefineField($"{uniqueMemberIdentifier}_dt", delegateBuilderType, FieldAttributes.Public);
 
-            var implementation = GenerateDelegateInvoker(method, delegateBuilderType, delegateField);
-            TargetType.DefineMethodOverride(implementation, method);
-
             AugmentHostingTypeConstructor(symbolName, delegateBuilderType, delegateField);
+
+            GenerateDelegateInvokerBody(definition, delegateBuilderType, delegateField);
         }
 
         /// <summary>
@@ -116,76 +128,42 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <summary>
         /// Generates a method that invokes the method's delegate.
         /// </summary>
-        /// <param name="method">The method to invoke.</param>
-        /// <param name="delegateBuilderType">The type of the method delegate.</param>
-        /// <param name="delegateField">The delegate field.</param>
+        /// <param name="methodDefinition">The method to invoke.</param>
         /// <returns>The generated invoker.</returns>
-        protected MethodInfo GenerateDelegateInvoker
-        (
-            [NotNull] MethodInfo method,
-            [NotNull] Type delegateBuilderType,
-            [NotNull] FieldInfo delegateField
-        )
-        {
-            return GenerateDelegateInvoker
-            (
-                method.Name,
-                method.ReturnType,
-                method.GetParameters().Select(p => p.ParameterType).ToArray(),
-                delegateBuilderType,
-                delegateField
-            );
-        }
-
-        /// <summary>
-        /// Generates a method that invokes the method's delegate.
-        /// </summary>
-        /// <param name="methodName">The name of the method.</param>
-        /// <param name="returnType">The return type of the method.</param>
-        /// <param name="parameterTypes">The parameter types of the method.</param>
-        /// <param name="delegateBuilderType">The type of the method delegate.</param>
-        /// <param name="delegateField">The delegate field.</param>
-        /// <returns>The generated invoker.</returns>
-        protected MethodInfo GenerateDelegateInvoker
-        (
-            [NotNull] string methodName,
-            [NotNull] Type returnType,
-            [NotNull] Type[] parameterTypes,
-            [NotNull] Type delegateBuilderType,
-            [NotNull] FieldInfo delegateField
-        )
+        protected IntrospectiveMethodInfo GenerateDelegateInvokerDefinition([NotNull] IntrospectiveMethodInfo methodDefinition)
         {
             var methodBuilder = TargetType.DefineMethod
             (
-                methodName,
+                methodDefinition.Name,
                 Public | Final | Virtual | HideBySig | NewSlot,
                 Standard,
-                returnType,
-                parameterTypes
+                methodDefinition.ReturnType,
+                methodDefinition.ParameterTypes.ToArray()
             );
 
-            GenerateDelegateInvokerBody(methodBuilder, parameterTypes, delegateBuilderType, delegateField);
-
-            return methodBuilder;
+            return new IntrospectiveMethodInfo(methodBuilder, methodDefinition.ReturnType, methodDefinition.ParameterTypes, methodDefinition);
         }
 
         /// <summary>
         /// Generates the method body for a delegate invoker.
         /// </summary>
         /// <param name="method">The method to generate the body for.</param>
-        /// <param name="parameterTypes">The parameter types of the method.</param>
         /// <param name="delegateBuilderType">The type of the method delegate.</param>
         /// <param name="delegateField">The delegate field.</param>
         protected void GenerateDelegateInvokerBody
         (
-            [NotNull] MethodBuilder method,
-            [NotNull] Type[] parameterTypes,
+            [NotNull] IntrospectiveMethodInfo method,
             [NotNull] Type delegateBuilderType,
             [NotNull] FieldInfo delegateField
         )
         {
+            if (!(method.GetWrappedMember() is MethodBuilder builder))
+            {
+                throw new ArgumentNullException(nameof(method), "Could not unwrap introspective method to method builder.");
+            }
+
             // Let's create a method that simply invoke the delegate
-            var methodIL = method.GetILGenerator();
+            var methodIL = builder.GetILGenerator();
 
             if (Options.HasFlagFast(GenerateDisposalChecks))
             {
@@ -194,7 +172,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             GenerateSymbolPush(methodIL, delegateField);
 
-            for (int p = 1; p <= parameterTypes.Length; p++)
+            for (int p = 1; p <= method.ParameterTypes.Count; p++)
             {
                 methodIL.Emit(OpCodes.Ldarg, p);
             }
@@ -206,40 +184,14 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <summary>
         /// Generates a delegate type for the given method.
         /// </summary>
-        /// <param name="method">The method.</param>
+        /// <param name="methodInfo">The method to generate a delegate type for.</param>
         /// <param name="memberIdentifier">The member identifier to use for name generation.</param>
         /// <param name="callingConvention">The unmanaged calling convention of the delegate.</param>
         /// <returns>A delegate type.</returns>
         [NotNull]
         protected TypeBuilder GenerateDelegateType
         (
-            [NotNull] MethodInfo method,
-            [NotNull] string memberIdentifier,
-            CallingConvention callingConvention
-        )
-        {
-            return GenerateDelegateType
-            (
-                method.ReturnType,
-                method.GetParameters().Select(p => p.ParameterType).ToArray(),
-                memberIdentifier,
-                callingConvention
-            );
-        }
-
-        /// <summary>
-        /// Generates a delegate type for the given method.
-        /// </summary>
-        /// <param name="methodReturnType">The return type of the method.</param>
-        /// <param name="methodParameterTypes">The parameter types of the method.s</param>
-        /// <param name="memberIdentifier">The member identifier to use for name generation.</param>
-        /// <param name="callingConvention">The unmanaged calling convention of the delegate.</param>
-        /// <returns>A delegate type.</returns>
-        [NotNull]
-        protected TypeBuilder GenerateDelegateType
-        (
-            [NotNull] Type methodReturnType,
-            [NotNull] Type[] methodParameterTypes,
+            [NotNull] IntrospectiveMethodInfo methodInfo,
             [NotNull] string memberIdentifier,
             CallingConvention callingConvention
         )
@@ -258,7 +210,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
                     c.GetParameters().Any() &&
                     c.GetParameters().Length == 1 &&
                     c.GetParameters().First().ParameterType == typeof(CallingConvention)
-
             );
 
             var functionPointerAttributeBuilder = new CustomAttributeBuilder
@@ -268,6 +219,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
             );
 
             delegateBuilder.SetCustomAttribute(functionPointerAttributeBuilder);
+            foreach (var attribute in methodInfo.CustomAttributes)
+            {
+                delegateBuilder.SetCustomAttribute(attribute.GetAttributeBuilder());
+            }
 
             var delegateCtorBuilder = delegateBuilder.DefineConstructor
             (
@@ -282,9 +237,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
             (
                 "Invoke",
                 Public | HideBySig | NewSlot | Virtual,
-                methodReturnType,
-                methodParameterTypes
+                methodInfo.ReturnType,
+                methodInfo.ParameterTypes.ToArray()
             );
+
+            delegateMethodBuilder.ApplyCustomAttributesFrom(methodInfo);
 
             delegateMethodBuilder.SetImplementationFlags(Runtime | Managed);
             return delegateBuilder;

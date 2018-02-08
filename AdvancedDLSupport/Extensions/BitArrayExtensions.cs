@@ -1,5 +1,5 @@
 ﻿//
-//  BooleanTransformer.cs
+//  BitArrayExtensions.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -18,36 +18,31 @@
 //
 
 using System;
+using System.Collections;
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport.Extensions
 {
     /// <summary>
-    /// Handles transformation of boolean values.
+    /// Extension methods for the <see cref="BitArray"/> class.
     /// </summary>
-    public class BooleanTransformer : ITypeTransformer<bool, byte>
+    public static class BitArrayExtensions
     {
-        /// <inheritdoc />
-        public Type LowerType()
+        /// <summary>
+        /// Converts the <see cref="BitArray"/> into its equivalent integer representation.
+        /// </summary>
+        /// <param name="this">The array.</param>
+        /// <returns>An equivalent integer.</returns>
+        public static int ToInt32(this BitArray @this)
         {
-            return typeof(byte);
-        }
+            if (@this.Count > 32)
+            {
+                throw new ArgumentOutOfRangeException(nameof(@this), "The bit array contained more than 32 bits.");
+            }
 
-        /// <inheritdoc />
-        public Type RaiseType()
-        {
-            return typeof(bool);
-        }
+            var result = new int[1];
+            @this.CopyTo(result, 0);
 
-        /// <inheritdoc />
-        public byte LowerValue(bool value)
-        {
-            return value ? (byte)1 : (byte)0;
-        }
-
-        /// <inheritdoc />
-        public bool RaiseValue(byte value)
-        {
-            return value > 0;
+            return result[0];
         }
     }
 }

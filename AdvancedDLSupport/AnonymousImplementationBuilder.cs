@@ -26,6 +26,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.ImplementationGenerators;
+using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap;
 using Mono.DllMap.Extensions;
@@ -75,8 +76,7 @@ namespace AdvancedDLSupport
 
             TypeCache = new ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type>(new LibraryIdentifierEqualityComparer());
             TransformerRepository = new TypeTransformerRepository()
-                .WithTypeTransformer(typeof(string), new StringTransformer())
-                .WithTypeTransformer(typeof(bool), new BooleanTransformer());
+                .WithTypeTransformer(typeof(string), new StringTransformer());
         }
 
         /// <summary>
@@ -296,9 +296,11 @@ namespace AdvancedDLSupport
             where TInterface : class
         {
             var methodGenerator = new MethodImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options);
-            var complexMethodGenerator = new ComplexMethodImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options, TransformerRepository);
+            var loweredGenerator = new LoweredMethodImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options, TransformerRepository);
 
-            foreach (var method in typeof(TInterface).GetMethods())
+            var refPermutationGenerator = new RefPermutationImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options, TransformerRepository);
+
+            foreach (var method in typeof(TInterface).GetIntrospectiveMethods())
             {
                 var targetMethod = method;
 
@@ -309,7 +311,7 @@ namespace AdvancedDLSupport
                 }
 
                 // Skip methods with a managed implementation in the base class
-                var baseClassMethod = typeof(TBaseClass).GetMethod(method.Name, method.GetParameters().Select(p => p.ParameterType).ToArray());
+                var baseClassMethod = typeof(TBaseClass).GetIntrospectiveMethod(method.Name, method.ParameterTypes.ToArray());
                 if (!(baseClassMethod is null))
                 {
                     if (!baseClassMethod.IsAbstract)
@@ -320,13 +322,20 @@ namespace AdvancedDLSupport
                     targetMethod = baseClassMethod;
                 }
 
-                if (method.IsComplexMethod())
+                if (method.RequiresRefPermutations())
                 {
-                    complexMethodGenerator.GenerateImplementation(targetMethod);
+                    refPermutationGenerator.GenerateImplementation(method);
                 }
                 else
                 {
-                    methodGenerator.GenerateImplementation(targetMethod);
+                    if (method.RequiresLowering())
+                    {
+                        loweredGenerator.GenerateImplementation(targetMethod);
+                    }
+                    else
+                    {
+                        methodGenerator.GenerateImplementation(targetMethod);
+                    }
                 }
             }
         }
@@ -372,7 +381,7 @@ namespace AdvancedDLSupport
                     targetProperty = baseClassProperty;
                 }
 
-                propertyGenerator.GenerateImplementation(targetProperty);
+                propertyGenerator.GenerateImplementation(new IntrospectivePropertyInfo(targetProperty));
             }
         }
     }
