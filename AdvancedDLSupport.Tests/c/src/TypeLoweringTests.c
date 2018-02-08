@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <stdbool.h>
-#include "wincomp.h"
+#include "comp.h"
 
 __declspec(dllexport) const char* GetString()
 {

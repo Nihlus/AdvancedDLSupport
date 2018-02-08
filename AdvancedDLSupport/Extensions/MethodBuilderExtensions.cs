@@ -113,6 +113,7 @@ namespace AdvancedDLSupport.Extensions
             [NotNull, ItemNotNull] IReadOnlyList<Type> targetParameterTypes
         )
         {
+            /*
             // Pass through all applied attributes
             var returnValueBuilder = @this.DefineParameter(0, source.ReturnParameterAttributes, null);
             foreach (var attribute in source.CustomReturnParameterAttributes)
@@ -151,6 +152,7 @@ namespace AdvancedDLSupport.Extensions
             {
                 @this.SetCustomAttribute(attribute.GetAttributeBuilder());
             }
+            */
         }
     }
 }
