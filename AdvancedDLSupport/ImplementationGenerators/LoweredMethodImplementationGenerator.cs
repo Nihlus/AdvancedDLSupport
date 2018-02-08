@@ -73,8 +73,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             var delegateBuilder = GenerateDelegateType
             (
-                loweredMethod.ReturnType,
-                loweredMethod.ParameterTypes.ToArray(),
+                loweredMethod,
                 uniqueMemberIdentifier,
                 metadataAttribute.CallingConvention
             );
@@ -345,7 +344,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 newParameterTypes.ToArray()
             );
 
-            return new IntrospectiveMethodInfo(loweredMethod, newReturnType, newParameterTypes);
+            return new IntrospectiveMethodInfo(loweredMethodBuilder, newReturnType, newParameterTypes);
         }
 
         /// <summary>

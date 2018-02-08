@@ -183,31 +183,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <summary>
         /// Generates a delegate type for the given method.
         /// </summary>
-        /// <param name="method">The method.</param>
-        /// <param name="memberIdentifier">The member identifier to use for name generation.</param>
-        /// <returns>A delegate type.</returns>
-        [NotNull]
-        protected TypeBuilder GenerateDelegateType
-        (
-            [NotNull] IntrospectiveMethodInfo method,
-            [NotNull] string memberIdentifier
-        )
-        {
-            var metadataAttribute = method.GetCustomAttribute<NativeSymbolAttribute>() ??
-                                    new NativeSymbolAttribute(method.Name);
-
-            return GenerateDelegateType
-            (
-                method.ReturnType,
-                method.ParameterTypes.ToArray(),
-                memberIdentifier,
-                metadataAttribute.CallingConvention
-            );
-        }
-
-        /// <summary>
-        /// Generates a delegate type for the given method.
-        /// </summary>
         /// <param name="methodInfo">The method to generate a delegate type for.</param>
         /// <param name="memberIdentifier">The member identifier to use for name generation.</param>
         /// <param name="callingConvention">The unmanaged calling convention of the delegate.</param>
@@ -215,7 +190,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         [NotNull]
         protected TypeBuilder GenerateDelegateType
         (
-            [NotNull] TransientMethodInfo methodInfo,
+            [NotNull] IntrospectiveMethodInfo methodInfo,
             [NotNull] string memberIdentifier,
             CallingConvention callingConvention
         )

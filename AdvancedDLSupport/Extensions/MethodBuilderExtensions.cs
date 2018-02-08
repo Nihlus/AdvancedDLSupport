@@ -23,6 +23,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
+using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.Extensions
@@ -97,7 +98,7 @@ namespace AdvancedDLSupport.Extensions
         }
 
         /// <summary>
-        /// Copies all custom attributes from the given <see cref="TransientMethodInfo"/> instance. This method will redefine the
+        /// Copies all custom attributes from the given <see cref="IntrospectiveMethodInfo"/> instance. This method will redefine the
         /// return value and method parameters in order to apply the required custom attributes.
         /// </summary>
         /// <param name="this">The builder to copy the attributes to.</param>
@@ -107,7 +108,7 @@ namespace AdvancedDLSupport.Extensions
         public static void CopyCustomAttributesFrom
         (
             [NotNull] this MethodBuilder @this,
-            [NotNull] TransientMethodInfo source,
+            [NotNull] IntrospectiveMethodInfo source,
             [NotNull] Type targetReturnParameterType,
             [NotNull, ItemNotNull] IReadOnlyList<Type> targetParameterTypes
         )
