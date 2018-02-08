@@ -13,33 +13,35 @@ support such features required of the wrapper, so strong background knowledge of
 
 Assume we have the following code in C:
 
-`
+```c
 #include <stdint.h>
+
 int32_t Add(int32_t a, int32_t b)
 {
 	return a + b;
 }
-`
+```
 
 Assume we have the complementary interface code in C#:
-`
+```cs
 public interface IMyLibrary
 {
 	int Add(int a, int b);
 }
-`
+```
 
 The final code would be produced by Advance DL Support as an anonymous instance for interface above:
 
-`
+```cs
 public class AnonymousClass : IMyLibrary {
+
 	public delegate int Add_dt(int a, int b);
 
 	public Add_dt Add_dtm;
 
 	public int Add(int a, int b) => Add_dtm(a, b);
 }
-`
+```
 
 This is what we refer to as a Delegate Approach, because this approach require significantly more code to be written to support a single instance
 of dynamic linked library.
