@@ -16,22 +16,16 @@ Assume we have the following code in C:
 `
 #include <stdint.h>
 int32_t Add(int32_t a, int32_t b)
-
 {
-
 	return a + b;
-
 }
 `
 
 Assume we have the complementary interface code in C#:
 `
 public interface IMyLibrary
-
 {
-
 	int Add(int a, int b);
-
 }
 `
 
@@ -39,13 +33,11 @@ The final code would be produced by Advance DL Support as an anonymous instance 
 
 `
 public class AnonymousClass : IMyLibrary {
-
 	public delegate int Add_dt(int a, int b);
 
 	public Add_dt Add_dtm;
 
 	public int Add(int a, int b) => Add_dtm(a, b);
-
 }
 `
 
