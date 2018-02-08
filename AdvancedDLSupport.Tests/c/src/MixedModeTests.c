@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "wincomp.h"
+#include "comp.h"
 
 __declspec(dllexport) int32_t NativeProperty = 0;
 __declspec(dllexport) int32_t OtherNativeProperty = 0;

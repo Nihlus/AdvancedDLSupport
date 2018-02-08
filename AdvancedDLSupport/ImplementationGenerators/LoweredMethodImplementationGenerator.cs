@@ -81,8 +81,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 TargetType.DefineField($"{uniqueMemberIdentifier}_dt", typeof(Lazy<>).MakeGenericType(delegateBuilderType), FieldAttributes.Public) :
                 TargetType.DefineField($"{uniqueMemberIdentifier}_dt", delegateBuilderType, FieldAttributes.Public);
 
-            GenerateDelegateInvokerBody(loweredMethod.LoweredMethod, loweredMethod.ParameterTypes, delegateBuilderType, delegateField);
-            var implementation = GenerateComplexMethodBody(method, loweredMethod.LoweredMethod, loweredMethod.ParameterTypes);
+            GenerateDelegateInvokerBody(loweredMethod.Builder, loweredMethod.MethodInfo.ParameterTypes.ToArray(), delegateBuilderType, delegateField);
+            var implementation = GenerateComplexMethodBody(method, loweredMethod.Builder, loweredMethod.MethodInfo.ParameterTypes.ToArray());
 
             TargetType.DefineMethodOverride(implementation, method);
 
