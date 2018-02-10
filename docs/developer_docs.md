@@ -6,8 +6,9 @@ C# inherently does not support accessing the properties from within the CLR,
 it require library to be dynamically loaded through other means which was originally the libDL.
 This is original reason why Advanced DL SUpport is named as such.
 
-The use of Common Intermediate Language is emphasized on this project to optimize as much as possible and to emit the least amount of code to
-support such features required of the wrapper, so strong background knowledge of CIL is required before contributing.
+The use of Common Intermediate Language is emphasized on this project to optimize as much as possible and to emit the 
+least amount of code to support such features required of the wrapper, so strong background knowledge of CIL is required 
+before contributing.
 
 ### The Basic
 
@@ -43,5 +44,5 @@ public class AnonymousClass : IMyLibrary {
 }
 ```
 
-This is what we refer to as a Delegate Approach, because this approach require significantly more code to be written to support a single instance
-of dynamic linked library.
+This is what we refer to as a Delegate Approach, because this approach require significantly more code to be written to 
+support a single instance of dynamic linked library.

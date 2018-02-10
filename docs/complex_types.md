@@ -1,18 +1,16 @@
 Complex Types
 =============
 
-AdvancedDLSupport also allows you to use more complex types than
-traditional P/Invoke. Chief among these are the following, which can be
-used just like you'd use them in C#.
+AdvancedDLSupport also allows you to easily use more complex types than traditional P/Invoke. Chief among these are the 
+following, which can be used just like you'd use them in C#.
 
 * `string`
 * `Nullable<T>`
 * `bool`
 
-Complex types are handled much in the same way as compilers handle
-syntactic sugar (or "compiler magic") - custom [compiler lowering][2])
-by generating automatic wrapper constructs that take care of all the
-tedious marshalling and interoperation for you.
+Complex types are handled much in the same way as compilers handle syntactic sugar (or "compiler magic") - custom 
+[compiler lowering][2]) by generating automatic wrapper constructs that take care of all the tedious marshalling and 
+interoperation for you.
 
 Thus, constructs like this is a simple matter for AdvancedDLSupport:
 
@@ -60,9 +58,9 @@ public interface IPulseSimple
         StreamDirection dir,
         string dev,
         string stream_name,
-        SampleSpecification ss,
-        ChannelMap? map,
-        BufferingAttributes? attr,
+        ref SampleSpecification ss,
+        ref ChannelMap? map,
+        ref BufferingAttributes? attr,
         out int error
     );
 
@@ -85,8 +83,6 @@ public interface IPulseSimple
     int pa_simple_flush(IntPtr s, out int error);
 }
 ```
-
-One important thing to note is that `Nullable<T>` does not yet support the `ref` or `out` modifier.
 
 [1]: https://freedesktop.org/software/pulseaudio/doxygen/simple_8h_source.html
 [2]: http://mattwarren.org/2017/05/25/Lowering-in-the-C-Compiler

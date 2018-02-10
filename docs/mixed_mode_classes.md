@@ -1,12 +1,11 @@
 Mixed-Mode Classes
 ==========
 
-Mixed-mode classes are useful constructs for object-oriented C programming, as well as 
-instances where you may want to have native and managed code coexisting in the same
-class definition.
+Mixed-mode classes are useful constructs for object-oriented C programming, as well as instances where you may want to
+have native and managed code coexisting in the same class definition.
 
-In short, it allows you to define normal classes that implement native interfaces, 
-and activate instances of them like you'd do with normal native interfaces.
+In short, it allows you to define normal classes that implement native interfaces, and activate instances of them like 
+you'd do with normal native interfaces.
 
 As an example, take this class (taken from the unit test suite):
 
@@ -67,12 +66,12 @@ namespace AdvancedDLSupport.Tests.Data
 }
 ```
 
-As you can see, managed functions can coexist with unmanaged ones, and managed code can override 
-implementations of the unmanaged functions (as seen in Subtract and OtherNativeProperty).
+As you can see, managed functions can coexist with unmanaged ones, and managed code can override implementations of the
+unmanaged functions (as seen in Subtract and OtherNativeProperty).
 
-In order to create a mixed-mode class, simply declare an `abstract` class that inherits from `AnonymousImplementationBase`, 
-and implements the interface you want to activate. Any interface members can have explicit managed
-implementations, or remain `abstract` to be routed to their corresponding native implementations.
+In order to create a mixed-mode class, simply declare an `abstract` class that inherits from 
+`AnonymousImplementationBase`, and implements the interface you want to activate. Any interface members can have 
+explicit managed implementations, or remain `abstract` to be routed to their corresponding native implementations.
 
 There are a few limitations:
 
@@ -80,8 +79,8 @@ There are a few limitations:
 * Mixed-mode classes must be abstract
 * Properties may only be fully managed or fully unmanaged - no mixing of getters and setters
 
-Once you have your class definition, instances of it can be created in much the same way as you
-would interface instances:
+Once you have your class definition, instances of it can be created in much the same way as you would interface 
+instances:
 
 ```cs
 AnonymousImplementationBuilder::ResolvedAndActivateClass<MixedModeClass, IMixedModeLibrary>(LibraryName);

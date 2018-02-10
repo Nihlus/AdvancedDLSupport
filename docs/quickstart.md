@@ -1,9 +1,8 @@
 Quickstart
 ==========
 
-AdvancedDLSupport uses anonymous implementations of interfaces to
-create a delegate-based interop framework. Usage is very simple - as an
-example, take this simple mockup C library.
+AdvancedDLSupport uses anonymous implementations of interfaces to create a delegate-based interop framework. Usage is
+very simple - as an example, take this simple mockup C library.
 
 `math.h`
 ```c
@@ -27,8 +26,8 @@ int Subtract(int a, int b)
 }
 ```
 
-In order to use this with the library, we could use the traditional
-`[DllImport]` attribute, but AdvancedDLSupport takes another approach.
+In order to use this with the library, we could use the traditional `[DllImport]` attribute, but AdvancedDLSupport takes 
+another approach.
 
 Instead, we declare a matching C# interface.
 
@@ -42,8 +41,8 @@ public interface IMath
 }
 ```
 
-Using this interface, we can then initialize an anonymous type which
-implements our interface, and allows us to use the native library.
+Using this interface, we can then initialize an anonymous type which implements our interface, and allows us to use the 
+native library.
 
 ```cs
 var mathLibrary = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IMath>(LibraryName);
@@ -60,5 +59,7 @@ Console.WriteLine($"Subtraction: {mySubtraction}, Multiplication: {myMultiplicat
 
 ```
 
-Refer to [Supported Constructs](supported_constructs.md) for more
-information about ways to interact with your libraries.
+Refer to [Supported Constructs][1] for more information about ways to interact with your libraries.
+
+
+[1]: supported_constructs.md

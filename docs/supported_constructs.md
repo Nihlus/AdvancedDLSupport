@@ -1,13 +1,11 @@
 Supported Constructs
 ====================
 
-AdvancedDLSupport supports a number of interop constructs between C and
-the equivalent C# interface. This page lists them, and gives some usage
-examples.
+AdvancedDLSupport supports a number of interop constructs between C and the equivalent C# interface. This page lists 
+them, and gives some usage examples.
 
 ### Functions to Methods
-Functions can be marshalled into methods on the interface. Virtually any
-configuration is supported.
+Functions can be marshalled into methods on the interface. Virtually any configuration is supported.
 
 #### Simple functions
 `C`
@@ -61,8 +59,7 @@ public interface IMyLibrary
 ```
 
 ### Global Variables to Properties
-You can also bind to and access global variables. These are bound to
-properties.
+You can also bind to and access global variables. These are bound to properties.
 
 #### Values
 `C`
