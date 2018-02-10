@@ -55,7 +55,7 @@ Read the [Docs][9], or get the [MyGet][10] development packages.
 	var myStruct = new MyStruct();
 	MyStruct? myOtherStruct = null;
 
-	library.MyOtherNativeFunction(myStruct, myOtherStruct);
+	library.MyOtherNativeFunction(myStruct, ref myOtherStruct);
 	```
 
 See the [Quickstart][11] for more information.
