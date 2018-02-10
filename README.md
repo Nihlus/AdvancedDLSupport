@@ -8,11 +8,11 @@ Fully compatible with Mono, .NET Framework, .NET Core, and .NET Standard. Compat
 platforms and runtimes. Configurable and adaptible.
 
 ## Build & Test status
-| Travis (Linux)          | Travis (OSX)            | AppVeyor (Windows)      | MyGet                         |
-| ----------------------- | ----------------------- | ----------------------- | ----------------------------- |
-| [![Build Status][1]][2] | [![Build Status][3]][4] | [![Build status][5]][6] | [![MyGet Build Status][7]][8] |
+| Travis (Linux)          | Travis (OSX)            | AppVeyor (Windows)      | MyGet (Development)     |
+| ----------------------- | ----------------------- | ----------------------- | ------------------------|
+| [![Build Status][1]][2] | [![Build Status][3]][4] | [![Build status][5]][6] | [![Build Status][7]][8] |
 
-Read the [Docs][9], or get the [MyGet][10] development packages.
+Read the [Docs][9], or get the [MyGet][10] development packages and [get started][11].
 
 ## Features
 * Supports all the typical P/Invoke patterns and constructs
