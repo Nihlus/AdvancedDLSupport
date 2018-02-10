@@ -18,6 +18,7 @@ Read the [Docs][9], or get the [MyGet][10] development packages.
 * Supports all the typical P/Invoke patterns and constructs
 * Seamlessly mix native functions and managed code
 * Use more complex types, such as `Nullable<T>` and `string` without any extra code
+* Select library architectures at runtime
 * Select library names at runtime
 * Swappable native library search algorithms
 * Import global variables 
