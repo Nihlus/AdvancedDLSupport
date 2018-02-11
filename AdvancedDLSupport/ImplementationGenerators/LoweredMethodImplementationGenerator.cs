@@ -35,8 +35,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// <summary>
     /// Generates method implementations for methods involving complex types.
     /// </summary>
-    internal class LoweredMethodImplementationGenerator : MethodImplementationGenerator
+    internal class LoweredMethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
+        private readonly MethodImplementationGenerator _methodGenerator;
+
         [NotNull]
         private readonly TypeTransformerRepository _transformerRepository;
 
@@ -59,6 +61,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             : base(targetModule, targetType, targetTypeConstructorIL, options)
         {
             _transformerRepository = transformerRepository;
+            _methodGenerator = new MethodImplementationGenerator(targetModule, targetType, targetTypeConstructorIL, options);
         }
 
         /// <inheritdoc />
@@ -67,29 +70,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var complexMethodDefinition = GenerateComplexMethodDefinition(method);
 
             var loweredMethod = GenerateLoweredMethod(complexMethodDefinition, uniqueMemberIdentifier);
-
-            var metadataAttribute = complexMethodDefinition.GetCustomAttribute<NativeSymbolAttribute>() ??
-                                    new NativeSymbolAttribute(complexMethodDefinition.Name);
-
-            var delegateBuilder = GenerateDelegateType
-            (
-                loweredMethod,
-                uniqueMemberIdentifier,
-                metadataAttribute.CallingConvention
-            );
-
-            var delegateBuilderType = delegateBuilder.CreateTypeInfo();
-
-            var delegateField = Options.HasFlagFast(UseLazyBinding) ?
-                TargetType.DefineField($"{uniqueMemberIdentifier}_dt", typeof(Lazy<>).MakeGenericType(delegateBuilderType), FieldAttributes.Public) :
-                TargetType.DefineField($"{uniqueMemberIdentifier}_dt", delegateBuilderType, FieldAttributes.Public);
-
-            AugmentHostingTypeConstructor(symbolName, delegateBuilderType, delegateField);
-
-            GenerateDelegateInvokerBody(loweredMethod, delegateBuilderType, delegateField);
+            _methodGenerator.GenerateImplementationForDefinition(loweredMethod, symbolName, uniqueMemberIdentifier);
 
             var implementation = GenerateComplexMethodBody(complexMethodDefinition, loweredMethod);
-
             TargetType.DefineMethodOverride(implementation.GetWrappedMember(), method.GetWrappedMember());
         }
 
