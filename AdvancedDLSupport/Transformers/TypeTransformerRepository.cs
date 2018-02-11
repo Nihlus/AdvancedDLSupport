@@ -58,7 +58,7 @@ namespace AdvancedDLSupport
         /// <returns>The type transformer for the complex value.</returns>
         /// <exception cref="NotSupportedException">Thrown if no compatible transformer can be found.</exception>
         [PublicAPI, NotNull]
-        public ITypeTransformer GetComplexTransformer([NotNull] Type type)
+        public ITypeTransformer GetTypeTransformer([NotNull] Type type)
         {
             if (type == typeof(string))
             {

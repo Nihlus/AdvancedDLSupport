@@ -53,6 +53,29 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
+  <member name="M:AdvancedDLSupport.Extensions.ILGeneratorExtensions.EmitGetCurrentMethodArgumentByIndex(System.Reflection.Emit.ILGenerator,System.Int32)">
+    <parameter name="il">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.Extensions.ILGeneratorExtensions.EmitGetCurrentMethodParameterByIndex(System.Reflection.Emit.ILGenerator,System.Int32)">
+    <parameter name="il">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.Extensions.ILGeneratorExtensions.EmitGetCurrentMethodReturnParameter(System.Reflection.Emit.ILGenerator)">
+    <parameter name="il">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.Extensions.ILGeneratorExtensions.EmitTypeOf(System.Reflection.Emit.ILGenerator,System.Type)">
+    <parameter name="il">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="type">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
   <member name="M:AdvancedDLSupport.ILibraryPathResolver.Resolve(System.String)">
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <parameter name="library">
@@ -291,13 +314,6 @@
   <member name="T:AdvancedDLSupport.TypeTransformerRepository">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.TypeTransformerRepository.GetComplexTransformer(System.Type)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    <parameter name="type">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
   <member name="M:AdvancedDLSupport.TypeTransformerRepository.GetNullableTransformer``1">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
@@ -305,6 +321,13 @@
   <member name="M:AdvancedDLSupport.TypeTransformerRepository.GetStringTransformer">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  <member name="M:AdvancedDLSupport.TypeTransformerRepository.GetTypeTransformer(System.Type)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    <parameter name="type">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
   </member>
   <member name="M:AdvancedDLSupport.TypeTransformerRepository.WithTypeTransformer``2(System.Type,AdvancedDLSupport.ITypeTransformer{``0,``1})">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />

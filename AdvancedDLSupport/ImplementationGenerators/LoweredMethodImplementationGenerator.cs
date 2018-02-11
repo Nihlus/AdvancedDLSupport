@@ -69,11 +69,45 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             var complexMethodDefinition = GenerateComplexMethodDefinition(method);
 
-            var loweredMethod = GenerateLoweredMethod(complexMethodDefinition, uniqueMemberIdentifier);
+            var loweredMethod = GenerateLoweredMethodDefinition(complexMethodDefinition, uniqueMemberIdentifier);
             _methodGenerator.GenerateImplementationForDefinition(loweredMethod, symbolName, uniqueMemberIdentifier);
 
             var implementation = GenerateComplexMethodBody(complexMethodDefinition, loweredMethod);
             TargetType.DefineMethodOverride(implementation.GetWrappedMember(), method.GetWrappedMember());
+        }
+
+        /// <summary>
+        /// Generates a lowered method based on the given complex method, lowering its return value and parameters.
+        /// </summary>
+        /// <param name="complexInterfaceMethod">The complex interface method.</param>
+        /// <param name="memberIdentifier">The unique member identifier to use.</param>
+        /// <returns>(
+        /// A <see cref="ValueTuple{T1, T2}"/>, containing the generated method builder and its paramete types.
+        /// </returns>
+        private IntrospectiveMethodInfo GenerateLoweredMethodDefinition
+        (
+            [NotNull] IntrospectiveMethodInfo complexInterfaceMethod,
+            [NotNull] string memberIdentifier
+        )
+        {
+            var newReturnType = LowerTypeIfRequired(complexInterfaceMethod.ReturnType);
+
+            var newParameterTypes = new List<Type>();
+            foreach (var parameterType in complexInterfaceMethod.ParameterTypes)
+            {
+                newParameterTypes.Add(LowerTypeIfRequired(parameterType));
+            }
+
+            var loweredMethodBuilder = TargetType.DefineMethod
+            (
+                $"{memberIdentifier}_lowered",
+                Public | Final | Virtual | HideBySig | NewSlot,
+                CallingConventions.Standard,
+                newReturnType,
+                newParameterTypes.ToArray()
+            );
+
+            return new IntrospectiveMethodInfo(loweredMethodBuilder, newReturnType, newParameterTypes, complexInterfaceMethod);
         }
 
         /// <summary>
@@ -172,61 +206,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var transformerType = typeof(ITypeTransformer<,>).MakeGenericType(complexType, simpleType);
             var lowerValueFunc = transformerType.GetMethod(nameof(ITypeTransformer<object, object>.LowerValue));
 
-            EmitGetComplexTransformerCall(il, complexType);
+            EmitGetTypeTransformerCall(il, complexType);
 
             il.Emit(OpCodes.Ldarg, argumentIndex); // Load the complex argument
-            EmitGetArgumentParameterInfoByIndex(il, argumentIndex); // Load the relevant parameter
+            il.EmitGetCurrentMethodArgumentByIndex(argumentIndex); // Load the relevant parameter
 
             il.Emit(OpCodes.Callvirt, lowerValueFunc); // Lower it
-        }
-
-        /// <summary>
-        /// Emits a set of IL instructions which will retrieve the current method, and get the argument specified by the
-        /// given index, pushing it as a <see cref="ParameterInfo"/> onto the evaluation stack.
-        /// </summary>
-        /// <param name="il">The generator where the IL is to be emitted.</param>
-        /// <param name="argumentIndex">The index of the argument to get.</param>
-        private void EmitGetArgumentParameterInfoByIndex([NotNull] ILGenerator il, int argumentIndex)
-        {
-            if (argumentIndex == 0)
-            {
-                EmitGetMethodReturnParameter(il);
-            }
-            else
-            {
-                EmitGetParameterInfoByIndex(il, argumentIndex - 1);
-            }
-        }
-
-        /// <summary>
-        /// Emits a set of IL instructions which will retrieve the current method, get its parameters, and then get the
-        /// parameter at the given index, pushing it onto the evaluation stack.
-        /// </summary>
-        /// <param name="il">The generator where the IL is to be emitted.</param>
-        /// <param name="parameterIndex">The index of the parameter to get in the parameter array.</param>
-        private void EmitGetParameterInfoByIndex([NotNull] ILGenerator il, int parameterIndex)
-        {
-            var getCurrentMethodFunc = typeof(MethodBase).GetMethod(nameof(MethodBase.GetCurrentMethod), BindingFlags.Public | BindingFlags.Static);
-            var getParametersFunc = typeof(MethodBase).GetMethod(nameof(MethodBase.GetParameters), BindingFlags.Public | BindingFlags.Instance);
-
-            il.Emit(OpCodes.Call, getCurrentMethodFunc);
-            il.Emit(OpCodes.Callvirt, getParametersFunc);
-            il.Emit(OpCodes.Ldc_I4, parameterIndex);
-            il.Emit(OpCodes.Ldelem_Ref);
-        }
-
-        /// <summary>
-        /// Emits a set of IL instructions which will retrieve the current method, get its return value parameter, and
-        /// push it onto the evaluation stack.
-        /// </summary>
-        /// <param name="il">The generator where the IL is to be emitted.</param>
-        private void EmitGetMethodReturnParameter([NotNull] ILGenerator il)
-        {
-            var getCurrentMethodFunc = typeof(MethodBase).GetMethod(nameof(MethodBase.GetCurrentMethod), BindingFlags.Public | BindingFlags.Static);
-            var getReturnParamFunc = typeof(MethodInfo).GetProperty(nameof(MethodInfo.ReturnParameter), BindingFlags.Public | BindingFlags.Instance).GetMethod;
-
-            il.Emit(OpCodes.Call, getCurrentMethodFunc);
-            il.Emit(OpCodes.Callvirt, getReturnParamFunc);
         }
 
         /// <summary>
@@ -253,10 +238,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
             il.DeclareLocal(simpleType);
             il.Emit(OpCodes.Stloc_0); // Store the current value on the stack
 
-            EmitGetComplexTransformerCall(il, complexType);
+            EmitGetTypeTransformerCall(il, complexType);
 
             il.Emit(OpCodes.Ldloc_0); // Load the result again
-            EmitGetArgumentParameterInfoByIndex(il, argumentIndex);
+            il.EmitGetCurrentMethodArgumentByIndex(argumentIndex);
 
             il.Emit(OpCodes.Callvirt, raiseValueFunc); // Raise it
         }
@@ -267,9 +252,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="il">The generator where the IL is to be emitted.</param>
         /// <param name="complexType">The complex type which the transformer should handle.</param>
-        private void EmitGetComplexTransformerCall([NotNull] ILGenerator il, [NotNull] Type complexType)
+        private void EmitGetTypeTransformerCall([NotNull] ILGenerator il, [NotNull] Type complexType)
         {
-            var getTransformerFunc = typeof(TypeTransformerRepository).GetMethod(nameof(TypeTransformerRepository.GetComplexTransformer));
+            var getTransformerFunc = typeof(TypeTransformerRepository).GetMethod(nameof(TypeTransformerRepository.GetTypeTransformer));
             var repoProperty = typeof(AnonymousImplementationBase).GetProperty
             (
                 nameof(AnonymousImplementationBase.TransformerRepository),
@@ -279,55 +264,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Call, repoProperty.GetMethod); // Get the type transformer repository
 
-            EmitTypeOf(il, complexType);
+            il.EmitTypeOf(complexType);
             il.Emit(OpCodes.Callvirt, getTransformerFunc); // Get the relevant type transformer
-        }
-
-        /// <summary>
-        /// Emits a set of IL instructions which will produce the equivalent of a typeof(T) call, placing it onto the
-        /// evaluation stack.
-        /// </summary>
-        /// <param name="il">The generator where the IL is to be emitted.</param>
-        /// <param name="type">The type to be emitted.</param>
-        private void EmitTypeOf([NotNull] ILGenerator il, [NotNull] Type type)
-        {
-            var getTypeFromHandleFunc = typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle));
-            il.Emit(OpCodes.Ldtoken, type);
-            il.Emit(OpCodes.Call, getTypeFromHandleFunc);
-        }
-
-        /// <summary>
-        /// Generates a lowered method based on the given complex method, lowering its return value and parameters.
-        /// </summary>
-        /// <param name="complexInterfaceMethod">The complex interface method.</param>
-        /// <param name="memberIdentifier">The unique member identifier to use.</param>
-        /// <returns>(
-        /// A <see cref="ValueTuple{T1, T2}"/>, containing the generated method builder and its paramete types.
-        /// </returns>
-        private IntrospectiveMethodInfo GenerateLoweredMethod
-        (
-            [NotNull] IntrospectiveMethodInfo complexInterfaceMethod,
-            [NotNull] string memberIdentifier
-        )
-        {
-            var newReturnType = LowerTypeIfRequired(complexInterfaceMethod.ReturnType);
-
-            var newParameterTypes = new List<Type>();
-            foreach (var parameterType in complexInterfaceMethod.ParameterTypes)
-            {
-                newParameterTypes.Add(LowerTypeIfRequired(parameterType));
-            }
-
-            var loweredMethodBuilder = TargetType.DefineMethod
-            (
-                $"{memberIdentifier}_lowered",
-                Public | Final | Virtual | HideBySig | NewSlot,
-                CallingConventions.Standard,
-                newReturnType,
-                newParameterTypes.ToArray()
-            );
-
-            return new IntrospectiveMethodInfo(loweredMethodBuilder, newReturnType, newParameterTypes, complexInterfaceMethod);
         }
 
         /// <summary>
@@ -340,7 +278,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             if (type.RequiresLowering())
             {
-                var transformer = _transformerRepository.GetComplexTransformer(type);
+                var transformer = _transformerRepository.GetTypeTransformer(type);
                 type = transformer.LowerType();
             }
 
