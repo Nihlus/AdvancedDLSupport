@@ -39,7 +39,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// <summary>
     /// Generates implementations for methods.
     /// </summary>
-    internal class MethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
+    internal sealed class MethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MethodImplementationGenerator"/> class.

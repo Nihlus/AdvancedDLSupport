@@ -35,7 +35,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// <summary>
     /// Generates method implementations for methods involving complex types.
     /// </summary>
-    internal class LoweredMethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
+    internal sealed class LoweredMethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
         private readonly MethodImplementationGenerator _methodGenerator;
 
