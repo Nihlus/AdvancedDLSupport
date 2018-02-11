@@ -95,7 +95,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="entrypointName">The name of the native entry point.</param>
         /// <param name="delegateBuilderType">The type of the method delegate.</param>
         /// <param name="delegateField">The delegate field.</param>
-        protected void AugmentHostingTypeConstructor
+        private void AugmentHostingTypeConstructor
         (
             [NotNull] string entrypointName,
             [NotNull] Type delegateBuilderType,
@@ -130,7 +130,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="methodDefinition">The method to invoke.</param>
         /// <returns>The generated invoker.</returns>
-        protected IntrospectiveMethodInfo GenerateDelegateInvokerDefinition([NotNull] IntrospectiveMethodInfo methodDefinition)
+        private IntrospectiveMethodInfo GenerateDelegateInvokerDefinition([NotNull] IntrospectiveMethodInfo methodDefinition)
         {
             var methodBuilder = TargetType.DefineMethod
             (
@@ -150,7 +150,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="method">The method to generate the body for.</param>
         /// <param name="delegateBuilderType">The type of the method delegate.</param>
         /// <param name="delegateField">The delegate field.</param>
-        protected void GenerateDelegateInvokerBody
+        private void GenerateDelegateInvokerBody
         (
             [NotNull] IntrospectiveMethodInfo method,
             [NotNull] Type delegateBuilderType,
@@ -189,7 +189,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="callingConvention">The unmanaged calling convention of the delegate.</param>
         /// <returns>A delegate type.</returns>
         [NotNull]
-        protected TypeBuilder GenerateDelegateType
+        private TypeBuilder GenerateDelegateType
         (
             [NotNull] IntrospectiveMethodInfo methodInfo,
             [NotNull] string memberIdentifier,
