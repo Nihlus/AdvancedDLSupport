@@ -65,6 +65,11 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
+  <member name="M:AdvancedDLSupport.Extensions.BitArrayExtensions.ToInt32(System.Collections.BitArray)">
+    <parameter name="this">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
   <member name="T:AdvancedDLSupport.ILibraryPathResolver">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
