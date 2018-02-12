@@ -26,6 +26,7 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Resolves library paths.
     /// </summary>
+    [PublicAPI]
     public interface ILibraryPathResolver
     {
         /// <summary>
@@ -37,7 +38,7 @@ namespace AdvancedDLSupport
         /// Thrown if the current platform doesn't have a path
         /// resolver defined.</exception>
         /// <exception cref="FileNotFoundException">Thrown if no library file can be found.</exception>
-        [Pure]
+        [PublicAPI, Pure]
         ResolvePathResult Resolve([NotNull] string library);
     }
 }

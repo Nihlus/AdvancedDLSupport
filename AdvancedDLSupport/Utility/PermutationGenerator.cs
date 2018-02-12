@@ -30,7 +30,7 @@ namespace AdvancedDLSupport
     /// Helper class for generating parameter permutations for methods with <see cref="Nullable{T}"/> parameters that
     /// are passed by reference.
     /// </summary>
-    public class PermutationGenerator
+    internal class PermutationGenerator
     {
         /// <summary>
         /// Generates all possible permutations of either a raw struct passed by reference, or an IntPtr, given a

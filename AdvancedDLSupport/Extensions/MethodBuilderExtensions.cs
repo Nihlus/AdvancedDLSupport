@@ -49,7 +49,6 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="source">The method to copy the attributes from.</param>
         /// <param name="newReturnParameterType">The return type of the target method.</param>
         /// <param name="newParameterTypes">The parameter types of the target method.</param>
-        [PublicAPI]
         public static void ApplyCustomAttributesFrom
         (
             [NotNull] this MethodBuilder @this,

@@ -34,27 +34,29 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// Base class for implementation generators.
     /// </summary>
     /// <typeparam name="T">The type of member to generate the implementation for.</typeparam>
+    [PublicAPI]
     public abstract class ImplementationGeneratorBase<T> : IImplementationGenerator<T> where T : MemberInfo
     {
         /// <inheritdoc />
+        [PublicAPI]
         public ImplementationOptions Options { get; }
 
         /// <summary>
         /// Gets the module in which the implementation should be generated.
         /// </summary>
-        [NotNull]
+        [PublicAPI, NotNull]
         protected ModuleBuilder TargetModule { get; }
 
         /// <summary>
         /// Gets the type in which the implementation should be generated.
         /// </summary>
-        [NotNull]
+        [PublicAPI, NotNull]
         protected TypeBuilder TargetType { get; }
 
         /// <summary>
         /// Gets the IL generator for the constructor of the type in which the implementation should be generated.
         /// </summary>
-        [NotNull]
+        [PublicAPI, NotNull]
         protected ILGenerator TargetTypeConstructorIL { get; }
 
         /// <summary>
@@ -64,6 +66,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="targetType">The type in which the implementation should be generated.</param>
         /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
         /// <param name="options">The configuration object to use.</param>
+        [PublicAPI]
         protected ImplementationGeneratorBase
         (
             [NotNull] ModuleBuilder targetModule,
@@ -79,6 +82,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <inheritdoc />
+        [PublicAPI]
         public void GenerateImplementation(T member)
         {
             var symbolInfo = GetSymbolNameAndIdentifier(member);
@@ -116,6 +120,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="member">The undefined member.</param>
         /// <param name="symbolName">The name of the symbol in the native library.</param>
         /// <param name="uniqueMemberIdentifier">The identifier to use for generated types and methods.</param>
+        [PublicAPI]
         protected abstract void GenerateImplementation([NotNull] T member, [NotNull] string symbolName, [NotNull] string uniqueMemberIdentifier);
 
         /// <summary>
@@ -125,6 +130,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="member">The defined member.</param>
         /// <param name="symbolName">The name of the symbol in the native library.</param>
         /// <param name="uniqueMemberIdentifier">The identifier to use for generated types and methods.</param>
+        [PublicAPI]
         public virtual void GenerateImplementationForDefinition([NotNull] T member, [NotNull] string symbolName, [NotNull] string uniqueMemberIdentifier)
         {
             throw new NotImplementedException();
@@ -134,6 +140,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// Emits a call to <see cref="AnonymousImplementationBase.ThrowIfDisposed"/>.
         /// </summary>
         /// <param name="il">The IL generator.</param>
+        [PublicAPI]
         protected void EmitDisposalCheck([NotNull] ILGenerator il)
         {
             var throwMethod = typeof(AnonymousImplementationBase).GetMethod("ThrowIfDisposed", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -147,6 +154,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="valueFactory">The value factory to use for the lazy loaded field.</param>
         /// <param name="type">The return type of the lazy field.</param>
+        [PublicAPI]
         protected void GenerateLazyLoadedField([NotNull] MethodBuilder valueFactory, [NotNull] Type type)
         {
             var funcType = typeof(Func<>).MakeGenericType(type);
@@ -173,6 +181,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="il">The IL generator.</param>
         /// <param name="symbolField">The field to generate the IL for.</param>
+        [PublicAPI]
         protected void GenerateSymbolPush([NotNull] ILGenerator il, [NotNull] FieldInfo symbolField)
         {
             il.Emit(OpCodes.Ldarg_0);
@@ -191,7 +200,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="symbolName">The name of the symbol.</param>
         /// <returns>A method which, when called, will load and return the given symbol.</returns>
-        [NotNull]
+        [PublicAPI, NotNull]
         protected MethodBuilder GenerateSymbolLoadingLambda([NotNull] string symbolName)
         {
             var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
@@ -225,7 +234,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="delegateType">The type of delegate to load.</param>
         /// <param name="functionName">The name of the function.</param>
         /// <returns>A method which, when called, will load and return the given function.</returns>
-        [NotNull]
+        [PublicAPI, NotNull]
         protected MethodBuilder GenerateFunctionLoadingLambda([NotNull] Type delegateType, [NotNull] string functionName)
         {
             var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");

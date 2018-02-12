@@ -18,28 +18,32 @@
 //
 
 using System;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
 {
     /// <summary>
     /// Holds generated implementation flag options.
     /// </summary>
-    [Flags]
+    [PublicAPI, Flags]
     public enum ImplementationOptions
     {
         /// <summary>
         /// Generate the bindings with lazy loaded symbol resolution.
         /// </summary>
+        [PublicAPI]
         UseLazyBinding = 1 << 0,
 
         /// <summary>
         /// Generate disposal checks for all binder methods.
         /// </summary>
+        [PublicAPI]
         GenerateDisposalChecks = 1 << 1,
 
         /// <summary>
         /// Enable Mono dllmap support for library scanning.
         /// </summary>
+        [PublicAPI]
         EnableDllMapSupport = 1 << 2
     }
 }

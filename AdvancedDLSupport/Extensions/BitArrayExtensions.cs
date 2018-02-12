@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.Extensions
 {
@@ -32,7 +33,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The array.</param>
         /// <returns>An equivalent integer.</returns>
-        public static int ToInt32(this BitArray @this)
+        public static int ToInt32([NotNull] this BitArray @this)
         {
             if (@this.Count > 32)
             {

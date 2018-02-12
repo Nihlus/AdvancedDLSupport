@@ -25,20 +25,25 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Represents an attempt to resolve a path.
     /// </summary>
+    [PublicAPI]
     public struct ResolvePathResult : IResult
     {
         /// <summary>
         /// Gets the resolved path.
         /// </summary>
+        [PublicAPI]
         public string Path { get; }
 
         /// <inheritdoc />
+        [PublicAPI]
         public string ErrorReason { get; }
 
         /// <inheritdoc />
+        [PublicAPI]
         public bool IsSuccess { get; }
 
         /// <inheritdoc />
+        [PublicAPI]
         public Exception Exception { get; }
 
         /// <summary>
@@ -48,7 +53,13 @@ namespace AdvancedDLSupport
         /// <param name="errorReason">The reason why the path couldn't be resolved. Can be null.</param>
         /// <param name="isSuccess">Whether or not a path was resolved.</param>
         /// <param name="exception">The exception which caused the path resolving to fail.</param>
-        private ResolvePathResult([CanBeNull] string path, [CanBeNull] string errorReason, bool isSuccess, [CanBeNull] Exception exception)
+        private ResolvePathResult
+        (
+            [CanBeNull] string path,
+            [CanBeNull] string errorReason,
+            bool isSuccess,
+            [CanBeNull] Exception exception
+        )
         {
             Path = path;
             ErrorReason = errorReason;
@@ -61,6 +72,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="resolvedPath">The path that was resolved.</param>
         /// <returns>A successful result.</returns>
+        [PublicAPI]
         public static ResolvePathResult FromSuccess([CanBeNull] string resolvedPath)
         {
             return new ResolvePathResult(resolvedPath, null, true, null);
@@ -71,6 +83,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="errorReason">The reason why the resolution failed.</param>
         /// <returns>A failed result.</returns>
+        [PublicAPI]
         public static ResolvePathResult FromError([NotNull] string errorReason)
         {
             return new ResolvePathResult(null, errorReason, false, null);
@@ -81,6 +94,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="exception">The exception that caused the resolution to fail.</param>
         /// <returns>A failed result.</returns>
+        [PublicAPI]
         public static ResolvePathResult FromError([NotNull] Exception exception)
         {
             return new ResolvePathResult(null, exception.Message, false, exception);

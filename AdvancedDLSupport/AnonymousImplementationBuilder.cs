@@ -24,12 +24,15 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.ImplementationGenerators;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap;
 using Mono.DllMap.Extensions;
+using static System.Reflection.CallingConventions;
+using static System.Reflection.MethodAttributes;
 
 namespace AdvancedDLSupport
 {
@@ -58,23 +61,31 @@ namespace AdvancedDLSupport
 
         static AnonymousImplementationBuilder()
         {
-            AssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("DLSupportAssembly"), AssemblyBuilderAccess.Run);
+            AssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly
+            (
+                new AssemblyName("DLSupportAssembly"), AssemblyBuilderAccess.Run
+            );
 
             #if DEBUG
             var dbgType = typeof(DebuggableAttribute);
             var dbgConstructor = dbgType.GetConstructor(new[] { typeof(DebuggableAttribute.DebuggingModes) });
-            var dbgBuilder = new CustomAttributeBuilder
-            (
-                dbgConstructor,
-                new object[] { DebuggableAttribute.DebuggingModes.DisableOptimizations | DebuggableAttribute.DebuggingModes.Default }
-            );
+            var dbgModes = new object[]
+            {
+                DebuggableAttribute.DebuggingModes.DisableOptimizations | DebuggableAttribute.DebuggingModes.Default
+            };
+
+            var dbgBuilder = new CustomAttributeBuilder(dbgConstructor, dbgModes);
 
             AssemblyBuilder.SetCustomAttribute(dbgBuilder);
             #endif
 
             ModuleBuilder = AssemblyBuilder.DefineDynamicModule("DLSupportModule");
 
-            TypeCache = new ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type>(new LibraryIdentifierEqualityComparer());
+            TypeCache = new ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type>
+            (
+                new LibraryIdentifierEqualityComparer()
+            );
+
             TransformerRepository = new TypeTransformerRepository()
                 .WithTypeTransformer(typeof(string), new StringTransformer());
         }
@@ -85,7 +96,11 @@ namespace AdvancedDLSupport
         /// <param name="options">The configuration settings to use for the builder.</param>
         /// <param name="pathResolver">The path resolver to use.</param>
         [PublicAPI]
-        public AnonymousImplementationBuilder(ImplementationOptions options = default, ILibraryPathResolver pathResolver = default )
+        public AnonymousImplementationBuilder
+        (
+            ImplementationOptions options = default,
+            [CanBeNull] ILibraryPathResolver pathResolver = default
+        )
         {
             Options = options;
             PathResolver = pathResolver ?? new DynamicLinkLibraryPathResolver();
@@ -99,13 +114,22 @@ namespace AdvancedDLSupport
         /// <typeparam name="TInterface">The interface type.</typeparam>
         /// <returns>A generated class that implements the given interface.</returns>
         /// <exception cref="ArgumentException">Thrown if either of the type arguments are incompatible.</exception>
-        /// <exception cref="FileNotFoundException">Thrown if the specified library can't be found in any of the loader paths.</exception>
-        /// <exception cref="InvalidOperationException">Thrown if the resulting instance can't be cast to the expected class. Should never occur in user code.</exception>
+        /// <exception cref="FileNotFoundException">
+        /// Thrown if the specified library can't be found in any of the loader paths.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the resulting instance can't be cast to the expected class. Should never occur in user code.
+        /// </exception>
         [NotNull, PublicAPI]
         public TInterface ResolveAndActivateInterface<TInterface>([NotNull] string libraryPath) where TInterface : class
         {
             var anonymousInstance = ResolveAndActivateClass<AnonymousImplementationBase, TInterface>(libraryPath);
-            return anonymousInstance as TInterface ?? throw new InvalidOperationException("The resulting instance was not convertible to an instance of the interface.");
+
+            return anonymousInstance as TInterface
+            ?? throw new InvalidOperationException
+            (
+                "The resulting instance was not convertible to an instance of the interface."
+            );
         }
 
         /// <summary>
@@ -117,8 +141,12 @@ namespace AdvancedDLSupport
         /// <typeparam name="TInterface">The interface to implement.</typeparam>
         /// <returns>An instance of the class.</returns>
         /// <exception cref="ArgumentException">Thrown if either of the type arguments are incompatible.</exception>
-        /// <exception cref="FileNotFoundException">Thrown if the specified library can't be found in any of the loader paths.</exception>
-        /// <exception cref="InvalidOperationException">Thrown if the resulting instance can't be cast to the expected class. Should never occur in user code.</exception>
+        /// <exception cref="FileNotFoundException">
+        /// Thrown if the specified library can't be found in any of the loader paths.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the resulting instance can't be cast to the expected class. Should never occur in user code.
+        /// </exception>
         [NotNull, PublicAPI]
         public TClass ResolveAndActivateClass<TClass, TInterface>([NotNull] string libraryPath)
             where TClass : AnonymousImplementationBase
@@ -133,7 +161,11 @@ namespace AdvancedDLSupport
             var interfaceType = typeof(TInterface);
             if (!interfaceType.IsInterface)
             {
-                throw new ArgumentException("The interface to activate on the class must be an interface type.", nameof(TInterface));
+                throw new ArgumentException
+                (
+                    "The interface to activate on the class must be an interface type.",
+                    nameof(TInterface)
+                );
             }
 
             // Check for remapping
@@ -146,7 +178,12 @@ namespace AdvancedDLSupport
             var resolveResult = PathResolver.Resolve(libraryPath);
             if (!resolveResult.IsSuccess)
             {
-                throw new FileNotFoundException($"The specified library (\"{libraryPath}\") was not found in any of the loader search paths.", libraryPath, resolveResult.Exception);
+                throw new FileNotFoundException
+                (
+                    $"The specified library (\"{libraryPath}\") was not found in any of the loader search paths.",
+                    libraryPath,
+                    resolveResult.Exception
+                );
             }
 
             libraryPath = resolveResult.Path;
@@ -158,9 +195,19 @@ namespace AdvancedDLSupport
                 // If so, use it instead of generating a new one
                 if (!(cachedType is null))
                 {
-                    var anonymousInstance = CreateAnonymousImplementationInstance<TInterface>(cachedType, libraryPath, Options, TransformerRepository);
+                    var anonymousInstance = CreateAnonymousImplementationInstance<TInterface>
+                    (
+                        cachedType,
+                        libraryPath,
+                        Options,
+                        TransformerRepository
+                    );
 
-                    return anonymousInstance as TClass ?? throw new InvalidOperationException("The resulting instance was not convertible to an instance of the class.");
+                    return anonymousInstance as TClass
+                    ?? throw new InvalidOperationException
+                    (
+                        "The resulting instance was not convertible to an instance of the class."
+                    );
                 }
             }
 
@@ -170,11 +217,21 @@ namespace AdvancedDLSupport
                 {
                     var finalType = GenerateInterfaceImplementationType<TClass, TInterface>();
 
-                    var anonymousInstance = CreateAnonymousImplementationInstance<TInterface>(finalType, libraryPath, Options, TransformerRepository);
+                    var anonymousInstance = CreateAnonymousImplementationInstance<TInterface>
+                    (
+                        finalType,
+                        libraryPath,
+                        Options,
+                        TransformerRepository
+                    );
 
                     TypeCache.TryAdd(key, finalType);
 
-                    return anonymousInstance as TClass ?? throw new InvalidOperationException("The resulting instance was not convertible to an instance of the class.");
+                    return anonymousInstance as TClass
+                    ?? throw new InvalidOperationException
+                    (
+                        "The resulting instance was not convertible to an instance of the class."
+                    );
                 }
                 catch (TargetInvocationException tex)
                 {
@@ -220,8 +277,8 @@ namespace AdvancedDLSupport
 
             var constructorBuilder = typeBuilder.DefineConstructor
             (
-                MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.HideBySig,
-                CallingConventions.Standard,
+                Public | SpecialName | RTSpecialName | HideBySig,
+                Standard,
                 anonymousConstructor.GetParameters().Select(p => p.ParameterType).ToArray()
             );
 
@@ -281,7 +338,14 @@ namespace AdvancedDLSupport
             [NotNull] TypeTransformerRepository transformerRepository
         )
         {
-            return (TInterface)Activator.CreateInstance(finalType, library, typeof(TInterface), options, transformerRepository);
+            return (TInterface)Activator.CreateInstance
+            (
+                finalType,
+                library,
+                typeof(TInterface),
+                options,
+                transformerRepository
+            );
         }
 
         /// <summary>
@@ -291,14 +355,32 @@ namespace AdvancedDLSupport
         /// <param name="constructorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
         /// <typeparam name="TBaseClass">The base class of the type to generate methods for.</typeparam>
         /// <typeparam name="TInterface">The interface where the methods originate.</typeparam>
-        private void ConstructMethods<TBaseClass, TInterface>([NotNull] TypeBuilder typeBuilder, [NotNull] ILGenerator constructorIL)
+        private void ConstructMethods<TBaseClass, TInterface>
+        (
+            [NotNull] TypeBuilder typeBuilder,
+            [NotNull] ILGenerator constructorIL
+        )
             where TBaseClass : AnonymousImplementationBase
             where TInterface : class
         {
             var methodGenerator = new MethodImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options);
-            var loweredGenerator = new LoweredMethodImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options, TransformerRepository);
+            var loweredGenerator = new LoweredMethodImplementationGenerator
+            (
+                ModuleBuilder,
+                typeBuilder,
+                constructorIL,
+                Options,
+                TransformerRepository
+            );
 
-            var refPermutationGenerator = new RefPermutationImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options, TransformerRepository);
+            var refPermutationGenerator = new RefPermutationImplementationGenerator
+            (
+                ModuleBuilder,
+                typeBuilder,
+                constructorIL,
+                Options,
+                TransformerRepository
+            );
 
             foreach (var method in typeof(TInterface).GetIntrospectiveMethods())
             {
@@ -311,7 +393,12 @@ namespace AdvancedDLSupport
                 }
 
                 // Skip methods with a managed implementation in the base class
-                var baseClassMethod = typeof(TBaseClass).GetIntrospectiveMethod(method.Name, method.ParameterTypes.ToArray());
+                var baseClassMethod = typeof(TBaseClass).GetIntrospectiveMethod
+                (
+                    method.Name,
+                    method.ParameterTypes.ToArray()
+                );
+
                 if (!(baseClassMethod is null))
                 {
                     if (!baseClassMethod.IsAbstract)
@@ -344,15 +431,29 @@ namespace AdvancedDLSupport
         /// Constructs the implementations for all properties.
         /// </summary>
         /// <param name="typeBuilder">Reference to TypeBuilder to define the methods in.</param>
-        /// <param name="constructorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
+        /// <param name="constructorIL">
+        /// Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.
+        /// </param>
         /// <typeparam name="TBaseClass">The base class of the type to generator properties for.</typeparam>
         /// <typeparam name="TInterface">The interface where the properties originate.</typeparam>
-        /// <exception cref="InvalidOperationException">Thrown if any property is declared as partially abstract.</exception>
-        private void ConstructProperties<TBaseClass, TInterface>([NotNull] TypeBuilder typeBuilder, [NotNull] ILGenerator constructorIL)
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if any property is declared as partially abstract.
+        /// </exception>
+        private void ConstructProperties<TBaseClass, TInterface>
+        (
+            [NotNull] TypeBuilder typeBuilder,
+            [NotNull] ILGenerator constructorIL
+        )
             where TBaseClass : AnonymousImplementationBase
             where TInterface : class
         {
-            var propertyGenerator = new PropertyImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options);
+            var propertyGenerator = new PropertyImplementationGenerator
+            (
+                ModuleBuilder,
+                typeBuilder,
+                constructorIL,
+                Options
+            );
 
             foreach (var property in typeof(TInterface).GetProperties())
             {
@@ -375,7 +476,10 @@ namespace AdvancedDLSupport
 
                     if (isPartiallyAbstract)
                     {
-                        throw new InvalidOperationException("Properties with overriding managed implementations may not be partially managed.");
+                        throw new InvalidOperationException
+                        (
+                            "Properties with overriding managed implementations may not be partially managed."
+                        );
                     }
 
                     targetProperty = baseClassProperty;

@@ -26,7 +26,8 @@ namespace AdvancedDLSupport.Loaders
     /// <summary>
     /// Acts as the base for platform loaders.
     /// </summary>
-    internal abstract class PlatformLoaderBase : IPlatformLoader
+    [PublicAPI]
+    public abstract class PlatformLoaderBase : IPlatformLoader
     {
         /// <inheritdoc />
         public T LoadFunction<T>(IntPtr library, string symbolName) =>
@@ -55,7 +56,7 @@ namespace AdvancedDLSupport.Loaders
         /// </summary>
         /// <returns>A platform loader for the current platform..</returns>
         /// <exception cref="PlatformNotSupportedException">Thrown if the current platform is not supported.</exception>
-        [Pure]
+        [PublicAPI, Pure]
         public static IPlatformLoader SelectPlatformLoader()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

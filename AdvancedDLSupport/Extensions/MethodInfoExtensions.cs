@@ -36,7 +36,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The method.</param>
         /// <returns>true if the method requires permutations; otherwise, false.</returns>
-        public static bool RequiresRefPermutations(this IntrospectiveMethodInfo @this)
+        public static bool RequiresRefPermutations([NotNull] this IntrospectiveMethodInfo @this)
         {
             return @this.ParameterTypes.Any(p => p.IsRefNullable());
         }
@@ -47,7 +47,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The method to check.</param>
         /// <returns>true if the method is complex; otherwise, false.</returns>
-        [PublicAPI, Pure]
+        [Pure]
         public static bool RequiresLowering([NotNull] this IntrospectiveMethodInfo @this)
         {
             return ParametersRequireLowering(@this) || ReturnValueRequiresLowering(@this);
@@ -58,7 +58,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The method.</param>
         /// <returns>true if the method has parameters that require lowering; otherwise, false.</returns>
-        [PublicAPI, Pure]
+        [Pure]
         public static bool ParametersRequireLowering([NotNull] this IntrospectiveMethodInfo @this)
         {
             var parameters = @this.ParameterTypes;
@@ -74,7 +74,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The method.</param>
         /// <returns>true if the method has a return value that requires lowering; otherwise, false.</returns>
-        [PublicAPI, Pure]
+        [Pure]
         public static bool ReturnValueRequiresLowering([NotNull] this IntrospectiveMethodInfo @this)
         {
             return @this.ReturnType.RequiresLowering();

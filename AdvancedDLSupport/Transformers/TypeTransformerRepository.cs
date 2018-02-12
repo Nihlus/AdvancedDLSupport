@@ -41,7 +41,11 @@ namespace AdvancedDLSupport
         /// <typeparam name="T2">The less complex type.</typeparam>
         /// <returns>The repository, with the transformer added.</returns>
         [PublicAPI, NotNull]
-        public TypeTransformerRepository WithTypeTransformer<T1, T2>([NotNull] Type type, [NotNull] ITypeTransformer<T1, T2> transformer)
+        public TypeTransformerRepository WithTypeTransformer<T1, T2>
+        (
+            [NotNull] Type type,
+            [NotNull] ITypeTransformer<T1, T2> transformer
+        )
         {
             if (!_typeTransformers.ContainsKey(type))
             {

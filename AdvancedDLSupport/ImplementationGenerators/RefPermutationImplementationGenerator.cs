@@ -35,7 +35,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// Generates a set of method permutations, based on a method with <see cref="Nullable{T}"/> parameters passed by
     /// reference.
     /// </summary>
-    public sealed class RefPermutationImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
+    internal sealed class RefPermutationImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
         private readonly PermutationGenerator _permutationGenerator;
 

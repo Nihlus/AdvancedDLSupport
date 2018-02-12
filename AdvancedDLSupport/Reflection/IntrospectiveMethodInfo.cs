@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.Reflection
 {
@@ -29,63 +30,75 @@ namespace AdvancedDLSupport.Reflection
     /// Wrapper class for <see cref="MethodInfo"/> and <see cref="MethodBuilder"/>, allowing equal compile-time
     /// introspection of their respective names, parameters, and types.
     /// </summary>
+    [PublicAPI]
     public class IntrospectiveMethodInfo : IntrospectiveMemberBase<MethodInfo>
     {
         /// <summary>
         /// Gets the return type of the method.
         /// </summary>
+        [PublicAPI]
         public Type ReturnType { get; }
 
         /// <summary>
         /// Gets the parameter types of the method.
         /// </summary>
+        [PublicAPI]
         public IReadOnlyList<Type> ParameterTypes { get; }
 
         /// <summary>
         /// Gets a value indicating whether the name of the method is special.
         /// </summary>
+        [PublicAPI]
         public bool IsSpecialName { get; }
 
         /// <summary>
         /// Gets a value indicating whether the method is abstract.
         /// </summary>
+        [PublicAPI]
         public bool IsAbstract { get; }
 
         /// <summary>
         /// Gets the method attributes of the definition.
         /// </summary>
+        [PublicAPI]
         public MethodAttributes Attributes { get; }
 
         /// <summary>
         /// Gets the parameter attributes of the return parameter.
         /// </summary>
+        [PublicAPI]
         public ParameterAttributes ReturnParameterAttributes { get; }
 
         /// <summary>
         /// Gets the names of the parameters.
         /// </summary>
+        [PublicAPI]
         public IReadOnlyList<string> ParameterNames { get; }
 
         /// <summary>
         /// Gets the parameter attributes of the parameter definitions.
         /// </summary>
+        [PublicAPI]
         public IReadOnlyList<ParameterAttributes> ParameterAttributes { get; }
 
         /// <summary>
         /// Gets the custom attributes applied to the return value parameter.
         /// </summary>
+        [PublicAPI]
         public IReadOnlyList<CustomAttributeData> ReturnParameterCustomAttributes { get; }
 
         /// <summary>
         /// Gets the custom attributes applied to the parameters.
         /// </summary>
+        [PublicAPI]
         public IReadOnlyList<IReadOnlyList<CustomAttributeData>> ParameterCustomAttributes { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectiveMethodInfo"/> class.
         /// </summary>
         /// <param name="methodInfo">The <see cref="MethodInfo"/> to wrap.</param>
-        public IntrospectiveMethodInfo(MethodInfo methodInfo)
+        [PublicAPI]
+        public IntrospectiveMethodInfo([NotNull] MethodInfo methodInfo)
             : base(methodInfo, methodInfo.CustomAttributes)
         {
             if (methodInfo is MethodBuilder)
@@ -126,12 +139,13 @@ namespace AdvancedDLSupport.Reflection
         /// <param name="returnType">The return type of the method.</param>
         /// <param name="parameterTypes">The parameter types of the method.</param>
         /// <param name="definitionToCopyAttributesFrom">The definition to copy custom attributes from.</param>
+        [PublicAPI]
         public IntrospectiveMethodInfo
         (
-            MethodBuilder builder,
-            Type returnType,
-            IEnumerable<Type> parameterTypes,
-            IntrospectiveMethodInfo definitionToCopyAttributesFrom = null)
+            [NotNull] MethodBuilder builder,
+            [NotNull] Type returnType,
+            [NotNull, ItemNotNull] IEnumerable<Type> parameterTypes,
+            [CanBeNull] IntrospectiveMethodInfo definitionToCopyAttributesFrom = null)
             : base(builder, definitionToCopyAttributesFrom?.CustomAttributes)
         {
             ReturnType = returnType;

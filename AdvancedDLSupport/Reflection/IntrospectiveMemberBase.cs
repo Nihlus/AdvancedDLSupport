@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.Reflection
 {
@@ -28,6 +29,7 @@ namespace AdvancedDLSupport.Reflection
     /// Abstract base wrapper class for introspective member informations.
     /// </summary>
     /// <typeparam name="TMemberInfo">The member info to wrap.</typeparam>
+    [PublicAPI]
     public abstract class IntrospectiveMemberBase<TMemberInfo> : MemberInfo, IIntrospectiveMember
         where TMemberInfo : MemberInfo
     {
@@ -51,13 +53,15 @@ namespace AdvancedDLSupport.Reflection
         /// <summary>
         /// Gets the wrapped member.
         /// </summary>
+        [PublicAPI]
         protected TMemberInfo Member { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectiveMemberBase{TMemberInfo}"/> class.
         /// </summary>
         /// <param name="memberInfo">The member info object to wrap.</param>
-        public IntrospectiveMemberBase(TMemberInfo memberInfo)
+        [PublicAPI]
+        protected IntrospectiveMemberBase([NotNull] TMemberInfo memberInfo)
         {
             Member = memberInfo;
 
@@ -74,10 +78,11 @@ namespace AdvancedDLSupport.Reflection
         /// </summary>
         /// <param name="memberInfo">The member info to wrap.</param>
         /// <param name="customAttributes">The custom attributes associated with the member.</param>
-        public IntrospectiveMemberBase
+        [PublicAPI]
+        protected IntrospectiveMemberBase
         (
-            TMemberInfo memberInfo,
-            IEnumerable<CustomAttributeData> customAttributes = default
+            [NotNull] TMemberInfo memberInfo,
+            [NotNull, ItemNotNull] IEnumerable<CustomAttributeData> customAttributes = default
         )
         {
             Member = memberInfo;
@@ -93,6 +98,7 @@ namespace AdvancedDLSupport.Reflection
         /// Gets the wrapped member information. No guarantees can be made about its introspective capabilities.
         /// </summary>
         /// <returns>The wrapped method.</returns>
+        [PublicAPI]
         public TMemberInfo GetWrappedMember() => Member;
 
         /// <inheritdoc />
@@ -135,7 +141,8 @@ namespace AdvancedDLSupport.Reflection
         /// </summary>
         /// <param name="introspectiveInfo">The introspective info.</param>
         /// <returns>The wrapped member.</returns>
-        public static explicit operator TMemberInfo(IntrospectiveMemberBase<TMemberInfo> introspectiveInfo)
+        [PublicAPI]
+        public static explicit operator TMemberInfo([NotNull] IntrospectiveMemberBase<TMemberInfo> introspectiveInfo)
         {
             return introspectiveInfo.Member;
         }

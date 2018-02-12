@@ -31,6 +31,7 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Gets the name of the symbol that failed to load.
         /// </summary>
+        [PublicAPI]
         public string SymbolName { get; }
 
         /// <summary>

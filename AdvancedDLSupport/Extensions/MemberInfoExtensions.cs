@@ -19,13 +19,14 @@
 
 using System;
 using System.Reflection;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.Extensions
 {
     /// <summary>
     /// Extension methods for the <see cref="MemberInfo"/> class.
     /// </summary>
-    public static class MemberInfoExtensions
+    internal static class MemberInfoExtensions
     {
         /// <summary>
         /// Determines whether or not the given member has a custom attribute of the given type.
@@ -33,7 +34,7 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="this">The member info.</param>
         /// <typeparam name="T">The attribute type.</typeparam>
         /// <returns>true if it has one; otherwise, false.</returns>
-        public static bool HasCustomAttribute<T>(this MemberInfo @this) where T : Attribute
+        public static bool HasCustomAttribute<T>([NotNull] this MemberInfo @this) where T : Attribute
         {
             return !(@this.GetCustomAttribute<T>() is null);
         }

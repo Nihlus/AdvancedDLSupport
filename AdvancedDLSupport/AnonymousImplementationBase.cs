@@ -56,6 +56,7 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Gets the type transformer repository.
         /// </summary>
+        [PublicAPI]
         public TypeTransformerRepository TransformerRepository { get; }
 
         /// <summary>
@@ -76,7 +77,7 @@ namespace AdvancedDLSupport
         /// <param name="interfaceType">The interface type that the anonymous type implements.</param>
         /// <param name="options">Whether or not this library can be disposed.</param>
         /// <param name="transformerRepository">The repository containing type transformers.</param>
-        [AnonymousConstructor]
+        [PublicAPI, AnonymousConstructor]
         protected AnonymousImplementationBase
         (
             [NotNull] string path,
@@ -97,6 +98,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="sym">The symbol name.</param>
         /// <returns>A handle to the symbol</returns>
+        [PublicAPI]
         protected IntPtr LoadSymbol([NotNull] string sym) => PlatformLoader.LoadSymbol(_libraryHandle, sym);
 
         /// <summary>
@@ -105,12 +107,14 @@ namespace AdvancedDLSupport
         /// <param name="sym">The symbol name.</param>
         /// <typeparam name="T">The delegate to load the symbol as.</typeparam>
         /// <returns>A function delegate.</returns>
+        [PublicAPI]
         protected T LoadFunction<T>([NotNull] string sym) => PlatformLoader.LoadFunction<T>(_libraryHandle, sym);
 
         /// <summary>
         /// Throws if the library has been disposed.
         /// </summary>
         /// <exception cref="ObjectDisposedException">Thrown if the library has been disposed.</exception>
+        [PublicAPI]
         protected void ThrowIfDisposed()
         {
             if (IsDisposed)

@@ -21,39 +21,46 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.Reflection
 {
     /// <summary>
     /// Wrapper class for property infos.
     /// </summary>
+    [PublicAPI]
     public class IntrospectivePropertyInfo : IntrospectiveMemberBase<PropertyInfo>
     {
         /// <summary>
         /// Gets the type of the property.
         /// </summary>
+        [PublicAPI]
         public Type PropertyType { get; }
 
         /// <summary>
         /// Gets the index parameter types of the property.
         /// </summary>
+        [PublicAPI]
         public IReadOnlyList<Type> IndexParameterTypes { get; }
 
         /// <summary>
         /// Gets a value indicating whether the property can be read.
         /// </summary>
+        [PublicAPI]
         public bool CanRead { get; }
 
         /// <summary>
         /// Gets a value indicating whether the property can be written.
         /// </summary>
+        [PublicAPI]
         public bool CanWrite { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectivePropertyInfo"/> class.
         /// </summary>
         /// <param name="memberInfo">The property info to wrap.</param>
-        public IntrospectivePropertyInfo(PropertyInfo memberInfo)
+        [PublicAPI]
+        public IntrospectivePropertyInfo([NotNull] PropertyInfo memberInfo)
             : base(memberInfo)
         {
             PropertyType = memberInfo.PropertyType;

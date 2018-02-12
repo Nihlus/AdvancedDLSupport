@@ -25,7 +25,8 @@ namespace AdvancedDLSupport.Loaders
     /// <summary>
     /// Represents a class which can load libraries and symbols on a specific platform.
     /// </summary>
-    internal interface IPlatformLoader
+    [PublicAPI]
+    public interface IPlatformLoader
     {
         /// <summary>
         /// Loads the given symbol name and marshals it into a function delegate.
@@ -34,7 +35,7 @@ namespace AdvancedDLSupport.Loaders
         /// <param name="symbolName">The name of the symbol.</param>
         /// <typeparam name="T">The delegate type to marshal.</typeparam>
         /// <returns>A marshalled delegate.</returns>
-        [NotNull, Pure]
+        [PublicAPI, NotNull, Pure]
         T LoadFunction<T>(IntPtr library, [NotNull] string symbolName);
 
         /// <summary>
@@ -43,6 +44,7 @@ namespace AdvancedDLSupport.Loaders
         /// <param name="path">The path to the library.</param>
         /// <returns>A handle to the library. This value carries no intrinsic meaning.</returns>
         /// <exception cref="LibraryLoadingException">Thrown if the library could not be loaded.</exception>
+        [PublicAPI]
         IntPtr LoadLibrary([NotNull] string path);
 
         /// <summary>
@@ -52,7 +54,7 @@ namespace AdvancedDLSupport.Loaders
         /// <param name="symbolName">The name of the symbol to load.</param>
         /// <exception cref="SymbolLoadingException">Thrown if the symbol could not be loaded.</exception>
         /// <returns>A handle to the symbol.</returns>
-        [Pure]
+        [PublicAPI, Pure]
         IntPtr LoadSymbol(IntPtr library, [NotNull] string symbolName);
 
         /// <summary>
@@ -60,6 +62,7 @@ namespace AdvancedDLSupport.Loaders
         /// </summary>
         /// <param name="library">The handle to the library to close.</param>
         /// <returns>true if the library was closed successfully; otherwise, false.</returns>
+        [PublicAPI]
         bool CloseLibrary(IntPtr library);
     }
 }

@@ -34,7 +34,8 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The type to inspect.</param>
         /// <returns>The methods.</returns>
-        public static IEnumerable<IntrospectiveMethodInfo> GetIntrospectiveMethods(this Type @this)
+        [NotNull, ItemNotNull]
+        public static IEnumerable<IntrospectiveMethodInfo> GetIntrospectiveMethods([NotNull] this Type @this)
         {
             var methods = @this.GetMethods();
             foreach (var method in methods)
@@ -50,7 +51,13 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="name">The name of the method.</param>
         /// <param name="parameterTypes">The parameter types of the method.</param>
         /// <returns>The method.</returns>
-        public static IntrospectiveMethodInfo GetIntrospectiveMethod(this Type @this, string name, Type[] parameterTypes)
+        [CanBeNull]
+        public static IntrospectiveMethodInfo GetIntrospectiveMethod
+        (
+            [NotNull] this Type @this,
+            [NotNull] string name,
+            [NotNull, ItemNotNull] Type[] parameterTypes
+        )
         {
             var method = @this.GetMethod(name, parameterTypes);
             return method is null ? null : new IntrospectiveMethodInfo(method);
@@ -74,7 +81,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The type.</param>
         /// <returns>true if it is a nullable that is not passed by reference; otherwise, false.</returns>
-        public static bool IsNonRefNullable(this Type @this)
+        public static bool IsNonRefNullable([NotNull] this Type @this)
         {
             if (@this.IsByRef)
             {
@@ -90,7 +97,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The type.</param>
         /// <returns>true if it is a nullable passed by reference; otherwise, false.</returns>
-        public static bool IsRefNullable(this Type @this)
+        public static bool IsRefNullable([NotNull] this Type @this)
         {
             if (!@this.IsByRef)
             {

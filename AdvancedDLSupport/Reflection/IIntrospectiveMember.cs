@@ -18,12 +18,14 @@
 //
 
 using System;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.Reflection
 {
     /// <summary>
     /// Introspective member interface.
     /// </summary>
+    [PublicAPI]
     public interface IIntrospectiveMember
     {
         /// <summary>
@@ -31,6 +33,7 @@ namespace AdvancedDLSupport.Reflection
         /// </summary>
         /// <typeparam name="TAttribute">The type of attribute to get.</typeparam>
         /// <returns>The attribute, or null.</returns>
+        [PublicAPI, CanBeNull]
         TAttribute GetCustomAttribute<TAttribute>() where TAttribute : Attribute;
     }
 }

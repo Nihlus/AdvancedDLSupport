@@ -27,7 +27,7 @@ namespace AdvancedDLSupport.Extensions
     /// <summary>
     /// Extension methods for emitting IL.
     /// </summary>
-    public static class ILGeneratorExtensions
+    internal static class ILGeneratorExtensions
     {
         /// <summary>
         /// Emits a set of IL instructions which will produce the equivalent of a typeof(T) call, placing it onto the

@@ -31,6 +31,7 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Gets the name of the library that failed to load.
         /// </summary>
+        [PublicAPI]
         public string LibraryName { get; }
 
         /// <summary>
