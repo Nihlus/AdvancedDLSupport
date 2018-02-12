@@ -146,7 +146,7 @@ namespace AdvancedDLSupport.Reflection
             [NotNull] Type returnType,
             [NotNull, ItemNotNull] IEnumerable<Type> parameterTypes,
             [CanBeNull] IntrospectiveMethodInfo definitionToCopyAttributesFrom = null)
-            : base(builder, definitionToCopyAttributesFrom?.CustomAttributes)
+            : base(builder, definitionToCopyAttributesFrom?.CustomAttributes ?? new List<CustomAttributeData>())
         {
             ReturnType = returnType;
             ParameterTypes = parameterTypes.ToList();
