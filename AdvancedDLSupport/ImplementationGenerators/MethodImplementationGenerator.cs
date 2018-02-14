@@ -70,7 +70,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <inheritdoc />
-        public override void GenerateImplementationForDefinition(IntrospectiveMethodInfo definition, string symbolName, string uniqueMemberIdentifier)
+        public override IntrospectiveMethodInfo GenerateImplementationForDefinition(IntrospectiveMethodInfo definition, string symbolName, string uniqueMemberIdentifier)
         {
             var metadataAttribute = definition.GetCustomAttribute<NativeSymbolAttribute>() ??
                                     new NativeSymbolAttribute(definition.Name);
@@ -87,6 +87,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             AugmentHostingTypeConstructor(symbolName, delegateBuilderType, delegateField);
 
             GenerateDelegateInvokerBody(definition, delegateBuilderType, delegateField);
+            return definition;
         }
 
         /// <summary>

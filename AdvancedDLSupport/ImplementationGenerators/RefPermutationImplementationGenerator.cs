@@ -120,6 +120,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
             TargetType.DefineMethodOverride(topLevelMethod, member.GetWrappedMember());
         }
 
+        /// <inheritdoc />
+        public override IntrospectiveMethodInfo GenerateImplementationForDefinition(IntrospectiveMethodInfo member, string symbolName, string uniqueMemberIdentifier)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Generates the implementation body of the top-level method, producing a method that selects the appropriate
         /// permutation to use for its runtime input.
@@ -170,7 +176,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var jumpTable = labelList.ToArray();
 
             methodIL.Emit(OpCodes.Switch, jumpTable);
-            methodIL.Emit(OpCodes.Br_S, defaultCase);
+            methodIL.Emit(OpCodes.Br, defaultCase);
 
             EmitDefaultSwitchCase(methodIL, defaultCase);
 
@@ -204,7 +210,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                     }
                     else
                     {
-                        methodIL.Emit(OpCodes.Ldloc, argumentIndex);
+                        methodIL.Emit(OpCodes.Ldarg, argumentIndex);
                     }
                 }
 
@@ -218,7 +224,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 }
 
                 // break;
-                methodIL.Emit(OpCodes.Br_S, endOfSwitch);
+                methodIL.Emit(OpCodes.Br, endOfSwitch);
             }
 
             // Mark end of switch

@@ -96,6 +96,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
             PropertyInitializationInConstructor(symbolName, propertyFieldBuilder); // This is ok for all 3 types of properties.
         }
 
+        /// <inheritdoc />
+        public override IntrospectivePropertyInfo GenerateImplementationForDefinition(IntrospectivePropertyInfo member, string symbolName, string uniqueMemberIdentifier)
+        {
+            throw new NotImplementedException();
+        }
+
         private void PropertyInitializationInConstructor
         (
             [NotNull] string symbolName,

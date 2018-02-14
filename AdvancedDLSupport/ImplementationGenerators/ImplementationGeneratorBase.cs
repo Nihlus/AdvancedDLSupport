@@ -130,11 +130,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="member">The defined member.</param>
         /// <param name="symbolName">The name of the symbol in the native library.</param>
         /// <param name="uniqueMemberIdentifier">The identifier to use for generated types and methods.</param>
+        /// <returns>The implementation.</returns>
         [PublicAPI]
-        public virtual void GenerateImplementationForDefinition([NotNull] T member, [NotNull] string symbolName, [NotNull] string uniqueMemberIdentifier)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract T GenerateImplementationForDefinition([NotNull] T member, [NotNull] string symbolName, [NotNull] string uniqueMemberIdentifier);
 
         /// <summary>
         /// Emits a call to <see cref="AnonymousImplementationBase.ThrowIfDisposed"/>.

@@ -69,11 +69,18 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             var complexMethodDefinition = GenerateComplexMethodDefinition(method);
 
+            var implementation = GenerateImplementationForDefinition(complexMethodDefinition, symbolName, uniqueMemberIdentifier);
+
+            TargetType.DefineMethodOverride(implementation.GetWrappedMember(), method.GetWrappedMember());
+        }
+
+        /// <inheritdoc />
+        public override IntrospectiveMethodInfo GenerateImplementationForDefinition(IntrospectiveMethodInfo complexMethodDefinition, string symbolName, string uniqueMemberIdentifier)
+        {
             var loweredMethod = GenerateLoweredMethodDefinition(complexMethodDefinition, uniqueMemberIdentifier);
             _methodGenerator.GenerateImplementationForDefinition(loweredMethod, symbolName, uniqueMemberIdentifier);
 
-            var implementation = GenerateComplexMethodBody(complexMethodDefinition, loweredMethod);
-            TargetType.DefineMethodOverride(implementation.GetWrappedMember(), method.GetWrappedMember());
+            return GenerateComplexMethodBody(complexMethodDefinition, loweredMethod);
         }
 
         /// <summary>
