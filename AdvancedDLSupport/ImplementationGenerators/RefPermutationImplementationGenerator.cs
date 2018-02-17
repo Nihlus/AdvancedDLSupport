@@ -142,20 +142,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
             IReadOnlyList<IntrospectiveMethodInfo> generatedMethods
         )
         {
-            var returnValueLocalIndex = 0;
             var nextFreeLocalSlot = 0;
 
             var parameterTypes = baseMemberDefinition.ParameterTypes.ToList();
             var methodIL = topLevelMethod.GetILGenerator();
-
-            // If we have a return value, declare a local to hold it later
-            if (baseMemberDefinition.ReturnType != typeof(void))
-            {
-                returnValueLocalIndex = nextFreeLocalSlot;
-                ++nextFreeLocalSlot;
-
-                methodIL.DeclareLocal(baseMemberDefinition.ReturnType);
-            }
 
             // Create a boolean array to store the data pertaining to which parameters have values
             var hasValueArrayIndex = EmitHasValueArray(methodIL, ref nextFreeLocalSlot, parameterTypes);
@@ -217,25 +207,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 // Call the permutation
                 methodIL.Emit(OpCodes.Call, generatedMethods[i].GetWrappedMember());
 
-                // Store the return value if we have one
-                if (baseMemberDefinition.ReturnType != typeof(void))
-                {
-                    methodIL.Emit(OpCodes.Stloc, returnValueLocalIndex);
-                }
-
                 // break;
                 methodIL.Emit(OpCodes.Br, endOfSwitch);
             }
 
             // Mark end of switch
             methodIL.MarkLabel(endOfSwitch);
-
-            // Load the return value if we have one
-            if (baseMemberDefinition.ReturnType != typeof(void))
-            {
-                methodIL.Emit(OpCodes.Ldloc, returnValueLocalIndex);
-            }
-
             methodIL.Emit(OpCodes.Ret);
         }
 
