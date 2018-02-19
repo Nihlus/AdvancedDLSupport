@@ -42,8 +42,8 @@ Read the [Docs][9], or get the [MyGet][10] development packages and [get started
 	```cs
 	const string MyLibraryName = "MyLibrary";
 
-	var activator = new AnonymousImplementationBuilder();
-	var library = activator.ResolveAndActivateInterface<IMyNativeLibrary>(MyLibraryName);
+	var activator = new NativeLibraryBuilder();
+	var library = activator.ActivateInterface<IMyNativeLibrary>(MyLibraryName);
 	```
 
 3. Use it

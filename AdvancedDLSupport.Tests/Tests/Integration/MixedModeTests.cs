@@ -10,13 +10,13 @@ namespace AdvancedDLSupport.Tests.Integration
 		private const string LibraryName = "MixedModeTests";
 
 		private readonly MixedModeClass _mixedModeClass;
-		private readonly AnonymousImplementationBuilder _builder;
+		private readonly NativeLibraryBuilder _builder;
 
 		public MixedModeTests()
 		{
-			_builder = new AnonymousImplementationBuilder();
+			_builder = new NativeLibraryBuilder();
 
-			_mixedModeClass = _builder.ResolveAndActivateClass<MixedModeClass, IMixedModeLibrary>(LibraryName);
+			_mixedModeClass = _builder.ActivateClass<MixedModeClass, IMixedModeLibrary>(LibraryName);
 		}
 
 		[Fact]
@@ -25,7 +25,7 @@ namespace AdvancedDLSupport.Tests.Integration
 			Assert.Throws<ArgumentException>
 			(
 				() =>
-					_builder.ResolveAndActivateClass<MixedModeClassThatIsNotAbstract, IMixedModeLibrary>(LibraryName)
+					_builder.ActivateClass<MixedModeClassThatIsNotAbstract, IMixedModeLibrary>(LibraryName)
 			);
 		}
 

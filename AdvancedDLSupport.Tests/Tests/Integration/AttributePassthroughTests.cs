@@ -10,7 +10,7 @@ namespace AdvancedDLSupport.Tests.Integration
         [Fact]
         public void RespectsReturnValueMarshalAs()
         {
-            var library = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IAttributePassthroughLibrary>(LibraryName);
+            var library = new NativeLibraryBuilder().ActivateInterface<IAttributePassthroughLibrary>(LibraryName);
 
             Assert.True(library.CheckIfGreaterThanZero(1));
             Assert.False(library.CheckIfGreaterThanZero(0));
@@ -21,7 +21,7 @@ namespace AdvancedDLSupport.Tests.Integration
         [Fact]
         public void RespectsStringMarshallingAttribute()
         {
-            var library = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IAttributePassthroughLibrary>(LibraryName);
+            var library = new NativeLibraryBuilder().ActivateInterface<IAttributePassthroughLibrary>(LibraryName);
             var expected = "Äta gurka i en båt på ön";
 
             Assert.Equal(expected, library.EchoWString(expected));

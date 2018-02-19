@@ -21,7 +21,7 @@ namespace AdvancedDLSupport.Tests.Integration
         [Fact]
         public void DisposedLibraryWithoutGeneratedChecksDoesNotThrow()
         {
-            var library = new AnonymousImplementationBuilder().ResolveAndActivateInterface<IDisposeCheckLibrary>(LibraryName);
+            var library = new NativeLibraryBuilder().ActivateInterface<IDisposeCheckLibrary>(LibraryName);
             library.Dispose();
             library.Multiply(5, 5);
         }
@@ -45,7 +45,7 @@ namespace AdvancedDLSupport.Tests.Integration
         {
             Library.Dispose();
 
-            var newLibrary = new AnonymousImplementationBuilder(Config).ResolveAndActivateInterface<IDisposeCheckLibrary>(LibraryName);
+            var newLibrary = new NativeLibraryBuilder(Config).ActivateInterface<IDisposeCheckLibrary>(LibraryName);
 
             newLibrary.Multiply(5, 5);
             Assert.NotSame(Library, newLibrary);

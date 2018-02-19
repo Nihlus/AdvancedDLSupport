@@ -262,9 +262,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         private void EmitGetTypeTransformerCall([NotNull] ILGenerator il, [NotNull] Type complexType)
         {
             var getTransformerFunc = typeof(TypeTransformerRepository).GetMethod(nameof(TypeTransformerRepository.GetTypeTransformer));
-            var repoProperty = typeof(AnonymousImplementationBase).GetProperty
+            var repoProperty = typeof(NativeLibraryBase).GetProperty
             (
-                nameof(AnonymousImplementationBase.TransformerRepository),
+                nameof(NativeLibraryBase.TransformerRepository),
                 BindingFlags.Public | BindingFlags.Instance
             );
 

@@ -25,7 +25,7 @@ namespace AdvancedDLSupport.Tests.Integration
 			Assert.Throws<SymbolLoadingException>
 			(
 				() =>
-					new AnonymousImplementationBuilder().ResolveAndActivateInterface<ILazyLoadingLibrary>(LibraryName)
+					new NativeLibraryBuilder().ActivateInterface<ILazyLoadingLibrary>(LibraryName)
 			);
 		}
 
@@ -45,7 +45,7 @@ namespace AdvancedDLSupport.Tests.Integration
 			Assert.Throws<SymbolLoadingException>
 			(
 				() =>
-					new AnonymousImplementationBuilder().ResolveAndActivateInterface<ILazyLoadingLibrary>(LibraryName)
+					new NativeLibraryBuilder().ActivateInterface<ILazyLoadingLibrary>(LibraryName)
 			);
 		}
 

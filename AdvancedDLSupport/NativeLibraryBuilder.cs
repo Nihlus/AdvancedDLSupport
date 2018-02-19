@@ -1,5 +1,5 @@
 //
-//  AnonymousImplementationBuilder.cs
+//  NativeLibraryBuilder.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -39,7 +39,7 @@ namespace AdvancedDLSupport
     /// Builder class for anonymous types that bind to native libraries.
     /// </summary>
     [PublicAPI]
-    public class AnonymousImplementationBuilder
+    public class NativeLibraryBuilder
     {
         /// <summary>
         /// Gets the configuration object for this builder.
@@ -58,7 +58,7 @@ namespace AdvancedDLSupport
         private static readonly ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type> TypeCache;
         private static readonly TypeTransformerRepository TransformerRepository;
 
-        static AnonymousImplementationBuilder()
+        static NativeLibraryBuilder()
         {
             AssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly
             (
@@ -89,12 +89,12 @@ namespace AdvancedDLSupport
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AnonymousImplementationBuilder"/> class.
+        /// Initializes a new instance of the <see cref="NativeLibraryBuilder"/> class.
         /// </summary>
         /// <param name="options">The configuration settings to use for the builder.</param>
         /// <param name="pathResolver">The path resolver to use.</param>
         [PublicAPI]
-        public AnonymousImplementationBuilder
+        public NativeLibraryBuilder
         (
             ImplementationOptions options = default,
             [CanBeNull] ILibraryPathResolver pathResolver = default
@@ -119,9 +119,9 @@ namespace AdvancedDLSupport
         /// Thrown if the resulting instance can't be cast to the expected class. Should never occur in user code.
         /// </exception>
         [NotNull, PublicAPI]
-        public TInterface ResolveAndActivateInterface<TInterface>([NotNull] string libraryPath) where TInterface : class
+        public TInterface ActivateInterface<TInterface>([NotNull] string libraryPath) where TInterface : class
         {
-            var anonymousInstance = ResolveAndActivateClass<AnonymousImplementationBase, TInterface>(libraryPath);
+            var anonymousInstance = ActivateClass<NativeLibraryBase, TInterface>(libraryPath);
 
             return anonymousInstance as TInterface
             ?? throw new InvalidOperationException
@@ -146,8 +146,8 @@ namespace AdvancedDLSupport
         /// Thrown if the resulting instance can't be cast to the expected class. Should never occur in user code.
         /// </exception>
         [NotNull, PublicAPI]
-        public TClass ResolveAndActivateClass<TClass, TInterface>([NotNull] string libraryPath)
-            where TClass : AnonymousImplementationBase
+        public TClass ActivateClass<TClass, TInterface>([NotNull] string libraryPath)
+            where TClass : NativeLibraryBase
             where TInterface : class
         {
             var classType = typeof(TClass);
@@ -229,7 +229,7 @@ namespace AdvancedDLSupport
         /// <returns>The type.</returns>
         [NotNull, Pure]
         private Type GenerateInterfaceImplementationType<TBaseClass, TInterface>()
-            where TBaseClass : AnonymousImplementationBase
+            where TBaseClass : NativeLibraryBase
             where TInterface : class
         {
             var baseClassType = typeof(TBaseClass);
@@ -247,7 +247,7 @@ namespace AdvancedDLSupport
             );
 
             // Now the constructor
-            var anonymousConstructor = typeof(AnonymousImplementationBase)
+            var anonymousConstructor = typeof(NativeLibraryBase)
             .GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance)
             .First
             (
@@ -339,7 +339,7 @@ namespace AdvancedDLSupport
             [NotNull] TypeBuilder typeBuilder,
             [NotNull] ILGenerator constructorIL
         )
-            where TBaseClass : AnonymousImplementationBase
+            where TBaseClass : NativeLibraryBase
             where TInterface : class
         {
             var methodGenerator = new MethodImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options);
@@ -423,7 +423,7 @@ namespace AdvancedDLSupport
             [NotNull] TypeBuilder typeBuilder,
             [NotNull] ILGenerator constructorIL
         )
-            where TBaseClass : AnonymousImplementationBase
+            where TBaseClass : NativeLibraryBase
             where TInterface : class
         {
             var propertyGenerator = new PropertyImplementationGenerator

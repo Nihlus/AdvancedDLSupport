@@ -135,13 +135,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
         public abstract T GenerateImplementationForDefinition([NotNull] T member, [NotNull] string symbolName, [NotNull] string uniqueMemberIdentifier);
 
         /// <summary>
-        /// Emits a call to <see cref="AnonymousImplementationBase.ThrowIfDisposed"/>.
+        /// Emits a call to <see cref="NativeLibraryBase.ThrowIfDisposed"/>.
         /// </summary>
         /// <param name="il">The IL generator.</param>
         [PublicAPI]
         protected void EmitDisposalCheck([NotNull] ILGenerator il)
         {
-            var throwMethod = typeof(AnonymousImplementationBase).GetMethod("ThrowIfDisposed", BindingFlags.NonPublic | BindingFlags.Instance);
+            var throwMethod = typeof(NativeLibraryBase).GetMethod("ThrowIfDisposed", BindingFlags.NonPublic | BindingFlags.Instance);
 
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Call, throwMethod);
@@ -203,7 +203,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
 
-            var loadSymbolMethod = typeof(AnonymousImplementationBase).GetMethod
+            var loadSymbolMethod = typeof(NativeLibraryBase).GetMethod
             (
                 "LoadSymbol",
                 BindingFlags.NonPublic | BindingFlags.Instance
@@ -237,7 +237,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
 
-            var loadFuncMethod = typeof(AnonymousImplementationBase).GetMethod
+            var loadFuncMethod = typeof(NativeLibraryBase).GetMethod
             (
                 "LoadFunction",
                 BindingFlags.NonPublic | BindingFlags.Instance

@@ -34,8 +34,8 @@ public interface IMyLibrary
 The final code would be produced by Advance DL Support as an anonymous instance for interface above:
 
 ```cs
-public class AnonymousClass : IMyLibrary {
-
+public class AnonymousClass : NativeLibraryBase, IMyLibrary 
+{
 	public delegate int Add_dt(int a, int b);
 
 	public Add_dt Add_dtm;

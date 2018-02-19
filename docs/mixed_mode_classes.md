@@ -14,7 +14,7 @@ using System;
 
 namespace AdvancedDLSupport.Tests.Data.Classes
 {
-	public abstract class MixedModeClass : AnonymousImplementationBase, IMixedModeLibrary
+	public abstract class MixedModeClass : NativeLibraryBase, IMixedModeLibrary
 	{
 		public MixedModeClass(string path, Type interfaceType, ImplementationConfiguration configuration, TypeTransformerRepository transformerRepository)
 			: base(path, interfaceType, configuration, transformerRepository)
@@ -70,7 +70,7 @@ As you can see, managed functions can coexist with unmanaged ones, and managed c
 unmanaged functions (as seen in Subtract and OtherNativeProperty).
 
 In order to create a mixed-mode class, simply declare an `abstract` class that inherits from 
-`AnonymousImplementationBase`, and implements the interface you want to activate. Any interface members can have 
+`NativeLibraryBase`, and implements the interface you want to activate. Any interface members can have 
 explicit managed implementations, or remain `abstract` to be routed to their corresponding native implementations.
 
 There are a few limitations:
@@ -83,5 +83,5 @@ Once you have your class definition, instances of it can be created in much the 
 instances:
 
 ```cs
-AnonymousImplementationBuilder::ResolvedAndActivateClass<MixedModeClass, IMixedModeLibrary>(LibraryName);
+NativeLibraryBuilder::ActivateClass<MixedModeClass, IMixedModeLibrary>(LibraryName);
 ```

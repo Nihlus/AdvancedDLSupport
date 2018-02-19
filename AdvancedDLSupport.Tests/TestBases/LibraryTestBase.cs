@@ -11,7 +11,7 @@ namespace AdvancedDLSupport.Tests.TestBases
         public LibraryTestBase(string libraryLocation)
         {
             Config = GetImplementationOptions();
-            Library = GetImplementationBuilder().ResolveAndActivateInterface<T>(libraryLocation);
+            Library = GetImplementationBuilder().ActivateInterface<T>(libraryLocation);
         }
 
         protected virtual ImplementationOptions GetImplementationOptions()
@@ -19,9 +19,9 @@ namespace AdvancedDLSupport.Tests.TestBases
             return 0;
         }
 
-        protected virtual AnonymousImplementationBuilder GetImplementationBuilder()
+        protected virtual NativeLibraryBuilder GetImplementationBuilder()
         {
-            return new AnonymousImplementationBuilder(Config);
+            return new NativeLibraryBuilder(Config);
         }
     }
 }

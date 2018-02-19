@@ -1,5 +1,5 @@
 //
-//  AnonymousImplementationBase.cs
+//  NativeLibraryBase.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -29,19 +29,19 @@ namespace AdvancedDLSupport
     /// Internal base class for library implementations
     /// </summary>
     [PublicAPI]
-    public abstract class AnonymousImplementationBase : IDisposable
+    public abstract class NativeLibraryBase : IDisposable
     {
         private static readonly IPlatformLoader PlatformLoader;
 
-        static AnonymousImplementationBase()
+        static NativeLibraryBase()
         {
             PlatformLoader = PlatformLoaderBase.SelectPlatformLoader();
         }
 
         /// <summary>
-        /// Finalizes an instance of the <see cref="AnonymousImplementationBase"/> class.
+        /// Finalizes an instance of the <see cref="NativeLibraryBase"/> class.
         /// </summary>
-        ~AnonymousImplementationBase()
+        ~NativeLibraryBase()
         {
             Dispose();
         }
@@ -71,14 +71,14 @@ namespace AdvancedDLSupport
         private ImplementationOptions Options { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AnonymousImplementationBase"/> class.
+        /// Initializes a new instance of the <see cref="NativeLibraryBase"/> class.
         /// </summary>
         /// <param name="path">The path to the library.</param>
         /// <param name="interfaceType">The interface type that the anonymous type implements.</param>
         /// <param name="options">Whether or not this library can be disposed.</param>
         /// <param name="transformerRepository">The repository containing type transformers.</param>
         [PublicAPI, AnonymousConstructor]
-        protected AnonymousImplementationBase
+        protected NativeLibraryBase
         (
             [NotNull] string path,
             [NotNull] Type interfaceType,

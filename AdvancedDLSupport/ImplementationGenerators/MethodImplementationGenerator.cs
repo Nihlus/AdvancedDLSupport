@@ -103,7 +103,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             [NotNull] FieldInfo delegateField
         )
         {
-            var loadFunc = typeof(AnonymousImplementationBase).GetMethod
+            var loadFunc = typeof(NativeLibraryBase).GetMethod
             (
                 "LoadFunction",
                 BindingFlags.NonPublic | BindingFlags.Instance

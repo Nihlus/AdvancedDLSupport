@@ -6,7 +6,7 @@ an `ImplementationOptions` flag set to the `AnonymousImplementationBuilder`.
 
 ```cs
 var config = ImplementationOptions.UseLazyBinding | ImplementationOptions.GenerateDisposalChecks;
-var library = new AnonymousImplementationBuilder(config).ResolveAndActivateInterface<IMyLibrary>(LibraryName);
+var library = new NativeLibraryBuilder(config).ActivateInterface<IMyLibrary>(LibraryName);
 ```
 
 At the moment, the following options are available.

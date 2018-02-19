@@ -108,7 +108,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             [NotNull] FieldInfo propertyFieldBuilder
         )
         {
-            var loadSymbolMethod = typeof(AnonymousImplementationBase).GetMethod
+            var loadSymbolMethod = typeof(NativeLibraryBase).GetMethod
             (
                 "LoadSymbol",
                 BindingFlags.NonPublic | BindingFlags.Instance
