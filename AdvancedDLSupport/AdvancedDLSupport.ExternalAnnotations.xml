@@ -130,6 +130,16 @@
   <member name="F:AdvancedDLSupport.ImplementationOptions.UseLazyBinding">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="T:AdvancedDLSupport.InternalNullableAccessor">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="M:AdvancedDLSupport.InternalNullableAccessor.AccessUnderlyingValue``1(System.Int32*)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+    <parameter name="nullablePtr">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
   <member name="T:AdvancedDLSupport.ITypeTransformer">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
@@ -355,10 +365,34 @@
       <attribute ctor="M:JetBrains.Annotations.ItemNotNullAttribute.#ctor" />
     </parameter>
   </member>
+  <member name="P:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.CustomAttributes">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="P:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.DeclaringType">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.GetCustomAttribute``1">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.GetCustomAttributes(System.Boolean)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.GetCustomAttributes(System.Type,System.Boolean)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
   <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.GetWrappedMember">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.IsDefined(System.Type,System.Boolean)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
   <member name="P:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.Member">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="P:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.MemberType">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="P:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.Name">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.op_Explicit(AdvancedDLSupport.Reflection.IntrospectiveMemberBase{`0})~`0">
@@ -366,6 +400,9 @@
     <parameter name="introspectiveInfo">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
+  </member>
+  <member name="P:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.ReflectedType">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="T:AdvancedDLSupport.Reflection.IntrospectiveMethodInfo">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />

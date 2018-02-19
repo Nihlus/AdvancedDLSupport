@@ -26,6 +26,12 @@
     <RepositoryUrl>https://github.com/Firwood-Software/AdvanceDLSupport/</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="AdvancedDLSupport.ExternalAnnotations.xml">
+      <InProject>false</InProject>
+      <CopyToOutputDirectory>CopyIfNewer</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <AdditionalFiles Include="$(ProjectDir)\..\stylecop.json">
       <Link>stylecop.json</Link>
       <InProject>false</InProject>
