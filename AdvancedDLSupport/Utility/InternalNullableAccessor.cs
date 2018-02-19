@@ -20,12 +20,14 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
 {
     /// <summary>
     /// Helper class for accessing the internal values of <see cref="Nullable{T}"/> instances.
     /// </summary>
+    [PublicAPI]
     public static class InternalNullableAccessor
     {
         /// <summary>
@@ -34,7 +36,8 @@ namespace AdvancedDLSupport
         /// <param name="nullablePtr">A pointer to a pinned nullable.</param>
         /// <typeparam name="T">The type of underlying value to access.</typeparam>
         /// <returns>The underlying value, passed by reference.</returns>
-        public static unsafe ref T AccessUnderlyingValue<T>(int* nullablePtr) where T : struct
+        [PublicAPI, Pure]
+        public static unsafe ref T AccessUnderlyingValue<T>([NotNull] int* nullablePtr) where T : struct
         {
             // HACK: Working around weird memory layout in .NET Core vs Mono/FX
             var desc = RuntimeInformation.FrameworkDescription;

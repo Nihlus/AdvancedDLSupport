@@ -35,7 +35,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The string to inspect.</param>
         /// <returns>true if the string is a valid path; otherwise, false.</returns>
-        [ContractAnnotation("this:null => false")]
+        [ContractAnnotation("this:null => false"), Pure]
         public static bool IsValidPath([CanBeNull] this string @this)
         {
             if (@this.IsNullOrWhiteSpace())
@@ -62,8 +62,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The string to check.</param>
         /// <returns>true if the string is null or whitespace; otherwise, false.</returns>
-        [Pure]
-        [ContractAnnotation("this:null => true")]
+        [ContractAnnotation("this:null => true"), Pure]
         public static bool IsNullOrWhiteSpace([CanBeNull] this string @this)
         {
             return string.IsNullOrWhiteSpace(@this);
@@ -74,8 +73,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The string to check.</param>
         /// <returns>true if the string is null or empty; otherwise, false.</returns>
-        [Pure]
-        [ContractAnnotation("this:null => true")]
+        [ContractAnnotation("this:null => true"), Pure]
         public static bool IsNullOrEmpty([CanBeNull] this string @this)
         {
             return string.IsNullOrEmpty(@this);
@@ -88,8 +86,7 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="search">The string to search for.</param>
         /// <param name="comparer">The string comparer to use.</param>
         /// <returns>true if the string contains the other string; otherwise, false.</returns>
-        [Pure]
-        [ContractAnnotation("this:null => false; search:null => false")]
+        [ContractAnnotation("this:null => false; search:null => false"), Pure]
         public static bool Contains([CanBeNull] this string @this, [CanBeNull] string search, StringComparison comparer)
         {
             return @this != null && search != null && @this.IndexOf(search, comparer) >= 0;

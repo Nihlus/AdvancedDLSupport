@@ -3,27 +3,33 @@
   <member name="T:Mono.DllMap.DllConfiguration">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:Mono.DllMap.DllConfiguration.Parse(System.IO.Stream)">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  <member name="M:Mono.DllMap.DllConfiguration.GetRelevantMaps">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:Mono.DllMap.DllConfiguration.Parse(System.IO.TextReader)">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  <member name="P:Mono.DllMap.DllConfiguration.Maps">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="M:Mono.DllMap.DllConfiguration.Parse(System.IO.Stream)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:Mono.DllMap.DllConfiguration.Parse(System.IO.TextReader)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <parameter name="tr">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="M:Mono.DllMap.DllConfiguration.Parse(System.String)">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <parameter name="xml">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="M:Mono.DllMap.DllConfiguration.TryParse(System.IO.Stream,Mono.DllMap.DllConfiguration@)">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
       <argument>false &lt;= result:null; true &lt;= result:notnull</argument>
     </attribute>
@@ -35,8 +41,8 @@
     </parameter>
   </member>
   <member name="M:Mono.DllMap.DllConfiguration.TryParse(System.IO.TextReader,Mono.DllMap.DllConfiguration@)">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
       <argument>false &lt;= result:null; true &lt;= result:notnull</argument>
     </attribute>
@@ -48,8 +54,8 @@
     </parameter>
   </member>
   <member name="M:Mono.DllMap.DllConfiguration.TryParse(System.String,Mono.DllMap.DllConfiguration@)">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
       <argument>false &lt;= result:null; true &lt;= result:notnull</argument>
     </attribute>
@@ -94,75 +100,82 @@
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:Mono.DllMap.DllMapResolver.GetDllMap(System.Reflection.Assembly)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="assembly">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="M:Mono.DllMap.DllMapResolver.GetDllMap(System.Type)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:Mono.DllMap.DllMapResolver.GetDllMap``1">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:Mono.DllMap.DllMapResolver.HasDllMapFile(System.Reflection.Assembly)">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <parameter name="assembly">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="M:Mono.DllMap.DllMapResolver.HasDllMapFile(System.Type)">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <parameter name="type">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="M:Mono.DllMap.DllMapResolver.HasDllMapFile``1">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
   </member>
   <member name="M:Mono.DllMap.DllMapResolver.MapLibraryName(Mono.DllMap.DllConfiguration,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:Mono.DllMap.DllMapResolver.MapLibraryName(System.Reflection.Assembly,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:Mono.DllMap.DllMapResolver.MapLibraryName(System.Type,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:Mono.DllMap.DllMapResolver.MapLibraryName``1(System.String)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="T:Mono.DllMap.DllMapWordSize">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:Mono.DllMap.Extensions.EnumExtensions.HasAll``1(``0)">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  <member name="T:Mono.DllMap.Extensions.EnumExtensions">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="M:Mono.DllMap.Extensions.EnumExtensions.GetFlags``1(``0)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:Mono.DllMap.Extensions.EnumExtensions.HasAll``1(``0)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
   </member>
   <member name="M:Mono.DllMap.Extensions.EnumExtensions.HasFlagFast``1(``0,``0)">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
   </member>
   <member name="M:Mono.DllMap.Extensions.EnumExtensions.HasFlagsFast``1(``0,``0[])">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
   </member>
   <member name="T:Mono.DllMap.MappingBase">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
@@ -173,6 +186,15 @@
   <member name="P:Mono.DllMap.MappingBase.OperatingSystems">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="P:Mono.DllMap.MappingBase.RawArchitecture">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="P:Mono.DllMap.MappingBase.RawOperatingSystems">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="P:Mono.DllMap.MappingBase.RawWordSize">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
   <member name="P:Mono.DllMap.MappingBase.WordSize">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
@@ -180,16 +202,23 @@
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:Mono.DllMap.Utility.DllConfigurationPlatformHelper.GetCurrentPlatform">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
   </member>
   <member name="M:Mono.DllMap.Utility.DllConfigurationPlatformHelper.GetCurrentRuntimeArchitecture">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:Mono.DllMap.Utility.DllConfigurationPlatformHelper.GetRuntimeWordSize">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="T:Mono.DllMap.Utility.DllMapAttributeParser">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:Mono.DllMap.Utility.DllMapAttributeParser.Parse``1(System.String)">
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <parameter name="content">
       <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     </parameter>

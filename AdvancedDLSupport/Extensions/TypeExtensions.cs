@@ -34,7 +34,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The type to inspect.</param>
         /// <returns>The methods.</returns>
-        [NotNull, ItemNotNull]
+        [Pure, NotNull, ItemNotNull]
         public static IEnumerable<IntrospectiveMethodInfo> GetIntrospectiveMethods([NotNull] this Type @this)
         {
             var methods = @this.GetMethods();
@@ -51,7 +51,7 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="name">The name of the method.</param>
         /// <param name="parameterTypes">The parameter types of the method.</param>
         /// <returns>The method.</returns>
-        [CanBeNull]
+        [Pure, CanBeNull]
         public static IntrospectiveMethodInfo GetIntrospectiveMethod
         (
             [NotNull] this Type @this,
@@ -68,7 +68,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The type.</param>
         /// <returns>true if the type requires lowering; otherwise, false.</returns>
-        [PublicAPI, Pure]
+        [Pure]
         public static bool RequiresLowering([NotNull] this Type @this)
         {
             return
@@ -81,6 +81,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The type.</param>
         /// <returns>true if it is a nullable that is not passed by reference; otherwise, false.</returns>
+        [Pure]
         public static bool IsNonRefNullable([NotNull] this Type @this)
         {
             if (@this.IsByRef)
@@ -97,6 +98,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The type.</param>
         /// <returns>true if it is a nullable passed by reference; otherwise, false.</returns>
+        [Pure]
         public static bool IsRefNullable([NotNull] this Type @this)
         {
             if (!@this.IsByRef)

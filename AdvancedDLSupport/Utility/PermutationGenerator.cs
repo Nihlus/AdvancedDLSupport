@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.Reflection;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
 {
@@ -38,6 +39,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="baseMethod">The method to generate permutatations of.</param>
         /// <returns>The permutations.</returns>
+        [Pure]
         public IReadOnlyList<IReadOnlyList<Type>> Generate(IntrospectiveMethodInfo baseMethod)
         {
             var parameters = baseMethod.ParameterTypes;
@@ -72,6 +74,7 @@ namespace AdvancedDLSupport
         /// <param name="basePermutation">The base set of parameter types.</param>
         /// <param name="mask">The bit mask to use for mutation.</param>
         /// <returns>The permutation.</returns>
+        [Pure]
         private IReadOnlyList<Type> GeneratePermutation(IReadOnlyList<Type> basePermutation, BitArray mask)
         {
             // For each type in the base permutation (containing nullable refs), we inspect the type

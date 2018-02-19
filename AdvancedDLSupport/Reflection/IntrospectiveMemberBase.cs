@@ -34,20 +34,25 @@ namespace AdvancedDLSupport.Reflection
         where TMemberInfo : MemberInfo
     {
         /// <inheritdoc />
+        [PublicAPI]
         public override string Name { get; }
 
         /// <summary>
         /// Gets the custom attributes applies to this member.
         /// </summary>
+        [PublicAPI]
         public override IEnumerable<CustomAttributeData> CustomAttributes { get; }
 
         /// <inheritdoc />
+        [PublicAPI]
         public override Type DeclaringType { get; }
 
         /// <inheritdoc />
+        [PublicAPI]
         public override MemberTypes MemberType { get; }
 
         /// <inheritdoc />
+        [PublicAPI]
         public override Type ReflectedType { get; }
 
         /// <summary>
@@ -102,6 +107,7 @@ namespace AdvancedDLSupport.Reflection
         public TMemberInfo GetWrappedMember() => Member;
 
         /// <inheritdoc />
+        [PublicAPI]
         public override object[] GetCustomAttributes(bool inherit)
         {
             // TODO: Wrap properly
@@ -109,6 +115,7 @@ namespace AdvancedDLSupport.Reflection
         }
 
         /// <inheritdoc />
+        [PublicAPI]
         public override object[] GetCustomAttributes(Type attributeType, bool inherit)
         {
             // TODO: Wrap properly
@@ -116,6 +123,7 @@ namespace AdvancedDLSupport.Reflection
         }
 
         /// <inheritdoc />
+        [PublicAPI]
         public override bool IsDefined(Type attributeType, bool inherit)
         {
             // TODO: Wrap properly
@@ -123,6 +131,7 @@ namespace AdvancedDLSupport.Reflection
         }
 
         /// <inheritdoc />
+        [PublicAPI]
         public TAttribute GetCustomAttribute<TAttribute>() where TAttribute : Attribute
         {
             var matchingData = CustomAttributes.FirstOrDefault(a => a.AttributeType == typeof(TAttribute));

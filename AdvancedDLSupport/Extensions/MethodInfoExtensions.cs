@@ -36,6 +36,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The method.</param>
         /// <returns>true if the method requires permutations; otherwise, false.</returns>
+        [Pure]
         public static bool RequiresRefPermutations([NotNull] this IntrospectiveMethodInfo @this)
         {
             return @this.ParameterTypes.Any(p => p.IsRefNullable());

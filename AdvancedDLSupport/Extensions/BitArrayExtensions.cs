@@ -26,6 +26,7 @@ namespace AdvancedDLSupport.Extensions
     /// <summary>
     /// Extension methods for the <see cref="BitArray"/> class.
     /// </summary>
+    [PublicAPI]
     public static class BitArrayExtensions
     {
         /// <summary>
@@ -33,6 +34,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The array.</param>
         /// <returns>An equivalent integer.</returns>
+        [PublicAPI, Pure]
         public static int ToInt32([NotNull] this BitArray @this)
         {
             if (@this.Count > 32)

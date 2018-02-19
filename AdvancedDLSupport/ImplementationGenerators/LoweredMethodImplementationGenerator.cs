@@ -280,7 +280,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="type">The type to lower.</param>
         /// <returns>The type, lowered by its transformer, or the original value.</returns>
-        [NotNull]
+        [Pure, NotNull]
         private Type LowerTypeIfRequired([NotNull] Type type)
         {
             if (type.RequiresLowering())
