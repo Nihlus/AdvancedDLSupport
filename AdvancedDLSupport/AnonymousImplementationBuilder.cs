@@ -188,54 +188,35 @@ namespace AdvancedDLSupport
 
             // Check if we've already generated a type for this configuration
             var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, libraryPath, Options);
-            if (TypeCache.TryGetValue(key, out var cachedType))
+            if (!TypeCache.TryGetValue(key, out var generatedType))
             {
-                // If so, use it instead of generating a new one
-                if (!(cachedType is null))
+                lock (BuilderLock)
                 {
-                    var anonymousInstance = CreateAnonymousImplementationInstance<TInterface>
-                    (
-                        cachedType,
-                        libraryPath,
-                        Options,
-                        TransformerRepository
-                    );
-
-                    return anonymousInstance as TClass
-                    ?? throw new InvalidOperationException
-                    (
-                        "The resulting instance was not convertible to an instance of the class."
-                    );
+                    generatedType = GenerateInterfaceImplementationType<TClass, TInterface>();
+                    TypeCache.TryAdd(key, generatedType);
                 }
             }
 
-            lock (BuilderLock)
+            try
             {
-                try
-                {
-                    var finalType = GenerateInterfaceImplementationType<TClass, TInterface>();
+                var anonymousInstance = CreateAnonymousImplementationInstance<TInterface>
+                (
+                    generatedType,
+                    libraryPath,
+                    Options,
+                    TransformerRepository
+                );
 
-                    var anonymousInstance = CreateAnonymousImplementationInstance<TInterface>
-                    (
-                        finalType,
-                        libraryPath,
-                        Options,
-                        TransformerRepository
-                    );
-
-                    TypeCache.TryAdd(key, finalType);
-
-                    return anonymousInstance as TClass
-                    ?? throw new InvalidOperationException
-                    (
-                        "The resulting instance was not convertible to an instance of the class."
-                    );
-                }
-                catch (TargetInvocationException tex)
-                {
-                    // Unwrap target invocation exceptions, since we can fail in the constructor
-                    throw tex.InnerException ?? tex;
-                }
+                return anonymousInstance as TClass
+                ?? throw new InvalidOperationException
+                (
+                    "The resulting instance was not convertible to an instance of the class."
+                );
+            }
+            catch (TargetInvocationException tex)
+            {
+                // Unwrap target invocation exceptions, since we can fail in the constructor
+                throw tex.InnerException ?? tex;
             }
         }
 
