@@ -85,8 +85,7 @@ namespace AdvancedDLSupport
                 new LibraryIdentifierEqualityComparer()
             );
 
-            TransformerRepository = new TypeTransformerRepository()
-                .WithTypeTransformer(typeof(string), new StringTransformer());
+            TransformerRepository = new TypeTransformerRepository();
         }
 
         /// <summary>
