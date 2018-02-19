@@ -42,64 +42,6 @@ namespace AdvancedDLSupport.Extensions
         };
 
         /// <summary>
-        /// Copies all custom attributes from the given <see cref="MethodInfo"/> instance. This method will redefine the
-        /// return value and method parameters in order to apply the required custom attributes.
-        /// </summary>
-        /// <param name="this">The builder to copy the attributes to.</param>
-        /// <param name="source">The method to copy the attributes from.</param>
-        /// <param name="newReturnParameterType">The return type of the target method.</param>
-        /// <param name="newParameterTypes">The parameter types of the target method.</param>
-        public static void ApplyCustomAttributesFrom
-        (
-            [NotNull] this MethodBuilder @this,
-            [NotNull] MethodInfo source,
-            [CanBeNull] Type newReturnParameterType = null,
-            [CanBeNull, ItemNotNull] IReadOnlyList<Type> newParameterTypes = null
-        )
-        {
-            newReturnParameterType = newReturnParameterType ?? source.ReturnType;
-            newParameterTypes = newParameterTypes ?? source.GetParameters().Select(p => p.ParameterType).ToList();
-
-            // Pass through all applied attributes
-            var returnValueBuilder = @this.DefineParameter(0, source.ReturnParameter.Attributes, null);
-            foreach (var attribute in CustomAttributeData.GetCustomAttributes(source.ReturnParameter))
-            {
-                if (AttributeBlacklist.ContainsKey(newReturnParameterType) && AttributeBlacklist[newReturnParameterType].Contains(attribute.AttributeType))
-                {
-                    continue;
-                }
-
-                returnValueBuilder.SetCustomAttribute(attribute.GetAttributeBuilder());
-            }
-
-            var methodParameters = source.GetParameters();
-            if (methodParameters.Any())
-            {
-                for (var i = 1; i <= methodParameters.Length; ++i)
-                {
-                    var targetParameterType = newParameterTypes[i - 1];
-                    var methodParameter = methodParameters[i - 1];
-
-                    var parameterBuilder = @this.DefineParameter(i, methodParameter.Attributes, methodParameter.Name);
-                    foreach (var attribute in CustomAttributeData.GetCustomAttributes(methodParameter))
-                    {
-                        if (AttributeBlacklist.ContainsKey(targetParameterType) && AttributeBlacklist[targetParameterType].Contains(attribute.AttributeType))
-                        {
-                            continue;
-                        }
-
-                        parameterBuilder.SetCustomAttribute(attribute.GetAttributeBuilder());
-                    }
-                }
-            }
-
-            foreach (var attribute in CustomAttributeData.GetCustomAttributes(source))
-            {
-                @this.SetCustomAttribute(attribute.GetAttributeBuilder());
-            }
-        }
-
-        /// <summary>
         /// Copies all custom attributes from the given <see cref="IntrospectiveMethodInfo"/> instance. This method will redefine the
         /// return value and method parameters in order to apply the required custom attributes.
         /// </summary>
