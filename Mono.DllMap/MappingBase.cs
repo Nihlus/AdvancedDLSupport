@@ -34,25 +34,25 @@ namespace Mono.DllMap
         /// <summary>
         /// Gets or sets the raw string containing the supported operating systems.
         /// </summary>
-        [XmlAttribute("os")]
+        [PublicAPI, XmlAttribute("os")]
         public string RawOperatingSystems { get; set; }
 
         /// <summary>
         /// Gets or sets the raw string containing the supported processor architectures.
         /// </summary>
-        [XmlAttribute("cpu")]
+        [PublicAPI, XmlAttribute("cpu")]
         public string RawArchitecture { get; set; }
 
         /// <summary>
         /// Gets or sets the raw string containing the supported word sizes.
         /// </summary>
-        [XmlAttribute("wordsize")]
+        [PublicAPI, XmlAttribute("wordsize")]
         public string RawWordSize { get; set; }
 
         /// <summary>
         /// Gets the supported operating systems of the entry.
         /// </summary>
-        [XmlIgnore, PublicAPI]
+        [PublicAPI, XmlIgnore]
         public DllMapOS OperatingSystems
         {
             get => DllMapAttributeParser.Parse<DllMapOS>(RawOperatingSystems);
@@ -62,7 +62,7 @@ namespace Mono.DllMap
         /// <summary>
         /// Gets the supported processor architectures of the entry.
         /// </summary>
-        [XmlIgnore, PublicAPI]
+        [PublicAPI, XmlIgnore]
         public DllMapArchitecture Architecture
         {
             get => DllMapAttributeParser.Parse<DllMapArchitecture>(RawArchitecture);
@@ -72,7 +72,7 @@ namespace Mono.DllMap
         /// <summary>
         /// Gets the supported word sizes of the entry.
         /// </summary>
-        [XmlIgnore, PublicAPI]
+        [PublicAPI, XmlIgnore]
         public DllMapWordSize WordSize
         {
             get => DllMapAttributeParser.Parse<DllMapWordSize>(RawWordSize);

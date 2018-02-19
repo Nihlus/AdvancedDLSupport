@@ -38,7 +38,7 @@ namespace Mono.DllMap
         /// <typeparam name="T">A type defined in the assembly to search the DllMap for.</typeparam>
         /// <param name="libraryName">The original name of the library.</param>
         /// <returns>The remapped name.</returns>
-        [Pure, NotNull, PublicAPI]
+        [PublicAPI, Pure, NotNull]
         public string MapLibraryName<T>(string libraryName) => MapLibraryName(typeof(T), libraryName);
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Mono.DllMap
         /// <param name="type">A type defined in the assembly to search the DllMap for.</param>
         /// <param name="libraryName">The original name of the library.</param>
         /// <returns>The remapped name.</returns>
-        [Pure, NotNull, PublicAPI]
+        [PublicAPI, Pure, NotNull]
         public string MapLibraryName(Type type, string libraryName) => MapLibraryName(type.Assembly, libraryName);
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Mono.DllMap
         /// <param name="assembly">The assembly to search the DllMap for.</param>
         /// <param name="libraryName">The original name of the library.</param>
         /// <returns>The remapped name.</returns>
-        [Pure, NotNull, PublicAPI]
+        [PublicAPI, Pure, NotNull]
         public string MapLibraryName(Assembly assembly, string libraryName)
         {
             if (!HasDllMapFile(assembly))
@@ -78,7 +78,7 @@ namespace Mono.DllMap
         /// <param name="configuration">The DllMap to search.</param>
         /// <param name="libraryName">The original name of the library.</param>
         /// <returns>The remapped name.</returns>
-        [Pure, NotNull, PublicAPI]
+        [PublicAPI, Pure, NotNull]
         public string MapLibraryName(DllConfiguration configuration, string libraryName)
         {
             var mapEntry = configuration.GetRelevantMaps().FirstOrDefault(m => m.SourceLibrary == libraryName);
@@ -96,7 +96,7 @@ namespace Mono.DllMap
         /// </summary>
         /// <typeparam name="T">The type to check.</typeparam>
         /// <returns>true if it has a file; otherwise, false.</returns>
-        [Pure, PublicAPI]
+        [PublicAPI, Pure]
         public bool HasDllMapFile<T>() => HasDllMapFile(typeof(T));
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace Mono.DllMap
         /// </summary>
         /// <param name="type">The type to check.</param>
         /// <returns>true if it has a file; otherwise, false.</returns>
-        [Pure, PublicAPI]
+        [PublicAPI, Pure]
         public bool HasDllMapFile([NotNull] Type type) => HasDllMapFile(type.Assembly);
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace Mono.DllMap
         /// </summary>
         /// <param name="assembly">The assembly to check.</param>
         /// <returns>true if it has a file; otherwise, false.</returns>
-        [Pure, PublicAPI]
+        [PublicAPI, Pure]
         public bool HasDllMapFile([NotNull] Assembly assembly)
         {
             var mapPath = GetDllMapPath(assembly);
@@ -125,7 +125,7 @@ namespace Mono.DllMap
         /// </summary>
         /// <typeparam name="T">The type to get the configuration for.</typeparam>
         /// <returns>The DllMap.</returns>
-        [Pure, NotNull, PublicAPI]
+        [PublicAPI, Pure, NotNull]
         public DllConfiguration GetDllMap<T>() => GetDllMap(typeof(T));
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace Mono.DllMap
         /// </summary>
         /// <param name="type">The type to get the configuration for.</param>
         /// <returns>The DllMap.</returns>
-        [Pure, NotNull, PublicAPI]
+        [PublicAPI, Pure, NotNull]
         public DllConfiguration GetDllMap(Type type) => GetDllMap(type.Assembly);
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace Mono.DllMap
         /// </summary>
         /// <param name="assembly">The assembly to get the configuration for.</param>
         /// <returns>The DllMap.</returns>
-        [Pure, NotNull, PublicAPI]
+        [PublicAPI, Pure, NotNull]
         public DllConfiguration GetDllMap([NotNull] Assembly assembly)
         {
             return DllConfiguration.Parse(File.ReadAllText(GetDllMapPath(assembly)));

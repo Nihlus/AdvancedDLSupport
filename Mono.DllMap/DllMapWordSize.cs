@@ -24,7 +24,7 @@ using JetBrains.Annotations;
 
 namespace Mono.DllMap
 {
-    [Flags, PublicAPI]
+    [PublicAPI, Flags]
     public enum DllMapWordSize
     {
         Word32 = 1 << 0,

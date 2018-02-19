@@ -25,7 +25,7 @@ using JetBrains.Annotations;
 
 namespace Mono.DllMap
 {
-    [Flags, PublicAPI]
+    [PublicAPI, Flags]
     public enum DllMapArchitecture
     {
         x86    = 1 << 0,

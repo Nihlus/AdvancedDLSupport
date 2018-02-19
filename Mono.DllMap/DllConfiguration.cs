@@ -30,19 +30,20 @@ namespace Mono.DllMap
     /// <summary>
     /// Represents a set of Mono DllMap entries.
     /// </summary>
-    [XmlRoot("configuration"), PublicAPI]
+    [PublicAPI, XmlRoot("configuration")]
     public class DllConfiguration
     {
         /// <summary>
         /// Gets or sets the mapping entries.
         /// </summary>
-        [XmlElement("dllmap")]
+        [PublicAPI, XmlElement("dllmap")]
         public List<DllMap> Maps { get; set; }
 
         /// <summary>
         /// Gets the map entries that are relevant for the current platform.
         /// </summary>
         /// <returns>The entries relevant for the current platform.</returns>
+        [PublicAPI]
         public IEnumerable<DllMap> GetRelevantMaps()
         {
             var currentPlatform = DllConfigurationPlatformHelper.GetCurrentPlatform();
@@ -63,7 +64,7 @@ namespace Mono.DllMap
         /// </summary>
         /// <param name="xml">The XML to parse.</param>
         /// <returns>A <see cref="DllConfiguration"/> object.</returns>
-        [Pure, PublicAPI]
+        [PublicAPI, Pure]
         public static DllConfiguration Parse([NotNull] string xml)
         {
             using (var sr = new StringReader(xml))
@@ -77,7 +78,7 @@ namespace Mono.DllMap
         /// </summary>
         /// <param name="s">The stream containing the xml.</param>
         /// <returns>A <see cref="DllConfiguration"/> object.</returns>
-        [Pure, PublicAPI]
+        [PublicAPI, Pure]
         public static DllConfiguration Parse(Stream s)
         {
             using (var sr = new StreamReader(s))
@@ -91,7 +92,7 @@ namespace Mono.DllMap
         /// </summary>
         /// <param name="tr">The reader containing the xml.</param>
         /// <returns>A <see cref="DllConfiguration"/> object.</returns>
-        [Pure, PublicAPI]
+        [PublicAPI, Pure]
         public static DllConfiguration Parse([NotNull] TextReader tr)
         {
             var deserializer = new XmlSerializer(typeof(DllConfiguration));
@@ -128,7 +129,7 @@ namespace Mono.DllMap
         /// <param name="s">The XML to parse.</param>
         /// <param name="result">The resulting <see cref="DllConfiguration"/> object.</param>
         /// <returns>true if the parsing succeeded; otherwise, false.</returns>
-        [Pure, PublicAPI, ContractAnnotation("false <= result:null; true <= result:notnull")]
+        [PublicAPI, Pure, ContractAnnotation("false <= result:null; true <= result:notnull")]
         public static bool TryParse([NotNull] Stream s, [CanBeNull] out DllConfiguration result)
         {
             try
@@ -149,7 +150,7 @@ namespace Mono.DllMap
         /// <param name="tr">The XML to parse.</param>
         /// <param name="result">The resulting <see cref="DllConfiguration"/> object.</param>
         /// <returns>true if the parsing succeeded; otherwise, false.</returns>
-        [Pure, PublicAPI, ContractAnnotation("false <= result:null; true <= result:notnull")]
+        [PublicAPI, Pure, ContractAnnotation("false <= result:null; true <= result:notnull")]
         public static bool TryParse([NotNull] TextReader tr, [CanBeNull] out DllConfiguration result)
         {
             try
@@ -170,7 +171,7 @@ namespace Mono.DllMap
         /// <param name="xml">The XML to parse.</param>
         /// <param name="result">The resulting <see cref="DllConfiguration"/> object.</param>
         /// <returns>true if the parsing succeeded; otherwise, false.</returns>
-        [Pure, PublicAPI, ContractAnnotation("false <= result:null; true <= result:notnull")]
+        [PublicAPI, Pure, ContractAnnotation("false <= result:null; true <= result:notnull")]
         public static bool TryParse([NotNull] string xml, [CanBeNull] out DllConfiguration result)
         {
             try

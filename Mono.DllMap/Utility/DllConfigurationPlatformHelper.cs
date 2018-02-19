@@ -39,7 +39,7 @@ namespace Mono.DllMap.Utility
         /// </summary>
         /// <returns>The current platform.</returns>
         /// <exception cref="PlatformNotSupportedException">Thrown if the current platform couldn't be detected.</exception>
-        [Pure, PublicAPI]
+        [PublicAPI, Pure]
         public static DllMapOS GetCurrentPlatform()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -75,7 +75,7 @@ namespace Mono.DllMap.Utility
         /// </summary>
         /// <returns>The runtime architecture.</returns>
         /// <exception cref="PlatformNotSupportedException">Thrown if the architecture couldn't be detected.</exception>
-        [Pure, PublicAPI]
+        [PublicAPI, Pure]
         public static DllMapArchitecture GetCurrentRuntimeArchitecture()
         {
             #pragma warning disable SA1513
@@ -124,6 +124,7 @@ namespace Mono.DllMap.Utility
         /// Gets the word size of the runtime.
         /// </summary>
         /// <returns>The word size.</returns>
+        [PublicAPI, Pure]
         public static DllMapWordSize GetRuntimeWordSize()
         {
             var pointerSize = IntPtr.Size;

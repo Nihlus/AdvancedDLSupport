@@ -24,7 +24,7 @@ using JetBrains.Annotations;
 
 namespace Mono.DllMap
 {
-    [Flags, PublicAPI]
+    [PublicAPI, Flags]
     public enum DllMapOS
     {
         Linux     = 1 << 0,

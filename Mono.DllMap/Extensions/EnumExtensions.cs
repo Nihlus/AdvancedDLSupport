@@ -28,6 +28,7 @@ namespace Mono.DllMap.Extensions
     /// <summary>
     /// Extension methods for enums.
     /// </summary>
+    [PublicAPI]
     public static class EnumExtensions
     {
         /// <summary>
@@ -40,7 +41,7 @@ namespace Mono.DllMap.Extensions
         /// <exception cref="ArgumentException">
         /// Thrown if the type parameter is not an enum decorated with a flag attribute.
         /// </exception>
-        [Pure, PublicAPI]
+        [PublicAPI, Pure]
         public static bool HasFlagFast<TEnum>(this TEnum value, TEnum flag)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -67,7 +68,7 @@ namespace Mono.DllMap.Extensions
         /// <exception cref="ArgumentException">
         /// Thrown if the type parameter is not an enum decorated with a flag attribute.
         /// </exception>
-        [Pure, PublicAPI]
+        [PublicAPI, Pure]
         public static bool HasFlagsFast<TEnum>(this TEnum value, params TEnum[] flags)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -93,7 +94,7 @@ namespace Mono.DllMap.Extensions
         /// <exception cref="ArgumentException">
         /// Thrown if the type parameter is not an enum decorated with a flag attribute.
         /// </exception>
-        [Pure, PublicAPI]
+        [PublicAPI, Pure]
         public static bool HasAll<TEnum>(this TEnum value)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -119,6 +120,7 @@ namespace Mono.DllMap.Extensions
         /// <exception cref="ArgumentException">
         /// Thrown if the type parameter is not an enum decorated with a flag attribute.
         /// </exception>
+        [PublicAPI, Pure]
         public static IEnumerable<TEnum> GetFlags<TEnum>(this TEnum input)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
