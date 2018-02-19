@@ -158,36 +158,20 @@ namespace AdvancedDLSupport
                 doesLibraryContainPath = true;
             }
 
-            var candidates = new List<string>();
-            candidates.Add(library);
+            var candidates = new List<string>
+            {
+                library
+            };
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !library.EndsWith(".dll"))
             {
-                candidates.Add($"{library}.dll");
+                candidates.AddRange(GenerateWindowsCandidates(library));
             }
 
             bool isBSD = RuntimeInformation.OSDescription.ToUpperInvariant().Contains("BSD");
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || isBSD || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                var prefix = "lib";
-                var suffix = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? ".dylib" : ".so";
-
-                var noSuffix = !library.EndsWith(suffix);
-                var noPrefix = !Path.GetFileName(library).StartsWith(prefix);
-                if (noSuffix)
-                {
-                    candidates.Add($"{library}{suffix}");
-                }
-
-                if (noPrefix)
-                {
-                    candidates.Add($"{prefix}{library}");
-                }
-
-                if (noPrefix && noSuffix)
-                {
-                    candidates.Add($"{prefix}{library}{suffix}");
-                }
+                candidates.AddRange(GenerateUnixCandidates(library));
             }
 
             // If we have a parent path we're looking at, mutate the candidate list to include the parent path
@@ -197,6 +181,34 @@ namespace AdvancedDLSupport
             }
 
             return candidates;
+        }
+
+        private static IEnumerable<string> GenerateWindowsCandidates(string library)
+        {
+            yield return $"{library}.dll";
+        }
+
+        private static IEnumerable<string> GenerateUnixCandidates(string library)
+        {
+            const string prefix = "lib";
+            var suffix = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? ".dylib" : ".so";
+
+            var noSuffix = !library.EndsWith(suffix);
+            var noPrefix = !Path.GetFileName(library).StartsWith(prefix);
+            if (noSuffix)
+            {
+                yield return $"{library}{suffix}";
+            }
+
+            if (noPrefix)
+            {
+                yield return $"{prefix}{library}";
+            }
+
+            if (noPrefix && noSuffix)
+            {
+                yield return $"{prefix}{library}{suffix}";
+            }
         }
     }
 }
