@@ -30,6 +30,7 @@ using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap;
 using Mono.DllMap.Extensions;
+using static AdvancedDLSupport.ImplementationOptions;
 using static System.Reflection.CallingConventions;
 using static System.Reflection.MethodAttributes;
 
@@ -46,6 +47,14 @@ namespace AdvancedDLSupport
         /// </summary>
         [PublicAPI]
         public ImplementationOptions Options { get; }
+
+        /// <summary>
+        /// Gets a builder instance with default settings. The default settings are
+        /// <see cref="ImplementationOptions.GenerateDisposalChecks"/> and
+        /// <see cref="ImplementationOptions.EnableDllMapSupport"/>.
+        /// </summary>
+        [PublicAPI, NotNull]
+        public static NativeLibraryBuilder Default { get; }
 
         private ILibraryPathResolver PathResolver { get; }
 
@@ -86,6 +95,11 @@ namespace AdvancedDLSupport
             );
 
             TransformerRepository = new TypeTransformerRepository();
+
+            Default = new NativeLibraryBuilder
+            (
+                GenerateDisposalChecks | EnableDllMapSupport
+            );
         }
 
         /// <summary>
@@ -167,7 +181,7 @@ namespace AdvancedDLSupport
             }
 
             // Check for remapping
-            if (Options.HasFlagFast(ImplementationOptions.EnableDllMapSupport))
+            if (Options.HasFlagFast(EnableDllMapSupport))
             {
                 libraryPath = new DllMapResolver().MapLibraryName(interfaceType, libraryPath);
             }

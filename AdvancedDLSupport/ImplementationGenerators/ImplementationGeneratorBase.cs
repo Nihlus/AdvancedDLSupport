@@ -93,6 +93,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         private static (string SymbolName, string MemberIdentifier) GetSymbolNameAndIdentifier(T member)
         {
             NativeSymbolAttribute metadataAttribute;
+
             // HACK: Working around weird casting behaviour in the CLR
             if (member is IIntrospectiveMember introspective)
             {
