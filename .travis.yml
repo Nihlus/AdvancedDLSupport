@@ -12,7 +12,7 @@ install:
 script:
   - msbuild /p:Configuration=Debug AdvanceDLSupport.sln
   - nuget install altcover -OutputDirectory altcover -Version 1.6.230
-  - dotnet run --project altcover/altcover.1.6.230/tools/netcoreapp2.0/AltCover/altcover.core.fsproj --configuration Debug -- -i=AdvancedDLSupport.Tests/bin/Debug/netcoreapp2.0 -o=instrumented -x=coverage.xml
+  - dotnet run --project altcover/altcover.1.6.230/tools/netcoreapp2.0/AltCover/altcover.core.fsproj --configuration Debug -- -i=AdvancedDLSupport.Tests/bin/Debug/netcoreapp2.0 -o=instrumented -x=coverage.xml --assemblyExcludeFilter=.+\.Tests --assemblyExcludeFilter=AltCover.+
   - cp instrumented/* AdvancedDLSupport.Tests/bin/Debug/netcoreapp2.0
   - dotnet test AdvancedDLSupport.Tests --no-build
   - dotnet test Mono.DllMap.Tests --no-build
