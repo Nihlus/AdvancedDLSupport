@@ -18,6 +18,8 @@
 //
 
 // ReSharper disable InconsistentNaming
+
+using System;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.Loaders
@@ -26,7 +28,7 @@ namespace AdvancedDLSupport.Loaders
     /// <see cref="dl.open"/> flags. Taken from the source code of
     /// GNU libc: <a href="https://github.com/lattera/glibc/blob/master/bits/dlfcn.h"/>
     /// </summary>
-    [PublicAPI]
+    [PublicAPI, Flags]
     public enum SymbolFlags
     {
         /// <summary>

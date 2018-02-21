@@ -402,7 +402,7 @@
   <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.op_Explicit(AdvancedDLSupport.Reflection.IntrospectiveMemberBase{`0})~`0">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="introspectiveInfo">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="P:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.ReflectedType">
