@@ -32,19 +32,19 @@ namespace Mono.DllMap
         /// <summary>
         /// Gets or sets the name of the source library that the map maps.
         /// </summary>
-        [PublicAPI, XmlAttribute("dll")]
+        [PublicAPI, CanBeNull, XmlAttribute("dll")]
         public string SourceLibrary { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the target library that the map maps to.
         /// </summary>
-        [PublicAPI, XmlAttribute("target")]
+        [PublicAPI, CanBeNull, XmlAttribute("target")]
         public string TargetLibrary { get; set; }
 
         /// <summary>
         /// Gets or sets the list of symbol remapping entries in the mapping entry.
         /// </summary>
-        [PublicAPI, XmlElement("dllentry")]
+        [PublicAPI, CanBeNull, XmlElement("dllentry")]
         public List<DllEntry> SymbolEntries { get; set; }
     }
 }

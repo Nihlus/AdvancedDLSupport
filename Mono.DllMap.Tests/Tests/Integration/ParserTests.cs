@@ -15,12 +15,14 @@ namespace Mono.DllMap.Tests.Integration
             {
                 var actual = DllConfiguration.Parse(fs);
 
+                Assert.NotNull(actual.Maps);
                 Assert.Single(actual.Maps);
                 var map = actual.Maps.First();
 
                 Assert.Equal("cygwin1.dll", map.SourceLibrary);
                 Assert.Equal("libc.so.6", map.TargetLibrary);
 
+                Assert.NotNull(map.SymbolEntries);
                 Assert.Empty(map.SymbolEntries);
 
                 Assert.True(map.Architecture.HasAll());
@@ -61,6 +63,7 @@ namespace Mono.DllMap.Tests.Integration
             {
                 var actual = DllConfiguration.Parse(fs);
 
+                Assert.NotNull(actual.Maps);
                 Assert.Single(actual.Maps);
                 var map = actual.Maps.First();
 
@@ -72,6 +75,7 @@ namespace Mono.DllMap.Tests.Integration
                 Assert.False(map.OperatingSystems.HasAll());
                 Assert.False(map.OperatingSystems.HasFlagFast(Windows));
 
+                Assert.NotNull(map.SymbolEntries);
                 Assert.Equal(2, map.SymbolEntries.Count);
                 var entry1 = map.SymbolEntries[0];
                 var entry2 = map.SymbolEntries[1];
@@ -100,6 +104,7 @@ namespace Mono.DllMap.Tests.Integration
             {
                 var actual = DllConfiguration.Parse(fs);
 
+                Assert.NotNull(actual.Maps);
                 Assert.Single(actual.Maps);
                 var map = actual.Maps.First();
 
@@ -109,6 +114,7 @@ namespace Mono.DllMap.Tests.Integration
                 Assert.True(map.WordSize.HasAll());
                 Assert.True(map.OperatingSystems.HasAll());
 
+                Assert.NotNull(map.SymbolEntries);
                 Assert.Equal(2, map.SymbolEntries.Count);
                 var entry1 = map.SymbolEntries[0];
                 var entry2 = map.SymbolEntries[1];

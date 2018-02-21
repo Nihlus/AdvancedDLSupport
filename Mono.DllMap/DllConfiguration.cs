@@ -36,14 +36,14 @@ namespace Mono.DllMap
         /// <summary>
         /// Gets or sets the mapping entries.
         /// </summary>
-        [PublicAPI, XmlElement("dllmap")]
+        [PublicAPI, CanBeNull, ItemNotNull, XmlElement("dllmap")]
         public List<DllMap> Maps { get; set; }
 
         /// <summary>
         /// Gets the map entries that are relevant for the current platform.
         /// </summary>
         /// <returns>The entries relevant for the current platform.</returns>
-        [PublicAPI]
+        [PublicAPI, NotNull, ItemNotNull]
         public IEnumerable<DllMap> GetRelevantMaps()
         {
             var currentPlatform = DllConfigurationPlatformHelper.GetCurrentPlatform();
@@ -64,7 +64,7 @@ namespace Mono.DllMap
         /// </summary>
         /// <param name="xml">The XML to parse.</param>
         /// <returns>A <see cref="DllConfiguration"/> object.</returns>
-        [PublicAPI, Pure]
+        [PublicAPI, NotNull, Pure]
         public static DllConfiguration Parse([NotNull] string xml)
         {
             using (var sr = new StringReader(xml))
@@ -78,8 +78,8 @@ namespace Mono.DllMap
         /// </summary>
         /// <param name="s">The stream containing the xml.</param>
         /// <returns>A <see cref="DllConfiguration"/> object.</returns>
-        [PublicAPI, Pure]
-        public static DllConfiguration Parse(Stream s)
+        [PublicAPI, NotNull, Pure]
+        public static DllConfiguration Parse([NotNull] Stream s)
         {
             using (var sr = new StreamReader(s))
             {
@@ -92,16 +92,16 @@ namespace Mono.DllMap
         /// </summary>
         /// <param name="tr">The reader containing the xml.</param>
         /// <returns>A <see cref="DllConfiguration"/> object.</returns>
-        [PublicAPI, Pure]
+        [PublicAPI, NotNull, Pure]
         public static DllConfiguration Parse([NotNull] TextReader tr)
         {
             var deserializer = new XmlSerializer(typeof(DllConfiguration));
             var config = (DllConfiguration)deserializer.Deserialize(tr);
 
             // Apply constraint inheritance
-            foreach (var map in config.Maps)
+            foreach (var map in config.Maps ?? new List<DllMap>())
             {
-                foreach (var symbolEntry in map.SymbolEntries)
+                foreach (var symbolEntry in map.SymbolEntries ?? new List<DllEntry>())
                 {
                     if (symbolEntry.RawArchitecture is null)
                     {

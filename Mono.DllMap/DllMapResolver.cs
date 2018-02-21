@@ -39,7 +39,7 @@ namespace Mono.DllMap
         /// <param name="libraryName">The original name of the library.</param>
         /// <returns>The remapped name.</returns>
         [PublicAPI, Pure, NotNull]
-        public string MapLibraryName<T>(string libraryName) => MapLibraryName(typeof(T), libraryName);
+        public string MapLibraryName<T>([NotNull] string libraryName) => MapLibraryName(typeof(T), libraryName);
 
         /// <summary>
         /// Finds the matching remapping entry, if any, for the given library name and type, and returns the
@@ -49,7 +49,7 @@ namespace Mono.DllMap
         /// <param name="libraryName">The original name of the library.</param>
         /// <returns>The remapped name.</returns>
         [PublicAPI, Pure, NotNull]
-        public string MapLibraryName(Type type, string libraryName) => MapLibraryName(type.Assembly, libraryName);
+        public string MapLibraryName([NotNull] Type type, [NotNull] string libraryName) => MapLibraryName(type.Assembly, libraryName);
 
         /// <summary>
         /// Finds the matching remapping entry, if any, for the given library name and assembly, and returns the
@@ -59,7 +59,7 @@ namespace Mono.DllMap
         /// <param name="libraryName">The original name of the library.</param>
         /// <returns>The remapped name.</returns>
         [PublicAPI, Pure, NotNull]
-        public string MapLibraryName(Assembly assembly, string libraryName)
+        public string MapLibraryName([NotNull] Assembly assembly, [NotNull] string libraryName)
         {
             if (!HasDllMapFile(assembly))
             {
@@ -79,7 +79,7 @@ namespace Mono.DllMap
         /// <param name="libraryName">The original name of the library.</param>
         /// <returns>The remapped name.</returns>
         [PublicAPI, Pure, NotNull]
-        public string MapLibraryName(DllConfiguration configuration, string libraryName)
+        public string MapLibraryName([NotNull] DllConfiguration configuration, [NotNull] string libraryName)
         {
             var mapEntry = configuration.GetRelevantMaps().FirstOrDefault(m => m.SourceLibrary == libraryName);
             if (mapEntry is null)
@@ -87,7 +87,11 @@ namespace Mono.DllMap
                 return libraryName;
             }
 
-            return mapEntry.TargetLibrary;
+            return mapEntry.TargetLibrary
+            ?? throw new InvalidOperationException
+            (
+                "The given library had a mapping, but the mapping lacked a target library."
+            );
         }
 
         /// <summary>
@@ -134,7 +138,7 @@ namespace Mono.DllMap
         /// <param name="type">The type to get the configuration for.</param>
         /// <returns>The DllMap.</returns>
         [PublicAPI, Pure, NotNull]
-        public DllConfiguration GetDllMap(Type type) => GetDllMap(type.Assembly);
+        public DllConfiguration GetDllMap([NotNull] Type type) => GetDllMap(type.Assembly);
 
         /// <summary>
         /// Gets the DllMap file for the given assembly.
@@ -148,7 +152,7 @@ namespace Mono.DllMap
         }
 
         [Pure, NotNull]
-        private string GetDllMapPath(Assembly assembly)
+        private string GetDllMapPath([NotNull] Assembly assembly)
         {
             var assemblyName = assembly.GetName().Name;
             var assemblyDirectory = Directory.GetParent(assembly.Location).FullName;

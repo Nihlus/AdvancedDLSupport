@@ -34,19 +34,19 @@ namespace Mono.DllMap
         /// <summary>
         /// Gets or sets the raw string containing the supported operating systems.
         /// </summary>
-        [PublicAPI, XmlAttribute("os")]
+        [PublicAPI, CanBeNull, XmlAttribute("os")]
         public string RawOperatingSystems { get; set; }
 
         /// <summary>
         /// Gets or sets the raw string containing the supported processor architectures.
         /// </summary>
-        [PublicAPI, XmlAttribute("cpu")]
+        [PublicAPI, CanBeNull, XmlAttribute("cpu")]
         public string RawArchitecture { get; set; }
 
         /// <summary>
         /// Gets or sets the raw string containing the supported word sizes.
         /// </summary>
-        [PublicAPI, XmlAttribute("wordsize")]
+        [PublicAPI, CanBeNull, XmlAttribute("wordsize")]
         public string RawWordSize { get; set; }
 
         /// <summary>
