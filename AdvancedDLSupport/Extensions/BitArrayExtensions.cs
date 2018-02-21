@@ -26,8 +26,7 @@ namespace AdvancedDLSupport.Extensions
     /// <summary>
     /// Extension methods for the <see cref="BitArray"/> class.
     /// </summary>
-    [PublicAPI]
-    public static class BitArrayExtensions
+    internal static class BitArrayExtensions
     {
         /// <summary>
         /// Converts the <see cref="BitArray"/> into its equivalent integer representation.

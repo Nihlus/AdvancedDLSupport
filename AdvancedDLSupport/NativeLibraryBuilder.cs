@@ -56,6 +56,20 @@ namespace AdvancedDLSupport
         [PublicAPI, NotNull]
         public static NativeLibraryBuilder Default { get; }
 
+        /// <summary>
+        /// Gets the name of the dynamic assembly.
+        /// </summary>
+        internal const string DynamicAssemblyName = "DLSupportDynamicAssembly";
+
+        /// <summary>
+        /// Gets the name of the dynamic module.
+        /// </summary>
+        internal const string DynamicModuleName = "DLSupportDynamicModule";
+
+        /// <summary>
+        /// Gets the path resolver to use for resolving libraries.
+        /// </summary>
+        [NotNull]
         private ILibraryPathResolver PathResolver { get; }
 
         // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
@@ -71,7 +85,7 @@ namespace AdvancedDLSupport
         {
             AssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly
             (
-                new AssemblyName("DLSupportAssembly"), AssemblyBuilderAccess.Run
+                new AssemblyName(DynamicAssemblyName), AssemblyBuilderAccess.Run
             );
 
             #if DEBUG
@@ -87,7 +101,7 @@ namespace AdvancedDLSupport
             AssemblyBuilder.SetCustomAttribute(dbgBuilder);
             #endif
 
-            ModuleBuilder = AssemblyBuilder.DefineDynamicModule("DLSupportModule");
+            ModuleBuilder = AssemblyBuilder.DefineDynamicModule(DynamicModuleName);
 
             TypeCache = new ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type>
             (

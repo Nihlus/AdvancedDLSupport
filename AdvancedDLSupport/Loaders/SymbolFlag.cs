@@ -18,7 +18,6 @@
 //
 
 // ReSharper disable InconsistentNaming
-
 using System;
 using JetBrains.Annotations;
 

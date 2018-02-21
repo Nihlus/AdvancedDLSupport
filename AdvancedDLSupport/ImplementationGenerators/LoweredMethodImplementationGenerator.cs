@@ -265,7 +265,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var repoProperty = typeof(NativeLibraryBase).GetProperty
             (
                 nameof(NativeLibraryBase.TransformerRepository),
-                BindingFlags.Public | BindingFlags.Instance
+                BindingFlags.NonPublic | BindingFlags.Instance
             );
 
             il.Emit(OpCodes.Ldarg_0);

@@ -26,7 +26,7 @@ namespace AdvancedDLSupport.Loaders
     /// <summary>
     /// Base class for Unix-family platform loaders, using the dl library.
     /// </summary>
-    public abstract class UnixPlatformLoader : PlatformLoaderBase
+    internal abstract class UnixPlatformLoader : PlatformLoaderBase
     {
         /// <summary>
         /// Gets a value indicating whether or not the dl methods should be loaded from the C library.

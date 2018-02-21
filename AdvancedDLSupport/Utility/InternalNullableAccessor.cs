@@ -27,8 +27,7 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Helper class for accessing the internal values of <see cref="Nullable{T}"/> instances.
     /// </summary>
-    [PublicAPI]
-    public static class InternalNullableAccessor
+    internal static class InternalNullableAccessor
     {
         /// <summary>
         /// Accesses the underlying value of a <see cref="Nullable{T}"/> instance, referred to by the given pointer.
@@ -36,7 +35,7 @@ namespace AdvancedDLSupport
         /// <param name="nullablePtr">A pointer to a pinned nullable.</param>
         /// <typeparam name="T">The type of underlying value to access.</typeparam>
         /// <returns>The underlying value, passed by reference.</returns>
-        [PublicAPI, Pure]
+        [Pure]
         public static unsafe ref T AccessUnderlyingValue<T>([NotNull] int* nullablePtr) where T : struct
         {
             // HACK: Working around weird memory layout in .NET Core vs Mono/FX

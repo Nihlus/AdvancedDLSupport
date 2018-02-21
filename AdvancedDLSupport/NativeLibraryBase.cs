@@ -31,34 +31,6 @@ namespace AdvancedDLSupport
     [PublicAPI]
     public abstract class NativeLibraryBase : IDisposable
     {
-        private static readonly IPlatformLoader PlatformLoader;
-
-        static NativeLibraryBase()
-        {
-            PlatformLoader = PlatformLoaderBase.SelectPlatformLoader();
-        }
-
-        /// <summary>
-        /// Finalizes an instance of the <see cref="NativeLibraryBase"/> class.
-        /// </summary>
-        ~NativeLibraryBase()
-        {
-            Dispose();
-        }
-
-        [NotNull]
-        private readonly string _path;
-
-        [NotNull]
-        private readonly Type _interfaceType;
-        private IntPtr _libraryHandle;
-
-        /// <summary>
-        /// Gets the type transformer repository.
-        /// </summary>
-        [PublicAPI]
-        public TypeTransformerRepository TransformerRepository { get; }
-
         /// <summary>
         /// Gets a value indicating whether or not the library has been disposed.
         /// </summary>
@@ -66,9 +38,46 @@ namespace AdvancedDLSupport
         public bool IsDisposed { get; private set; }
 
         /// <summary>
+        /// Gets the type transformer repository.
+        /// </summary>
+        [NotNull]
+        internal TypeTransformerRepository TransformerRepository { get; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether or not the library can be disposed.
         /// </summary>
-        private ImplementationOptions Options { get; set; }
+        internal ImplementationOptions Options { get; set; }
+
+        /// <summary>
+        /// Gets the path to or name of the encapsulated library.
+        /// </summary>
+        [NotNull]
+        private readonly string _path;
+
+        /// <summary>
+        /// Gets the type of the interface that the library implements.
+        /// </summary>
+        [NotNull]
+        private readonly Type _interfaceType;
+
+        /// <summary>
+        /// Gets an opaque native handle to the library.
+        /// </summary>
+        private IntPtr _libraryHandle;
+
+        /// <summary>
+        /// Gets the library and symbol loader for the current platform.
+        /// </summary>
+        [NotNull]
+        private static readonly IPlatformLoader PlatformLoader;
+
+        /// <summary>
+        /// Initializes static members of the <see cref="NativeLibraryBase"/> class.
+        /// </summary>
+        static NativeLibraryBase()
+        {
+            PlatformLoader = PlatformLoaderBase.SelectPlatformLoader();
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NativeLibraryBase"/> class.
@@ -94,12 +103,19 @@ namespace AdvancedDLSupport
         }
 
         /// <summary>
+        /// Finalizes an instance of the <see cref="NativeLibraryBase"/> class.
+        /// </summary>
+        ~NativeLibraryBase()
+        {
+            Dispose();
+        }
+
+        /// <summary>
         /// Forwards the symbol loading call to the wrapped platform loader.
         /// </summary>
         /// <param name="sym">The symbol name.</param>
         /// <returns>A handle to the symbol</returns>
-        [PublicAPI]
-        protected IntPtr LoadSymbol([NotNull] string sym) => PlatformLoader.LoadSymbol(_libraryHandle, sym);
+        internal IntPtr LoadSymbol([NotNull] string sym) => PlatformLoader.LoadSymbol(_libraryHandle, sym);
 
         /// <summary>
         /// Forwards the function loading call to the wrapped platform loader.
@@ -107,8 +123,7 @@ namespace AdvancedDLSupport
         /// <param name="sym">The symbol name.</param>
         /// <typeparam name="T">The delegate to load the symbol as.</typeparam>
         /// <returns>A function delegate.</returns>
-        [PublicAPI]
-        protected T LoadFunction<T>([NotNull] string sym) => PlatformLoader.LoadFunction<T>(_libraryHandle, sym);
+        internal T LoadFunction<T>([NotNull] string sym) => PlatformLoader.LoadFunction<T>(_libraryHandle, sym);
 
         /// <summary>
         /// Throws if the library has been disposed.

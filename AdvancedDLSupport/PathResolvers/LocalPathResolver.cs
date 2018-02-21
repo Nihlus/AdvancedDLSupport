@@ -26,7 +26,7 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Resolves locally bundled library paths.
     /// </summary>
-    internal class LocalPathResolver : ILibraryPathResolver
+    internal sealed class LocalPathResolver : ILibraryPathResolver
     {
         private readonly string _executingDirectory;
         private readonly string _libraryDirectory;

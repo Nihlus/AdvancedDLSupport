@@ -26,7 +26,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// Interface for classes that generate anonymous implementations for members.
     /// </summary>
     /// <typeparam name="TAccepted">The type of member that the class will generate for.</typeparam>
-    internal interface IImplementationGenerator<in TAccepted> where TAccepted : MemberInfo
+    [PublicAPI]
+    public interface IImplementationGenerator<in TAccepted> where TAccepted : MemberInfo
     {
         /// <summary>
         /// Gets the implementation configuration object to use.

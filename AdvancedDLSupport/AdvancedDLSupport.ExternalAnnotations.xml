@@ -1,15 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <assembly name="AdvancedDLSupport">
-  <member name="T:AdvancedDLSupport.Extensions.BitArrayExtensions">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="M:AdvancedDLSupport.Extensions.BitArrayExtensions.ToInt32(System.Collections.BitArray)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <parameter name="this">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
   <member name="T:AdvancedDLSupport.ILibraryPathResolver">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
@@ -17,6 +7,14 @@
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <parameter name="library">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="T:AdvancedDLSupport.ImplementationGenerators.IImplementationGenerator`1">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="M:AdvancedDLSupport.ImplementationGenerators.IImplementationGenerator`1.GenerateImplementation(`0)">
+    <parameter name="member">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
@@ -129,16 +127,6 @@
   </member>
   <member name="F:AdvancedDLSupport.ImplementationOptions.UseLazyBinding">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="T:AdvancedDLSupport.InternalNullableAccessor">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="M:AdvancedDLSupport.InternalNullableAccessor.AccessUnderlyingValue``1(System.Int32*)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <parameter name="nullablePtr">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
   </member>
   <member name="T:AdvancedDLSupport.ITypeTransformer">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
@@ -271,22 +259,7 @@
   <member name="P:AdvancedDLSupport.NativeLibraryBase.IsDisposed">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.NativeLibraryBase.LoadFunction``1(System.String)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <parameter name="sym">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.NativeLibraryBase.LoadSymbol(System.String)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <parameter name="sym">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
   <member name="M:AdvancedDLSupport.NativeLibraryBase.ThrowIfDisposed">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="P:AdvancedDLSupport.NativeLibraryBase.TransformerRepository">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="T:AdvancedDLSupport.NativeLibraryBuilder">
