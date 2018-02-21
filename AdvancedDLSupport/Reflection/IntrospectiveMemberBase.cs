@@ -151,9 +151,9 @@ namespace AdvancedDLSupport.Reflection
         /// <param name="introspectiveInfo">The introspective info.</param>
         /// <returns>The wrapped member.</returns>
         [PublicAPI]
-        public static explicit operator TMemberInfo([NotNull] IntrospectiveMemberBase<TMemberInfo> introspectiveInfo)
+        public static explicit operator TMemberInfo([CanBeNull] IntrospectiveMemberBase<TMemberInfo> introspectiveInfo)
         {
-            return introspectiveInfo.Member;
+            return introspectiveInfo?.Member;
         }
     }
 }
