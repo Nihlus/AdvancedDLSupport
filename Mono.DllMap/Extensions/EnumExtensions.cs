@@ -115,8 +115,8 @@ namespace Mono.DllMap.Extensions
         /// Throws an <see cref="ArgumentException"/> if the provided generic type is not an enum decorated with a
         /// <see cref="FlagsAttribute"/>.
         /// </summary>
-        /// <typeparam name="TEnum"></typeparam>
-        /// <exception cref="ArgumentException"></exception>
+        /// <typeparam name="TEnum">The type to check.</typeparam>
+        /// <exception cref="ArgumentException">Thrown if the generic type is not a flag enum.</exception>
         private static void ThrowIfEnumIsNotEnumOrNotFlags<TEnum>()
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
