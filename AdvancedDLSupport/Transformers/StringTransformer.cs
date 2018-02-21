@@ -87,7 +87,11 @@ namespace AdvancedDLSupport
                 }
                 default:
                 {
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException
+                    (
+                        nameof(unmanagedType),
+                        "The unmanaged type wasn't set to a recognized string type."
+                    );
                 }
             }
 
@@ -138,7 +142,11 @@ namespace AdvancedDLSupport
                 }
                 default:
                 {
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException
+                    (
+                        nameof(unmanagedType),
+                        "The unmanaged type wasn't set to a recognized string type."
+                    );
                 }
             }
 
