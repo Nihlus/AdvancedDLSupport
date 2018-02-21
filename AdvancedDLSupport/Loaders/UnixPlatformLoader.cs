@@ -37,7 +37,7 @@ namespace AdvancedDLSupport.Loaders
         private readonly Action _resetErrorAction;
 
         [NotNull]
-        private readonly Func<string, SymbolFlags, IntPtr> _openLibraryFunc;
+        private readonly Func<string, SymbolFlag, IntPtr> _openLibraryFunc;
 
         [NotNull]
         private readonly Func<IntPtr, string, IntPtr> _openSymbolFunc;
@@ -67,7 +67,7 @@ namespace AdvancedDLSupport.Loaders
         /// <param name="flags">The loading flags to use.</param>
         /// <returns>A handle to the library. This value carries no intrinsic meaning.</returns>
         /// <exception cref="LibraryLoadingException">Thrown if the library could not be loaded.</exception>
-        private IntPtr LoadLibrary([CanBeNull] string path, SymbolFlags flags)
+        private IntPtr LoadLibrary([CanBeNull] string path, SymbolFlag flags)
         {
             _resetErrorAction();
 
@@ -87,7 +87,7 @@ namespace AdvancedDLSupport.Loaders
         }
 
         /// <inheritdoc />
-        protected override IntPtr LoadLibraryInternal(string path) => LoadLibrary(path, SymbolFlags.RTLD_DEFAULT);
+        protected override IntPtr LoadLibraryInternal(string path) => LoadLibrary(path, SymbolFlag.RTLD_DEFAULT);
 
         /// <inheritdoc />
         public override IntPtr LoadSymbol(IntPtr library, string symbolName)

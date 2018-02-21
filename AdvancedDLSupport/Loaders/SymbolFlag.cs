@@ -1,5 +1,5 @@
 ﻿//
-//  SymbolFlags.cs
+//  SymbolFlag.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -29,7 +29,7 @@ namespace AdvancedDLSupport.Loaders
     /// GNU libc: <a href="https://github.com/lattera/glibc/blob/master/bits/dlfcn.h"/>
     /// </summary>
     [PublicAPI, Flags]
-    public enum SymbolFlags
+    public enum SymbolFlag
     {
         /// <summary>
         /// The default flags.

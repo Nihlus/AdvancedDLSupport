@@ -38,7 +38,7 @@ namespace AdvancedDLSupport.Loaders
         private const string LibraryNameUnix = "dl";
         private const string LibraryNameBSD = "c";
 
-        public static IntPtr open([CanBeNull] string fileName, SymbolFlags flags = SymbolFlags.RTLD_DEFAULT, bool useCLibrary = false)
+        public static IntPtr open([CanBeNull] string fileName, SymbolFlag flags = SymbolFlag.RTLD_DEFAULT, bool useCLibrary = false)
         {
             return useCLibrary ? BSD.dlopen(fileName, flags) : Unix.dlopen(fileName, flags);
         }
@@ -70,7 +70,7 @@ namespace AdvancedDLSupport.Loaders
         private static class Unix
         {
             [DllImport(LibraryNameUnix)]
-            public static extern IntPtr dlopen(string fileName, SymbolFlags flags);
+            public static extern IntPtr dlopen(string fileName, SymbolFlag flags);
 
             [DllImport(LibraryNameUnix)]
             public static extern IntPtr dlsym(IntPtr handle, string name);
@@ -85,7 +85,7 @@ namespace AdvancedDLSupport.Loaders
         private static class BSD
         {
             [DllImport(LibraryNameBSD)]
-            public static extern IntPtr dlopen(string fileName, SymbolFlags flags);
+            public static extern IntPtr dlopen(string fileName, SymbolFlag flags);
 
             [DllImport(LibraryNameBSD)]
             public static extern IntPtr dlsym(IntPtr handle, string name);

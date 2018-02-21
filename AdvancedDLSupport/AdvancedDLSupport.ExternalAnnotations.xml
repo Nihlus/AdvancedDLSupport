@@ -247,7 +247,7 @@
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
   </member>
-  <member name="T:AdvancedDLSupport.Loaders.SymbolFlags">
+  <member name="T:AdvancedDLSupport.Loaders.SymbolFlag">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="T:AdvancedDLSupport.NativeLibraryBase">
