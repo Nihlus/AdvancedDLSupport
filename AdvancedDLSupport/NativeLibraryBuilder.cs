@@ -229,8 +229,13 @@ namespace AdvancedDLSupport
             }
             catch (TargetInvocationException tex)
             {
+                if (tex.InnerException is null)
+                {
+                    throw;
+                }
+
                 // Unwrap target invocation exceptions, since we can fail in the constructor
-                throw tex.InnerException ?? tex;
+                throw tex.InnerException;
             }
         }
 
