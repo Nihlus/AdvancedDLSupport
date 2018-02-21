@@ -45,14 +45,15 @@ Using this interface, we can then initialize an anonymous type which implements 
 native library.
 
 ```cs
-var mathLibrary = new NativeLibraryBuilder().ActivateInterface<IMath>(LibraryName);
-
-int mySubtraction = mathLibrary.Subtract(10, 5);
-int myMultiplication mathLibrary.Multiply(5, 5);
-
-int timesUsed = mathLibrary.TimesUsed;
-
-Console.WriteLine($"Subtraction: {mySubtraction}, Multiplication: {myMultiplication}, Times used: {timesUsed}");
+using (var mathLibrary = NativeLibraryBuilder.Default.ActivateInterface<IMath>(LibraryName))
+{
+	int mySubtraction = mathLibrary.Subtract(10, 5);
+    int myMultiplication mathLibrary.Multiply(5, 5);
+    
+    int timesUsed = mathLibrary.TimesUsed;
+    
+    Console.WriteLine($"Subtraction: {mySubtraction}, Multiplication: {myMultiplication}, Times used: {timesUsed}");
+}
 
 // Output:
 // Subtraction: 5, Multiplication: 25, Times used: 2
