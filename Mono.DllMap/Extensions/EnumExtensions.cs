@@ -45,15 +45,7 @@ namespace Mono.DllMap.Extensions
         public static bool HasFlagFast<TEnum>(this TEnum value, TEnum flag)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
-            if (!typeof(TEnum).IsEnum)
-            {
-                throw new ArgumentException("The provided type was not an enum.", nameof(TEnum));
-            }
-
-            if (typeof(TEnum).GetCustomAttribute<FlagsAttribute>() is null)
-            {
-                throw new ArgumentException("The provided enum type was not a flag enum.", nameof(TEnum));
-            }
+            ThrowIfEnumIsNotEnumOrNotFlags<TEnum>();
 
             return ((dynamic)value & (dynamic)flag) != 0;
         }
@@ -72,15 +64,7 @@ namespace Mono.DllMap.Extensions
         public static bool HasFlagsFast<TEnum>(this TEnum value, params TEnum[] flags)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
-            if (!typeof(TEnum).IsEnum)
-            {
-                throw new ArgumentException("The provided type was not an enum.", nameof(TEnum));
-            }
-
-            if (typeof(TEnum).GetCustomAttribute<FlagsAttribute>() is null)
-            {
-                throw new ArgumentException("The provided enum type was not a flag enum.", nameof(TEnum));
-            }
+            ThrowIfEnumIsNotEnumOrNotFlags<TEnum>();
 
             return flags.All(f => value.HasFlagFast(f));
         }
@@ -98,15 +82,7 @@ namespace Mono.DllMap.Extensions
         public static bool HasAll<TEnum>(this TEnum value)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
-            if (!typeof(TEnum).IsEnum)
-            {
-                throw new ArgumentException("The provided type was not an enum.", nameof(TEnum));
-            }
-
-            if (typeof(TEnum).GetCustomAttribute<FlagsAttribute>() is null)
-            {
-                throw new ArgumentException("The provided enum type was not a flag enum.", nameof(TEnum));
-            }
+            ThrowIfEnumIsNotEnumOrNotFlags<TEnum>();
 
             return Enum.GetValues(typeof(TEnum)).Cast<TEnum>().All(v => value.HasFlagFast(v));
         }
@@ -124,6 +100,26 @@ namespace Mono.DllMap.Extensions
         public static IEnumerable<TEnum> GetFlags<TEnum>(this TEnum input)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
+            ThrowIfEnumIsNotEnumOrNotFlags<TEnum>();
+
+            foreach (TEnum value in Enum.GetValues(input.GetType()))
+            {
+                if (input.HasFlagFast(value))
+                {
+                    yield return value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Throws an <see cref="ArgumentException"/> if the provided generic type is not an enum decorated with a
+        /// <see cref="FlagsAttribute"/>.
+        /// </summary>
+        /// <typeparam name="TEnum"></typeparam>
+        /// <exception cref="ArgumentException"></exception>
+        private static void ThrowIfEnumIsNotEnumOrNotFlags<TEnum>()
+            where TEnum : struct, IComparable, IFormattable, IConvertible
+        {
             if (!typeof(TEnum).IsEnum)
             {
                 throw new ArgumentException("The provided type was not an enum.", nameof(TEnum));
@@ -132,14 +128,6 @@ namespace Mono.DllMap.Extensions
             if (typeof(TEnum).GetCustomAttribute<FlagsAttribute>() is null)
             {
                 throw new ArgumentException("The provided enum type was not a flag enum.", nameof(TEnum));
-            }
-
-            foreach (TEnum value in Enum.GetValues(input.GetType()))
-            {
-                if (input.HasFlagFast(value))
-                {
-                    yield return value;
-                }
             }
         }
     }
