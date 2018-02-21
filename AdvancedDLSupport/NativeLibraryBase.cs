@@ -132,6 +132,8 @@ namespace AdvancedDLSupport
                 return;
             }
 
+            GC.SuppressFinalize(this);
+
             IsDisposed = true;
 
             PlatformLoader.CloseLibrary(_libraryHandle);
