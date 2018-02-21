@@ -27,7 +27,7 @@ namespace AdvancedDLSupport
     /// Holds metadata for native functions.
     /// </summary>
     [PublicAPI, AttributeUsage(AttributeTargets.Method | AttributeTargets.Property)]
-    public class NativeSymbolAttribute : Attribute
+    public sealed class NativeSymbolAttribute : Attribute
     {
         /// <summary>
         /// Gets or sets the name of the function's entrypoint.
