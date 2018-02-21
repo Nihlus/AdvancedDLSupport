@@ -222,7 +222,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var lambdaIL = lambdaBuilder.GetILGenerator();
             lambdaIL.Emit(OpCodes.Ldarg_0);
             lambdaIL.Emit(OpCodes.Ldstr, symbolName);
-            lambdaIL.EmitCall(OpCodes.Call, loadSymbolMethod, null);
+            lambdaIL.Emit(OpCodes.Call, loadSymbolMethod);
             lambdaIL.Emit(OpCodes.Ret);
             return lambdaBuilder;
         }
@@ -258,7 +258,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var lambdaIL = lambdaBuilder.GetILGenerator();
             lambdaIL.Emit(OpCodes.Ldarg_0);
             lambdaIL.Emit(OpCodes.Ldstr, functionName);
-            lambdaIL.EmitCall(OpCodes.Call, loadFunc, null);
+            lambdaIL.Emit(OpCodes.Call, loadFunc);
             lambdaIL.Emit(OpCodes.Ret);
             return lambdaBuilder;
         }
