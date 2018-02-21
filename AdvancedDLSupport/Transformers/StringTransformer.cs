@@ -51,16 +51,7 @@ namespace AdvancedDLSupport
                 return IntPtr.Zero;
             }
 
-            var unmanagedType = LPStr;
-            var marshalAsAttribute = parameter.GetCustomAttribute<MarshalAsAttribute>();
-            if (!(marshalAsAttribute is null))
-            {
-                var customUnmanagedType = marshalAsAttribute.Value;
-                if (_supportedTypes.Contains(customUnmanagedType))
-                {
-                    unmanagedType = customUnmanagedType;
-                }
-            }
+            var unmanagedType = GetCustomUnmanagedTypeOrDefault(parameter);
 
             IntPtr ptr;
             switch (unmanagedType)
@@ -98,14 +89,8 @@ namespace AdvancedDLSupport
             return ptr;
         }
 
-        /// <inheritdoc />
-        public override string RaiseValue(IntPtr value, ParameterInfo parameter)
+        private UnmanagedType GetCustomUnmanagedTypeOrDefault(ParameterInfo parameter)
         {
-            if (value == IntPtr.Zero)
-            {
-                return null;
-            }
-
             var unmanagedType = LPStr;
             var marshalAsAttribute = parameter.GetCustomAttribute<MarshalAsAttribute>();
             if (!(marshalAsAttribute is null))
@@ -116,6 +101,19 @@ namespace AdvancedDLSupport
                     unmanagedType = customUnmanagedType;
                 }
             }
+
+            return unmanagedType;
+        }
+
+        /// <inheritdoc />
+        public override string RaiseValue(IntPtr value, ParameterInfo parameter)
+        {
+            if (value == IntPtr.Zero)
+            {
+                return null;
+            }
+
+            var unmanagedType = GetCustomUnmanagedTypeOrDefault(parameter);
 
             string val;
             switch (unmanagedType)
