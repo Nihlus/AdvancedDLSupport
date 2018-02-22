@@ -22,6 +22,9 @@ include_directories(${CMAKE_SOURCE_DIR})
 
 set(SHARED_HEADERS src/TestStruct.h src/comp.h)
 
+# Uncomment if testing on a non-unicode platform
+add_definitions(-DUNICODE)
+
 add_library(BaseTests SHARED src/BaseTests.c ${SHARED_HEADERS})
 add_library(DisposeTests SHARED src/DisposeTests.c ${SHARED_HEADERS})
 add_library(EventTests SHARED src/EventTests.c ${SHARED_HEADERS})

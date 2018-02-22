@@ -54,11 +54,11 @@ __declspec(dllexport) size_t LPWStringLength(LPWCSTR value)
 
 __declspec(dllexport) size_t LPTStringLength(LPTCSTR value)
 {
-    #ifdef _MSC_VER
+    #if _MSC_VER
         return _tcslen(value);
     #endif
 
-    #ifdef UNICODE
+    #if UNICODE
         return LPWStringLength(value);
     #else
         return strlen(value);
