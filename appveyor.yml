@@ -1,6 +1,6 @@
 image: Visual Studio 2017
 init:
-  - git config --global url."https:\\github.com\".insteadOf "git@github.com:"
+  - git config --global url."https://github.com/".insteadOf "git@github.com:"
 configuration: Debug
 before_build:
   - dotnet restore
