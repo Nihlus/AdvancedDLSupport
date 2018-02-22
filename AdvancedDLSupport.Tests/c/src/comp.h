@@ -40,7 +40,6 @@
     typedef char16_t* BSTR;
     typedef const char16_t* BCSTR;
 
-
     typedef char* LPSTR;
     typedef const char* LPCSTR;
 
@@ -57,6 +56,5 @@
         typedef LPCSTR LPTCSTR;
     #endif
 #endif
-
 
 #endif //C_WINCOMP_H
