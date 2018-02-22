@@ -15,6 +15,6 @@ script:
   - dotnet run --project altcover/altcover.1.6.230/tools/netcoreapp2.0/AltCover/altcover.core.fsproj --configuration Debug -- -i=AdvancedDLSupport.Tests/bin/Debug/netcoreapp2.0 -o=instrumented -x=coverage.xml --assemblyExcludeFilter=.+\.Tests --assemblyExcludeFilter=AltCover.+
   - cp instrumented/* AdvancedDLSupport.Tests/bin/Debug/netcoreapp2.0
   - dotnet run --project altcover/altcover.1.6.230/tools/netcoreapp2.0/AltCover/altcover.core.fsproj --no-build -- runner -x "dotnet" -r "AdvancedDLSupport.Tests/bin/Debug/netcoreapp2.0" -- test AdvancedDLSupport.Tests --no-build
-  - dotnet run --project altcover/altcover.1.6.230/tools/netcoreapp2.0/AltCover/altcover.core.fsproj --no-build -- runner -x "dotnet" -r "Mono.DllMap.Tests/bin/Debug/netcoreapp2.0" -- test Mono.DllMap.Tests --no-build
+  - dotnet test Mono.DllMap.Tests --no-build
 after_success:
   - bash <(curl -s https://codecov.io/bash)
