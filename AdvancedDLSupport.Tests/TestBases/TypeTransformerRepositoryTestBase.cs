@@ -1,10 +1,7 @@
-﻿using JetBrains.Annotations;
-
-namespace AdvancedDLSupport.Tests.TestBases
+﻿namespace AdvancedDLSupport.Tests.TestBases
 {
     public class TypeTransformerRepositoryTestBase
     {
-        [NotNull]
         protected TypeTransformerRepository Repository { get; }
 
         protected TypeTransformerRepositoryTestBase()
