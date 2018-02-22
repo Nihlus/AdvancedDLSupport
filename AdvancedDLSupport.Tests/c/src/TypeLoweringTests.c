@@ -3,8 +3,6 @@
 #include <stdbool.h>
 #include "comp.h"
 
-size_t LPWStringLength(LPWCSTR value);
-
 __declspec(dllexport) LPCSTR GetString()
 {
     return "Hello from C!";
@@ -43,15 +41,6 @@ __declspec(dllexport) size_t BStringLength(BCSTR value)
     return (length / sizeof(char16_t)) - 1;
 }
 
-__declspec(dllexport) size_t LPTStringLength(LPTCSTR value)
-{
-    #ifdef UNICODE
-        return LPWStringLength(value);
-    #else
-        return strlen(value);
-    #endif
-}
-
 __declspec(dllexport) size_t LPWStringLength(LPWCSTR value)
 {
     LPWCSTR start = value;
@@ -61,8 +50,17 @@ __declspec(dllexport) size_t LPWStringLength(LPWCSTR value)
     while (*end++);
 
     return (end - start) - 1;
-
 }
+
+__declspec(dllexport) size_t LPTStringLength(LPTCSTR value)
+{
+#ifdef UNICODE
+    return LPWStringLength(value);
+#else
+    return strlen(value);
+#endif
+}
+
 __declspec(dllexport) bool CheckIfStringIsNull(const char* value)
 {
     return value == NULL;
