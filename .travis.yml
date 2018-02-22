@@ -11,6 +11,10 @@ install:
   - dotnet restore
 script:
   - msbuild /p:Configuration=Debug AdvanceDLSupport.sln
+  # Since altcover doesn't pass through return values, run the tests normally first
+  - dotnet test --no-build AdvancedDLSupport.Tests
+  - dotnet test --no-build Mono.DllMap.Tests
+  # Then run coverage
   - nuget install altcover -OutputDirectory altcover -Version 1.6.230
   - dotnet run --project altcover/altcover.1.6.230/tools/netcoreapp2.0/AltCover/altcover.core.fsproj --configuration Debug -- -i=AdvancedDLSupport.Tests/bin/Debug/netcoreapp2.0 -o=instrumented-adl -x=coverage-adl.xml --assemblyExcludeFilter=.+\.Tests --assemblyExcludeFilter=AltCover.+ --assemblyExcludeFilter=Mono\.DllMap.+
   - dotnet run --project altcover/altcover.1.6.230/tools/netcoreapp2.0/AltCover/altcover.core.fsproj --configuration Debug -- -i=Mono.DllMap.Tests/bin/Debug/netcoreapp2.0 -o=instrumented-mdl -x=coverage-mdl.xml --assemblyExcludeFilter=.+\.Tests --assemblyExcludeFilter=AltCover.+
