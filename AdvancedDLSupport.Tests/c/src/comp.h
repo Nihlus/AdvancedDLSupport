@@ -19,9 +19,9 @@
     #include <Windows.h>
     #include <stdint.h>
 
-    typedef const char16_t* BCSTR;
+    typedef const wchar_t* BCSTR;
     typedef const char* LPCSTR;
-    typedef const char16_t* LPWCSTR;
+    typedef const wchar_t* LPWCSTR;
 
     #ifdef UNICODE
         #define LPTSTR(value) L ##value;
