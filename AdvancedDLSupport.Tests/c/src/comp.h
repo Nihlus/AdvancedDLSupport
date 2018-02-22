@@ -18,6 +18,7 @@
 #if _MSC_VER
     #include <Windows.h>
     #include <stdint.h>
+    #include <Tchar.h>
 
     typedef const wchar_t* BCSTR;
     typedef const char* LPCSTR;

@@ -54,11 +54,15 @@ __declspec(dllexport) size_t LPWStringLength(LPWCSTR value)
 
 __declspec(dllexport) size_t LPTStringLength(LPTCSTR value)
 {
-#ifdef UNICODE
-    return LPWStringLength(value);
-#else
-    return strlen(value);
-#endif
+    #ifdef _MSC_VER
+        return _tcslen(value);
+    #endif
+
+    #ifdef UNICODE
+        return LPWStringLength(value);
+    #else
+        return strlen(value);
+    #endif
 }
 
 __declspec(dllexport) bool CheckIfStringIsNull(const char* value)
