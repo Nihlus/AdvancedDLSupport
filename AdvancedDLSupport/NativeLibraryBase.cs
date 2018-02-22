@@ -44,7 +44,7 @@ namespace AdvancedDLSupport
         internal TypeTransformerRepository TransformerRepository { get; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether or not the library can be disposed.
+        /// Gets or sets the set of options that were used to construct the type.
         /// </summary>
         internal ImplementationOptions Options { get; set; }
 
