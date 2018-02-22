@@ -9,9 +9,17 @@
 
 #if _MSC_VER
 #include <stdint.h>
+
+#ifdef UNICODE
+#define LPTSTR(value) L ##value;
+#else
+#define LPTSTR(value) value;
+#endif
+
 #endif
 
 #if !_MSC_VER
+
 #define __declspec(dllexport)
 #define __stdcall
 
