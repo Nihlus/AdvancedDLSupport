@@ -77,5 +77,26 @@ namespace AdvancedDLSupport.Tests.Integration
 
             Assert.Equal(10, result);
         }
+
+        [Fact]
+        public void CanCallFunctionWithRefNullableParameterThatRequiresLowering()
+        {
+            TestStruct? testStruct = new TestStruct { A = 10, B = 20 };
+
+            var result = Library.GetAFromStructAsString(ref testStruct);
+
+            Assert.Equal("10", result);
+        }
+
+        [Fact]
+        public void CanCallFunctionWithRefNullableParameterAndNormalParameters()
+        {
+            const int multiplier = 5;
+            TestStruct? testStruct = new TestStruct { A = 10, B = 20 };
+
+            var result = Library.GetAFromStructMultipliedByParameter(ref testStruct, multiplier);
+
+            Assert.Equal(10 * multiplier, result);
+        }
     }
 }

@@ -18,5 +18,8 @@ namespace AdvancedDLSupport.Tests.Data
 
         int GetValueInNullableRefStruct(ref TestStruct? testStruct);
         void SetValueInNullableRefStruct(ref TestStruct? testStruct);
+
+        string GetAFromStructAsString(ref TestStruct? testStruct);
+        int GetAFromStructMultipliedByParameter(ref TestStruct? testStruct, int multiplier);
     }
 }
