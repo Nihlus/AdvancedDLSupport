@@ -32,8 +32,7 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Raises or lowers strings.
     /// </summary>
-    [PublicAPI]
-    public class StringTransformer : PointerTransformer<string>
+    internal class StringTransformer : PointerTransformer<string>
     {
         private readonly IReadOnlyList<UnmanagedType> _supportedTypes = new[]
         {
