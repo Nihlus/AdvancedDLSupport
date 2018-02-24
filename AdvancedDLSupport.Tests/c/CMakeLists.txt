@@ -61,15 +61,21 @@ install(TARGETS
             AttributePassthroughTests
             MixedModeTests
             NullableTests
+        COMPONENT
+            standard
         DESTINATION
             ${INSTALL_PATH_ABSOLUTE})
 
 install(TARGETS
             BaseTests-x64
+        COMPONENT
+            standard
         DESTINATION
             ${INSTALL_PATH_ABSOLUTE}/lib/x64)
 
 install(TARGETS
             BaseTests-x32
+        COMPONENT
+            x32-only
         DESTINATION
             ${INSTALL_PATH_ABSOLUTE}/lib/x32)
