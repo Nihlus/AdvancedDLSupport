@@ -39,7 +39,7 @@
     <CMakeGenerator-x86>"Visual Studio 15 2017"</CMakeGenerator-x86>
     <CMakeGenerator>"Visual Studio 15 2017 Win64"</CMakeGenerator>
   </PropertyGroup>
-  <Target Name="InitCMake" BeforeTargets="CompileTestLibraries" Condition="!Exists('$(CMakeBuildDir)\CMakeCache.txt')">
+  <Target Name="InitCMake" AfterTargets="BeforeBuild" Condition="!Exists('$(CMakeBuildDir)\CMakeCache.txt')">
     <Exec Command="mkdir -p $(CMakeBuildDir)" />
     <Exec Command="cmake -G $(CMakeGenerator) -DOUTPUT_PATH=$(OutDir) -DPROJECT_PATH=$(MSBuildProjectDirectory) .." WorkingDirectory="$(CMakeBuildDir)" />
   </Target>
