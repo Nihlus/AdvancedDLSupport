@@ -53,9 +53,9 @@
     <Exec Command="cmake -DCOMPONENT=x32-only --config Debug -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDir)" />
   </Target>
   <Target Name="CompileWinTestLibraries" AfterTargets="AfterBuild" Condition="'$(OS)' == 'Windows_NT'">
-    <Exec Command="cmake --build ." WorkingDirectory="$(CMakeBuildDir)"  />
-    <Exec Command="cmake --build ." WorkingDirectory="$(CMakeBuildDir)-x86"  />
-    <Exec Command="cmake -DCOMPONENT=standard --config Debug -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDir)" />
-    <Exec Command="cmake -DCOMPONENT=x32-only --config Debug -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDir)-x86" />
+    <Exec Command="cmake --build . --config Release" WorkingDirectory="$(CMakeBuildDir)"  />
+    <Exec Command="cmake --build . --config Release" WorkingDirectory="$(CMakeBuildDir)-x86"  />
+    <Exec Command="cmake -DCOMPONENT=standard -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDir)" />
+    <Exec Command="cmake -DCOMPONENT=x32-only -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDir)-x86" />
   </Target>
 </Project>
