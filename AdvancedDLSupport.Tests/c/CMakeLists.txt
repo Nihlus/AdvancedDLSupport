@@ -39,8 +39,14 @@ add_library(AttributePassthroughTests SHARED src/AttributePassthroughTests.c ${S
 add_library(MixedModeTests SHARED src/MixedModeTests.c ${SHARED_HEADERS})
 add_library(NullableTests SHARED src/NullableTests.c ${SHARED_HEADERS})
 
-set_target_properties(BaseTests-x64 PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
-set_target_properties(BaseTests-x32 PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+if ( CMAKE_COMPILER_IS_GNUCC )
+    set_target_properties(BaseTests-x64 PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+    set_target_properties(BaseTests-x32 PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+endif()
+
+if ( MSVC )
+
+endif()
 
 get_filename_component(INSTALL_PATH_ABSOLUTE "${PROJECT_PATH}/${OUTPUT_PATH}" ABSOLUTE)
 

@@ -3,6 +3,10 @@ solution: AdvanceDLSupport.sln
 os:
   - linux
   - osx
+addons:
+  apt:
+    packages:
+      - gcc-multilib
 mono: latest
 dotnet: 2.1.3
 before_install:
