@@ -40,11 +40,11 @@
     <CMakeGenerator>"Visual Studio 15 2017 Win64"</CMakeGenerator>
   </PropertyGroup>
   <Target Name="InitCMake" AfterTargets="BeforeBuild" Condition="!Exists('$(CMakeBuildDir)\CMakeCache.txt')">
-    <Exec Command="mkdir -p $(CMakeBuildDir)" />
+    <Exec Command="mkdir $(CMakeBuildDir)" />
     <Exec Command="cmake -G $(CMakeGenerator) -DOUTPUT_PATH=$(OutDir) -DPROJECT_PATH=$(MSBuildProjectDirectory) .." WorkingDirectory="$(CMakeBuildDir)" />
   </Target>
   <Target Name="InitWinCMake" AfterTargets="InitCMake" Condition="'$(OS)' == 'Windows_NT'">
-    <Exec Command="mkdir -p $(CMakeBuildDir)-x86" />
+    <Exec Command="mkdir $(CMakeBuildDir)-x86" />
     <Exec Command="cmake -G $(CMakeGenerator-x86) -DOUTPUT_PATH=$(OutDir) -DPROJECT_PATH=$(MSBuildProjectDirectory) .." WorkingDirectory="$(CMakeBuildDir)-x86" />
   </Target>
   <Target Name="CompileUnixTestLibraries" AfterTargets="AfterBuild" Condition="'$(OS)' == 'Unix'">
