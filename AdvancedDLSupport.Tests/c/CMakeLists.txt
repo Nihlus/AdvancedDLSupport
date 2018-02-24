@@ -6,11 +6,12 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_GENERATOR_PLATFORM x64)
 
-if ( CMAKE_COMPILER_IS_GNUCC )
+set(IS_UNIX_COMPILER CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+
+if ( IS_UNIX_COMPILER )
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-long-long -pedantic")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic")
-endif()
-if ( MSVC )
+elseif ( MSVC )
 	set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /W4")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 endif()
@@ -39,13 +40,11 @@ add_library(AttributePassthroughTests SHARED src/AttributePassthroughTests.c ${S
 add_library(MixedModeTests SHARED src/MixedModeTests.c ${SHARED_HEADERS})
 add_library(NullableTests SHARED src/NullableTests.c ${SHARED_HEADERS})
 
-if ( CMAKE_COMPILER_IS_GNUCC )
+if ( IS_UNIX_COMPILER )
     set_target_properties(BaseTests-x64 PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
     set_target_properties(BaseTests-x32 PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-endif()
-
-if ( MSVC )
-
+elseif ( MSVC )
+    # TODO: Do something to force a 32-bit build on BaseTests-x32
 endif()
 
 get_filename_component(INSTALL_PATH_ABSOLUTE "${PROJECT_PATH}/${OUTPUT_PATH}" ABSOLUTE)

@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 using AdvancedDLSupport.Tests.Data;
 using AdvancedDLSupport.Tests.Data.Classes;
 using AdvancedDLSupport.Tests.TestBases;
-using Microsoft.Extensions.DependencyModel;
 using Xunit;
 
 namespace AdvancedDLSupport.Tests.Integration
