@@ -26,6 +26,8 @@ set(SHARED_HEADERS src/TestStruct.h src/comp.h)
 add_definitions(-DUNICODE)
 
 add_library(BaseTests SHARED src/BaseTests.c ${SHARED_HEADERS})
+add_library(BaseTests-x64 SHARED src/BaseTests.c ${SHARED_HEADERS})
+add_library(BaseTests-x32 SHARED src/BaseTests.c ${SHARED_HEADERS})
 add_library(DisposeTests SHARED src/DisposeTests.c ${SHARED_HEADERS})
 add_library(EventTests SHARED src/EventTests.c ${SHARED_HEADERS})
 add_library(FunctionTests SHARED src/FunctionTests.c ${SHARED_HEADERS})
@@ -36,6 +38,9 @@ add_library(TypeLoweringTests SHARED src/TypeLoweringTests.c ${SHARED_HEADERS})
 add_library(AttributePassthroughTests SHARED src/AttributePassthroughTests.c ${SHARED_HEADERS})
 add_library(MixedModeTests SHARED src/MixedModeTests.c ${SHARED_HEADERS})
 add_library(NullableTests SHARED src/NullableTests.c ${SHARED_HEADERS})
+
+set_target_properties(BaseTests-x64 PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+set_target_properties(BaseTests-x32 PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
 
 get_filename_component(INSTALL_PATH_ABSOLUTE "${PROJECT_PATH}/${OUTPUT_PATH}" ABSOLUTE)
 
@@ -53,3 +58,13 @@ install(TARGETS
             NullableTests
         DESTINATION
             ${INSTALL_PATH_ABSOLUTE})
+
+install(TARGETS
+            BaseTests-x64
+        DESTINATION
+            ${INSTALL_PATH_ABSOLUTE}/lib/x64)
+
+install(TARGETS
+            BaseTests-x32
+        DESTINATION
+            ${INSTALL_PATH_ABSOLUTE}/lib/x32)

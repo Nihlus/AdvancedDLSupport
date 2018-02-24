@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using AdvancedDLSupport.Tests.Data;
 using AdvancedDLSupport.Tests.Data.Classes;
 using AdvancedDLSupport.Tests.TestBases;
+using Microsoft.Extensions.DependencyModel;
 using Xunit;
 
 namespace AdvancedDLSupport.Tests.Integration
@@ -21,6 +23,20 @@ namespace AdvancedDLSupport.Tests.Integration
             public void CanLoadLibrary()
             {
                 Assert.NotNull(Library);
+            }
+
+            [Fact]
+            public void LoadingLibraryWithMismatchedBitnessThrows()
+            {
+                var incorrectBitness = RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x32" : "x64";
+
+                var libraryName = $"{LibraryName}-{incorrectBitness}";
+                var libraryPath = Path.Combine("lib", incorrectBitness, libraryName);
+
+                Assert.Throws<LibraryLoadingException>
+                (
+                    () => NativeLibraryBuilder.Default.ActivateInterface<IBaseLibrary>(libraryPath)
+                );
             }
 
             [Fact]
