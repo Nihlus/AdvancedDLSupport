@@ -31,21 +31,22 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-release</CMakeBuildDir>
+    <CMakeBuildDir-x86>$(MSBuildProjectDirectory)\c\cmake-build-release-x86</CMakeBuildDir-x86>
   </PropertyGroup>
   <PropertyGroup Condition="'$(OS)' == 'Unix'">
     <CMakeGenerator>"Unix Makefiles"</CMakeGenerator>
   </PropertyGroup>
   <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
-    <CMakeGenerator-x86>"Visual Studio 15 2017"</CMakeGenerator-x86>
     <CMakeGenerator>"Visual Studio 15 2017 Win64"</CMakeGenerator>
+    <CMakeGenerator-x86>"Visual Studio 15 2017"</CMakeGenerator-x86>
   </PropertyGroup>
   <Target Name="InitCMake" AfterTargets="BeforeBuild" Condition="!Exists('$(CMakeBuildDir)\CMakeCache.txt')">
     <Exec Command="mkdir $(CMakeBuildDir)" />
     <Exec Command="cmake -G $(CMakeGenerator) -DOUTPUT_PATH=$(OutDir) -DPROJECT_PATH=$(MSBuildProjectDirectory) .." WorkingDirectory="$(CMakeBuildDir)" />
   </Target>
   <Target Name="InitWinCMake" AfterTargets="InitCMake" Condition="'$(OS)' == 'Windows_NT'">
-    <Exec Command="mkdir $(CMakeBuildDir)-x86" />
-    <Exec Command="cmake -G $(CMakeGenerator-x86) -DOUTPUT_PATH=$(OutDir) -DPROJECT_PATH=$(MSBuildProjectDirectory) .." WorkingDirectory="$(CMakeBuildDir)-x86" />
+    <Exec Command="mkdir $(CMakeBuildDir-x86)" />
+    <Exec Command="cmake -G $(CMakeGenerator-x86) -DOUTPUT_PATH=$(OutDir) -DPROJECT_PATH=$(MSBuildProjectDirectory) .." WorkingDirectory="$(CMakeBuildDir-x86)" />
   </Target>
   <Target Name="CompileUnixTestLibraries" AfterTargets="AfterBuild" Condition="'$(OS)' == 'Unix'">
     <Exec Command="cmake --build ." WorkingDirectory="$(CMakeBuildDir)"  />
@@ -54,8 +55,8 @@
   </Target>
   <Target Name="CompileWinTestLibraries" AfterTargets="AfterBuild" Condition="'$(OS)' == 'Windows_NT'">
     <Exec Command="cmake --build . --config Release" WorkingDirectory="$(CMakeBuildDir)"  />
-    <Exec Command="cmake --build . --config Release" WorkingDirectory="$(CMakeBuildDir)-x86"  />
+    <Exec Command="cmake --build . --config Release" WorkingDirectory="$(CMakeBuildDir-x86)"  />
     <Exec Command="cmake -DCOMPONENT=standard -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDir)" />
-    <Exec Command="cmake -DCOMPONENT=x32-only -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDir)-x86" />
+    <Exec Command="cmake -DCOMPONENT=x32-only -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDir-x86)" />
   </Target>
 </Project>
