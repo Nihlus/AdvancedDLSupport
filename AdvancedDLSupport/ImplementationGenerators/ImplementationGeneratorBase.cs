@@ -202,7 +202,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         [PublicAPI, NotNull]
         protected MethodBuilder GenerateSymbolLoadingLambda([NotNull] string symbolName)
         {
-            var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
+            var uniqueIdentifier = Guid.NewGuid().ToString().Replace('-', '_');
 
             var loadSymbolMethod = typeof(NativeLibraryBase).GetMethod
             (
@@ -236,7 +236,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         [PublicAPI, NotNull]
         protected MethodBuilder GenerateFunctionLoadingLambda([NotNull] Type delegateType, [NotNull] string functionName)
         {
-            var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
+            var uniqueIdentifier = Guid.NewGuid().ToString().Replace('-', '_');
 
             var loadFuncMethod = typeof(NativeLibraryBase).GetMethod
             (
