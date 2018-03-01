@@ -19,7 +19,9 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using AdvancedDLSupport;
 
+[assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 [assembly: InternalsVisibleTo(NativeLibraryBuilder.DynamicAssemblyName)]

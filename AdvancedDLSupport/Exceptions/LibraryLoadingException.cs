@@ -18,6 +18,8 @@
 //
 
 using System;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
@@ -37,10 +39,29 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Initializes a new instance of the <see cref="LibraryLoadingException"/> class.
         /// </summary>
+        [PublicAPI]
+        public LibraryLoadingException()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LibraryLoadingException"/> class.
+        /// </summary>
         /// <param name="message">The message of the exception.</param>
         [PublicAPI]
         public LibraryLoadingException([CanBeNull] string message)
             : base(message)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LibraryLoadingException"/> class.
+        /// </summary>
+        /// <param name="message">The message of the exception.</param>
+        /// <param name="inner">The exception which caused this exception.</param>
+        [PublicAPI]
+        public LibraryLoadingException([CanBeNull] string message, Exception inner)
+            : base(message, inner)
         {
         }
 
@@ -60,13 +81,32 @@ namespace AdvancedDLSupport
         /// Initializes a new instance of the <see cref="LibraryLoadingException"/> class.
         /// </summary>
         /// <param name="message">The message of the exception.</param>
-        /// <param name="inner">The exception which caused this exception.</param>
         /// <param name="libraryName">The name of the library that failed to load.</param>
+        /// <param name="inner">The exception which caused this exception.</param>
         [PublicAPI]
-        public LibraryLoadingException([NotNull] string message, [NotNull] Exception inner, [CanBeNull] string libraryName)
+        public LibraryLoadingException([NotNull] string message, [CanBeNull] string libraryName, [NotNull] Exception inner)
             : base(message, inner)
         {
             LibraryName = libraryName;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LibraryLoadingException"/> class.
+        /// </summary>
+        /// <param name="info">The serialized information.</param>
+        /// <param name="context">The streaming context.</param>
+        protected LibraryLoadingException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            LibraryName = info.GetString(nameof(LibraryName));
+        }
+
+        /// <inheritdoc />
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(nameof(LibraryName), LibraryName);
+            base.GetObjectData(info, context);
         }
     }
 }
