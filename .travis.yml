@@ -5,6 +5,10 @@ os:
   - linux
   - osx
 
+env:
+ - BuildConfiguration=Debug
+ - BuildConfiguration=Release
+
 addons:
   apt:
     packages:
