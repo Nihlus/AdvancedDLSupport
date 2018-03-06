@@ -25,6 +25,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", ".\scripts", "{BB134437-F15D-42F6-B88C-46C7BA8FEFEB}"
 	ProjectSection(SolutionItems) = preProject
 		scripts\appveyor-coverage.cmd = scripts\appveyor-coverage.cmd
+		scripts\travis-build.sh = scripts\travis-build.sh
+		scripts\travis-coverage.sh = scripts\travis-coverage.sh
+		scripts\travis-test.sh = scripts\travis-test.sh
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDLSupport", "AdvancedDLSupport\AdvancedDLSupport.csproj", "{7EDC8F84-DF28-4C3C-AF56-F283B694218A}"

@@ -14,7 +14,7 @@ test:
       - Mono.DllMap.Tests.dll
 
 after_test:
-  - cmd: appveyor-coverage.cmd
+  - cmd: scripts\appveyor-coverage.cmd
   - ps: |
       $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
       Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
