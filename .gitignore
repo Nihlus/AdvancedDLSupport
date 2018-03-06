@@ -398,8 +398,6 @@ __pycache__/
 
 # CMake
 cmake-build-debug/
-cmake-build-debug-x86/
-cmake-build-debug-x64/
 
 # Mongo Explorer plugin:
 .idea/**/mongoSettings.xml
