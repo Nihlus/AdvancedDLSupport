@@ -13,7 +13,7 @@ environment:
     - platform: x64
       output_dir: x64\%CONFIGURATION%
     - platform: Any CPU
-      output_dir: \%CONFIGURATION%
+      output_dir: %CONFIGURATION%
 
 before_build:
   - dotnet restore
