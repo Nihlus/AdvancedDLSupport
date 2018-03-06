@@ -53,11 +53,11 @@
   </PropertyGroup>
   <Target Name="InitCMake" AfterTargets="BeforeBuild" Condition="!Exists('$(CMakeBuildDir)\CMakeCache.txt')">
     <Exec Command="mkdir $(CMakeBuildDir)" />
-    <Exec Command="cmake -G $(CMakeGenerator) -DOUTPUT_PATH=$(OutDir) -DPROJECT_PATH=$(MSBuildProjectDirectory) .." WorkingDirectory="$(CMakeBuildDir)" />
+    <Exec Command="cmake -G $(CMakeGenerator) -DOUTPUT_PATH=$(OutDir) -DPROJECT_PATH=$(MSBuildProjectDirectory) -DTARGET_PLATFORM=$(Platform) .." WorkingDirectory="$(CMakeBuildDir)" />
   </Target>
   <Target Name="InitWinCMake" AfterTargets="InitCMake" Condition="'$(OS)' == 'Windows_NT'">
     <Exec Command="mkdir $(CMakeBuildDir)-x86" />
-    <Exec Command="cmake -G $(CMakeGenerator-x86) -DOUTPUT_PATH=$(OutDir) -DPROJECT_PATH=$(MSBuildProjectDirectory) .." WorkingDirectory="$(CMakeBuildDir)-x86" />
+    <Exec Command="cmake -G $(CMakeGenerator-x86) -DOUTPUT_PATH=$(OutDir) -DPROJECT_PATH=$(MSBuildProjectDirectory) -DTARGET_PLATFORM=$(Platform) .." WorkingDirectory="$(CMakeBuildDir)-x86" />
   </Target>
   <Target Name="CompileUnixTestLibraries" AfterTargets="AfterBuild" Condition="'$(OS)' == 'Unix'">
     <Exec Command="cmake --build ." WorkingDirectory="$(CMakeBuildDir)" />

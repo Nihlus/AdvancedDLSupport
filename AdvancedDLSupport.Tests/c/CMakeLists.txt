@@ -4,7 +4,21 @@ project(c)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 11)
 
-set(CMAKE_GENERATOR_PLATFORM x64)
+set(bitness 32)
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(bitness 64)
+endif()
+
+set(TARGET_PLATFORM "x${bitness}" CACHE STRING "The target platform.")
+
+if (TARGET_PLATFORM STREQUAL "AnyCPU")
+    set(TARGET_PLATFORM "x${bitness}")
+endif()
+
+set(OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib" CACHE STRING "The path where the output binaries should be installed.")
+set(PROJECT_PATH "${CMAKE_BINARY_DIR}/lib" CACHE STRING "The path where the output binaries should be installed.")
+
+set(CMAKE_GENERATOR_PLATFORM ${TARGET_PLATFORM})
 
 if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID MATCHES "Clang")
     set(IS_UNIX_COMPILER true)
@@ -17,9 +31,6 @@ elseif ( MSVC )
 	set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /W4")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 endif()
-
-set(OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib" CACHE STRING "The path where the output binaries should be installed.")
-set(PROJECT_PATH "${CMAKE_BINARY_DIR}/lib" CACHE STRING "The path where the output binaries should be installed.")
 
 include_directories(${CMAKE_SOURCE_DIR})
 
