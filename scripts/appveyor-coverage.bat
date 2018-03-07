@@ -32,7 +32,7 @@ copy /y instrumented-mdl\* Mono.DllMap.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0
 
 :: And run coverage
 dotnet run^
- --project altcover\altcover.1.6.230\tools\netcoreapp2.0\AltCover\altcover.core.fsproj^ --no-build --configuration %CONFIGURATION% --^
+ --project altcover\altcover.1.6.230\tools\netcoreapp2.0\AltCover\altcover.core.fsproj --no-build --configuration %CONFIGURATION% --^
  runner -x "dotnet" -r "AdvancedDLSupport.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0" --^
  test AdvancedDLSupport.Tests --no-build
 
