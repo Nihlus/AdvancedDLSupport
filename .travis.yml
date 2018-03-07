@@ -10,8 +10,8 @@ env:
   - BuildConfiguration=Release TargetPlatform=x86
   - BuildConfiguration=Debug TargetPlatform=x64
   - BuildConfiguration=Release TargetPlatform=x64
-  - BuildConfiguration=Debug TargetPlatform="Any CPU"
-  - BuildConfiguration=Release TargetPlatform="Any CPU"
+  - BuildConfiguration=Debug TargetPlatform=Any CPU
+  - BuildConfiguration=Release TargetPlatform=Any CPU
 
 addons:
   apt:
