@@ -16,11 +16,8 @@ before_build:
 build:
   parallel: true
   project: AdvanceDLSupport.sln
-test:
-  assemblies:
-    only:
-      - AdvancedDLSupport.Tests.dll
-      - Mono.DllMap.Tests.dll
+
+test_script: scripts\appveyor-test.bat
 
 after_test:
   - cmd: scripts\appveyor-coverage.bat
