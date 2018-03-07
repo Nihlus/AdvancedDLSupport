@@ -13,7 +13,7 @@
         <CMakeGenerator>"Visual Studio 15 2017"</CMakeGenerator>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Platform)' == 'x64' Or '$(Platform)' == 'Any CPU'">
+    <PropertyGroup Condition="'$(Platform)' == 'x64' Or '$(Platform)' == 'AnyCPU'">
         <CMakeGenerator>"Visual Studio 15 2017 Win64"</CMakeGenerator>
     </PropertyGroup>
 

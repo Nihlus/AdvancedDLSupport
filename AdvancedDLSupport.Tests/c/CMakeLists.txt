@@ -43,7 +43,7 @@ add_library(NullableTests SHARED src/NullableTests.c ${SHARED_HEADERS})
 
 if (IS_UNIX_COMPILER)
     # Any CPU is assumed to be 64-bit
-    if (BUILD_PLATFORM STREQUAL "x64" OR BUILD_PLATFORM STREQUAL "Any CPU")
+    if (BUILD_PLATFORM STREQUAL "x64" OR BUILD_PLATFORM STREQUAL "AnyCPU")
         set_target_properties(BaseTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
         set_target_properties(DisposeTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
         set_target_properties(EventTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
