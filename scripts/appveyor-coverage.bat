@@ -1,13 +1,13 @@
 @echo off
 
 :: Determine the output folder of the binaries
-set OUTPUT_DIR = "%CONFIGURATION%"
-if "%PLATFORM%" == "x86" (
-	set OUTPUT_DIR = "x86\%CONFIGURATION%"
+set OUTPUT_DIR=%CONFIGURATION%
+if "%PLATFORM%"=="x86" (
+	set OUTPUT_DIR=x86\%CONFIGURATION%
 )
 
-if "%PLATFORM%" == "x64" (
-	set OUTPUT_DIR = "x64\%CONFIGURATION%"
+if "%PLATFORM%"=="x64" (
+	set OUTPUT_DIR=x64\%CONFIGURATION%
 )
 
 :: Install AltCover
