@@ -17,8 +17,7 @@ build:
   parallel: true
   project: AdvanceDLSupport.sln
 
-#test_script: scripts\appveyor-test.bat
-test_script: echo Test
+test_script: scripts\appveyor-test.bat
 
 after_test:
   - cmd: scripts\appveyor-coverage.bat
