@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <!-- Common properties -->
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-debug</CMakeBuildDir>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-release</CMakeBuildDir>
+    </PropertyGroup>
+
+    <!-- Common targets -->
+    <Target Name="InitCMake" AfterTargets="BeforeBuild" Condition="!Exists('$(CMakeBuildDir)\CMakeCache.txt')">
+        <Exec Command="mkdir $(CMakeBuildDir)" />
+        <Exec Command="cmake -G $(CMakeGenerator) -DOUTPUT_PATH=$(OutDir) -DPROJECT_PATH=$(MSBuildProjectDirectory) -DBUILD_PLATFORM=$(Platform) .." WorkingDirectory="$(CMakeBuildDir)" />
+    </Target>
+</Project>
