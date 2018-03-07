@@ -29,6 +29,6 @@
     <ProjectReference Include="..\AdvancedDLSupport\AdvancedDLSupport.csproj" />
   </ItemGroup>
   <!-- Common CMake build steps -->
-  <Import Project="build\CMake-Unix.targets" Condition="'$(OS)' == 'Unix'" />
-  <Import Project="build\CMake-Win.targets" Condition="'$(OS)' == 'Windows_NT'" />
+  <Import Project="targets\CMake-Unix.targets" Condition="'$(OS)' == 'Unix'" />
+  <Import Project="targets\CMake-Win.targets" Condition="'$(OS)' == 'Windows_NT'" />
 </Project>
