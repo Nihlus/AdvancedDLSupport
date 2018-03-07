@@ -4,22 +4,21 @@ project(c)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 11)
 
-set(CMAKE_GENERATOR_PLATFORM x64)
+set(BUILD_PLATFORM "x64" CACHE STRING "The target build platform.")
+set(OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib" CACHE STRING "The path where the output binaries should be installed.")
+set(PROJECT_PATH "${CMAKE_BINARY_DIR}/lib" CACHE STRING "The path where the output binaries should be installed.")
 
 if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID MATCHES "Clang")
     set(IS_UNIX_COMPILER true)
 endif()
 
-if ( IS_UNIX_COMPILER )
+if (IS_UNIX_COMPILER)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-long-long -pedantic")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic")
 elseif ( MSVC )
 	set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /W4")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 endif()
-
-set(OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib" CACHE STRING "The path where the output binaries should be installed.")
-set(PROJECT_PATH "${CMAKE_BINARY_DIR}/lib" CACHE STRING "The path where the output binaries should be installed.")
 
 include_directories(${CMAKE_SOURCE_DIR})
 
@@ -42,11 +41,38 @@ add_library(AttributePassthroughTests SHARED src/AttributePassthroughTests.c ${S
 add_library(MixedModeTests SHARED src/MixedModeTests.c ${SHARED_HEADERS})
 add_library(NullableTests SHARED src/NullableTests.c ${SHARED_HEADERS})
 
-if ( IS_UNIX_COMPILER )
+if (IS_UNIX_COMPILER)
+    # Any CPU is assumed to be 64-bit
+    if (BUILD_PLATFORM STREQUAL "x64" OR BUILD_PLATFORM STREQUAL "Any CPU")
+        set_target_properties(BaseTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+        set_target_properties(DisposeTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+        set_target_properties(EventTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+        set_target_properties(FunctionTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+        set_target_properties(LazyLoadingTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+        set_target_properties(PropertyTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+        set_target_properties(RemappingTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+        set_target_properties(TypeLoweringTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+        set_target_properties(AttributePassthroughTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+        set_target_properties(MixedModeTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+        set_target_properties(NullableTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+    elseif (BUILD_PLATFORM STREQUAL "x86")
+        set_target_properties(BaseTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+        set_target_properties(DisposeTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+        set_target_properties(EventTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+        set_target_properties(FunctionTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+        set_target_properties(LazyLoadingTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+        set_target_properties(PropertyTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+        set_target_properties(RemappingTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+        set_target_properties(TypeLoweringTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+        set_target_properties(AttributePassthroughTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+        set_target_properties(MixedModeTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+        set_target_properties(NullableTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+    endif()
+
     set_target_properties(BaseTests-x64 PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
     set_target_properties(BaseTests-x32 PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-elseif ( MSVC )
-    # TODO: Do something to force a 32-bit build on BaseTests-x32
+elseif (MSVC)
+    # Handled in MSBuild
 endif()
 
 get_filename_component(INSTALL_PATH_ABSOLUTE "${PROJECT_PATH}/${OUTPUT_PATH}" ABSOLUTE)
@@ -71,7 +97,7 @@ install(TARGETS
 install(TARGETS
             BaseTests-x64
         COMPONENT
-            standard
+            x64-only
         DESTINATION
             ${INSTALL_PATH_ABSOLUTE}/lib/x64)
 

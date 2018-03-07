@@ -3,6 +3,8 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Configurations>Debug;Release</Configurations>
+    <Platforms>AnyCPU;x86;x64</Platforms>
   </PropertyGroup>
   <PropertyGroup>
     <IsPackable>false</IsPackable>
@@ -26,36 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AdvancedDLSupport\AdvancedDLSupport.csproj" />
   </ItemGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-debug</CMakeBuildDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-release</CMakeBuildDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(OS)' == 'Unix'">
-    <CMakeGenerator>"Unix Makefiles"</CMakeGenerator>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
-    <CMakeGenerator-x86>"Visual Studio 15 2017"</CMakeGenerator-x86>
-    <CMakeGenerator>"Visual Studio 15 2017 Win64"</CMakeGenerator>
-  </PropertyGroup>
-  <Target Name="InitCMake" AfterTargets="BeforeBuild" Condition="!Exists('$(CMakeBuildDir)\CMakeCache.txt')">
-    <Exec Command="mkdir $(CMakeBuildDir)" />
-    <Exec Command="cmake -G $(CMakeGenerator) -DOUTPUT_PATH=$(OutDir) -DPROJECT_PATH=$(MSBuildProjectDirectory) .." WorkingDirectory="$(CMakeBuildDir)" />
-  </Target>
-  <Target Name="InitWinCMake" AfterTargets="InitCMake" Condition="'$(OS)' == 'Windows_NT'">
-    <Exec Command="mkdir $(CMakeBuildDir)-x86" />
-    <Exec Command="cmake -G $(CMakeGenerator-x86) -DOUTPUT_PATH=$(OutDir) -DPROJECT_PATH=$(MSBuildProjectDirectory) .." WorkingDirectory="$(CMakeBuildDir)-x86" />
-  </Target>
-  <Target Name="CompileUnixTestLibraries" AfterTargets="AfterBuild" Condition="'$(OS)' == 'Unix'">
-    <Exec Command="cmake --build ." WorkingDirectory="$(CMakeBuildDir)"  />
-    <Exec Command="cmake -DCOMPONENT=standard --config Debug -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDir)" />
-    <Exec Command="cmake -DCOMPONENT=x32-only --config Debug -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDir)" />
-  </Target>
-  <Target Name="CompileWinTestLibraries" AfterTargets="AfterBuild" Condition="'$(OS)' == 'Windows_NT'">
-    <Exec Command="cmake --build . --config Release" WorkingDirectory="$(CMakeBuildDir)"  />
-    <Exec Command="cmake --build . --config Release" WorkingDirectory="$(CMakeBuildDir)-x86"  />
-    <Exec Command="cmake -DCOMPONENT=standard -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDir)" />
-    <Exec Command="cmake -DCOMPONENT=x32-only -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDir)-x86" />
-  </Target>
+  <!-- Common CMake build steps -->
+  <Import Project="build\CMake-Unix.targets" Condition="'$(OS)' == 'Unix'" />
+  <Import Project="build\CMake-Win.targets" Condition="'$(OS)' == 'Windows_NT'" />
 </Project>
