@@ -6,13 +6,12 @@ os:
   - osx
 
 env:
-  - BuildConfiguration=Debug
-  - BuildConfiguration=Release
-
-env:
-  - TargetPlatform=x86
-  - TargetPlatform=x64
-  - TargetPlatform=Any CPU
+  - BuildConfiguration=Debug TargetPlatform=x86
+  - BuildConfiguration=Release TargetPlatform=x86
+  - BuildConfiguration=Debug TargetPlatform=x64
+  - BuildConfiguration=Release TargetPlatform=x64
+  - BuildConfiguration=Debug TargetPlatform="Any CPU"
+  - BuildConfiguration=Release TargetPlatform="Any CPU"
 
 addons:
   apt:
