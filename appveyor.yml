@@ -6,6 +6,11 @@ configuration:
   - Debug
   - Release
 
+platform:
+  - x86
+  - x64
+  - Any CPU
+
 before_build:
   - dotnet restore
 build:
