@@ -8,6 +8,9 @@ os:
 env:
  - BuildConfiguration=Debug
  - BuildConfiguration=Release
+ - TargetPlatform=x86
+ - TargetPlatform=x64
+ - TargetPlatform=AnyCPU
 
 addons:
   apt:
