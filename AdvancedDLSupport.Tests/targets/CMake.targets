@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project>
     <!-- Common properties -->
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
         <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-debug</CMakeBuildDir>

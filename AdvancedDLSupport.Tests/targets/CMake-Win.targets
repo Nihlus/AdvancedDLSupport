@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project>
     <Import Project="CMake.targets"/>
 
     <!-- Windows-specific properties -->
@@ -8,11 +8,11 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Platform)' == 'x86'">
-        <CMakeGenerator>Visual Studio 15 2017</CMakeGenerator>
+        <CMakeGenerator>"Visual Studio 15 2017"</CMakeGenerator>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Platform)' == 'x64' Or '$(Platform)' == 'Any CPU'">
-        <CMakeGenerator>Visual Studio 15 2017 Win64</CMakeGenerator>
+        <CMakeGenerator>"Visual Studio 15 2017 Win64"</CMakeGenerator>
     </PropertyGroup>
 
 
