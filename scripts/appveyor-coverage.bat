@@ -10,7 +10,7 @@ if "%PLATFORM%"=="x64" (
 	set OUTPUT_DIR=x64\%CONFIGURATION%
 )
 
-set PLATFORM=""
+set PLATFORM=
 
 :: Install AltCover
 nuget install altcover -OutputDirectory altcover -Version 1.6.230
