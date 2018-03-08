@@ -10,7 +10,6 @@ if "%PLATFORM%"=="x64" (
 	set OUTPUT_DIR=x64\%CONFIGURATION%
 )
 
-set CACHED_PLATFORM=%PLATFORM%
 set PLATFORM=
 
 :: Install AltCover
@@ -30,8 +29,6 @@ dotnet run^
 :: Copy them to their build directories
 copy /y instrumented-adl\* AdvancedDLSupport.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0
 copy /y instrumented-mdl\* Mono.DllMap.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0
-
-set PLATFORM=%CACHED_PLATFORM%
 
 :: And run coverage
 dotnet run^
