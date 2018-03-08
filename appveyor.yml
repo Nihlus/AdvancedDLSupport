@@ -20,7 +20,6 @@ build:
 test_script: scripts\appveyor-test.bat
 
 after_test:
-  - ps: $env:platform = ""
   - cmd: scripts\appveyor-coverage.bat
   - ps: |
       $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
