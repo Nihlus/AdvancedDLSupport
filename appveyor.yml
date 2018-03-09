@@ -1,8 +1,8 @@
 image: Visual Studio 2017
 init:
   - git config --global url."https://github.com/".insteadOf "git@github.com:"
-  - ps: Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -OutFile dotnet-install.ps1
-  - ps: .\dotnet-install.ps1 -Architecture x86 -NoPath
+  - ps: Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -OutFile C:\dotnet-install.ps1
+  - ps: C:\dotnet-install.ps1 -Channel Current -InstallDir "C:\Program Files (x86)\dotnet" -Architecture x86 -NoPath
 
 configuration:
   - Debug
