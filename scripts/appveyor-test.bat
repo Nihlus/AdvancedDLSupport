@@ -7,7 +7,7 @@ if "%PLATFORM%"=="x86" (
 )
 
 if "%PLATFORM"=="Any CPU" (
-	set CACHED_PLATFORM=%PLATFORM%
+	set "CACHED_PLATFORM=%PLATFORM%"
 	set PLATFORM=
 )
 
@@ -15,5 +15,5 @@ if "%PLATFORM"=="Any CPU" (
 "%DOTNET_EXE%" test --configuration %CONFIGURATION% --no-build Mono.DllMap.Tests
 
 if "%PLATFORM"=="Any CPU" (
-	set PLATFORM=%CACHED_PLATFORM%
+	set "PLATFORM=%CACHED_PLATFORM%"
 )
