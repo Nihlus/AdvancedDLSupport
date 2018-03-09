@@ -1,5 +1,4 @@
-:: @echo off
-echo %PLATFORM%
+@echo off
 
 if "%PLATFORM"=="Any cpu" (
 	set CACHED_PLATFORM=%PLATFORM%

@@ -10,7 +10,10 @@ if "%PLATFORM%"=="x64" (
 	set OUTPUT_DIR=x64\%CONFIGURATION%
 )
 
-set PLATFORM=
+if "%PLATFORM"=="Any CPU" (
+	set CACHED_PLATFORM=%PLATFORM%
+	set PLATFORM=
+)
 
 :: Install AltCover
 nuget install altcover -OutputDirectory altcover -Version 1.6.230
@@ -40,3 +43,7 @@ dotnet run^
  --project altcover\altcover.1.6.230\tools\netcoreapp2.0\AltCover\altcover.core.fsproj --no-build --configuration %CONFIGURATION% --^
  runner -x "dotnet" -r "Mono.DllMap.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0" --^
  test Mono.DllMap.Tests --no-build
+
+if "%PLATFORM"=="Any CPU" (
+	set PLATFORM=%CACHED_PLATFORM%
+)
