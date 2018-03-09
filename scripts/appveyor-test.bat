@@ -1,9 +1,9 @@
 @echo off
 
 :: Determine the dotnet runtime to use
-set DOTNET_EXE="C:\Program Files\dotnet\dotnet.exe"
+set "DOTNET_EXE=C:\Program Files\dotnet\dotnet.exe"
 if "%PLATFORM%"=="x86" (
-	set DOTNET_EXE="C:\Program Files (x86)\dotnet\dotnet.exe"
+	set "DOTNET_EXE=C:\Program Files (x86)\dotnet\dotnet.exe"
 )
 
 if "%PLATFORM"=="Any CPU" (

@@ -1,19 +1,19 @@
 @echo off
 
 :: Determine the output folder of the binaries and the dotnet runtime to use
-set DOTNET_EXE="C:\Program Files\dotnet\dotnet.exe"
+set "DOTNET_EXE=C:\Program Files\dotnet\dotnet.exe"
 set OUTPUT_DIR=%CONFIGURATION%
 if "%PLATFORM%"=="x86" (
-	set DOTNET_EXE="C:\Program Files (x86)\dotnet\dotnet.exe"
-	set OUTPUT_DIR=x86\%CONFIGURATION%
+	set "DOTNET_EXE=C:\Program Files (x86)\dotnet\dotnet.exe"
+	set "OUTPUT_DIR=x86\%CONFIGURATION%"
 )
 
 if "%PLATFORM%"=="x64" (
-	set OUTPUT_DIR=x64\%CONFIGURATION%
+	set "OUTPUT_DIR=x64\%CONFIGURATION%"
 )
 
 :: Clear platform variable to allow instrumentation to succeed
-set CACHED_PLATFORM=%PLATFORM%
+set "CACHED_PLATFORM=%PLATFORM%"
 set PLATFORM=
 
 :: Install AltCover
@@ -46,4 +46,4 @@ copy /y instrumented-mdl\* Mono.DllMap.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0
  test Mono.DllMap.Tests --no-build
 
 :: Restore platform
-set PLATFORM=%CACHED_PLATFORM%
+set "PLATFORM=%CACHED_PLATFORM%"
