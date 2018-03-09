@@ -1,6 +1,7 @@
-@echo off
+:: @echo off
+echo %PLATFORM%
 
-if "%PLATFORM"=="Any CPU" (
+if "%PLATFORM"=="Any cpu" (
 	set CACHED_PLATFORM=%PLATFORM%
 	set PLATFORM=
 )
@@ -8,6 +9,6 @@ if "%PLATFORM"=="Any CPU" (
 dotnet test --configuration %CONFIGURATION% --no-build AdvancedDLSupport.Tests
 dotnet test --configuration %CONFIGURATION% --no-build Mono.DllMap.Tests
 
-if "%PLATFORM"=="Any CPU" (
+if "%PLATFORM"=="Any cpu" (
 	set PLATFORM=%CACHED_PLATFORM%
 )
