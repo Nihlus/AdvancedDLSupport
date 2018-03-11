@@ -24,6 +24,6 @@ if "%PLATFORM%"=="x86" (
 :: Restore the cached variable
 set "PLATFORM=%INTERNAL_CACHED_PLATFORM%"
 
-if "%PLATFORM"=="Any CPU" (
+if "%CACHED_PLATFORM"=="Any CPU" (
 	set "PLATFORM=%CACHED_PLATFORM%"
 )

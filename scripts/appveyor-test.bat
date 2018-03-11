@@ -14,6 +14,6 @@ if "%PLATFORM"=="Any CPU" (
 "%DOTNET_EXE%" test --configuration %CONFIGURATION% --no-build AdvancedDLSupport.Tests
 "%DOTNET_EXE%" test --configuration %CONFIGURATION% --no-build Mono.DllMap.Tests
 
-if "%PLATFORM"=="Any CPU" (
+if "%CACHED_PLATFORM"=="Any CPU" (
 	set "PLATFORM=%CACHED_PLATFORM%"
 )
