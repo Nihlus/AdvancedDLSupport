@@ -16,7 +16,7 @@ if "%PLATFORM%"=="x64" (
 :: Clear the platform if it's Any CPU
 if "%PLATFORM"=="Any CPU" (
 	set "CACHED_PLATFORM=%PLATFORM%"
-	set PLATFORM=
+	set PLATFORM=AnyCPU
 )
 
 :: Install AltCover
