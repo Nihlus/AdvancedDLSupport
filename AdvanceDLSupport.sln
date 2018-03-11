@@ -25,7 +25,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", ".\scripts", "{BB134437-F15D-42F6-B88C-46C7BA8FEFEB}"
 	ProjectSection(SolutionItems) = preProject
 		scripts\appveyor-coverage.bat = scripts\appveyor-coverage.bat
-		scripts\dotnet-wrapper.bat = scripts\dotnet-wrapper.bat
 		scripts\travis-build.sh = scripts\travis-build.sh
 		scripts\travis-coverage.sh = scripts\travis-coverage.sh
 		scripts\travis-test.sh = scripts\travis-test.sh
