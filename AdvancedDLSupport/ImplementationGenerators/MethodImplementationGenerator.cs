@@ -217,7 +217,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             (
                 attributeConstructor,
                 new object[] { callingConvention },
-                new [] { typeof(UnmanagedFunctionPointerAttribute).GetField(nameof(UnmanagedFunctionPointerAttribute.SetLastError)) },
+                new[] { typeof(UnmanagedFunctionPointerAttribute).GetField(nameof(UnmanagedFunctionPointerAttribute.SetLastError)) },
                 new object[] { true }
             );
 
