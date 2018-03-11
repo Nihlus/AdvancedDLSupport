@@ -40,10 +40,10 @@ set "PLATFORM=%CACHED_PLATFORM%"
 :: And run coverage
 "%DOTNET_EXE%" run^
  --project altcover\altcover.1.6.230\tools\netcoreapp2.0\AltCover\altcover.core.fsproj --no-build --configuration %CONFIGURATION% --^
- runner -x "%DOTNET_EXE%" -r "AdvancedDLSupport.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0" --^
+ runner -x "./scripts/dotnet-wrapper.bat" -r "AdvancedDLSupport.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0" --^
  test AdvancedDLSupport.Tests --no-build
 
 "%DOTNET_EXE%" run^
  --project altcover\altcover.1.6.230\tools\netcoreapp2.0\AltCover\altcover.core.fsproj --no-build --configuration %CONFIGURATION% --^
- runner -x "%DOTNET_EXE%" -r "Mono.DllMap.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0" --^
+ runner -x "./scripts/dotnet-wrapper.bat" -r "Mono.DllMap.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0" --^
  test Mono.DllMap.Tests --no-build
