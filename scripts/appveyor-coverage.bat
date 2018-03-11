@@ -40,12 +40,12 @@ copy /y instrumented-mdl\* Mono.DllMap.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0
 :: And run coverage
 "%DOTNET_EXE%" run^
  --project altcover\altcover.2.0.324\tools\netcoreapp2.0\AltCover\altcover.core.fsproj --no-build --configuration %CONFIGURATION% --^
- runner -x "dotnet" -r "AdvancedDLSupport.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0" --opencover --^
+ runner -x "dotnet" -r "AdvancedDLSupport.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0" --^
  test AdvancedDLSupport.Tests --no-build
 
 "%DOTNET_EXE%" run^
  --project altcover\altcover.2.0.324\tools\netcoreapp2.0\AltCover\altcover.core.fsproj --no-build --configuration %CONFIGURATION% --^
- runner -x "dotnet" -r "Mono.DllMap.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0" --opencover --^
+ runner -x "dotnet" -r "Mono.DllMap.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0" --^
  test Mono.DllMap.Tests --no-build
 
 if "%CACHED_PLATFORM"=="Any CPU" (
