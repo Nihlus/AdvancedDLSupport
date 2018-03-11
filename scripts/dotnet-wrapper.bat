@@ -20,7 +20,6 @@ if "%PLATFORM%"=="x86" (
 )
 
 "%DOTNET_EXE%" %ALL_BUT_FIRST%
-"%DOTNET_EXE%" %ALL_BUT_FIRST%
 
 :: Restore the cached variable
 set "PLATFORM=%INTERNAL_CACHED_PLATFORM%"
