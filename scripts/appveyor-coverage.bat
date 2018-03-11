@@ -12,21 +12,17 @@ if "%PLATFORM%"=="x64" (
 	set "OUTPUT_DIR=x64\%CONFIGURATION%"
 )
 
-:: Clear platform variable to allow instrumentation to succeed
-set "CACHED_PLATFORM=%PLATFORM%"
-set PLATFORM=
-
 :: Install AltCover
-nuget install altcover -OutputDirectory altcover -Version 1.6.230
+nuget install altcover -OutputDirectory altcover -Version 2.0.324
 
 :: Instrument the test assemblies
 "%DOTNET_EXE%" run^
- --project altcover\altcover.1.6.230\tools\netcoreapp2.0\AltCover\altcover.core.fsproj --configuration %CONFIGURATION% --^
+ --project altcover\altcover.2.0.324\tools\netcoreapp2.0\AltCover\altcover.core.fsproj --configuration %CONFIGURATION% --^
  -i=AdvancedDLSupport.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0 -o=instrumented-adl -x=coverage-adl.xml^
  --assemblyExcludeFilter=.+\.Tests --assemblyExcludeFilter=AltCover.+ --assemblyExcludeFilter=Mono\.DllMap.+
 
 "%DOTNET_EXE%" run^
- --project altcover\altcover.1.6.230\tools\netcoreapp2.0\AltCover\altcover.core.fsproj --configuration %CONFIGURATION% --^
+ --project altcover\altcover.2.0.324\tools\netcoreapp2.0\AltCover\altcover.core.fsproj --configuration %CONFIGURATION% --^
  -i=Mono.DllMap.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0 -o=instrumented-mdl -x=coverage-mdl.xml^
  --assemblyExcludeFilter=.+\.Tests --assemblyExcludeFilter=AltCover.+
 
@@ -36,14 +32,11 @@ copy /y instrumented-mdl\* Mono.DllMap.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0
 
 :: And run coverage
 "%DOTNET_EXE%" run^
- --project altcover\altcover.1.6.230\tools\netcoreapp2.0\AltCover\altcover.core.fsproj --no-build --configuration %CONFIGURATION% --^
+ --project altcover\altcover.2.0.324\tools\netcoreapp2.0\AltCover\altcover.core.fsproj --no-build --configuration %CONFIGURATION% --^
  runner -x "./scripts/dotnet-wrapper.bat" -r "AdvancedDLSupport.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0" --^
  %CACHED_PLATFORM% test AdvancedDLSupport.Tests --no-build
 
 "%DOTNET_EXE%" run^
- --project altcover\altcover.1.6.230\tools\netcoreapp2.0\AltCover\altcover.core.fsproj --no-build --configuration %CONFIGURATION% --^
+ --project altcover\altcover.2.0.324\tools\netcoreapp2.0\AltCover\altcover.core.fsproj --no-build --configuration %CONFIGURATION% --^
  runner -x "./scripts/dotnet-wrapper.bat" -r "Mono.DllMap.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0" --^
  %CACHED_PLATFORM% test Mono.DllMap.Tests --no-build
-
-:: Restore platform
-set "PLATFORM=%CACHED_PLATFORM%"
