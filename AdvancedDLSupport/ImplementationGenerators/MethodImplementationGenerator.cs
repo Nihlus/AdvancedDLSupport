@@ -216,7 +216,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var functionPointerAttributeBuilder = new CustomAttributeBuilder
             (
                 attributeConstructor,
-                new object[] { callingConvention }
+                new object[] { callingConvention },
+                new [] { typeof(UnmanagedFunctionPointerAttribute).GetField(nameof(UnmanagedFunctionPointerAttribute.SetLastError)) },
+                new object[] { true }
             );
 
             delegateBuilder.SetCustomAttribute(functionPointerAttributeBuilder);
