@@ -34,16 +34,16 @@ nuget install altcover -OutputDirectory altcover -Version 1.6.230
 copy /y instrumented-adl\* AdvancedDLSupport.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0
 copy /y instrumented-mdl\* Mono.DllMap.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0
 
-:: Restore platform
-set "PLATFORM=%CACHED_PLATFORM%"
-
 :: And run coverage
 "%DOTNET_EXE%" run^
  --project altcover\altcover.1.6.230\tools\netcoreapp2.0\AltCover\altcover.core.fsproj --no-build --configuration %CONFIGURATION% --^
  runner -x "./scripts/dotnet-wrapper.bat" -r "AdvancedDLSupport.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0" --^
- test AdvancedDLSupport.Tests --no-build
+ %CACHED_PLATFORM% test AdvancedDLSupport.Tests --no-build
 
 "%DOTNET_EXE%" run^
  --project altcover\altcover.1.6.230\tools\netcoreapp2.0\AltCover\altcover.core.fsproj --no-build --configuration %CONFIGURATION% --^
  runner -x "./scripts/dotnet-wrapper.bat" -r "Mono.DllMap.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0" --^
- test Mono.DllMap.Tests --no-build
+ %CACHED_PLATFORM% test Mono.DllMap.Tests --no-build
+
+:: Restore platform
+set "PLATFORM=%CACHED_PLATFORM%"
