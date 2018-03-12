@@ -1,4 +1,4 @@
 #!/bin/bash
 
-msbuild /p:Configuration=${BuildConfiguration} /p:Platform=${TargetPlatform} AdvanceDLSupport.sln
+msbuild /p:Configuration=${Configuration} /p:Platform=${Platform} AdvanceDLSupport.sln
 scripts/travis-coverage.sh
