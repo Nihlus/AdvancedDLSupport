@@ -29,8 +29,9 @@ before_install:
 install:
   - dotnet restore
 
-script: ./scripts/travis-build.sh
+script:
+  - ./scripts/travis-build.sh
+  - ./scripts/travis-coverage.sh
 
 after_success:
-  - ./scripts/travis-coverage.sh
   - bash <(curl -s https://codecov.io/bash)
