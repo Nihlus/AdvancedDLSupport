@@ -9,9 +9,9 @@ if [ ${Platform} == "x64" ]; then
 	OutputDir="x64/${Configuration}"
 fi
 
+CachedPlatform=${Platform}
 if [ ${Platform} == "Any CPU" ]; then
-	CachedPlatform=${Platform}
-	Platform=
+	export Platform=
 fi
 
 # Install AltCover
@@ -40,5 +40,5 @@ dotnet run --project altcover/altcover.2.0.324/tools/netcoreapp2.0/AltCover/altc
  test Mono.DllMap.Tests --no-build
 
 if [ ${CachedPlatform} == "Any CPU" ]; then
-	Platform=${CachedPlatform}
+	export Platform="${CachedPlatform}"
 fi
