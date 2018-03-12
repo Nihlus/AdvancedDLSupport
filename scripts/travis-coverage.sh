@@ -1,17 +1,17 @@
 #!/bin/bash
 
-OutputDir=${Configuration}
-if [ ${Platform} == "x86" ]; then
+OutputDir="${Configuration}"
+if [ "${Platform}" == "x86" ]; then
 	OutputDir="x86/${Configuration}"
 fi
 
-if [ ${Platform} == "x64" ]; then
+if [ "${Platform}" == "x64" ]; then
 	OutputDir="x64/${Configuration}"
 fi
 
-CachedPlatform=${Platform}
-if [ ${Platform} == "Any CPU" ]; then
-	export Platform=AnyCPU
+CachedPlatform="${Platform}"
+if [ "${Platform}" == "Any CPU" ]; then
+	export Platform=
 fi
 
 # Install AltCover
@@ -39,6 +39,4 @@ dotnet run --project altcover/altcover.2.0.324/tools/netcoreapp2.0/AltCover/altc
  runner -x "dotnet" -r "Mono.DllMap.Tests/bin/${OutputDir}/netcoreapp2.0" --\
  test Mono.DllMap.Tests --no-build
 
-if [ ${CachedPlatform} == "Any CPU" ]; then
-	export Platform="${CachedPlatform}"
-fi
+export Platform="${CachedPlatform}"
