@@ -11,7 +11,7 @@ fi
 
 CachedPlatform=${Platform}
 if [ ${Platform} == "Any CPU" ]; then
-	export Platform=
+	export Platform=AnyCPU
 fi
 
 # Install AltCover

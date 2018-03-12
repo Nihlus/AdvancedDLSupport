@@ -32,4 +32,5 @@ install:
 script: ./scripts/travis-build.sh
 
 after_success:
+  - ./scripts/travis-coverage.sh
   - bash <(curl -s https://codecov.io/bash)
