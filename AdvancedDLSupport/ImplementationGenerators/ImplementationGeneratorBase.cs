@@ -21,6 +21,8 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.InteropServices;
+using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
@@ -106,7 +108,25 @@ namespace AdvancedDLSupport.ImplementationGenerators
                     member.GetCustomAttribute<NativeSymbolAttribute>() ?? new NativeSymbolAttribute(member.Name);
             }
 
-            var symbolName = metadataAttribute.Entrypoint ?? member.Name;
+            var symbolName = metadataAttribute.Entrypoint;
+            if (metadataAttribute.Entrypoint.IsNullOrEmpty())
+            {
+                symbolName = member.Name;
+
+                // TODO: select mangler a better way
+                if (member is IntrospectiveMethodInfo introspectiveMethod)
+                {
+                    var needsStdCallMangling =
+                        metadataAttribute.CallingConvention == CallingConvention.StdCall &&
+                        RuntimeInformation.OSArchitecture == Architecture.X86 &&
+                        RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
+                    if (needsStdCallMangling)
+                    {
+                        symbolName = new StdCallEntrypointMangler().Mangle(introspectiveMethod);
+                    }
+                }
+            }
 
             var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
             var memberIdentifier = $"{member.Name}_{uniqueIdentifier}";
