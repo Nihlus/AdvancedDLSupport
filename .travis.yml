@@ -27,6 +27,8 @@ before_install:
   - echo $Platform
 
 install:
+  - wget https://dot.net/v1/dotnet-install.sh ~/dotnet-install.sh
+  - ~/dotnet-install.sh --channel Current --install-dir ~\dotnet-32 --architecture x86 --no-path
   - dotnet restore
 
 script:
