@@ -1,7 +1,7 @@
 image: Visual Studio 2017
 init:
   - git config --global url."https://github.com/".insteadOf "git@github.com:"
-  - ps: .\scripts\appveyor-install-dotnet-32.ps1
+  - ps: '& ".\scripts\appveyor-install-dotnet-32.ps1"'
 
 configuration:
   - Debug
