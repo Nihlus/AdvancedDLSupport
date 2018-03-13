@@ -103,11 +103,11 @@ namespace AdvancedDLSupport.Loaders
             var errorPtr = _getErrorFunc();
             if (errorPtr == IntPtr.Zero)
             {
-                throw new SymbolLoadingException("Symbol could not be loaded, and error information from dl could not be found.", symbolName);
+                throw new SymbolLoadingException($"Symbol could not be loaded, and error information from dl could not be found. Symbol name: {symbolName}", symbolName);
             }
 
             var msg = Marshal.PtrToStringAnsi(errorPtr);
-            throw new SymbolLoadingException(string.Format("Symbol could not be loaded: {0}", msg), symbolName);
+            throw new SymbolLoadingException($"Symbol could not be loaded: {msg}. Symbol name: {symbolName}", symbolName);
         }
 
         /// <inheritdoc />

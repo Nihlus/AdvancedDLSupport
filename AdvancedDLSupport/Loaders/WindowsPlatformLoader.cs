@@ -51,7 +51,7 @@ namespace AdvancedDLSupport.Loaders
             var symbolHandle = kernel32.GetProcAddress(library, symbolName);
             if (symbolHandle == IntPtr.Zero)
             {
-                throw new SymbolLoadingException("Symbol loading failed.", symbolName, new Win32Exception(Marshal.GetLastWin32Error()));
+                throw new SymbolLoadingException($"Symbol loading failed. Symbol name: {symbolName}", symbolName, new Win32Exception(Marshal.GetLastWin32Error()));
             }
 
             return symbolHandle;

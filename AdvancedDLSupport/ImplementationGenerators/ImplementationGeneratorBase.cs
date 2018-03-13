@@ -118,7 +118,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 {
                     var needsStdCallMangling =
                         metadataAttribute.CallingConvention == CallingConvention.StdCall &&
-                        RuntimeInformation.OSArchitecture == Architecture.X86 &&
+                        RuntimeInformation.ProcessArchitecture == Architecture.X86 &&
                         RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
                     if (needsStdCallMangling)

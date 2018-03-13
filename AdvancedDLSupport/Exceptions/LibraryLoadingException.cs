@@ -108,11 +108,5 @@ namespace AdvancedDLSupport
             info.AddValue(nameof(LibraryName), LibraryName);
             base.GetObjectData(info, context);
         }
-
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            return $"{base.ToString()} (Library name: {LibraryName})";
-        }
     }
 }
