@@ -17,6 +17,7 @@ __declspec(dllexport) int32_t Subtract(int value, int other)
     return value - other;
 }
 
+#pragma comment(linker, "/export:STDCALLSubtract=_STDCALLSubtract@8")
 __declspec(dllexport) int32_t __stdcall STDCALLSubtract(int value, int other)
 {
     return value - other;
