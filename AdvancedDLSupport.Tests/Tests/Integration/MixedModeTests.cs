@@ -5,7 +5,7 @@ using Xunit;
 
 namespace AdvancedDLSupport.Tests.Integration
 {
-	public class MixedModeTests
+	public class MixedModeTests : IDisposable
 	{
 		private const string LibraryName = "MixedModeTests";
 
@@ -14,7 +14,7 @@ namespace AdvancedDLSupport.Tests.Integration
 
 		public MixedModeTests()
 		{
-			_builder = new NativeLibraryBuilder();
+			_builder = new NativeLibraryBuilder(ImplementationOptions.GenerateDisposalChecks);
 
 			_mixedModeClass = _builder.ActivateClass<MixedModeClass, IMixedModeLibrary>(LibraryName);
 		}
@@ -72,6 +72,11 @@ namespace AdvancedDLSupport.Tests.Integration
 
 			_mixedModeClass.OtherNativeProperty = 255;
 			Assert.True(_mixedModeClass.RanManagedSetter);
+		}
+
+		public void Dispose()
+		{
+			_mixedModeClass?.Dispose();
 		}
 	}
 }
