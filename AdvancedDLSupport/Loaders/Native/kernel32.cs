@@ -33,7 +33,7 @@ namespace AdvancedDLSupport.Loaders
         [DllImport("kernel32", SetLastError = true)]
         public static extern HMODULE LoadLibrary([NotNull] string fileName);
 
-        [DllImport("kernel32", SetLastError = true), Pure]
+        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Ansi), Pure]
         public static extern FARPROC GetProcAddress(HMODULE module, [NotNull] string procName);
 
         [DllImport("kernel32", SetLastError = true)]
