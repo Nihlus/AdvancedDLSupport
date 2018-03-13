@@ -108,5 +108,11 @@ namespace AdvancedDLSupport
             info.AddValue(nameof(SymbolName), SymbolName);
             base.GetObjectData(info, context);
         }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{base.ToString()} (Symbol name: {SymbolName})";
+        }
     }
 }
