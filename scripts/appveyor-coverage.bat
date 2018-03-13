@@ -13,6 +13,11 @@ if "%PLATFORM%"=="x64" (
 	set "OUTPUT_DIR=x64\%CONFIGURATION%"
 )
 
+set ADDITIONAL_TEST_ARGS=
+if "%PLATFORM%"=="Any CPU" (
+	set "ADDITIONAL_TEST_ARGS=/property:Platform=AnyCPU"
+)
+
 :: Install AltCover
 nuget install altcover -OutputDirectory altcover -Version 2.0.324
 
@@ -35,9 +40,9 @@ copy /y instrumented-mdl\* Mono.DllMap.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0
 "%DOTNET_EXE%" run^
  --project altcover\altcover.2.0.324\tools\netcoreapp2.0\AltCover\altcover.core.fsproj --no-build --configuration %CONFIGURATION% --^
  runner -x "dotnet" -r "AdvancedDLSupport.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0" --^
- test AdvancedDLSupport.Tests --no-build
+ test AdvancedDLSupport.Tests --no-build %ADDITIONAL_TEST_ARGS%
 
 "%DOTNET_EXE%" run^
  --project altcover\altcover.2.0.324\tools\netcoreapp2.0\AltCover\altcover.core.fsproj --no-build --configuration %CONFIGURATION% --^
  runner -x "dotnet" -r "Mono.DllMap.Tests\bin\%OUTPUT_DIR%\netcoreapp2.0" --^
- test Mono.DllMap.Tests --no-build
+ test Mono.DllMap.Tests --no-build %ADDITIONAL_TEST_ARGS%
