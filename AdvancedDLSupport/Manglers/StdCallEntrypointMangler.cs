@@ -17,7 +17,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using AdvancedDLSupport.Reflection;
 
@@ -29,16 +31,40 @@ namespace AdvancedDLSupport
     public class StdCallEntrypointMangler : IEntrypointMangler
     {
         /// <inheritdoc />
-        public string Mangle(IntrospectiveMethodInfo method)
+        public string Mangle<T>(T member) where T : IIntrospectiveMember
         {
-            var argumentListSize = method.ParameterTypes.Sum(Marshal.SizeOf);
-            return $"_{method.Name}@{argumentListSize}";
+            if (member is IntrospectiveMethodInfo method)
+            {
+                var argumentListSize = method.ParameterTypes.Sum(Marshal.SizeOf);
+                return $"_{method.Name}@{argumentListSize}";
+            }
+
+            throw new NotSupportedException("The given member cannot be mangled by this mangler.");
         }
 
         /// <inheritdoc />
         public string Demangle(string mangledEntrypoint)
         {
             return new string(mangledEntrypoint.Skip(1).TakeWhile(c => c != '@').ToArray());
+        }
+
+        /// <inheritdoc />
+        public bool IsManglerApplicable(MemberInfo member)
+        {
+            if (!(member is IntrospectiveMethodInfo method))
+            {
+                return false;
+            }
+
+            var metadataAttribute = method.GetCustomAttribute<NativeSymbolAttribute>()
+                                    ?? new NativeSymbolAttribute(method.Name);
+
+            var isApplicable =
+                metadataAttribute.CallingConvention == CallingConvention.StdCall &&
+                RuntimeInformation.ProcessArchitecture == Architecture.X86 &&
+                RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
+            return isApplicable;
         }
     }
 }

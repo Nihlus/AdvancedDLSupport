@@ -62,6 +62,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
         protected ILGenerator TargetTypeConstructorIL { get; }
 
         /// <summary>
+        /// Gets the repository object containing name manglers.
+        /// </summary>
+        protected ManglerRepository ManglerRepository { get; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ImplementationGeneratorBase{T}"/> class.
         /// </summary>
         /// <param name="targetModule">The module where the implementation should be generated.</param>
@@ -81,6 +86,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
             TargetType = targetType;
             TargetTypeConstructorIL = targetTypeConstructorIL;
             Options = options;
+
+            ManglerRepository = ManglerRepository.Default;
         }
 
         /// <inheritdoc />
@@ -92,7 +99,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             GenerateImplementation(member, symbolInfo.SymbolName, symbolInfo.MemberIdentifier);
         }
 
-        private static (string SymbolName, string MemberIdentifier) GetSymbolNameAndIdentifier(T member)
+        private (string SymbolName, string MemberIdentifier) GetSymbolNameAndIdentifier(T member)
         {
             NativeSymbolAttribute metadataAttribute;
 
@@ -113,18 +120,19 @@ namespace AdvancedDLSupport.ImplementationGenerators
             {
                 symbolName = member.Name;
 
-                // TODO: select mangler a better way
-                if (member is IntrospectiveMethodInfo introspectiveMethod)
+                var applicableManglers = ManglerRepository.GetApplicableManglers(member).ToList();
+                if (applicableManglers.Count > 1)
                 {
-                    var needsStdCallMangling =
-                        metadataAttribute.CallingConvention == CallingConvention.StdCall &&
-                        RuntimeInformation.ProcessArchitecture == Architecture.X86 &&
-                        RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+                    throw new AmbiguousMatchException
+                    (
+                        "Multiple name manglers were deemed applicable to the member. Provide hinting information in the native symbol attribute."
+                    );
+                }
 
-                    if (needsStdCallMangling)
-                    {
-                        symbolName = new StdCallEntrypointMangler().Mangle(introspectiveMethod);
-                    }
+                if (member is IIntrospectiveMember introspectiveMember && applicableManglers.Any())
+                {
+                    var applicableMangler = applicableManglers.First();
+                    symbolName = applicableMangler.Mangle(introspectiveMember);
                 }
             }
 

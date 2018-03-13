@@ -17,6 +17,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Reflection;
 using AdvancedDLSupport.Reflection;
 
 namespace AdvancedDLSupport
@@ -27,11 +28,19 @@ namespace AdvancedDLSupport
     public interface IEntrypointMangler
     {
         /// <summary>
-        /// Mangles the given method.
+        /// Determines whether or not the mangler is applicable to the given
         /// </summary>
-        /// <param name="method">The method to mangle.</param>
+        /// <param name="member">The member to check.</param>
+        /// <returns>true if the mangler is applicable; otherwise, false.</returns>
+        bool IsManglerApplicable(MemberInfo member);
+
+        /// <summary>
+        /// Mangles the given member.
+        /// </summary>
+        /// <typeparam name="T">The type of the member to mangle.</typeparam>
+        /// <param name="member">The member to mangle.</param>
         /// <returns>The mangled entrypoint.</returns>
-        string Mangle(IntrospectiveMethodInfo method);
+        string Mangle<T>(T member) where T : IIntrospectiveMember;
 
         /// <summary>
         /// Demangles a mangled entrypoint name, returning it to its original state.

@@ -29,6 +29,11 @@ namespace AdvancedDLSupport.Reflection
     public interface IIntrospectiveMember
     {
         /// <summary>
+        /// Gets the name of the member.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
         /// Gets a custom attribute of <typeparamref name="TAttribute"/>, or null if none can be found.
         /// </summary>
         /// <typeparam name="TAttribute">The type of attribute to get.</typeparam>
