@@ -10,7 +10,7 @@
 
         protected MapResolverTestBase()
         {
-            Resolver = new DllMapResolver();;
+            Resolver = new DllMapResolver();
         }
     }
 }

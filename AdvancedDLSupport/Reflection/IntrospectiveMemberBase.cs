@@ -33,7 +33,7 @@ namespace AdvancedDLSupport.Reflection
     public abstract class IntrospectiveMemberBase<TMemberInfo> : MemberInfo, IIntrospectiveMember
         where TMemberInfo : MemberInfo
     {
-        /// <inheritdoc />
+        /// <inheritdoc cref="MemberInfo.Name" />
         [PublicAPI]
         public override string Name { get; }
 
