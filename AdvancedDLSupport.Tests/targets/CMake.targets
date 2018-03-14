@@ -7,13 +7,9 @@
         <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-release</CMakeBuildDir>
     </PropertyGroup>
 
-    <PropertyGroup>
-        <BaseInstallPath>$([System.IO.Path]::Combine("bin", $(Configuration)))</BaseInstallPath>
-    </PropertyGroup>
-
     <!-- Common targets -->
     <Target Name="InitCMake" AfterTargets="BeforeBuild" Condition="!Exists('$(CMakeBuildDir)\CMakeCache.txt')">
         <Exec Command="mkdir $(CMakeBuildDir)" />
-        <Exec Command="cmake -G $(CMakeGenerator) '-DTARGET_FRAMEWORKS=$(TargetFrameworks)' -DBASE_INSTALL_PATH=$(BaseInstallPath) -DPROJECT_PATH=$(MSBuildProjectDirectory) -DBUILD_PLATFORM=$(Platform) .." WorkingDirectory="$(CMakeBuildDir)" />
+        <Exec Command="cmake -G $(CMakeGenerator) '-DTARGET_FRAMEWORKS=$(TargetFrameworks)' -DBASE_INSTALL_PATH=$([System.IO.Path]::GetDirectoryName($(OutputPath.TrimEnd('/').TrimEnd('\\')))) -DPROJECT_PATH=$(MSBuildProjectDirectory) -DBUILD_PLATFORM=$(Platform) .." WorkingDirectory="$(CMakeBuildDir)" />
     </Target>
 </Project>
