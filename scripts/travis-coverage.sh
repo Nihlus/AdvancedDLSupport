@@ -31,10 +31,12 @@ cp instrumented-adl/* AdvancedDLSupport.Tests/bin/${OutputDir}/netcoreapp2.0
 cp instrumented-mdl/* Mono.DllMap.Tests/bin/${OutputDir}/netcoreapp2.0
 
 # And run coverage
-dotnet run --project altcover/altcover.2.0.324/tools/netcoreapp2.0/AltCover/altcover.core.fsproj --configuration ${Configuration} --no-build --\
+cd AdvancedDLSupport.Tests
+dotnet run --project ../altcover/altcover.2.0.324/tools/netcoreapp2.0/AltCover/altcover.core.fsproj --configuration ${Configuration} --no-build --\
  runner -x "dotnet" -r "AdvancedDLSupport.Tests/bin/${OutputDir}/netcoreapp2.0" --\
- test AdvancedDLSupport.Tests --no-build ${AdditionalTestArgs}
+ xunit --no-build ${AdditionalTestArgs}
 
-dotnet run --project altcover/altcover.2.0.324/tools/netcoreapp2.0/AltCover/altcover.core.fsproj --configuration ${Configuration} --no-build --\
+cd ../Mono.DllMap.Tests
+dotnet run --project ../altcover/altcover.2.0.324/tools/netcoreapp2.0/AltCover/altcover.core.fsproj --configuration ${Configuration} --no-build --\
  runner -x "dotnet" -r "Mono.DllMap.Tests/bin/${OutputDir}/netcoreapp2.0" --\
- test Mono.DllMap.Tests --no-build ${AdditionalTestArgs}
+ xunit --no-build ${AdditionalTestArgs}
