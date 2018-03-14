@@ -18,7 +18,7 @@ before_build:
   - dotnet restore
 
 build:
-  parallel: true
+  parallel: false
   project: AdvanceDLSupport.sln
 
 test_script: scripts\appveyor-coverage.bat
