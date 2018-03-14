@@ -22,8 +22,8 @@
     <Target Name="InitWinCMake" AfterTargets="InitCMake">
         <Exec Command="mkdir $(CMakeBuildDirx86)" />
         <Exec Command="mkdir $(CMakeBuildDirx64)" />
-        <Exec Command="cmake -G $(CMakeGeneratorx86) -DOUTPUT_PATH=$(OutDir) -DPROJECT_PATH=$(MSBuildProjectDirectory) -DBUILD_PLATFORM=x86 .." WorkingDirectory="$(CMakeBuildDirx86)" />
-        <Exec Command="cmake -G $(CMakeGeneratorx64) -DOUTPUT_PATH=$(OutDir) -DPROJECT_PATH=$(MSBuildProjectDirectory) -DBUILD_PLATFORM=x64 .." WorkingDirectory="$(CMakeBuildDirx64)" />
+        <Exec Command="cmake -G $(CMakeGeneratorx86) '-DTARGET_FRAMEWORKS=$(TargetFrameworks)' -DBASE_INSTALL_PATH=$([System.IO.Path]::GetDirectoryName($(OutputPath.TrimEnd('\\')))) -DPROJECT_PATH=$(MSBuildProjectDirectory) -DBUILD_PLATFORM=x86 .." WorkingDirectory="$(CMakeBuildDirx86)" />
+        <Exec Command="cmake -G $(CMakeGeneratorx64) '-DTARGET_FRAMEWORKS=$(TargetFrameworks)' -DBASE_INSTALL_PATH=$([System.IO.Path]::GetDirectoryName($(OutputPath.TrimEnd('\\')))) -DPROJECT_PATH=$(MSBuildProjectDirectory) -DBUILD_PLATFORM=x64 .." WorkingDirectory="$(CMakeBuildDirx64)" />
     </Target>
 
     <Target Name="CompileWinTestLibraries" AfterTargets="AfterBuild">
