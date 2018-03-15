@@ -19,7 +19,7 @@
 
 
     <!-- Windows-specific targets -->
-    <Target Name="InitWinCMake" AfterTargets="InitCMake">
+    <Target Name="InitWinCMake" AfterTargets="InitCMake" Condition="!Exists('$(CMakeBuildDirx86)') And !Exists('$(CMakeBuildDirx64)')">
         <Exec Command="mkdir $(CMakeBuildDirx86)" />
         <Exec Command="mkdir $(CMakeBuildDirx64)" />
         <Exec Command="cmake -G $(CMakeGeneratorx86) '-DTARGET_FRAMEWORKS=$(TargetFrameworks)' -DBASE_INSTALL_PATH=$([System.IO.Path]::GetDirectoryName($(OutputPath.TrimEnd('\\')))) -DPROJECT_PATH=$(MSBuildProjectDirectory) -DBUILD_PLATFORM=x86 .." WorkingDirectory="$(CMakeBuildDirx86)" />
