@@ -9,13 +9,14 @@ if "%PLATFORM%"=="x86" (
 	set "OUTPUT_DIR=x86\%CONFIGURATION%"
 )
 
+set ADDITIONAL_TEST_ARGS=
 if "%PLATFORM%"=="x64" (
 	set "OUTPUT_DIR=x64\%CONFIGURATION%"
+	set "ADDITIONAL_TEST_ARGS=/property:PlatformTarget=x64"
 )
 
-set ADDITIONAL_TEST_ARGS=
 if "%PLATFORM%"=="Any CPU" (
-	set "ADDITIONAL_TEST_ARGS=/property:Platform=AnyCPU"
+	set "ADDITIONAL_TEST_ARGS=/property:Platform=AnyCPU /property:PlatformTarget=x64"
 )
 
 :: Install AltCover
