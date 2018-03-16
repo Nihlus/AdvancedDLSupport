@@ -28,7 +28,7 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Mangles C-style functions decorated with the MSVC __stdcall attribute.
     /// </summary>
-    public class StdCallEntrypointMangler : IEntrypointMangler
+    internal class StdCallEntrypointMangler : IEntrypointMangler
     {
         /// <inheritdoc />
         public string Mangle<T>(T member) where T : IIntrospectiveMember
@@ -61,7 +61,7 @@ namespace AdvancedDLSupport
 
             var isApplicable =
                 metadataAttribute.CallingConvention == CallingConvention.StdCall &&
-                RuntimeInformation.ProcessArchitecture == Architecture.X86 &&
+                IntPtr.Size == 4 && // 32-bit system
                 RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
             return isApplicable;

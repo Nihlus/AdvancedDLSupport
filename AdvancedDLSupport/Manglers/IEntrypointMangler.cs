@@ -19,12 +19,14 @@
 
 using System.Reflection;
 using AdvancedDLSupport.Reflection;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
 {
     /// <summary>
     /// Represents a class that can mangle entrypoint names according to an implementation-specific pattern.
     /// </summary>
+    [PublicAPI, UsedImplicitly]
     public interface IEntrypointMangler
     {
         /// <summary>
@@ -32,6 +34,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="member">The member to check.</param>
         /// <returns>true if the mangler is applicable; otherwise, false.</returns>
+        [PublicAPI]
         bool IsManglerApplicable(MemberInfo member);
 
         /// <summary>
@@ -40,6 +43,7 @@ namespace AdvancedDLSupport
         /// <typeparam name="T">The type of the member to mangle.</typeparam>
         /// <param name="member">The member to mangle.</param>
         /// <returns>The mangled entrypoint.</returns>
+        [PublicAPI]
         string Mangle<T>(T member) where T : IIntrospectiveMember;
 
         /// <summary>
@@ -47,6 +51,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="mangledEntrypoint">A mangled entrypoint name.</param>
         /// <returns>The demangled entrypoint.</returns>
+        [PublicAPI]
         string Demangle(string mangledEntrypoint);
     }
 }

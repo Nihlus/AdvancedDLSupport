@@ -22,18 +22,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using AdvancedDLSupport.Reflection;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
 {
     /// <summary>
     /// Repository class for name manglers.
     /// </summary>
+    [PublicAPI]
     public class ManglerRepository
     {
         /// <summary>
         /// Gets the default instance of the <see cref="ManglerRepository"/> class. This instance contains all discovered
         /// mangler types.
         /// </summary>
+        [PublicAPI]
         public static ManglerRepository Default { get; }
 
         private List<IEntrypointMangler> Manglers { get; }
@@ -59,7 +62,7 @@ namespace AdvancedDLSupport
         /// Scans the currently executing assembly for classes implementing the <see cref="IEntrypointMangler"/>
         /// interface, and creates an instance of each which is added to the repository's internal store.
         /// </summary>
-        public void DiscoverManglers()
+        internal void DiscoverManglers()
         {
             Manglers.Clear();
 
@@ -84,6 +87,7 @@ namespace AdvancedDLSupport
         /// <param name="member">The member.</param>
         /// <typeparam name="T">A member implementing the <see cref="IIntrospectiveMember"/> interface.</typeparam>
         /// <returns>A set of applicable manglers, if any.</returns>
+        [PublicAPI]
         public IEnumerable<IEntrypointMangler> GetApplicableManglers<T>(T member) where T : MemberInfo
         {
             return Manglers.Where(m => m.IsManglerApplicable(member));
