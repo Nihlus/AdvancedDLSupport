@@ -172,12 +172,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
             }
             else
             {
-                throw new NotSupportedException(
-                    string.Format
-                    (
-                        "{0} Type is not supported. Only ValueType property or Pointer Property is supported.",
-                        property.PropertyType.FullName
-                    )
+                throw new NotSupportedException
+                (
+                    $"The type \"{property.PropertyType.FullName}\" is not supported. Only value types or pointers are supported."
                 );
             }
 
