@@ -27,7 +27,7 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Represents a failure to load a native library.
     /// </summary>
-    [PublicAPI]
+    [PublicAPI, Serializable]
     public class SymbolLoadingException : Exception
     {
         /// <summary>
