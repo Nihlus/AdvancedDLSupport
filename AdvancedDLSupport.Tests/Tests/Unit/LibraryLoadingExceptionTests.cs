@@ -129,7 +129,7 @@ namespace AdvancedDLSupport.Tests.Unit
                     Assert.Equal(actual.LibraryName, deserialized.LibraryName);
 
                     Assert.IsType<Exception>(deserialized.InnerException);
-                    Assert.Equal(actual.InnerException.Message, deserialized.InnerException.Message);
+                    Assert.Equal(actual.InnerException?.Message, deserialized.InnerException.Message);
                 }
             }
 

@@ -66,7 +66,17 @@ namespace AdvancedDLSupport
                 }
                 case LPTStr:
                 {
-                    ptr = Marshal.StringToHGlobalAuto(value);
+                    if (RuntimeInformation.FrameworkDescription.Contains("Mono"))
+                    {
+                        // Mono uses ANSI for Auto, but ANSI is no longer a supported charset. Use Unicode.
+                        ptr = Marshal.StringToHGlobalUni(value);
+                    }
+                    else
+                    {
+                        // Use automatic selection
+                        ptr = Marshal.StringToHGlobalAuto(value);
+                    }
+
                     break;
                 }
                 case LPWStr:
@@ -128,7 +138,17 @@ namespace AdvancedDLSupport
                 }
                 case LPTStr:
                 {
-                    val = Marshal.PtrToStringAuto(value);
+                    if (RuntimeInformation.FrameworkDescription.Contains("Mono"))
+                    {
+                        // Mono uses ANSI for Auto, but ANSI is no longer a supported charset. Use Unicode.
+                        val = Marshal.PtrToStringUni(value);
+                    }
+                    else
+                    {
+                        // Use automatic selection
+                        val = Marshal.PtrToStringAuto(value);
+                    }
+
                     break;
                 }
                 case LPWStr:
