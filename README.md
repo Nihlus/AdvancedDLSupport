@@ -90,7 +90,7 @@ Install-Package AdvancedDLSupport -ProjectName MyProject
 AdvancedDLSupport is licensed under the [GNU General Public License, Version 3 (GPLv3)][12]. See the [LICENSE][13] for
 details. Without the support of the open-source movement, it would never have existed.
 
-We also offer custom licensing for companies and individuals. Contact us for a quote.
+We also offer custom licensing for companies and individuals. [Contact us][14] for a quote.
 
 
 
@@ -129,3 +129,4 @@ We also offer custom licensing for companies and individuals. Contact us for a q
 
 [12]: https://www.gnu.org/licenses/gpl-3.0.en.html
 [13]: LICENSE
+[14]: mailto:jarl.gullberg@gmail.com
