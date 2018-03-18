@@ -1,8 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AdvancedDLSupport.Tests.TestBases
 {
-    public abstract class LibraryTestBase<T> where T : class
+    public abstract class LibraryTestBase<T> : IDisposable where T : class
     {
         protected readonly ImplementationOptions Config;
         protected readonly T Library;
@@ -16,12 +17,18 @@ namespace AdvancedDLSupport.Tests.TestBases
 
         protected virtual ImplementationOptions GetImplementationOptions()
         {
-            return 0;
+            return ImplementationOptions.GenerateDisposalChecks;
         }
 
         protected virtual NativeLibraryBuilder GetImplementationBuilder()
         {
             return new NativeLibraryBuilder(Config);
+        }
+
+        public void Dispose()
+        {
+            var libraryBase = Library as NativeLibraryBase;
+            libraryBase?.Dispose();
         }
     }
 }

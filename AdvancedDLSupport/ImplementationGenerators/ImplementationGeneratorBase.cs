@@ -21,6 +21,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
@@ -60,6 +61,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
         protected ILGenerator TargetTypeConstructorIL { get; }
 
         /// <summary>
+        /// Gets the repository object containing name manglers.
+        /// </summary>
+        protected ManglerRepository ManglerRepository { get; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ImplementationGeneratorBase{T}"/> class.
         /// </summary>
         /// <param name="targetModule">The module where the implementation should be generated.</param>
@@ -79,6 +85,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
             TargetType = targetType;
             TargetTypeConstructorIL = targetTypeConstructorIL;
             Options = options;
+
+            ManglerRepository = ManglerRepository.Default;
         }
 
         /// <inheritdoc />
@@ -90,7 +98,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             GenerateImplementation(member, symbolInfo.SymbolName, symbolInfo.MemberIdentifier);
         }
 
-        private static (string SymbolName, string MemberIdentifier) GetSymbolNameAndIdentifier(T member)
+        private (string SymbolName, string MemberIdentifier) GetSymbolNameAndIdentifier(T member)
         {
             NativeSymbolAttribute metadataAttribute;
 
@@ -106,7 +114,26 @@ namespace AdvancedDLSupport.ImplementationGenerators
                     member.GetCustomAttribute<NativeSymbolAttribute>() ?? new NativeSymbolAttribute(member.Name);
             }
 
-            var symbolName = metadataAttribute.Entrypoint ?? member.Name;
+            var symbolName = metadataAttribute.Entrypoint;
+            if (metadataAttribute.Entrypoint.IsNullOrEmpty())
+            {
+                symbolName = member.Name;
+
+                var applicableManglers = ManglerRepository.GetApplicableManglers(member).ToList();
+                if (applicableManglers.Count > 1)
+                {
+                    throw new AmbiguousMatchException
+                    (
+                        "Multiple name manglers were deemed applicable to the member. Provide hinting information in the native symbol attribute."
+                    );
+                }
+
+                if (member is IIntrospectiveMember introspectiveMember && applicableManglers.Any())
+                {
+                    var applicableMangler = applicableManglers.First();
+                    symbolName = applicableMangler.Mangle(introspectiveMember);
+                }
+            }
 
             var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
             var memberIdentifier = $"{member.Name}_{uniqueIdentifier}";
@@ -202,7 +229,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         [PublicAPI, NotNull]
         protected MethodBuilder GenerateSymbolLoadingLambda([NotNull] string symbolName)
         {
-            var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
+            var uniqueIdentifier = Guid.NewGuid().ToString().Replace('-', '_');
 
             var loadSymbolMethod = typeof(NativeLibraryBase).GetMethod
             (
@@ -236,7 +263,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         [PublicAPI, NotNull]
         protected MethodBuilder GenerateFunctionLoadingLambda([NotNull] Type delegateType, [NotNull] string functionName)
         {
-            var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
+            var uniqueIdentifier = Guid.NewGuid().ToString().Replace('-', '_');
 
             var loadFuncMethod = typeof(NativeLibraryBase).GetMethod
             (

@@ -133,6 +133,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 interfaceDefinition.ParameterTypes.ToArray()
             );
 
+            methodBuilder.ApplyCustomAttributesFrom(interfaceDefinition);
+
             return new IntrospectiveMethodInfo(methodBuilder, interfaceDefinition.ReturnType, interfaceDefinition.ParameterTypes, interfaceDefinition);
         }
 

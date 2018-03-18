@@ -33,7 +33,7 @@ namespace AdvancedDLSupport.Reflection
     public abstract class IntrospectiveMemberBase<TMemberInfo> : MemberInfo, IIntrospectiveMember
         where TMemberInfo : MemberInfo
     {
-        /// <inheritdoc />
+        /// <inheritdoc cref="MemberInfo.Name" />
         [PublicAPI]
         public override string Name { get; }
 
@@ -141,7 +141,22 @@ namespace AdvancedDLSupport.Reflection
                 return null;
             }
 
-            var instance = Activator.CreateInstance(matchingData.AttributeType, matchingData.ConstructorArguments.Select(a => a.Value).ToArray());
+            var type = matchingData.AttributeType;
+            var instance = Activator.CreateInstance(type, matchingData.ConstructorArguments.Select(a => a.Value).ToArray());
+
+            foreach (var namedArgument in matchingData.NamedArguments)
+            {
+                if (namedArgument.MemberInfo is FieldInfo field)
+                {
+                    field.SetValue(instance, namedArgument.TypedValue.Value);
+                }
+
+                if (namedArgument.MemberInfo is PropertyInfo property)
+                {
+                    property.SetValue(instance, namedArgument.TypedValue.Value);
+                }
+            }
+
             return instance as TAttribute;
         }
 

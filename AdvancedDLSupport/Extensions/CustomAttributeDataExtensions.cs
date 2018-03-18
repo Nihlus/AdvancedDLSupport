@@ -17,6 +17,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -37,11 +39,49 @@ namespace AdvancedDLSupport.Extensions
         [NotNull, Pure]
         public static CustomAttributeBuilder GetAttributeBuilder([NotNull] this CustomAttributeData @this)
         {
+            var namedFields = @this.NamedArguments?.Where(a => a.IsField).ToList() ?? new List<CustomAttributeNamedArgument>();
+            var namedProperties = @this.NamedArguments?.Where(a => a.MemberInfo is PropertyInfo).ToList() ?? new List<CustomAttributeNamedArgument>();
+
             return new CustomAttributeBuilder
             (
                 @this.Constructor,
-                @this.ConstructorArguments.Select(a => a.Value).ToArray()
+                @this.ConstructorArguments.Select(a => a.Value).ToArray(),
+                namedProperties.Select(p => p.MemberInfo).Cast<PropertyInfo>().ToArray(),
+                namedProperties.Select(p => p.TypedValue.Value).ToArray(),
+                namedFields.Select(f => f.MemberInfo).Cast<FieldInfo>().ToArray(),
+                namedFields.Select(f => f.TypedValue.Value).ToArray()
             );
+        }
+
+        /// <summary>
+        /// Uses the attribute data to create an instance of the attribute.
+        /// </summary>
+        /// <param name="this">The attribute data.</param>
+        /// <typeparam name="T">The encapsulated type of the attribute.</typeparam>
+        /// <returns>An instance of the attribute as described by the attribute data.</returns>
+        /// <exception cref="ArgumentException">Thrown if the attribute type and the generic type doesn't match.</exception>
+        public static T ToInstance<T>([NotNull] this CustomAttributeData @this) where T : Attribute
+        {
+            if (typeof(T) != @this.AttributeType)
+            {
+                throw new ArgumentException($"Incorrect generic argument type. Use {@this.AttributeType.Name}.", nameof(@this));
+            }
+
+            var instance = @this.Constructor.Invoke(@this.ConstructorArguments.Select(a => a.Value).ToArray());
+
+            var namedFields = @this.NamedArguments.Where(a => a.IsField).ToList();
+            foreach (var field in namedFields)
+            {
+                (field.MemberInfo as FieldInfo)?.SetValue(instance, field.TypedValue.Value);
+            }
+
+            var namedProperties = @this.NamedArguments.Where(a => a.MemberInfo is PropertyInfo).ToList();
+            foreach (var property in namedProperties)
+            {
+                (property.MemberInfo as PropertyInfo)?.SetValue(instance, property.TypedValue.Value);
+            }
+
+            return instance as T;
         }
     }
 }

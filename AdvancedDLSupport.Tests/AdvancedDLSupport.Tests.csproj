@@ -1,8 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Configurations>Debug;Release</Configurations>
+    <Platforms>AnyCPU;x86;x64</Platforms>
+    <Prefer32bit>false</Prefer32bit>
   </PropertyGroup>
   <PropertyGroup>
     <IsPackable>false</IsPackable>
@@ -15,10 +18,6 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Data\AdvancedDLSupport.Tests.dll.config">
-      <Link>AdvancedDLSupport.Tests.dll.config</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -26,24 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AdvancedDLSupport\AdvancedDLSupport.csproj" />
   </ItemGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-debug</CMakeBuildDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-release</CMakeBuildDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(OS)' == 'Unix'">
-    <CMakeGenerator>"Unix Makefiles"</CMakeGenerator>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
-    <CMakeGenerator>"Visual Studio 15 2017 Win64"</CMakeGenerator>
-  </PropertyGroup>
-  <Target Name="InitCMake" BeforeTargets="CompileTestLibraries" Condition="!Exists('$(CMakeBuildDir)\CMakeCache.txt')">
-    <Exec Command="mkdir -p $(CMakeBuildDir)" />
-    <Exec Command="cmake -G $(CMakeGenerator) -DOUTPUT_PATH=$(OutDir) -DPROJECT_PATH=$(MSBuildProjectDirectory) .." WorkingDirectory="$(CMakeBuildDir)" />
-  </Target>
-  <Target Name="CompileTestLibraries" AfterTargets="AfterBuild">
-    <Exec Command="cmake --build . --target install" WorkingDirectory="$(CMakeBuildDir)" Condition="'$(OS)' == 'Unix'" />
-    <Exec Command="cmake --build . --target INSTALL" WorkingDirectory="$(CMakeBuildDir)" Condition="'$(OS)' == 'Windows_NT'" />
-  </Target>
+  <!-- Common CMake build steps -->
+  <Import Project="targets\CMake-Unix.targets" Condition="'$(OS)' == 'Unix'" />
+  <Import Project="targets\CMake-Win.targets" Condition="'$(OS)' == 'Windows_NT'" />
 </Project>

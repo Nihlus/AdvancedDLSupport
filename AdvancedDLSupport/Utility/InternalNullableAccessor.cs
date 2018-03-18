@@ -40,7 +40,7 @@ namespace AdvancedDLSupport
         {
             // HACK: Working around weird memory layout in .NET Core vs Mono/FX
             var desc = RuntimeInformation.FrameworkDescription;
-            if (desc.Contains(".NET Core"))
+            if (desc.Contains(".NET Core") || desc.Contains(".NET Framework"))
             {
                 nullablePtr += Unsafe.SizeOf<bool>();
             }

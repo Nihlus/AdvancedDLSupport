@@ -148,7 +148,13 @@ namespace Mono.DllMap
         [PublicAPI, Pure, NotNull]
         public DllConfiguration GetDllMap([NotNull] Assembly assembly)
         {
-            return DllConfiguration.Parse(File.ReadAllText(GetDllMapPath(assembly)));
+            var mapPath = GetDllMapPath(assembly);
+            if (!File.Exists(mapPath))
+            {
+                throw new FileNotFoundException("Could not find a DllMap file associated with the assembly.", mapPath);
+            }
+
+            return DllConfiguration.Parse(File.ReadAllText(mapPath));
         }
 
         [Pure, NotNull]

@@ -22,6 +22,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.InteropServices;
+using AdvancedDLSupport.Extensions;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.Reflection
@@ -120,7 +122,26 @@ namespace AdvancedDLSupport.Reflection
             foreach (var parameter in methodInfo.GetParameters())
             {
                 parameterNames.Add(parameter.Name);
-                parameterCustomAttributes.Add(parameter.GetCustomAttributesData() ?? new List<CustomAttributeData>());
+
+                var customAttributes = new List<CustomAttributeData>(parameter.GetCustomAttributesData());
+                // HACK: Mono workaround until bug is fixed
+                var parameterMarshalAsAttribute = customAttributes
+                .FirstOrDefault
+                (
+                    a =>
+                        a.AttributeType == typeof(MarshalAsAttribute)
+                )?.ToInstance<MarshalAsAttribute>();
+
+                if (parameterMarshalAsAttribute is null && RuntimeInformation.FrameworkDescription.Contains("Mono"))
+                {
+                    parameterMarshalAsAttribute = Attribute.GetCustomAttribute(parameter, typeof(MarshalAsAttribute)) as MarshalAsAttribute;
+                    if (!(parameterMarshalAsAttribute is null))
+                    {
+                        customAttributes.Add(parameterMarshalAsAttribute.GetAttributeData());
+                    }
+                }
+
+                parameterCustomAttributes.Add(customAttributes);
                 parameterAttributes.Add(parameter.Attributes);
             }
 
@@ -129,7 +150,26 @@ namespace AdvancedDLSupport.Reflection
             ParameterCustomAttributes = parameterCustomAttributes.Select(pl => pl.ToList()).ToList();
 
             ReturnParameterAttributes = methodInfo.ReturnParameter.Attributes;
-            ReturnParameterCustomAttributes = methodInfo.ReturnParameter.GetCustomAttributesData().ToList() ?? new List<CustomAttributeData>();
+
+            var returnCustomAttributes = new List<CustomAttributeData>(methodInfo.ReturnParameter.GetCustomAttributesData());
+            ReturnParameterCustomAttributes = returnCustomAttributes;
+
+            // HACK: Mono workaround until bug is fixed
+            var returnParameterMarshalAsAttribute = methodInfo.ReturnParameter.GetCustomAttributesData()
+            .FirstOrDefault
+            (
+                a =>
+                    a.AttributeType == typeof(MarshalAsAttribute)
+            )?.ToInstance<MarshalAsAttribute>();
+
+            if (returnParameterMarshalAsAttribute is null && RuntimeInformation.FrameworkDescription.Contains("Mono"))
+            {
+                returnParameterMarshalAsAttribute = Attribute.GetCustomAttribute(methodInfo.ReturnParameter, typeof(MarshalAsAttribute)) as MarshalAsAttribute;
+                if (!(returnParameterMarshalAsAttribute is null))
+                {
+                    returnCustomAttributes.Add(returnParameterMarshalAsAttribute.GetAttributeData());
+                }
+            }
         }
 
         /// <summary>

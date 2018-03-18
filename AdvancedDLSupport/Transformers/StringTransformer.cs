@@ -22,7 +22,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using JetBrains.Annotations;
 using static System.Runtime.InteropServices.UnmanagedType;
 
 #pragma warning disable SA1513
@@ -32,8 +31,7 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Raises or lowers strings.
     /// </summary>
-    [PublicAPI]
-    public class StringTransformer : PointerTransformer<string>
+    internal class StringTransformer : PointerTransformer<string>
     {
         private readonly IReadOnlyList<UnmanagedType> _supportedTypes = new[]
         {
@@ -68,7 +66,17 @@ namespace AdvancedDLSupport
                 }
                 case LPTStr:
                 {
-                    ptr = Marshal.StringToHGlobalAuto(value);
+                    if (RuntimeInformation.FrameworkDescription.Contains("Mono"))
+                    {
+                        // Mono uses ANSI for Auto, but ANSI is no longer a supported charset. Use Unicode.
+                        ptr = Marshal.StringToHGlobalUni(value);
+                    }
+                    else
+                    {
+                        // Use automatic selection
+                        ptr = Marshal.StringToHGlobalAuto(value);
+                    }
+
                     break;
                 }
                 case LPWStr:
@@ -130,7 +138,17 @@ namespace AdvancedDLSupport
                 }
                 case LPTStr:
                 {
-                    val = Marshal.PtrToStringAuto(value);
+                    if (RuntimeInformation.FrameworkDescription.Contains("Mono"))
+                    {
+                        // Mono uses ANSI for Auto, but ANSI is no longer a supported charset. Use Unicode.
+                        val = Marshal.PtrToStringUni(value);
+                    }
+                    else
+                    {
+                        // Use automatic selection
+                        val = Marshal.PtrToStringAuto(value);
+                    }
+
                     break;
                 }
                 case LPWStr:

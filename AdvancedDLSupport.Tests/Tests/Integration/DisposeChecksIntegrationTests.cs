@@ -13,11 +13,6 @@ namespace AdvancedDLSupport.Tests.Integration
         {
         }
 
-        protected override ImplementationOptions GetImplementationOptions()
-        {
-            return ImplementationOptions.GenerateDisposalChecks;
-        }
-
         [Fact]
         public void DisposedLibraryWithoutGeneratedChecksDoesNotThrow()
         {

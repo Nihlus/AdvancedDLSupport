@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include "TestStruct.h"
 #include "comp.h"
 
@@ -36,4 +37,19 @@ __declspec(dllexport) int32_t GetValueInNullableRefStruct(const TestStruct* test
 __declspec(dllexport) void SetValueInNullableRefStruct(TestStruct* testStruct)
 {
     testStruct->A = 15;
+}
+
+__declspec(dllexport) const char* GetAFromStructAsString(const TestStruct* testStruct)
+{
+    size_t size = (size_t)snprintf(NULL, 0, "%d", testStruct->A);
+    char* buffer = malloc(size + 1);
+
+    sprintf(buffer, "%d", testStruct->A);
+
+    return buffer;
+}
+
+__declspec(dllexport) int GetAFromStructMultipliedByParameter(const TestStruct* testStruct, int multiplier)
+{
+    return testStruct->A * multiplier;
 }

@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
@@ -72,7 +73,12 @@ namespace AdvancedDLSupport
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 var innerType = type.GetGenericArguments().First();
-                var openNullableGetter = typeof(TypeTransformerRepository).GetMethod(nameof(GetNullableTransformer));
+                var openNullableGetter = typeof(TypeTransformerRepository).GetMethod
+                (
+                    nameof(GetNullableTransformer),
+                    BindingFlags.Instance | BindingFlags.NonPublic
+                );
+
                 var closedNullableGetter = openNullableGetter.MakeGenericMethod(innerType);
 
                 return (ITypeTransformer)closedNullableGetter.Invoke(this, null);
@@ -90,8 +96,8 @@ namespace AdvancedDLSupport
         /// Gets a type transformer which can transform strings to pointers and vice versa.
         /// </summary>
         /// <returns>A string transformer.</returns>
-        [PublicAPI, NotNull]
-        public StringTransformer GetStringTransformer()
+        [NotNull]
+        internal StringTransformer GetStringTransformer()
         {
             if (_typeTransformers.ContainsKey(typeof(string)))
             {
@@ -109,8 +115,8 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <typeparam name="T">The value type.</typeparam>
         /// <returns>A nullable transformer.</returns>
-        [PublicAPI, NotNull]
-        public NullableTransformer<T> GetNullableTransformer<T>() where T : struct
+        [NotNull]
+        internal NullableTransformer<T> GetNullableTransformer<T>() where T : struct
         {
             if (_typeTransformers.ContainsKey(typeof(T?)))
             {

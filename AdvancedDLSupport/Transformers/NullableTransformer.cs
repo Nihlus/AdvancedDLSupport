@@ -20,7 +20,6 @@
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
 {
@@ -28,8 +27,7 @@ namespace AdvancedDLSupport
     /// Raises or lowers nullable value types to pointers.
     /// </summary>
     /// <typeparam name="T">The value type.</typeparam>
-    [PublicAPI]
-    public class NullableTransformer<T> : PointerTransformer<T?> where T : struct
+    internal class NullableTransformer<T> : PointerTransformer<T?> where T : struct
     {
         /// <inheritdoc />
         public override IntPtr LowerValue(T? value, ParameterInfo parameter)
