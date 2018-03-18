@@ -8,9 +8,17 @@ Fully compatible with Mono, .NET Framework, .NET Core, and .NET Standard. Compat
 platforms and runtimes. Configurable and adaptible.
 
 ## Build & Test status
-| Travis (Linux)          | Travis (OSX)            | AppVeyor (Windows)      | MyGet (Development)     |
-| ----------------------- | ----------------------- | ----------------------- | ------------------------|
-| [![Build Status][1]][2] | [![Build Status][3]][4] | [![Build status][5]][6] | [![Build Status][7]][8] |
+|                   | Travis (Linux - Mono & .NET Core)          | Travis (OSX - Mono & .NET Core)        | AppVeyor (Windows - .NET & .NET Core)    | MyGet (Development)     |
+| ----------------- |------------------------------------------- | -------------------------------------- | ---------------------------------------- | ------------------------|
+| x64 (Debug)       | [![Build Status][linux-x64-debug]][2]      | [![Build Status][mac-x64-debug]][4]    | [![Build status][win-x64-debug]][6]      |                         |
+| x64 (Release      | [![Build Status][linux-x64-release]][2]    | [![Build Status][mac-x64-release]][4]  | [![Build status][win-x64-release]][6]    |                         |
+| x86 (Debug)       |                                            |                                        | [![Build status][win-x86-debug]][6]      |                         |
+| x86 (Release)     |                                            |                                        | [![Build status][win-x86-release]][6]    |                         |
+| Any CPU (Debug)   | [![Build Status][linux-anycpu-debug]][2]   | [![Build Status][mac-anycpu-debug]][4] | [![Build status][win-anycpu-debug]][6]   | [![Build Status][7]][8] |                        |
+| Any CPU (Release) | [![Build Status][linux-anycpu-release]][2] | [![Build Status][mac-anycpu-debug]][4] | [![Build status][win-anycpu-release]][6] |                         |
+
+
+Total project coverage: [![Codecov.io][codecov-coverage]][codecov]
 
 Read the [Docs][9], or get the [MyGet][10] development packages and [get started][11].
 
@@ -85,14 +93,29 @@ details. Without the support of the open-source movement, it would never have ex
 We also offer custom licensing for companies and individuals. Contact us for a quote.
 
 
-[1]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvanceDLSupport/branches/master/1
+
+[linux-x64-debug]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvanceDLSupport/branches/master/1
+[linux-x64-release]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvanceDLSupport/branches/master/2
+[linux-anycpu-debug]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvanceDLSupport/branches/master/3
+[linux-anycpu-release]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvanceDLSupport/branches/master/4
+[mac-x64-debug]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvanceDLSupport/branches/master/5
+[mac-x64-release]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvanceDLSupport/branches/master/6
+[mac-anycpu-debug]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvanceDLSupport/branches/master/7
+[mac-anycpu-release]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvanceDLSupport/branches/master/8
+ 
 [2]: https://travis-ci.org/Firwood-Software/AdvanceDLSupport
 
-[3]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvanceDLSupport/branches/master/2 
-[4]: https://travis-ci.org/Firwood-Software/AdvanceDLSupport
+[win-x86-debug]: https://appveyor-matrix-badges.herokuapp.com/repos/Nihlus/advancedlsupport-dnwes/branch/master/1
+[win-x64-debug]: https://appveyor-matrix-badges.herokuapp.com/repos/Nihlus/advancedlsupport-dnwes/branch/master/2
+[win-anycpu-debug]: https://appveyor-matrix-badges.herokuapp.com/repos/Nihlus/advancedlsupport-dnwes/branch/master/3
+[win-x86-release]: https://appveyor-matrix-badges.herokuapp.com/repos/Nihlus/advancedlsupport-dnwes/branch/master/4
+[win-x64-release]: https://appveyor-matrix-badges.herokuapp.com/repos/Nihlus/advancedlsupport-dnwes/branch/master/5
+[win-anycpu-release]: https://appveyor-matrix-badges.herokuapp.com/repos/Nihlus/advancedlsupport-dnwes/branch/master/6
 
-[5]: https://ci.appveyor.com/api/projects/status/vx6kskvtgv79uwvo?svg=true
 [6]: https://ci.appveyor.com/project/Nihlus/advancedlsupport-dnwes
+
+[codecov-coverage]: https://codecov.io/gh/Firwood-Software/AdvanceDLSupport/branch/master/graph/badge.svg
+[codecov]: https://codecov.io/gh/Firwood-Software/AdvanceDLSupport
 
 [7]: https://www.myget.org/BuildSource/Badge/advancedlsupport?identifier=81802e0b-f4f6-4939-93a9-9edb54b134e6
 [8]: https://www.myget.org
