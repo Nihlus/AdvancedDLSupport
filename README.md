@@ -12,8 +12,8 @@ platforms and runtimes. Configurable and adaptible.
 | ----------------- |------------------------------------------- | -------------------------------------- | ---------------------------------------- | ------------------------|
 | x64 (Debug)       | [![Build Status][linux-x64-debug]][2]      | [![Build Status][mac-x64-debug]][2]    | [![Build status][win-x64-debug]][6]      |                         |
 | x64 (Release      | [![Build Status][linux-x64-release]][2]    | [![Build Status][mac-x64-release]][2]  | [![Build status][win-x64-release]][6]    |                         |
-| x86 (Debug)       |                                            |                                        | [![Build status][win-x86-debug]][6]      |                         |
-| x86 (Release)     |                                            |                                        | [![Build status][win-x86-release]][6]    |                         |
+| x86 (Debug)       | [![Build Status][build-not-found]][2]      | [![Build Status][build-not-found]][2]  | [![Build status][win-x86-debug]][6]      |                         |
+| x86 (Release)     | [![Build Status][build-not-found]][2]      | [![Build Status][build-not-found]][2]  | [![Build status][win-x86-release]][6]    |                         |
 | Any CPU (Debug)   | [![Build Status][linux-anycpu-debug]][2]   | [![Build Status][mac-anycpu-debug]][2] | [![Build status][win-anycpu-debug]][6]   | [![Build Status][7]][8] |                        |
 | Any CPU (Release) | [![Build Status][linux-anycpu-release]][2] | [![Build Status][mac-anycpu-debug]][2] | [![Build status][win-anycpu-release]][6] |                         |
 
@@ -113,6 +113,8 @@ We also offer custom licensing for companies and individuals. Contact us for a q
 [win-anycpu-release]: https://appveyor-matrix-badges.herokuapp.com/repos/Nihlus/advancedlsupport-dnwes/branch/master/6
 
 [6]: https://ci.appveyor.com/project/Nihlus/advancedlsupport-dnwes
+
+[build-not-found]: https://img.shields.io/badge/build-not%20found-lightgrey.svg
 
 [codecov-coverage]: https://codecov.io/gh/Firwood-Software/AdvanceDLSupport/branch/master/graph/badge.svg
 [codecov]: https://codecov.io/gh/Firwood-Software/AdvanceDLSupport
