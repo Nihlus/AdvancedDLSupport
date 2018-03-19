@@ -87,11 +87,11 @@ Install-Package AdvancedDLSupport -ProjectName MyProject
 ```
 
 ## License
-AdvancedDLSupport is licensed under the [GNU General Public License, Version 3 (GPLv3)][12]. See the [LICENSE][13] for
-details. Without the support of the open-source movement, it would never have existed.
+AdvancedDLSupport's public release is licensed under the [GNU General Public License, Version 3 (GPLv3)][12]. 
+See the [LICENSE][13] for details. Without the support of the open-source movement, it would never have existed.
 
-We also offer custom licensing for companies and individuals. [Contact us][14] for a quote.
-
+If the GPLv3 license doesn't fit your project or product, please [contact us][14]. Custom licensing options are 
+available, and we are always open to working something out that fits you - be it modified, commercial, or otherwise.
 
 
 [linux-x64-debug]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvanceDLSupport/branches/master/1
