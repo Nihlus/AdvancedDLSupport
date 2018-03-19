@@ -41,7 +41,7 @@ public interface IMath
 }
 ```
 
-Using this interface, we can then initialize an anonymous type which implements our interface, and allows us to use the 
+Using this interface, we can then initialize a generated type which implements our interface, and allows us to use the 
 native library.
 
 ```cs
