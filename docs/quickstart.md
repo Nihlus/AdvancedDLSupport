@@ -41,13 +41,13 @@ public interface IMath
 }
 ```
 
-Using this interface, we can then initialize an anonymous type which implements our interface, and allows us to use the 
+Using this interface, we can then initialize a generated type which implements our interface, and allows us to use the 
 native library.
 
 ```cs
 using (var mathLibrary = NativeLibraryBuilder.Default.ActivateInterface<IMath>(LibraryName))
 {
-	int mySubtraction = mathLibrary.Subtract(10, 5);
+    int mySubtraction = mathLibrary.Subtract(10, 5);
     int myMultiplication mathLibrary.Multiply(5, 5);
     
     int timesUsed = mathLibrary.TimesUsed;
