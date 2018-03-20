@@ -33,7 +33,7 @@ namespace AdvancedDLSupport
         /// <inheritdoc />
         public ResolvePathResult Resolve(string library)
         {
-            var executingDir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
+            var executingDir = Directory.GetParent(Assembly.GetEntryAssembly().Location).FullName;
             var libraryLocation = Path.GetFullPath(Path.Combine(executingDir, library));
             if (File.Exists(libraryLocation))
             {

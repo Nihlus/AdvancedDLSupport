@@ -12,9 +12,15 @@ information.
 In short, DLSupport follows, by default, this search order:
 
   1. If the library name is actually a path (absolute or relative), the given path (`/some/path/to/libMyLib.so`)
-  2. The local executable directory (`./`)
-     1. The local library directory (`./lib`)
-     2. The local platform-specific directory library (`./lib/x64`) or (`./lib/x86`)
+  2. The directory of the entry assembly
+     1. The library directory (`<entryDir>/lib`)
+     2. The platform-specific directory library (`<entryDir>/lib/x64`) or (`<entryDir>/lib/x86`)
+  3. The directory of the executing assembly
+     1. The library directory (`<execDir>/lib`)
+     2. The platform-specific directory library (`<execDir>/lib/x64`) or (`<execDir>/lib/x86`)
+  2. The current directory (`<currDir>/`)
+     1. The library directory (`<currDir>/lib`)
+     2. The platform-specific directory library (`<currDir>/lib/x64`) or (`<currDir>/lib/x86`)
   3. The platform-specific search pattern
   4. 5. If running under Mono, and the library name is `__Internal`, returns the main assembly
   

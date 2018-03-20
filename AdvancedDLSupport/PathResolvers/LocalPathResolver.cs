@@ -20,6 +20,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
 {
@@ -28,39 +29,86 @@ namespace AdvancedDLSupport
     /// </summary>
     internal sealed class LocalPathResolver : ILibraryPathResolver
     {
-        private readonly string _executingDirectory;
-        private readonly string _libraryDirectory;
-        private readonly string _platformLibraryDirectory;
+        [CanBeNull]
+        private readonly string _entryAssemblyDirectory;
+
+        [CanBeNull]
+        private readonly string _executingAssemblyDirectory;
+
+        [CanBeNull]
+        private readonly string _currentDirectory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalPathResolver"/> class.
         /// </summary>
         public LocalPathResolver()
         {
-            _executingDirectory = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
-            _libraryDirectory = Path.Combine(_executingDirectory, "lib");
-            _platformLibraryDirectory = Path.Combine(_libraryDirectory, Environment.Is64BitProcess ? "x64" : "x86");
+            var entryAssembly = Assembly.GetEntryAssembly();
+            _entryAssemblyDirectory = entryAssembly is null
+                ? null
+                : Directory.GetParent(entryAssembly.Location).FullName;
+
+            var executingAssembly = Assembly.GetExecutingAssembly();
+            _executingAssemblyDirectory = executingAssembly is null
+                ? null
+                : Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
+
+            _currentDirectory = Directory.GetCurrentDirectory();
         }
 
         /// <inheritdoc />
         public ResolvePathResult Resolve(string library)
         {
-            // First, check next to the executable
-            var libraryLocation = Path.GetFullPath(Path.Combine(_executingDirectory, library));
+            // First, check next to the entry executable
+            if (!(_entryAssemblyDirectory is null))
+            {
+                var result = ScanPathForLibrary(_entryAssemblyDirectory, library);
+                if (result.IsSuccess)
+                {
+                    return result;
+                }
+            }
+
+            if (!(_executingAssemblyDirectory is null))
+            {
+                var result = ScanPathForLibrary(_executingAssemblyDirectory, library);
+                if (result.IsSuccess)
+                {
+                    return result;
+                }
+            }
+
+            // Then, check the current directory
+            if (!(_currentDirectory is null))
+            {
+                var result = ScanPathForLibrary(_currentDirectory, library);
+                if (result.IsSuccess)
+                {
+                    return result;
+                }
+            }
+
+            return ResolvePathResult.FromError(new FileNotFoundException("No local copy of the given library could be found.", library));
+        }
+
+        private ResolvePathResult ScanPathForLibrary(string path, string library)
+        {
+            var libraryLocation = Path.GetFullPath(Path.Combine(path, library));
             if (File.Exists(libraryLocation))
             {
                 return ResolvePathResult.FromSuccess(libraryLocation);
             }
 
             // Check the local library directory
-            libraryLocation = Path.GetFullPath(Path.Combine(_libraryDirectory, library));
+            libraryLocation = Path.GetFullPath(Path.Combine(path, "lib", library));
             if (File.Exists(libraryLocation))
             {
                 return ResolvePathResult.FromSuccess(libraryLocation);
             }
 
             // Check platform-specific directory
-            libraryLocation = Path.GetFullPath(Path.Combine(_platformLibraryDirectory, library));
+            var bitness = Environment.Is64BitProcess ? "x64" : "x86";
+            libraryLocation = Path.GetFullPath(Path.Combine(path, "lib", bitness, library));
             if (File.Exists(libraryLocation))
             {
                 return ResolvePathResult.FromSuccess(libraryLocation);
