@@ -1,15 +1,15 @@
 Complex Types
 =============
 
-AdvancedDLSupport also allows you to easily use more complex types than traditional P/Invoke. Chief among these are the 
+AdvancedDLSupport also allows you to easily use more complex types than traditional P/Invoke. Chief among these are the
 following, which can be used just like you'd use them in C#.
 
 * `string`
 * `Nullable<T>`
 * `bool`
 
-Complex types are handled much in the same way as compilers handle syntactic sugar (or "compiler magic") - custom 
-[compiler lowering][2]) by generating automatic wrapper constructs that take care of all the tedious marshalling and 
+Complex types are handled much in the same way as compilers handle syntactic sugar (or "compiler magic") - custom
+[compiler lowering][2]) by generating automatic wrapper constructs that take care of all the tedious marshalling and
 interoperation for you.
 
 Thus, constructs like this is a simple matter for AdvancedDLSupport:
@@ -81,6 +81,24 @@ public interface IPulseSimple
     ulong pa_simple_get_latency(IntPtr s, out int error);
 
     int pa_simple_flush(IntPtr s, out int error);
+}
+```
+
+Of note is string handling, which traditional P/Invoke handles via the MarshalAs attribute. ADL also respects the
+MarshalAs attribute, and defaults to marshalling string parameters as `uchar8_t*`. The typical `StringBuilder` construct
+is also support.
+
+When running under Mono, `LPTSTR` is handled as a unicode string.
+
+```cs
+public interface IMyStringLibrary
+{
+    string GetSomeString();
+
+    int GetWStrLength([MarshalAs(UnmanagedType.LPWStr)] string uniString);
+
+    [return: MarshalAs(UnmanagedType(LPWStr)]
+    string GetSomeWString();
 }
 ```
 
