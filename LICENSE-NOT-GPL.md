@@ -10,7 +10,7 @@ This license is, first and foremost, a commercial license. The payment model (bu
 per-seat cost, per-product cost) is down to the customer's requirements and the nature of the product that ADL will be
 incorporated into.
 
-However, this does not exclude established open-source projects under less restrictive licenses for applying for a
+However, this does not exclude established open-source projects under less restrictive licenses from applying for a
 custom license that allows ADL to be used, while maintaining their existing license independence. It may be difficult
 for a project to attempt a relicensing under the GPL, and staying under the existing license may be preferable.
 Therefore, we also offer free or discounted licenses to established open-source projects.
