@@ -84,9 +84,9 @@ public interface IPulseSimple
 }
 ```
 
-Of note is string handling, which traditional P/Invoke handles via the MarshalAs attribute. ADL also respects the
-MarshalAs attribute, and defaults to marshalling string parameters as `uchar8_t*`. The typical `StringBuilder` construct
-is also support.
+Of note is string handling, which traditional P/Invoke handles via the `MarshalAs` attribute. ADL also respects the
+`MarshalAs` attribute, and defaults to marshalling string parameters as `uchar8_t*`. The typical `StringBuilder` construct
+is also supported.
 
 When running under Mono, `LPTSTR` is handled as a unicode string.
 
