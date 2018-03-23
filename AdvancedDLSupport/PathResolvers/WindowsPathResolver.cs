@@ -40,15 +40,14 @@ namespace AdvancedDLSupport
                 return ResolvePathResult.FromSuccess(libraryLocation);
             }
 
-            var windowsDir = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
-
-            var sys32Dir = Path.Combine(windowsDir, "System32");
-            libraryLocation = Path.GetFullPath(Path.Combine(sys32Dir, library));
+            var sysDir = Environment.SystemDirectory;
+            libraryLocation = Path.GetFullPath(Path.Combine(sysDir, library));
             if (File.Exists(libraryLocation))
             {
                 return ResolvePathResult.FromSuccess(libraryLocation);
             }
 
+            var windowsDir = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
             var sys16Dir = Path.Combine(windowsDir, "System");
             libraryLocation = Path.GetFullPath(Path.Combine(sys16Dir, library));
             if (File.Exists(libraryLocation))
