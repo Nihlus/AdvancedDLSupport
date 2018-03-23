@@ -48,7 +48,6 @@ namespace AdvancedDLSupport
             }
 
             var windowsDir = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
-
             var sys16Dir = Path.Combine(windowsDir, "System");
             libraryLocation = Path.GetFullPath(Path.Combine(sys16Dir, library));
             if (File.Exists(libraryLocation))
