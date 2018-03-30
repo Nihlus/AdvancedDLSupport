@@ -275,6 +275,9 @@
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.ItemNotNullAttribute.#ctor" />
   </member>
+  <member name="T:AdvancedDLSupport.NativeAOT">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
   <member name="T:AdvancedDLSupport.NativeLibraryBase">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
@@ -302,7 +305,7 @@
   <member name="T:AdvancedDLSupport.NativeLibraryBuilder">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.NativeLibraryBuilder.#ctor(AdvancedDLSupport.ImplementationOptions,AdvancedDLSupport.ILibraryPathResolver)">
+  <member name="M:AdvancedDLSupport.NativeLibraryBuilder.#ctor(AdvancedDLSupport.ImplementationOptions,AdvancedDLSupport.ILibraryPathResolver,System.Reflection.Emit.AssemblyBuilderAccess)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="pathResolver">
       <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />

@@ -45,20 +45,6 @@ namespace AdvancedDLSupport
     public class NativeLibraryBuilder
     {
         /// <summary>
-        /// Gets the configuration object for this builder.
-        /// </summary>
-        [PublicAPI]
-        public ImplementationOptions Options { get; }
-
-        /// <summary>
-        /// Gets a builder instance with default settings. The default settings are
-        /// <see cref="ImplementationOptions.GenerateDisposalChecks"/> and
-        /// <see cref="ImplementationOptions.EnableDllMapSupport"/>.
-        /// </summary>
-        [PublicAPI, NotNull]
-        public static NativeLibraryBuilder Default { get; }
-
-        /// <summary>
         /// Gets the name of the dynamic assembly.
         /// </summary>
         internal const string DynamicAssemblyName = "DLSupportDynamicAssembly";
@@ -69,14 +55,27 @@ namespace AdvancedDLSupport
         internal const string DynamicModuleName = "DLSupportDynamicModule";
 
         /// <summary>
+        /// Gets a builder instance with default settings. The default settings are
+        /// <see cref="ImplementationOptions.GenerateDisposalChecks"/> and
+        /// <see cref="ImplementationOptions.EnableDllMapSupport"/>.
+        /// </summary>
+        [PublicAPI, NotNull]
+        public static NativeLibraryBuilder Default { get; }
+
+        /// <summary>
+        /// Gets the configuration object for this builder.
+        /// </summary>
+        [PublicAPI]
+        public ImplementationOptions Options { get; }
+
+        /// <summary>
         /// Gets the path resolver to use for resolving libraries.
         /// </summary>
         [NotNull]
         private ILibraryPathResolver PathResolver { get; }
 
-        // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
-        private static readonly AssemblyBuilder AssemblyBuilder;
-        private static readonly ModuleBuilder ModuleBuilder;
+        private readonly AssemblyBuilder _assemblyBuilder;
+        private readonly ModuleBuilder _moduleBuilder;
 
         private static readonly object BuilderLock = new object();
 
@@ -85,26 +84,6 @@ namespace AdvancedDLSupport
 
         static NativeLibraryBuilder()
         {
-            AssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly
-            (
-                new AssemblyName(DynamicAssemblyName), AssemblyBuilderAccess.Run
-            );
-
-            #if DEBUG
-            var dbgType = typeof(DebuggableAttribute);
-            var dbgConstructor = dbgType.GetConstructor(new[] { typeof(DebuggableAttribute.DebuggingModes) });
-            var dbgModes = new object[]
-            {
-                DebuggableAttribute.DebuggingModes.DisableOptimizations | DebuggableAttribute.DebuggingModes.Default
-            };
-
-            var dbgBuilder = new CustomAttributeBuilder(dbgConstructor, dbgModes);
-
-            AssemblyBuilder.SetCustomAttribute(dbgBuilder);
-            #endif
-
-            ModuleBuilder = AssemblyBuilder.DefineDynamicModule(DynamicModuleName);
-
             TypeCache = new ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type>
             (
                 new LibraryIdentifierEqualityComparer()
@@ -123,15 +102,48 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="options">The configuration settings to use for the builder.</param>
         /// <param name="pathResolver">The path resolver to use.</param>
+        /// <param name="builderAccess">Optional. The access type to use for the dynamic assembly.</param>
         [PublicAPI]
         public NativeLibraryBuilder
         (
             ImplementationOptions options = default,
-            [CanBeNull] ILibraryPathResolver pathResolver = default
+            [CanBeNull] ILibraryPathResolver pathResolver = default,
+            AssemblyBuilderAccess builderAccess = AssemblyBuilderAccess.Run
         )
         {
+            _assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly
+            (
+                new AssemblyName(DynamicAssemblyName), builderAccess
+            );
+
+#if DEBUG
+            var dbgType = typeof(DebuggableAttribute);
+            var dbgConstructor = dbgType.GetConstructor(new[] { typeof(DebuggableAttribute.DebuggingModes) });
+            var dbgModes = new object[]
+            {
+                DebuggableAttribute.DebuggingModes.DisableOptimizations | DebuggableAttribute.DebuggingModes.Default
+            };
+
+            var dbgBuilder = new CustomAttributeBuilder(dbgConstructor, dbgModes);
+
+            _assemblyBuilder.SetCustomAttribute(dbgBuilder);
+#endif
+
+            _moduleBuilder = _assemblyBuilder.DefineDynamicModule(DynamicModuleName);
+
             Options = options;
             PathResolver = pathResolver ?? new DynamicLinkLibraryPathResolver();
+        }
+
+        /// <summary>
+        /// Gets the internal generated assembly. This builder is only provided for external inspection purposes, and
+        /// must not be altered.
+        /// </summary>
+        /// <returns>The assembly.</returns>
+        [NotNull]
+        internal AssemblyBuilder GetGeneratedAssembly()
+        {
+            return _assemblyBuilder;
         }
 
         /// <summary>
@@ -218,40 +230,168 @@ namespace AdvancedDLSupport
 
             // Check if we've already generated a type for this configuration
             var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, libraryPath, Options);
-            if (!TypeCache.TryGetValue(key, out var generatedType))
+            lock (BuilderLock)
             {
-                lock (BuilderLock)
+                if (!TypeCache.TryGetValue(key, out var generatedType))
                 {
                     generatedType = GenerateInterfaceImplementationType<TClass, TInterface>();
                     TypeCache.TryAdd(key, generatedType);
                 }
-            }
 
-            try
-            {
-                var anonymousInstance = CreateAnonymousImplementationInstance<TInterface>
-                (
-                    generatedType,
-                    libraryPath,
-                    Options,
-                    TransformerRepository
-                );
-
-                return anonymousInstance as TClass
-                ?? throw new InvalidOperationException
-                (
-                    "The resulting instance was not convertible to an instance of the class."
-                );
-            }
-            catch (TargetInvocationException tex)
-            {
-                if (tex.InnerException is null)
+                try
                 {
-                    throw;
-                }
+                    var anonymousInstance = CreateAnonymousImplementationInstance<TInterface>
+                    (
+                        generatedType,
+                        libraryPath,
+                        Options,
+                        TransformerRepository
+                    );
 
-                // Unwrap target invocation exceptions, since we can fail in the constructor
-                throw tex.InnerException;
+                    return anonymousInstance as TClass
+                    ?? throw new InvalidOperationException
+                    (
+                        "The resulting instance was not convertible to an instance of the class."
+                    );
+                }
+                catch (TargetInvocationException tex)
+                {
+                    if (tex.InnerException is null)
+                    {
+                        throw;
+                    }
+
+                    // Unwrap target invocation exceptions, since we can fail in the constructor
+                    throw tex.InnerException;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Generates the implementation type for a given class and interface combination, caching it for later use.
+        /// </summary>
+        /// <param name="libraryPath">The name of or path to the library.</param>
+        /// <typeparam name="TBaseClass">The base class for the implementation to generate.</typeparam>
+        /// <typeparam name="TInterface">The interface to implement.</typeparam>
+        /// <exception cref="ArgumentException">Thrown if either of the type arguments are incompatible.</exception>
+        /// <exception cref="FileNotFoundException">
+        /// Thrown if the specified library can't be found in any of the loader paths.
+        /// </exception>
+        internal void PregenerateImplementationType<TBaseClass, TInterface>(string libraryPath)
+            where TBaseClass : NativeLibraryBase
+            where TInterface : class
+        {
+            var classType = typeof(TBaseClass);
+            if (!classType.IsAbstract)
+            {
+                throw new ArgumentException
+                (
+                    "The class to activate must be abstract.",
+                    nameof(TBaseClass)
+                );
+            }
+
+            var interfaceType = typeof(TInterface);
+            if (!interfaceType.IsInterface)
+            {
+                throw new ArgumentException
+                (
+                    "The interface to activate on the class must be an interface type.",
+                    nameof(TInterface)
+                );
+            }
+
+            // Check for remapping
+            if (Options.HasFlagFast(EnableDllMapSupport))
+            {
+                libraryPath = new DllMapResolver().MapLibraryName(interfaceType, libraryPath);
+            }
+
+            // Attempt to resolve a name or path for the given library
+            var resolveResult = PathResolver.Resolve(libraryPath);
+            if (!resolveResult.IsSuccess)
+            {
+                throw new FileNotFoundException
+                (
+                    $"The specified library (\"{libraryPath}\") was not found in any of the loader search paths.",
+                    libraryPath,
+                    resolveResult.Exception
+                );
+            }
+
+            libraryPath = resolveResult.Path;
+
+            // Check if we've already generated a type for this configuration
+            var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, libraryPath, Options);
+            lock (BuilderLock)
+            {
+                if (!TypeCache.TryGetValue(key, out var generatedType))
+                {
+                    generatedType = GenerateInterfaceImplementationType<TBaseClass, TInterface>();
+                    TypeCache.TryAdd(key, generatedType);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Generates the implementation type for a given class and interface combination, caching it for later use.
+        /// </summary>
+        /// <param name="libraryPath">The name of or path to the library.</param>
+        /// <param name="classType">The base class for the implementation to generate.</param>
+        /// <param name="interfaceType">The interface to implement.</param>
+        /// <exception cref="ArgumentException">Thrown if either of the type arguments are incompatible.</exception>
+        /// <exception cref="FileNotFoundException">
+        /// Thrown if the specified library can't be found in any of the loader paths.
+        /// </exception>
+        internal void PregenerateImplementationType
+        (
+            string libraryPath,
+            [NotNull] Type classType,
+            [NotNull] Type interfaceType
+        )
+        {
+            if (!classType.IsAbstract)
+            {
+                throw new ArgumentException
+                (
+                    "The class to activate must be abstract.",
+                    nameof(classType)
+                );
+            }
+
+            if (!(classType.IsSubclassOf(typeof(NativeLibraryBase)) || classType == typeof(NativeLibraryBase)))
+            {
+                throw new ArgumentException
+                (
+                    $"The base class must be or derive from {nameof(NativeLibraryBase)}.",
+                    nameof(classType)
+                );
+            }
+
+            if (!interfaceType.IsInterface)
+            {
+                throw new ArgumentException
+                (
+                    "The interface to activate on the class must be an interface type.",
+                    nameof(interfaceType)
+                );
+            }
+
+            // Check for remapping
+            if (Options.HasFlagFast(EnableDllMapSupport))
+            {
+                libraryPath = new DllMapResolver().MapLibraryName(interfaceType, libraryPath);
+            }
+
+            // Check if we've already generated a type for this configuration
+            var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, libraryPath, Options);
+            lock (BuilderLock)
+            {
+                if (!TypeCache.TryGetValue(key, out var generatedType))
+                {
+                    generatedType = GenerateInterfaceImplementationType(classType, interfaceType);
+                    TypeCache.TryAdd(key, generatedType);
+                }
             }
         }
 
@@ -270,14 +410,54 @@ namespace AdvancedDLSupport
             var baseClassType = typeof(TBaseClass);
             var interfaceType = typeof(TInterface);
 
+            return GenerateInterfaceImplementationType(baseClassType, interfaceType);
+        }
+
+        /// <summary>
+        /// Generates a type inheriting from the given class and implementing the given interface, setting it up to bind
+        /// the interface functions to native C code.
+        /// </summary>
+        /// <param name="classType">The base class for the implementation to generate.</param>
+        /// <param name="interfaceType">The interface to implement.</param>
+        /// <returns>The type.</returns>
+        [NotNull, Pure]
+        private Type GenerateInterfaceImplementationType([NotNull] Type classType, [NotNull] Type interfaceType)
+        {
+            if (!classType.IsAbstract)
+            {
+                throw new ArgumentException
+                (
+                    "The class to activate must be abstract.",
+                    nameof(classType)
+                );
+            }
+
+            if (!(classType.IsSubclassOf(typeof(NativeLibraryBase)) || classType == typeof(NativeLibraryBase)))
+            {
+                throw new ArgumentException
+                (
+                    $"The base class must be or derive from {nameof(NativeLibraryBase)}.",
+                    nameof(classType)
+                );
+            }
+
+            if (!interfaceType.IsInterface)
+            {
+                throw new ArgumentException
+                (
+                    "The interface to activate on the class must be an interface type.",
+                    nameof(interfaceType)
+                );
+            }
+
             var typeName = GenerateTypeName(interfaceType);
 
             // Create a new type for the anonymous implementation
-            var typeBuilder = ModuleBuilder.DefineType
+            var typeBuilder = _moduleBuilder.DefineType
             (
                 typeName,
                 TypeAttributes.AutoClass | TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed,
-                baseClassType,
+                classType,
                 new[] { interfaceType }
             );
 
@@ -307,15 +487,15 @@ namespace AdvancedDLSupport
 
             var pipeline = new ImplementationPipeline
             (
-                ModuleBuilder,
+                _moduleBuilder,
                 typeBuilder,
                 constructorIL,
                 Options,
                 TransformerRepository
             );
 
-            ConstructMethods<TBaseClass, TInterface>(pipeline);
-            ConstructProperties<TBaseClass, TInterface>(pipeline);
+            ConstructMethods(pipeline, classType, interfaceType);
+            ConstructProperties(pipeline, classType, interfaceType);
 
             constructorIL.Emit(OpCodes.Ret);
             return typeBuilder.CreateTypeInfo();
@@ -375,14 +555,17 @@ namespace AdvancedDLSupport
         /// Constructs the implementations for all normal methods.
         /// </summary>
         /// <param name="pipeline">The implementation pipeline that consumes the methods.</param>
-        /// <typeparam name="TBaseClass">The base class of the type to generate methods for.</typeparam>
-        /// <typeparam name="TInterface">The interface where the methods originate.</typeparam>
-        private void ConstructMethods<TBaseClass, TInterface>([NotNull] ImplementationPipeline pipeline)
-            where TBaseClass : NativeLibraryBase
-            where TInterface : class
+        /// <param name="classType">The base class of the type to generate methods for.</param>
+        /// <param name="interfaceType">The interface where the methods originate.</param>
+        private void ConstructMethods
+        (
+            [NotNull] ImplementationPipeline pipeline,
+            [NotNull] Type classType,
+            [NotNull] Type interfaceType
+        )
         {
             var methods = new List<PipelineWorkUnit<IntrospectiveMethodInfo>>();
-            foreach (var method in typeof(TInterface).GetIntrospectiveMethods(true))
+            foreach (var method in interfaceType.GetIntrospectiveMethods(true))
             {
                 var targetMethod = method;
 
@@ -393,7 +576,7 @@ namespace AdvancedDLSupport
                 }
 
                 // Skip methods with a managed implementation in the base class
-                var baseClassMethod = typeof(TBaseClass).GetIntrospectiveMethod
+                var baseClassMethod = classType.GetIntrospectiveMethod
                 (
                     method.Name,
                     method.ParameterTypes.ToArray()
@@ -428,22 +611,25 @@ namespace AdvancedDLSupport
         /// Constructs the implementations for all properties.
         /// </summary>
         /// <param name="pipeline">The implementation pipeline that consumes the methods.</param>
-        /// <typeparam name="TBaseClass">The base class of the type to generator properties for.</typeparam>
-        /// <typeparam name="TInterface">The interface where the properties originate.</typeparam>
+        /// <param name="classType">The base class of the type to generator properties for.</param>
+        /// <param name="interfaceType">The interface where the properties originate.</param>
         /// <exception cref="InvalidOperationException">
         /// Thrown if any property is declared as partially abstract.
         /// </exception>
-        private void ConstructProperties<TBaseClass, TInterface>([NotNull] ImplementationPipeline pipeline)
-            where TBaseClass : NativeLibraryBase
-            where TInterface : class
+        private void ConstructProperties
+        (
+            [NotNull] ImplementationPipeline pipeline,
+            [NotNull] Type classType,
+            [NotNull] Type interfaceType
+        )
         {
             var properties = new List<PipelineWorkUnit<IntrospectivePropertyInfo>>();
-            foreach (var property in typeof(TInterface).GetProperties())
+            foreach (var property in interfaceType.GetProperties())
             {
                 var targetProperty = property;
 
                 // Skip properties with a managed implementation
-                var baseClassProperty = typeof(TBaseClass).GetProperty(property.Name, property.PropertyType);
+                var baseClassProperty = classType.GetProperty(property.Name, property.PropertyType);
                 if (!(baseClassProperty is null))
                 {
                     var isFullyManaged = !baseClassProperty.GetGetMethod().IsAbstract &&
