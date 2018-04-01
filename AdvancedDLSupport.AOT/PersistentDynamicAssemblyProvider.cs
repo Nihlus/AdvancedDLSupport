@@ -80,7 +80,7 @@ namespace AdvancedDLSupport.AOT
 
             if (dbgConstructor is null)
             {
-                throw new InvalidOperationException($"Could not find {nameof(DebuggableAttribute)} constructor.");
+                throw new InvalidOperationException($"Could not find the {nameof(DebuggableAttribute)} constructor.");
             }
 
             var dbgBuilder = new CustomAttributeBuilder(dbgConstructor, dbgModes);

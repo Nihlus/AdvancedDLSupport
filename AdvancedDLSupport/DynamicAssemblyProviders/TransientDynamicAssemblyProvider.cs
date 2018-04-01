@@ -76,6 +76,11 @@ namespace AdvancedDLSupport.DynamicAssemblyProviders
                 DebuggableAttribute.DebuggingModes.DisableOptimizations | DebuggableAttribute.DebuggingModes.Default
             };
 
+            if (dbgConstructor is null)
+            {
+                throw new InvalidOperationException($"Could not find the {nameof(DebuggableAttribute)} constructor.");
+            }
+
             var dbgBuilder = new CustomAttributeBuilder(dbgConstructor, dbgModes);
 
             _dynamicAssembly.SetCustomAttribute(dbgBuilder);
