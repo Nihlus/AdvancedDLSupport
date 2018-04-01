@@ -95,7 +95,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="info">The serialized information.</param>
         /// <param name="context">The streaming context.</param>
-        protected SymbolLoadingException(SerializationInfo info, StreamingContext context)
+        protected SymbolLoadingException([NotNull] SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
             SymbolName = info.GetString(nameof(SymbolName));
@@ -103,7 +103,7 @@ namespace AdvancedDLSupport
 
         /// <inheritdoc />
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        public override void GetObjectData([NotNull] SerializationInfo info, StreamingContext context)
         {
             info.AddValue(nameof(SymbolName), SymbolName);
             base.GetObjectData(info, context);

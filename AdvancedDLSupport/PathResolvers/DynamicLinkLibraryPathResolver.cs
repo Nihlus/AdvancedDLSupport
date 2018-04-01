@@ -183,13 +183,13 @@ namespace AdvancedDLSupport
             return candidates;
         }
 
-        [NotNull, ItemNotNull]
+        [NotNull, ItemNotNull, Pure]
         private static IEnumerable<string> GenerateWindowsCandidates([NotNull] string library)
         {
             yield return $"{library}.dll";
         }
 
-        [NotNull, ItemNotNull]
+        [NotNull, ItemNotNull, Pure]
         private static IEnumerable<string> GenerateUnixCandidates([NotNull] string library)
         {
             const string prefix = "lib";

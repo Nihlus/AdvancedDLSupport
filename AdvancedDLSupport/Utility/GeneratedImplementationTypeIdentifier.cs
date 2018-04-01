@@ -80,7 +80,7 @@ namespace AdvancedDLSupport
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
+        public override bool Equals([CanBeNull] object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -97,7 +97,7 @@ namespace AdvancedDLSupport
             {
                 return
                     ((_baseClassType != null ? _interfaceType.GetHashCode() : 0) * 397) ^
-                    (_interfaceType != null ? _interfaceType.GetHashCode() : 0) * 397 ^
+                    ((_interfaceType != null ? _interfaceType.GetHashCode() : 0) * 397) ^
                     (_absoluteLibraryPath != null ? _absoluteLibraryPath.GetHashCode() : 0) ^
                     ((int)_options * 397);
             }

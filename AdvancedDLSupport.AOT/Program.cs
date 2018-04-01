@@ -17,9 +17,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System;
-
-namespace AdvancedDLSupport.AssemblyGenerator
+namespace AdvancedDLSupport.AOT
 {
     /// <summary>
     /// The main entrypoint class of the program.

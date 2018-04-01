@@ -20,6 +20,7 @@ namespace AdvancedDLSupport.Tests.Integration
             Assert.Equal(10, result.Value.A);
             Assert.Equal(20, result.Value.B);
         }
+
         [Fact]
         public void CanCallFunctionWithNullableReturnValueWhereResultIsNull()
         {
@@ -30,7 +31,7 @@ namespace AdvancedDLSupport.Tests.Integration
         [Fact]
         public void CanCallFunctionWithNullableParameter()
         {
-            Assert.False(Library.CheckIfStructIsNull(new TestStruct{ A = 10, B = 20 }));
+            Assert.False(Library.CheckIfStructIsNull(new TestStruct { A = 10, B = 20 }));
         }
 
         [Fact]

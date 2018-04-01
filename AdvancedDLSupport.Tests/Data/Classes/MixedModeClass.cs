@@ -1,6 +1,6 @@
 ﻿using System;
-// ReSharper disable ValueParameterNotUsed
 
+// ReSharper disable ValueParameterNotUsed
 namespace AdvancedDLSupport.Tests.Data.Classes
 {
 	public abstract class MixedModeClass : NativeLibraryBase, IMixedModeLibrary
