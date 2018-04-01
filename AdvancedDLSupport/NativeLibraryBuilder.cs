@@ -25,6 +25,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using AdvancedDLSupport.DynamicAssemblyProviders;
 using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.ImplementationGenerators;
 using AdvancedDLSupport.Pipeline;
@@ -74,7 +75,7 @@ namespace AdvancedDLSupport
         [NotNull]
         private ILibraryPathResolver PathResolver { get; }
 
-        private readonly AssemblyBuilder _assemblyBuilder;
+        private readonly IDynamicAssemblyProvider _assemblyProvider;
         private readonly ModuleBuilder _moduleBuilder;
 
         private static readonly object BuilderLock = new object();
@@ -102,48 +103,25 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="options">The configuration settings to use for the builder.</param>
         /// <param name="pathResolver">The path resolver to use.</param>
-        /// <param name="builderAccess">Optional. The access type to use for the dynamic assembly.</param>
+        /// <param name="assemblyProvider">Optional. The dynamic assembly provider to use. Defaults to a transient provider..</param>
         [PublicAPI]
         public NativeLibraryBuilder
         (
             ImplementationOptions options = default,
             [CanBeNull] ILibraryPathResolver pathResolver = default,
-            AssemblyBuilderAccess builderAccess = AssemblyBuilderAccess.Run
+            [CanBeNull] IDynamicAssemblyProvider assemblyProvider = default
         )
         {
-            _assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly
-            (
-                new AssemblyName(DynamicAssemblyName), builderAccess
-            );
+            #if DEBUG
+            _assemblyProvider = assemblyProvider ?? new TransientDynamicAssemblyProvider(DynamicAssemblyName, true);
+            #else
+            _assemblyProvider = assemblyProvider ?? new TransientDynamicAssemblyProvider(DynamicAssemblyName, false);
+            #endif
 
-#if DEBUG
-            var dbgType = typeof(DebuggableAttribute);
-            var dbgConstructor = dbgType.GetConstructor(new[] { typeof(DebuggableAttribute.DebuggingModes) });
-            var dbgModes = new object[]
-            {
-                DebuggableAttribute.DebuggingModes.DisableOptimizations | DebuggableAttribute.DebuggingModes.Default
-            };
-
-            var dbgBuilder = new CustomAttributeBuilder(dbgConstructor, dbgModes);
-
-            _assemblyBuilder.SetCustomAttribute(dbgBuilder);
-#endif
-
-            _moduleBuilder = _assemblyBuilder.DefineDynamicModule(DynamicModuleName);
+            _moduleBuilder = _assemblyProvider.GetDynamicModule(DynamicModuleName);
 
             Options = options;
             PathResolver = pathResolver ?? new DynamicLinkLibraryPathResolver();
-        }
-
-        /// <summary>
-        /// Gets the internal generated assembly. This builder is only provided for external inspection purposes, and
-        /// must not be altered.
-        /// </summary>
-        /// <returns>The assembly.</returns>
-        [NotNull]
-        internal AssemblyBuilder GetGeneratedAssembly()
-        {
-            return _assemblyBuilder;
         }
 
         /// <summary>

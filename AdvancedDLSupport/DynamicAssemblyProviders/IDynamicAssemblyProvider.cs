@@ -41,6 +41,6 @@ namespace AdvancedDLSupport.DynamicAssemblyProviders
         /// <param name="name">The name of the module to get.</param>
         /// <returns>The module.</returns>
         [PublicAPI, NotNull]
-        ModuleBuilder GetDynamicModule(string name);
+        ModuleBuilder GetDynamicModule([NotNull] string name);
     }
 }
