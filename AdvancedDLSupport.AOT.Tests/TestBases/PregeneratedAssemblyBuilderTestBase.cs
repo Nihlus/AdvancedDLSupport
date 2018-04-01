@@ -6,7 +6,7 @@ namespace AdvancedDLSupport.AOT.Tests.TestBases
 {
     public class PregeneratedAssemblyBuilderTestBase : IDisposable
     {
-        protected const string OutputPath = "tests_output.dll";
+        protected const string OutputName = "tests_output.dll";
 
         protected Assembly SourceAssembly { get; }
         protected PregeneratedAssemblyBuilder Builder { get; }
@@ -19,9 +19,12 @@ namespace AdvancedDLSupport.AOT.Tests.TestBases
 
         public void Dispose()
         {
-            if (File.Exists(OutputPath))
+            var currentDirectory = Directory.GetCurrentDirectory();
+            var generatedAssemblies = Directory.EnumerateFiles(currentDirectory, $"{Path.GetFileNameWithoutExtension(OutputName)}*");
+
+            foreach (var assembly in generatedAssemblies)
             {
-                File.Delete(OutputPath);
+                 File.Delete(assembly);
             }
         }
     }
