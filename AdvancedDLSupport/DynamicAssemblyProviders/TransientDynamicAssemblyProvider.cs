@@ -18,6 +18,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -25,13 +26,21 @@ using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.DynamicAssemblyProviders
 {
+    /// <summary>
+    /// Provides transient dynamic assemblies.
+    /// </summary>
     [PublicAPI]
     public class TransientDynamicAssemblyProvider : IDynamicAssemblyProvider
     {
+        /// <summary>
+        /// Gets a value indicating whether or not the assembly is debuggable.
+        /// </summary>
         [PublicAPI]
         public bool IsDebuggable { get; }
 
         private AssemblyBuilder _dynamicAssembly;
+
+        private Dictionary<string, ModuleBuilder> _dynamicModules;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TransientDynamicAssemblyProvider"/> class.
@@ -46,6 +55,7 @@ namespace AdvancedDLSupport.DynamicAssemblyProviders
         public TransientDynamicAssemblyProvider(string assemblyName, bool debuggable)
         {
             IsDebuggable = debuggable;
+            _dynamicModules = new Dictionary<string, ModuleBuilder>();
 
             var dynamicAssemblyName = $"{assemblyName}-{Guid.NewGuid().ToString()}";
 
@@ -54,7 +64,11 @@ namespace AdvancedDLSupport.DynamicAssemblyProviders
                 new AssemblyName(dynamicAssemblyName), AssemblyBuilderAccess.Run
             );
 
-#if DEBUG
+            if (!debuggable)
+            {
+                return;
+            }
+
             var dbgType = typeof(DebuggableAttribute);
             var dbgConstructor = dbgType.GetConstructor(new[] { typeof(DebuggableAttribute.DebuggingModes) });
             var dbgModes = new object[]
@@ -65,17 +79,26 @@ namespace AdvancedDLSupport.DynamicAssemblyProviders
             var dbgBuilder = new CustomAttributeBuilder(dbgConstructor, dbgModes);
 
             _dynamicAssembly.SetCustomAttribute(dbgBuilder);
-#endif
         }
 
+        /// <inheritdoc/>
         public AssemblyBuilder GetDynamicAssembly()
         {
             return _dynamicAssembly;
         }
 
+        /// <inheritdoc/>
         public ModuleBuilder GetDynamicModule(string name)
         {
-            throw new System.NotImplementedException();
+            if (_dynamicModules.ContainsKey(name))
+            {
+                return _dynamicModules[name];
+            }
+
+            var module = _dynamicAssembly.DefineDynamicModule(name);
+            _dynamicModules.Add(name, module);
+
+            return module;
         }
     }
 }
