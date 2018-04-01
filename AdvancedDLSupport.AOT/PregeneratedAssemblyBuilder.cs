@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -165,14 +166,17 @@ namespace AdvancedDLSupport.AOT
                 combinationList.Add(explicitCombination);
             }
 
+            var assemblyName = $"{Path.GetFileNameWithoutExtension(outputPath)}";
+            var persistentAssemblyProvider = new PersistentDynamicAssemblyProvider(assemblyName, true);
+
             // And build the types
-            var libraryBuilder = new NativeLibraryBuilder(Options, builderAccess: AssemblyBuilderAccess.RunAndSave);
+            var libraryBuilder = new NativeLibraryBuilder(Options, assemblyProvider: persistentAssemblyProvider);
             foreach (var combination in combinationList)
             {
                 libraryBuilder.PregenerateImplementationType("dummy", combination.ClassType, combination.InterfaceType);
             }
 
-            var assembly = libraryBuilder.GetGeneratedAssembly();
+            var assembly = persistentAssemblyProvider.GetDynamicAssembly();
             assembly.Save(outputPath);
         }
     }
