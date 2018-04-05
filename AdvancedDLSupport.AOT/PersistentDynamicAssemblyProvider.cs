@@ -59,7 +59,7 @@ namespace AdvancedDLSupport.AOT
             IsDebuggable = debuggable;
             _dynamicModules = new Dictionary<string, ModuleBuilder>();
 
-            _assemblyName = $"{assemblyName}-{Guid.NewGuid().ToString()}";
+            _assemblyName = assemblyName;
 
             _dynamicAssembly = AssemblyBuilder.DefineDynamicAssembly
             (

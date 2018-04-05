@@ -6,7 +6,7 @@ namespace AdvancedDLSupport.AOT.Tests.TestBases
 {
     public class PregeneratedAssemblyBuilderTestBase : IDisposable
     {
-        protected const string OutputName = "tests_output.dll";
+        protected const string OutputName = "DLSupportDynamicAssembly.dll";
 
         protected Assembly SourceAssembly { get; }
         protected PregeneratedAssemblyBuilder Builder { get; }

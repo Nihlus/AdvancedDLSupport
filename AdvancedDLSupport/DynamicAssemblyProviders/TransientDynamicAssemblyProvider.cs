@@ -57,11 +57,9 @@ namespace AdvancedDLSupport.DynamicAssemblyProviders
             IsDebuggable = debuggable;
             _dynamicModules = new Dictionary<string, ModuleBuilder>();
 
-            var dynamicAssemblyName = $"{assemblyName}-{Guid.NewGuid().ToString()}";
-
             _dynamicAssembly = AssemblyBuilder.DefineDynamicAssembly
             (
-                new AssemblyName(dynamicAssemblyName), AssemblyBuilderAccess.Run
+                new AssemblyName(assemblyName), AssemblyBuilderAccess.Run
             );
 
             if (!debuggable)
