@@ -40,7 +40,7 @@ namespace AdvancedDLSupport.DynamicAssemblyProviders
 
         private AssemblyBuilder _dynamicAssembly;
 
-        private Dictionary<string, ModuleBuilder> _dynamicModules;
+        private ModuleBuilder _dynamicModule;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TransientDynamicAssemblyProvider"/> class.
@@ -55,7 +55,6 @@ namespace AdvancedDLSupport.DynamicAssemblyProviders
         public TransientDynamicAssemblyProvider(string assemblyName, bool debuggable)
         {
             IsDebuggable = debuggable;
-            _dynamicModules = new Dictionary<string, ModuleBuilder>();
 
             _dynamicAssembly = AssemblyBuilder.DefineDynamicAssembly
             (
@@ -91,17 +90,9 @@ namespace AdvancedDLSupport.DynamicAssemblyProviders
         }
 
         /// <inheritdoc/>
-        public ModuleBuilder GetDynamicModule(string name)
+        public ModuleBuilder GetDynamicModule()
         {
-            if (_dynamicModules.ContainsKey(name))
-            {
-                return _dynamicModules[name];
-            }
-
-            var module = _dynamicAssembly.DefineDynamicModule(name);
-            _dynamicModules.Add(name, module);
-
-            return module;
+            return _dynamicModule ?? (_dynamicModule = _dynamicAssembly.DefineDynamicModule("DLSupportDynamicModules"));
         }
     }
 }

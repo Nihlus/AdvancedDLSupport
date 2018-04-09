@@ -25,6 +25,8 @@ using System.Reflection;
 using System.Reflection.Emit;
 using AdvancedDLSupport.Extensions;
 using JetBrains.Annotations;
+using StrictEmit;
+using static System.Reflection.MethodAttributes;
 
 namespace AdvancedDLSupport.AOT
 {
@@ -49,6 +51,7 @@ namespace AdvancedDLSupport.AOT
         [PublicAPI]
         public PregeneratedAssemblyBuilder(ImplementationOptions options = 0)
         {
+            Options = options;
             SourceAssemblies = new List<Assembly>();
             SourceExplicitTypeCombinations = new List<(Type, Type)>();
         }
@@ -147,7 +150,7 @@ namespace AdvancedDLSupport.AOT
             var automaticInterfaces = new List<Type>();
             foreach (var sourceAssembly in SourceAssemblies)
             {
-                automaticInterfaces.AddRange(sourceAssembly.ExportedTypes.Where(t => t.HasCustomAttribute<NativeAOT>()));
+                automaticInterfaces.AddRange(sourceAssembly.ExportedTypes.Where(t => t.HasCustomAttribute<AOTTypeAttribute>()));
             }
 
             // Build combination list
@@ -170,14 +173,147 @@ namespace AdvancedDLSupport.AOT
             var persistentAssemblyProvider = new PersistentDynamicAssemblyProvider(assemblyName, true);
 
             // And build the types
+            var generatedTypeDictionary = new Dictionary<GeneratedImplementationTypeIdentifier, Type>();
+
             var libraryBuilder = new NativeLibraryBuilder(Options, assemblyProvider: persistentAssemblyProvider);
             foreach (var combination in combinationList)
             {
-                libraryBuilder.PregenerateImplementationType(combination.ClassType, combination.InterfaceType);
+                var generatedCombination = libraryBuilder.PregenerateImplementationType(combination.ClassType, combination.InterfaceType);
+
+                generatedTypeDictionary.Add(generatedCombination.Key, generatedCombination.Value);
             }
 
             var assembly = persistentAssemblyProvider.GetDynamicAssembly();
-            assembly.Save(outputPath);
+
+            // Apply the AOT attribute
+            var aotAssemblyConstructor = typeof(AOTAssemblyAttribute).GetConstructors().First(c => !c.GetParameters().Any());
+            var aotAssemblyAttributeBuilder = new CustomAttributeBuilder(aotAssemblyConstructor, new object[] { });
+            assembly.SetCustomAttribute(aotAssemblyAttributeBuilder);
+
+            // Create the metadata class
+            CreateMetadataType(persistentAssemblyProvider.GetDynamicModule(), generatedTypeDictionary);
+
+            var outputDirectory = Path.GetDirectoryName(outputPath) ?? outputPath;
+            var outputFileName = Path.GetFileName(outputPath) ?? outputPath;
+            var outputModuleName = persistentAssemblyProvider.GetDynamicModule().FullyQualifiedName;
+
+            Directory.CreateDirectory(outputDirectory);
+
+            assembly.Save(outputFileName);
+
+            File.Copy(outputFileName, Path.Combine(outputDirectory, outputFileName), true);
+            File.Copy(outputModuleName, Path.Combine(outputDirectory, outputModuleName), true);
+
+            File.Delete(outputFileName);
+            File.Delete(persistentAssemblyProvider.GetDynamicModule().FullyQualifiedName);
+        }
+
+        /// <summary>
+        /// Creates a metadata type in the assembly that contains a listing of the pregenerated types and their
+        /// respective lookup keys.
+        /// </summary>
+        /// <param name="module">The module to emit the type in.</param>
+        /// <param name="typeDictionary">The generated types.</param>
+        private void CreateMetadataType
+        (
+            [NotNull] ModuleBuilder module,
+            [NotNull] IReadOnlyDictionary<GeneratedImplementationTypeIdentifier, Type> typeDictionary
+        )
+        {
+            var type = module.DefineType
+            (
+                $"AOTMetadata_{Guid.NewGuid().ToString().ToLowerInvariant()}",
+                TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed,
+                typeof(object),
+                new[] { typeof(IAOTMetadata) }
+            );
+
+            // Tag the type with the metadata attribute
+            var aotMetadataAttributeConstructor = typeof(AOTMetadataAttribute).GetConstructors().First(c => !c.GetParameters().Any());
+            var aotMetadataAttributeBuilder = new CustomAttributeBuilder(aotMetadataAttributeConstructor, new object[] { });
+            type.SetCustomAttribute(aotMetadataAttributeBuilder);
+
+            var backingField = type.DefineField
+            (
+                $"{nameof(IAOTMetadata.GeneratedTypes)}_backing",
+                typeof(IReadOnlyDictionary<GeneratedImplementationTypeIdentifier, Type>),
+                FieldAttributes.Private | FieldAttributes.Static
+            );
+
+            var constructor = type.DefineConstructor
+            (
+                Public,
+                CallingConventions.Standard,
+                new Type[] { }
+            );
+
+            var dictionaryType = typeof(Dictionary<GeneratedImplementationTypeIdentifier, Type>);
+            var dictionaryConstructor = dictionaryType.GetConstructors().First
+            (
+                c => !c.GetParameters().Any()
+            );
+
+            var dictionaryAdd = dictionaryType.GetMethod(nameof(Dictionary<object, object>.Add));
+
+            var constructorIL = constructor.GetILGenerator();
+
+            constructorIL.EmitNewObject(dictionaryConstructor);
+            constructorIL.EmitSetStaticField(backingField);
+
+            foreach (var entry in typeDictionary)
+            {
+                constructorIL.EmitLoadStaticField(backingField);
+
+                EmitCreateKeyInstance(constructorIL, entry.Key);
+                constructorIL.EmitTypeOf(entry.Value);
+
+                constructorIL.EmitCallVirtual(dictionaryAdd);
+            }
+
+            constructorIL.EmitReturn();
+
+            var property = type.DefineProperty
+            (
+                nameof(IAOTMetadata.GeneratedTypes),
+                PropertyAttributes.HasDefault,
+                typeof(IReadOnlyDictionary<GeneratedImplementationTypeIdentifier, Type>),
+                null
+            );
+
+            var getter = type.DefineMethod
+            (
+                $"get_{nameof(IAOTMetadata.GeneratedTypes)}",
+                Public | Final | Virtual | SpecialName | HideBySig | NewSlot,
+                typeof(IReadOnlyDictionary<GeneratedImplementationTypeIdentifier, Type>),
+                null
+            );
+
+            var getterIL = getter.GetILGenerator();
+            getterIL.EmitLoadStaticField(backingField);
+            getterIL.EmitReturn();
+
+            property.SetGetMethod(getter);
+
+            type.CreateType();
+        }
+
+        /// <summary>
+        /// Emits a set of IL instructions that creates a new instance of the given <paramref name ="entryKey"/>.
+        /// </summary>
+        /// <param name="constructorIL">The generator where the Il is to be emitted.</param>
+        /// <param name="entryKey">The instance to emit.</param>
+        private void EmitCreateKeyInstance([NotNull] ILGenerator constructorIL, GeneratedImplementationTypeIdentifier entryKey)
+        {
+            var constructor = entryKey.GetType().GetConstructor
+            (
+                new[] { typeof(Type), typeof(Type), typeof(ImplementationOptions) }
+            );
+
+            constructorIL.EmitTypeOf(entryKey.BaseClassType);
+            constructorIL.EmitTypeOf(entryKey.InterfaceType);
+            constructorIL.EmitConstantInt((int)entryKey.Options);
+
+            constructorIL.EmitNewObject(constructor);
         }
     }
 }

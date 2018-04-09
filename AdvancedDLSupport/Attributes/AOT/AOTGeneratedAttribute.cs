@@ -1,5 +1,5 @@
 ﻿//
-//  NativeAOT.cs
+//  AOTGeneratedAttribute.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -20,13 +20,13 @@
 using System;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport.AOT
 {
     /// <summary>
-    /// Tags an interface as being eligible for native binding ahead-of-time compilation.
+    /// Tags a type as being ahead-of-time-generated.
     /// </summary>
-    [PublicAPI, AttributeUsage(AttributeTargets.Interface)]
-    public class NativeAOT : Attribute
+    [PublicAPI, AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class)]
+    public class AOTGeneratedAttribute : Attribute
     {
     }
 }

@@ -40,33 +40,33 @@ namespace AdvancedDLSupport
             ImplementationOptions options
         )
         {
-            _baseClassType = baseClassType;
-            _interfaceType = interfaceType;
-            _options = options;
+            BaseClassType = baseClassType;
+            InterfaceType = interfaceType;
+            Options = options;
         }
 
         /// <summary>
-        /// The base class type of the library.
+        /// Gets the base class type of the library.
         /// </summary>
-        private readonly Type _baseClassType;
+        internal Type BaseClassType { get; }
 
         /// <summary>
-        /// The interface type for the library.
+        /// Gets the interface type for the library.
         /// </summary>
-        private readonly Type _interfaceType;
+        internal Type InterfaceType { get; }
 
         /// <summary>
-        /// The configuration used for the library at construction time.
+        /// Gets the configuration used for the library at construction time.
         /// </summary>
-        private readonly ImplementationOptions _options;
+        internal ImplementationOptions Options { get; }
 
         /// <inheritdoc />
         public bool Equals(GeneratedImplementationTypeIdentifier other)
         {
             return
-                _baseClassType == other._baseClassType &&
-                _interfaceType == other._interfaceType &&
-                _options == other._options;
+                BaseClassType == other.BaseClassType &&
+                InterfaceType == other.InterfaceType &&
+                Options == other.Options;
         }
 
         /// <inheritdoc />
@@ -86,9 +86,9 @@ namespace AdvancedDLSupport
             unchecked
             {
                 return
-                    ((_baseClassType != null ? _interfaceType.GetHashCode() : 0) * 397) ^
-                    ((_interfaceType != null ? _interfaceType.GetHashCode() : 0) * 397) ^
-                    ((int)_options * 397);
+                    ((BaseClassType != null ? InterfaceType.GetHashCode() : 0) * 397) ^
+                    ((InterfaceType != null ? InterfaceType.GetHashCode() : 0) * 397) ^
+                    ((int)Options * 397);
             }
         }
     }

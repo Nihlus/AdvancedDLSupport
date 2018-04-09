@@ -103,6 +103,24 @@ namespace AdvancedDLSupport.Extensions
         }
 
         /// <summary>
+        /// Checks if the give type implements a given interface type.
+        /// </summary>
+        /// <param name="this">The type.</param>
+        /// <typeparam name="T">The interface.</typeparam>
+        /// <exception cref="ArgumentException">Thrown if the interface type is not an interface.</exception>
+        /// <returns>true if the type implements the interface; otherwise, false.</returns>
+        [Pure]
+        public static bool HasInterface<T>([NotNull] this Type @this) where T : class
+        {
+            if (!typeof(T).IsInterface)
+            {
+                throw new ArgumentException($"The type {typeof(T).Name} was not an interface.", nameof(T));
+            }
+
+            return !(@this.GetInterface(typeof(T).Name) is null);
+        }
+
+        /// <summary>
         /// Determines whether or not the given type is a <see cref="Nullable{T}"/> that is not passed by reference.
         /// </summary>
         /// <param name="this">The type.</param>

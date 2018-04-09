@@ -1,5 +1,5 @@
 ﻿//
-//  IDynamicAssemblyProvider.cs
+//  AssemblyExtensions.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -17,29 +17,26 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Reflection.Emit;
+using System;
+using System.Reflection;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.DynamicAssemblyProviders
+namespace AdvancedDLSupport.Extensions
 {
     /// <summary>
-    /// Provides and constructs a dynamic assembly for consumption.
+    /// Extension methods for the <see cref="MemberInfo"/> class.
     /// </summary>
-    [PublicAPI]
-    public interface IDynamicAssemblyProvider
+    internal static class AssemblyExtensions
     {
         /// <summary>
-        /// Gets the dynamic assembly provided by this instance.
+        /// Determines whether or not the given member has a custom attribute of the given type.
         /// </summary>
-        /// <returns>The assembly.</returns>
-        [PublicAPI, NotNull, Pure]
-        AssemblyBuilder GetDynamicAssembly();
-
-        /// <summary>
-        /// Gets the dynamic module from the assembly, creating one if it doesn't exist.
-        /// </summary>
-        /// <returns>The module.</returns>
-        [PublicAPI, NotNull]
-        ModuleBuilder GetDynamicModule();
+        /// <param name="this">The member info.</param>
+        /// <typeparam name="T">The attribute type.</typeparam>
+        /// <returns>true if it has one; otherwise, false.</returns>
+        public static bool HasCustomAttribute<T>([NotNull] this Assembly @this) where T : Attribute
+        {
+            return !(@this.GetCustomAttribute<T>() is null);
+        }
     }
 }

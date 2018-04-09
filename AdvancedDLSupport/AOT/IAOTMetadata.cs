@@ -1,5 +1,5 @@
 ﻿//
-//  IDynamicAssemblyProvider.cs
+//  IAOTMetadata.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -17,29 +17,21 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Reflection.Emit;
+using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.DynamicAssemblyProviders
+namespace AdvancedDLSupport.AOT
 {
     /// <summary>
-    /// Provides and constructs a dynamic assembly for consumption.
+    /// Interface for metadata classes in AOT assemblies.
     /// </summary>
-    [PublicAPI]
-    public interface IDynamicAssemblyProvider
+    internal interface IAOTMetadata
     {
         /// <summary>
-        /// Gets the dynamic assembly provided by this instance.
+        /// Gets the ahead-of-time-generated types in the assembly.
         /// </summary>
-        /// <returns>The assembly.</returns>
-        [PublicAPI, NotNull, Pure]
-        AssemblyBuilder GetDynamicAssembly();
-
-        /// <summary>
-        /// Gets the dynamic module from the assembly, creating one if it doesn't exist.
-        /// </summary>
-        /// <returns>The module.</returns>
-        [PublicAPI, NotNull]
-        ModuleBuilder GetDynamicModule();
+        [UsedImplicitly]
+        IReadOnlyDictionary<GeneratedImplementationTypeIdentifier, Type> GeneratedTypes { get; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
@@ -17,4 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AdvancedDLSupport.AOT\AdvancedDLSupport.AOT.csproj" />
   </ItemGroup>
+  <!-- Common CMake build steps -->
+  <Import Project="targets\CMake-Unix.targets" Condition="'$(OS)' == 'Unix'" />
+  <Import Project="targets\CMake-Win.targets" Condition="'$(OS)' == 'Windows_NT'" />
 </Project>

@@ -20,14 +20,13 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using AdvancedDLSupport.AOT;
 using AdvancedDLSupport.DynamicAssemblyProviders;
 using AdvancedDLSupport.Extensions;
-using AdvancedDLSupport.ImplementationGenerators;
 using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
@@ -36,6 +35,7 @@ using Mono.DllMap.Extensions;
 using static AdvancedDLSupport.ImplementationOptions;
 using static System.Reflection.CallingConventions;
 using static System.Reflection.MethodAttributes;
+using Assembly = System.Reflection.Assembly;
 
 namespace AdvancedDLSupport
 {
@@ -49,11 +49,6 @@ namespace AdvancedDLSupport
         /// Gets the name of the dynamic assembly.
         /// </summary>
         internal const string DynamicAssemblyName = "DLSupportDynamicAssembly";
-
-        /// <summary>
-        /// Gets the name of the dynamic module.
-        /// </summary>
-        internal const string DynamicModuleName = "DLSupportDynamicModule";
 
         /// <summary>
         /// Gets a builder instance with default settings. The default settings are
@@ -118,10 +113,58 @@ namespace AdvancedDLSupport
             _assemblyProvider = assemblyProvider ?? new TransientDynamicAssemblyProvider(DynamicAssemblyName, false);
             #endif
 
-            _moduleBuilder = _assemblyProvider.GetDynamicModule(DynamicModuleName);
+            _moduleBuilder = _assemblyProvider.GetDynamicModule();
 
             Options = options;
             PathResolver = pathResolver ?? new DynamicLinkLibraryPathResolver();
+        }
+
+        /// <summary>
+        /// Scans the given directory for assemblies, attempting to discover pregenerated native binding types.
+        /// </summary>
+        /// <param name="searchDirectory">The directory to search.</param>
+        [PublicAPI]
+        public static void DiscoverCompiledTypes([NotNull] string searchDirectory)
+        {
+            var assemblyPaths = Directory.EnumerateFiles(searchDirectory, "*.dll", SearchOption.AllDirectories);
+
+            foreach (var assemblyPath in assemblyPaths)
+            {
+                var assembly = Assembly.LoadFile(assemblyPath);
+                if (!assembly.HasCustomAttribute<AOTAssemblyAttribute>())
+                {
+                    continue;
+                }
+
+                var metadataType = assembly.GetExportedTypes().FirstOrDefault
+                (
+                    t =>
+                        t.HasCustomAttribute<AOTMetadataAttribute>() && t.HasInterface<IAOTMetadata>()
+                );
+
+                if (metadataType is null)
+                {
+                    throw new InvalidOperationException("The assembly did not contain a compatible metadata type.");
+                }
+
+                var typeDictionaryProperty = metadataType.GetProperty(nameof(IAOTMetadata.GeneratedTypes));
+
+                var metadataInstance = Activator.CreateInstance(metadataType);
+                var typeDictionary = (IReadOnlyDictionary<GeneratedImplementationTypeIdentifier, Type>)typeDictionaryProperty.GetValue(metadataInstance);
+
+                foreach (var generatedType in typeDictionary)
+                {
+                    lock (BuilderLock)
+                    {
+                        if (TypeCache.ContainsKey(generatedType.Key))
+                        {
+                            continue;
+                        }
+
+                        TypeCache.TryAdd(generatedType.Key, generatedType.Value);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -299,7 +342,8 @@ namespace AdvancedDLSupport
         /// <exception cref="FileNotFoundException">
         /// Thrown if the specified library can't be found in any of the loader paths.
         /// </exception>
-        internal void PregenerateImplementationType
+        /// <returns>A key-value tuple of the generated type identifier and the type.</returns>
+        internal (GeneratedImplementationTypeIdentifier Key, Type Value) PregenerateImplementationType
         (
             [NotNull] Type classType,
             [NotNull] Type interfaceType
@@ -334,14 +378,17 @@ namespace AdvancedDLSupport
 
             // Check if we've already generated a type for this configuration
             var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, Options);
+            Type generatedType;
             lock (BuilderLock)
             {
-                if (!TypeCache.TryGetValue(key, out var generatedType))
+                if (!TypeCache.TryGetValue(key, out generatedType))
                 {
                     generatedType = GenerateInterfaceImplementationType(classType, interfaceType);
                     TypeCache.TryAdd(key, generatedType);
                 }
             }
+
+            return (key, generatedType);
         }
 
         /// <summary>

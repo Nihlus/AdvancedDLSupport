@@ -42,7 +42,7 @@ namespace AdvancedDLSupport.AOT
 
         private AssemblyBuilder _dynamicAssembly;
 
-        private Dictionary<string, ModuleBuilder> _dynamicModules;
+        private ModuleBuilder _dynamicModule;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PersistentDynamicAssemblyProvider"/> class.
@@ -57,7 +57,6 @@ namespace AdvancedDLSupport.AOT
         public PersistentDynamicAssemblyProvider(string assemblyName, bool debuggable)
         {
             IsDebuggable = debuggable;
-            _dynamicModules = new Dictionary<string, ModuleBuilder>();
 
             _assemblyName = assemblyName;
 
@@ -95,17 +94,15 @@ namespace AdvancedDLSupport.AOT
         }
 
         /// <inheritdoc/>
-        public ModuleBuilder GetDynamicModule(string name)
+        public ModuleBuilder GetDynamicModule()
         {
-            if (_dynamicModules.ContainsKey(name))
-            {
-                return _dynamicModules[name];
-            }
-
-            var module = _dynamicAssembly.DefineDynamicModule(name, $"{_assemblyName}_{name}.module", IsDebuggable);
-            _dynamicModules.Add(name, module);
-
-            return module;
+            return _dynamicModule ??
+            (
+                _dynamicModule = _dynamicAssembly.DefineDynamicModule
+                (
+                    "DLSupportDynamicModule", $"DLSupportDynamicModule_{Guid.NewGuid().ToString().ToLowerInvariant()}.module"
+                )
+            );
         }
     }
 }
