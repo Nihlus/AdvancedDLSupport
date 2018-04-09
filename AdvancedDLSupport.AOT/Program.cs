@@ -17,6 +17,15 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using AdvancedDLSupport.AOT.Arguments;
+using AdvancedDLSupport.Extensions;
+using CommandLine;
+using NLog;
+
 namespace AdvancedDLSupport.AOT
 {
     /// <summary>
@@ -24,12 +33,65 @@ namespace AdvancedDLSupport.AOT
     /// </summary>
     internal static class Program
     {
+        private static ILogger Log = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
+        /// Gets the command-line arguments to the program.
+        /// </summary>
+        internal static CommandLineArguments Arguments { get; private set; }
+
         /// <summary>
         /// The main entry point.
         /// </summary>
         /// <param name="args">The raw arguments passed to the program.</param>
-        internal static void Main(string[] args)
+        /// <returns>The exit code of the application.</returns>
+        internal static int Main(string[] args)
         {
+            Parser.Default.ParseArguments<CommandLineArguments>(args)
+            .WithParsed(o => Arguments = o);
+
+            if (Arguments is null)
+            {
+                return (int)ExitCodes.InvalidArguments;
+            }
+
+            var builder = new PregeneratedAssemblyBuilder(Arguments.ImplementationOptions);
+
+            // Ensure all input paths are fully resolved, and that we don't try to process empty inputs
+            Arguments.InputAssemblies = Arguments.InputAssemblies.Select(Path.GetFullPath).Where(i => !i.IsNullOrWhiteSpace());
+
+            // Default to the current directory as the output directory
+            if (Arguments.OutputPath.IsNullOrWhiteSpace())
+            {
+                Arguments.OutputPath = Directory.GetCurrentDirectory();
+            }
+
+            foreach (var inputAssembly in Arguments.InputAssemblies)
+            {
+                if (!File.Exists(inputAssembly))
+                {
+                    Log.Error(new FileNotFoundException("Could not find the given input assembly.", inputAssembly));
+                    return (int)ExitCodes.InputAssemblyNotFound;
+                }
+
+                try
+                {
+                    var assembly = Assembly.LoadFile(inputAssembly);
+                    builder.WithSourceAssembly(assembly);
+
+                    Log.Info($"Loaded input assembly \"{assembly.GetName().Name}\".");
+                }
+                catch (BadImageFormatException bex)
+                {
+                    Log.Error(bex, "Failed to load input assembly due to a bitness mismatch or incompatible assembly.");
+                    return (int)ExitCodes.FailedToLoadAssembly;
+                }
+            }
+
+            var outputFilename = Path.Combine(Arguments.OutputPath, "DLSupportDynamicAssembly.dll");
+            builder.Build(outputFilename);
+
+            return (int)ExitCodes.Success;
         }
     }
 }

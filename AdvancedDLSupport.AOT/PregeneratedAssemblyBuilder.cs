@@ -25,6 +25,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using AdvancedDLSupport.Extensions;
 using JetBrains.Annotations;
+using NLog;
 using StrictEmit;
 using static System.Reflection.MethodAttributes;
 
@@ -36,6 +37,8 @@ namespace AdvancedDLSupport.AOT
     [PublicAPI]
     public class PregeneratedAssemblyBuilder
     {
+        private static ILogger Log = LogManager.GetCurrentClassLogger();
+
         [NotNull, ItemNotNull]
         private List<Assembly> SourceAssemblies { get; }
 
@@ -150,7 +153,12 @@ namespace AdvancedDLSupport.AOT
             var automaticInterfaces = new List<Type>();
             foreach (var sourceAssembly in SourceAssemblies)
             {
-                automaticInterfaces.AddRange(sourceAssembly.ExportedTypes.Where(t => t.HasCustomAttribute<AOTTypeAttribute>()));
+                Log.Info($"Scanning {sourceAssembly.GetName().Name}...");
+                foreach (var automaticInterface in sourceAssembly.ExportedTypes.Where(t => t.HasCustomAttribute<AOTTypeAttribute>()))
+                {
+                    automaticInterfaces.Add(automaticInterface);
+                    Log.Info($"Discovered {automaticInterface.Name}.");
+                }
             }
 
             // Build combination list
@@ -200,6 +208,11 @@ namespace AdvancedDLSupport.AOT
             Directory.CreateDirectory(outputDirectory);
 
             assembly.Save(outputFileName);
+
+            if (outputDirectory == Directory.GetCurrentDirectory())
+            {
+                return;
+            }
 
             File.Copy(outputFileName, Path.Combine(outputDirectory, outputFileName), true);
             File.Copy(outputModuleName, Path.Combine(outputDirectory, outputModuleName), true);

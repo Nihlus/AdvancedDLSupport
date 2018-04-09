@@ -1,5 +1,5 @@
 ﻿//
-//  AOTTypeAttribute.cs
+//  ExitCodes.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -17,16 +17,31 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System;
-using JetBrains.Annotations;
-
 namespace AdvancedDLSupport.AOT
 {
     /// <summary>
-    /// Tags an interface as being eligible for native binding ahead-of-time compilation.
+    /// Holds exit codes for the application.
     /// </summary>
-    [PublicAPI, AttributeUsage(AttributeTargets.Interface)]
-    public class AOTTypeAttribute : Attribute
+    public enum ExitCodes
     {
+        /// <summary>
+        /// No error, all is fine.
+        /// </summary>
+        Success = 0,
+
+        /// <summary>
+        /// Could not find one or more of the input assemblies.
+        /// </summary>
+        InputAssemblyNotFound = 1,
+
+        /// <summary>
+        /// Failed to load a given assembly.
+        /// </summary>
+        FailedToLoadAssembly = 2,
+
+        /// <summary>
+        /// Input arguments could not be parsed.
+        /// </summary>
+        InvalidArguments = 3
     }
 }
