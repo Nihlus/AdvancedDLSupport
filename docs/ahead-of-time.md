@@ -71,4 +71,7 @@ The `DiscoverCompiledTypes` call will recursively scan the given path for files 
 the ones containing AOT-compiled types into the global cache, making the types available for future instance activation
 calls.
 
+You should only call this method *once*. It's a comparatively expensive call, and calling it multiple times will only 
+cost you cycles without doing anything.
+
 That's it! Enjoy your runtime speed gains.
