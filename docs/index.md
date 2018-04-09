@@ -8,5 +8,6 @@ below.
 5. [Mixed-Mode Classes](mixed_mode_classes.md)
 6. [Library Scanning](library_scanning.md)
 7. [Indirect Calling](indirect-calling.md)
-8. [Interface Composition](interface-composition.md)
-9. [Dev Notes](developer_docs.md)
+8. [Ahead-of-Time Compilation](ahead-of-time.md)
+9. [Interface Composition](interface-composition.md)
+10. [Dev Notes](developer_docs.md)
