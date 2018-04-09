@@ -173,7 +173,7 @@ namespace AdvancedDLSupport.AOT
             var libraryBuilder = new NativeLibraryBuilder(Options, assemblyProvider: persistentAssemblyProvider);
             foreach (var combination in combinationList)
             {
-                libraryBuilder.PregenerateImplementationType("dummy", combination.ClassType, combination.InterfaceType);
+                libraryBuilder.PregenerateImplementationType(combination.ClassType, combination.InterfaceType);
             }
 
             var assembly = persistentAssemblyProvider.GetDynamicAssembly();

@@ -207,7 +207,7 @@ namespace AdvancedDLSupport
             libraryPath = resolveResult.Path;
 
             // Check if we've already generated a type for this configuration
-            var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, libraryPath, Options);
+            var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, Options);
             lock (BuilderLock)
             {
                 if (!TypeCache.TryGetValue(key, out var generatedType))
@@ -248,14 +248,13 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Generates the implementation type for a given class and interface combination, caching it for later use.
         /// </summary>
-        /// <param name="libraryPath">The name of or path to the library.</param>
         /// <typeparam name="TBaseClass">The base class for the implementation to generate.</typeparam>
         /// <typeparam name="TInterface">The interface to implement.</typeparam>
         /// <exception cref="ArgumentException">Thrown if either of the type arguments are incompatible.</exception>
         /// <exception cref="FileNotFoundException">
         /// Thrown if the specified library can't be found in any of the loader paths.
         /// </exception>
-        internal void PregenerateImplementationType<TBaseClass, TInterface>(string libraryPath)
+        internal void PregenerateImplementationType<TBaseClass, TInterface>()
             where TBaseClass : NativeLibraryBase
             where TInterface : class
         {
@@ -279,28 +278,8 @@ namespace AdvancedDLSupport
                 );
             }
 
-            // Check for remapping
-            if (Options.HasFlagFast(EnableDllMapSupport))
-            {
-                libraryPath = new DllMapResolver().MapLibraryName(interfaceType, libraryPath);
-            }
-
-            // Attempt to resolve a name or path for the given library
-            var resolveResult = PathResolver.Resolve(libraryPath);
-            if (!resolveResult.IsSuccess)
-            {
-                throw new FileNotFoundException
-                (
-                    $"The specified library (\"{libraryPath}\") was not found in any of the loader search paths.",
-                    libraryPath,
-                    resolveResult.Exception
-                );
-            }
-
-            libraryPath = resolveResult.Path;
-
             // Check if we've already generated a type for this configuration
-            var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, libraryPath, Options);
+            var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, Options);
             lock (BuilderLock)
             {
                 if (!TypeCache.TryGetValue(key, out var generatedType))
@@ -314,7 +293,6 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Generates the implementation type for a given class and interface combination, caching it for later use.
         /// </summary>
-        /// <param name="libraryPath">The name of or path to the library.</param>
         /// <param name="classType">The base class for the implementation to generate.</param>
         /// <param name="interfaceType">The interface to implement.</param>
         /// <exception cref="ArgumentException">Thrown if either of the type arguments are incompatible.</exception>
@@ -323,7 +301,6 @@ namespace AdvancedDLSupport
         /// </exception>
         internal void PregenerateImplementationType
         (
-            string libraryPath,
             [NotNull] Type classType,
             [NotNull] Type interfaceType
         )
@@ -355,14 +332,8 @@ namespace AdvancedDLSupport
                 );
             }
 
-            // Check for remapping
-            if (Options.HasFlagFast(EnableDllMapSupport))
-            {
-                libraryPath = new DllMapResolver().MapLibraryName(interfaceType, libraryPath);
-            }
-
             // Check if we've already generated a type for this configuration
-            var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, libraryPath, Options);
+            var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, Options);
             lock (BuilderLock)
             {
                 if (!TypeCache.TryGetValue(key, out var generatedType))
