@@ -18,7 +18,6 @@
 //
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -87,7 +86,7 @@ namespace AdvancedDLSupport.AOT
             _dynamicAssembly.SetCustomAttribute(dbgBuilder);
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public AssemblyBuilder GetDynamicAssembly()
         {
             return _dynamicAssembly;

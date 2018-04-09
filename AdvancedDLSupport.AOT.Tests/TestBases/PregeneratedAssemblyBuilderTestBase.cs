@@ -12,6 +12,7 @@ namespace AdvancedDLSupport.AOT.Tests.TestBases
         protected Assembly SourceAssembly { get; }
         protected PregeneratedAssemblyBuilder Builder { get; }
 
+        [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")]
         protected PregeneratedAssemblyBuilderTestBase()
         {
             SourceAssembly = Assembly.GetAssembly(typeof(PregeneratedAssemblyBuilderTestBase));
