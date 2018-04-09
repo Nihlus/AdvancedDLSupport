@@ -8,6 +8,23 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
+  <PropertyGroup>
+    <Title>AdvancedDLSupport.AOT</Title>
+    <Authors>TheBlackCentipede;Jax</Authors>
+    <Version>1.1.0</Version>
+    <Description>An alternative approach to your typical P/Invoke.</Description>
+    <Copyright>Copyright Firwood Software 2017</Copyright>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageLicenseUrl>https://www.gnu.org/licenses/gpl-3.0.en.html</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
+    <PackageTags>p/invoke;cross-platform;mono;netcore;netstandard;native;interop</PackageTags>
+    <PackageOutputPath>../nuget</PackageOutputPath>
+    <IncludeSymbols>True</IncludeSymbols>
+    <IncludeSource>True</IncludeSource>
+    <RepositoryUrl>https://github.com/Firwood-Software/AdvanceDLSupport/</RepositoryUrl>
+  </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="$(ProjectDir)\..\stylecop.json">
       <Link>stylecop.json</Link>
