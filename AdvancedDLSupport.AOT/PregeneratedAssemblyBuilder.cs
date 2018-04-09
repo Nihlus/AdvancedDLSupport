@@ -37,7 +37,9 @@ namespace AdvancedDLSupport.AOT
     [PublicAPI]
     public class PregeneratedAssemblyBuilder
     {
-        private static ILogger Log = LogManager.GetCurrentClassLogger();
+        private static ILogger _log = LogManager.GetCurrentClassLogger();
+
+        private static object _fileCopyLock = new object();
 
         [NotNull, ItemNotNull]
         private List<Assembly> SourceAssemblies { get; }
@@ -153,11 +155,11 @@ namespace AdvancedDLSupport.AOT
             var automaticInterfaces = new List<Type>();
             foreach (var sourceAssembly in SourceAssemblies)
             {
-                Log.Info($"Scanning {sourceAssembly.GetName().Name}...");
+                _log.Info($"Scanning {sourceAssembly.GetName().Name}...");
                 foreach (var automaticInterface in sourceAssembly.ExportedTypes.Where(t => t.HasCustomAttribute<AOTTypeAttribute>()))
                 {
                     automaticInterfaces.Add(automaticInterface);
-                    Log.Info($"Discovered {automaticInterface.Name}.");
+                    _log.Info($"Discovered {automaticInterface.Name}.");
                 }
             }
 
@@ -201,24 +203,30 @@ namespace AdvancedDLSupport.AOT
             // Create the metadata class
             CreateMetadataType(persistentAssemblyProvider.GetDynamicModule(), generatedTypeDictionary);
 
-            var outputDirectory = Path.GetDirectoryName(outputPath) ?? outputPath;
+            var outputDirectory = Path.GetFullPath(Path.GetDirectoryName(outputPath) ?? outputPath);
             var outputFileName = Path.GetFileName(outputPath) ?? outputPath;
             var outputModuleName = persistentAssemblyProvider.GetDynamicModule().FullyQualifiedName;
 
-            Directory.CreateDirectory(outputDirectory);
+            if (!outputDirectory.IsNullOrWhiteSpace())
+            {
+                Directory.CreateDirectory(outputDirectory);
+            }
 
             assembly.Save(outputFileName);
 
-            if (outputDirectory == Directory.GetCurrentDirectory())
+            if (outputDirectory == Directory.GetCurrentDirectory() || outputDirectory.IsNullOrWhiteSpace())
             {
                 return;
             }
 
-            File.Copy(outputFileName, Path.Combine(outputDirectory, outputFileName), true);
-            File.Copy(outputModuleName, Path.Combine(outputDirectory, outputModuleName), true);
+            lock (_fileCopyLock)
+            {
+                File.Copy(outputFileName, Path.Combine(outputDirectory, outputFileName), true);
+                File.Copy(outputModuleName, Path.Combine(outputDirectory, outputModuleName), true);
 
-            File.Delete(outputFileName);
-            File.Delete(persistentAssemblyProvider.GetDynamicModule().FullyQualifiedName);
+                File.Delete(outputFileName);
+                File.Delete(persistentAssemblyProvider.GetDynamicModule().FullyQualifiedName);
+            }
         }
 
         /// <summary>

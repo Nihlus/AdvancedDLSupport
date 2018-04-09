@@ -33,7 +33,7 @@ namespace AdvancedDLSupport.AOT
     /// </summary>
     internal static class Program
     {
-        private static ILogger Log = LogManager.GetCurrentClassLogger();
+        private static ILogger _log = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// Gets the command-line arguments to the program.
@@ -70,7 +70,7 @@ namespace AdvancedDLSupport.AOT
             {
                 if (!File.Exists(inputAssembly))
                 {
-                    Log.Error(new FileNotFoundException("Could not find the given input assembly.", inputAssembly));
+                    _log.Error(new FileNotFoundException("Could not find the given input assembly.", inputAssembly));
                     return (int)ExitCodes.InputAssemblyNotFound;
                 }
 
@@ -79,11 +79,11 @@ namespace AdvancedDLSupport.AOT
                     var assembly = Assembly.LoadFile(inputAssembly);
                     builder.WithSourceAssembly(assembly);
 
-                    Log.Info($"Loaded input assembly \"{assembly.GetName().Name}\".");
+                    _log.Info($"Loaded input assembly \"{assembly.GetName().Name}\".");
                 }
                 catch (BadImageFormatException bex)
                 {
-                    Log.Error(bex, "Failed to load input assembly due to a bitness mismatch or incompatible assembly.");
+                    _log.Error(bex, "Failed to load input assembly due to a bitness mismatch or incompatible assembly.");
                     return (int)ExitCodes.FailedToLoadAssembly;
                 }
             }
