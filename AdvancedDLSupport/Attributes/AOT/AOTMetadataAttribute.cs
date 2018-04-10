@@ -25,7 +25,7 @@ namespace AdvancedDLSupport.AOT
     /// <summary>
     /// Tags a type as containing precompiled type metadata.
     /// </summary>
-    [PublicAPI, AttributeUsage(AttributeTargets.Assembly)]
+    [PublicAPI, AttributeUsage(AttributeTargets.Class)]
     public class AOTMetadataAttribute : Attribute
     {
     }

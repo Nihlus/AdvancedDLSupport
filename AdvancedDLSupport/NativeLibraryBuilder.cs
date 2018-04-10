@@ -325,11 +325,13 @@ namespace AdvancedDLSupport
             var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, Options);
             lock (BuilderLock)
             {
-                if (!TypeCache.TryGetValue(key, out var generatedType))
+                if (TypeCache.TryGetValue(key, out var generatedType))
                 {
-                    generatedType = GenerateInterfaceImplementationType<TBaseClass, TInterface>();
-                    TypeCache.TryAdd(key, generatedType);
+                    return;
                 }
+
+                generatedType = GenerateInterfaceImplementationType<TBaseClass, TInterface>();
+                TypeCache.TryAdd(key, generatedType);
             }
         }
 
@@ -381,11 +383,13 @@ namespace AdvancedDLSupport
             Type generatedType;
             lock (BuilderLock)
             {
-                if (!TypeCache.TryGetValue(key, out generatedType))
+                if (TypeCache.TryGetValue(key, out generatedType))
                 {
-                    generatedType = GenerateInterfaceImplementationType(classType, interfaceType);
-                    TypeCache.TryAdd(key, generatedType);
+                    return (key, generatedType);
                 }
+
+                generatedType = GenerateInterfaceImplementationType(classType, interfaceType);
+                TypeCache.TryAdd(key, generatedType);
             }
 
             return (key, generatedType);
@@ -474,7 +478,7 @@ namespace AdvancedDLSupport
 
             constructorBuilder.DefineParameter(1, ParameterAttributes.In, "libraryPath");
             var constructorIL = constructorBuilder.GetILGenerator();
-            for (int i = 0; i <= anonymousConstructor.GetParameters().Length; ++i)
+            for (var i = 0; i <= anonymousConstructor.GetParameters().Length; ++i)
             {
                 constructorIL.Emit(OpCodes.Ldarg, i);
             }
