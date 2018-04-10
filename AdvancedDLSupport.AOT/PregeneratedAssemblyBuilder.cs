@@ -203,7 +203,11 @@ namespace AdvancedDLSupport.AOT
             // Create the metadata class
             CreateMetadataType(persistentAssemblyProvider.GetDynamicModule(), generatedTypeDictionary);
 
-            var outputDirectory = Path.GetFullPath(Path.GetDirectoryName(outputPath) ?? outputPath);
+            var outputDirectory = Path.GetDirectoryName(outputPath) ?? outputPath;
+            outputDirectory = outputDirectory.IsNullOrWhiteSpace()
+                ? Directory.GetCurrentDirectory()
+                : Path.GetFullPath(outputDirectory);
+
             var outputFileName = Path.GetFileName(outputPath) ?? outputPath;
             var outputModuleName = persistentAssemblyProvider.GetDynamicModule().FullyQualifiedName;
 
