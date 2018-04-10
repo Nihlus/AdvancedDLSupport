@@ -53,7 +53,7 @@ namespace AdvancedDLSupport.AOT
         /// Whether or not the assembly should be marked as debuggable. This disables any compiler optimizations.
         /// </param>
         [PublicAPI]
-        public PersistentDynamicAssemblyProvider(string assemblyName, bool debuggable)
+        public PersistentDynamicAssemblyProvider([NotNull] string assemblyName, bool debuggable)
         {
             IsDebuggable = debuggable;
 

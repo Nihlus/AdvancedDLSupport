@@ -149,7 +149,7 @@ namespace AdvancedDLSupport.AOT
         /// Builds the implementation assembly, saving it to the given path.
         /// </summary>
         /// <param name="outputPath">The path where the assembly should be saved.</param>
-        public void Build(string outputPath)
+        public void Build([NotNull] string outputPath)
         {
             // Discover automatic interfaces
             var automaticInterfaces = new List<Type>();
@@ -208,7 +208,7 @@ namespace AdvancedDLSupport.AOT
                 ? Directory.GetCurrentDirectory()
                 : Path.GetFullPath(outputDirectory);
 
-            var outputFileName = Path.GetFileName(outputPath) ?? outputPath;
+            var outputFileName = Path.GetFileName(outputPath);
             var outputModuleName = persistentAssemblyProvider.GetDynamicModule().FullyQualifiedName;
 
             if (!outputDirectory.IsNullOrWhiteSpace())
@@ -218,7 +218,7 @@ namespace AdvancedDLSupport.AOT
 
             assembly.Save(outputFileName);
 
-            if (outputDirectory == Directory.GetCurrentDirectory() || outputDirectory.IsNullOrWhiteSpace())
+            if (outputDirectory == Directory.GetCurrentDirectory())
             {
                 return;
             }
