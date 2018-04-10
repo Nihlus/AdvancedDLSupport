@@ -31,7 +31,7 @@ namespace AdvancedDLSupport.AOT
     /// <summary>
     /// The main entrypoint class of the program.
     /// </summary>
-    internal static class Program
+    public static class Program
     {
         private static ILogger _log = LogManager.GetCurrentClassLogger();
 
@@ -45,10 +45,11 @@ namespace AdvancedDLSupport.AOT
         /// </summary>
         /// <param name="args">The raw arguments passed to the program.</param>
         /// <returns>The exit code of the application.</returns>
-        internal static int Main(string[] args)
+        public static int Main(string[] args)
         {
             Parser.Default.ParseArguments<CommandLineArguments>(args)
-            .WithParsed(o => Arguments = o);
+            .WithParsed(o => Arguments = o)
+            .WithNotParsed(e => Arguments = null);
 
             if (Arguments is null)
             {
