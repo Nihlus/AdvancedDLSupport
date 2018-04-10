@@ -20,7 +20,7 @@
     <PackageId>AdvancedDLSupport</PackageId>
     <PackageLicenseUrl>https://www.gnu.org/licenses/lgpl-3.0.txt</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Relicense under LGPLv3.</PackageReleaseNotes>
+    <PackageReleaseNotes>Add support for AOT compilation of native binding types. Implement an option to use calli when generating native code.</PackageReleaseNotes>
     <PackageTags>p/invoke;cross-platform;mono;netcore;netstandard;native;interop</PackageTags>
     <PackageOutputPath>../nuget</PackageOutputPath>
     <IncludeSymbols>True</IncludeSymbols>
