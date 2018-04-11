@@ -18,9 +18,11 @@ var builder = new NativeLibraryBuilder(options);
 Here are some benchmarks to demonstrate the benefits of using `calli`.
 
 *.NET Core 2.0*
+
 ![.NET Core][benchmark-netcore]
 
 *Mono*
+
 ![Mono][benchmark-mono] 
 
 While using `calli` provides unprecedented speed improvements, there are some things to look out for. Primarily, `calli`
