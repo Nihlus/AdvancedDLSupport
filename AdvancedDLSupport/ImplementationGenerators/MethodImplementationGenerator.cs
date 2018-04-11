@@ -27,7 +27,7 @@ using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
-
+using StrictEmit;
 using static AdvancedDLSupport.ImplementationOptions;
 using static System.Reflection.CallingConventions;
 using static System.Reflection.MethodAttributes;
@@ -62,7 +62,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <inheritdoc />
         protected override void GenerateImplementation(IntrospectiveMethodInfo method, string symbolName, string uniqueMemberIdentifier)
         {
-            var definition = GenerateDelegateInvokerDefinition(method);
+            var definition = GenerateInvokerDefinition(method);
 
             GenerateImplementationForDefinition(definition, symbolName, uniqueMemberIdentifier);
 
@@ -70,60 +70,126 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <inheritdoc />
+        [NotNull]
         public override IntrospectiveMethodInfo GenerateImplementationForDefinition(IntrospectiveMethodInfo definition, string symbolName, string uniqueMemberIdentifier)
         {
             var metadataAttribute = definition.GetCustomAttribute<NativeSymbolAttribute>() ??
                                     new NativeSymbolAttribute(definition.Name);
 
-            var delegateBuilder = GenerateDelegateType(definition, uniqueMemberIdentifier, metadataAttribute.CallingConvention);
-
-            // Create a delegate field
-            var delegateBuilderType = delegateBuilder.CreateTypeInfo();
-
-            var delegateField = Options.HasFlagFast(UseLazyBinding) ?
-                TargetType.DefineField($"{uniqueMemberIdentifier}_dtm", typeof(Lazy<>).MakeGenericType(delegateBuilderType), FieldAttributes.Public) :
-                TargetType.DefineField($"{uniqueMemberIdentifier}_dtm", delegateBuilderType, FieldAttributes.Public);
-
-            AugmentHostingTypeConstructor(symbolName, delegateBuilderType, delegateField);
-
-            GenerateDelegateInvokerBody(definition, delegateBuilderType, delegateField);
-            return definition;
-        }
-
-        /// <summary>
-        /// Augments the constructor of the hosting type with initialization logic for this method.
-        /// </summary>
-        /// <param name="entrypointName">The name of the native entry point.</param>
-        /// <param name="delegateBuilderType">The type of the method delegate.</param>
-        /// <param name="delegateField">The delegate field.</param>
-        private void AugmentHostingTypeConstructor
-        (
-            [NotNull] string entrypointName,
-            [NotNull] Type delegateBuilderType,
-            [NotNull] FieldInfo delegateField
-        )
-        {
-            var loadFunc = typeof(NativeLibraryBase).GetMethod
-            (
-                "LoadFunction",
-                BindingFlags.NonPublic | BindingFlags.Instance
-            ).MakeGenericMethod(delegateBuilderType);
-
-            TargetTypeConstructorIL.Emit(OpCodes.Ldarg_0); // This is for storing field delegate, it needs the "this" reference
-            TargetTypeConstructorIL.Emit(OpCodes.Ldarg_0);
-
-            if (Options.HasFlagFast(UseLazyBinding))
+            if (Options.HasFlagFast(UseIndirectCalls))
             {
-                var lambdaBuilder = GenerateFunctionLoadingLambda(delegateBuilderType, entrypointName);
-                GenerateLazyLoadedField(lambdaBuilder, delegateBuilderType);
+                var backingFieldType = typeof(IntPtr);
+
+                var backingField = Options.HasFlagFast(UseLazyBinding)
+                ? TargetType.DefineField
+                (
+                    $"{uniqueMemberIdentifier}_ptr_lazy",
+                    typeof(Lazy<>).MakeGenericType(backingFieldType),
+                    FieldAttributes.Private | FieldAttributes.InitOnly
+                )
+                : TargetType.DefineField
+                (
+                    $"{uniqueMemberIdentifier}_ptr",
+                    backingFieldType,
+                    FieldAttributes.Private | FieldAttributes.InitOnly
+                );
+
+                AugmentHostingTypeConstructorWithNativeInitialization(symbolName, backingFieldType, backingField);
+                GenerateNativeInvokerBody(definition, backingFieldType, backingField);
             }
             else
             {
-                TargetTypeConstructorIL.Emit(OpCodes.Ldstr, entrypointName);
-                TargetTypeConstructorIL.EmitCall(OpCodes.Call, loadFunc, null);
+                var delegateBuilder = GenerateDelegateType(definition, uniqueMemberIdentifier, metadataAttribute.CallingConvention);
+
+                // Create a delegate field
+                var backingFieldType = delegateBuilder.CreateTypeInfo();
+
+                var backingField = Options.HasFlagFast(UseLazyBinding)
+                ? TargetType.DefineField
+                (
+                    $"{uniqueMemberIdentifier}_delegate_lazy",
+                    typeof(Lazy<>).MakeGenericType(backingFieldType),
+                    FieldAttributes.Private | FieldAttributes.InitOnly
+                )
+                :
+                TargetType.DefineField
+                (
+                    $"{uniqueMemberIdentifier}_delegate",
+                    backingFieldType,
+                    FieldAttributes.Private | FieldAttributes.InitOnly
+                );
+
+                AugmentHostingTypeConstructorWithDelegateInitialization(symbolName, backingFieldType, backingField);
+                GenerateDelegateInvokerBody(definition, backingFieldType, backingField);
             }
 
-            TargetTypeConstructorIL.Emit(OpCodes.Stfld, delegateField);
+            return definition;
+        }
+
+        private void AugmentHostingTypeConstructorWithNativeInitialization
+        (
+            [NotNull] string entrypointName,
+            [NotNull] Type backingFieldType,
+            [NotNull] FieldInfo backingField
+        )
+        {
+            TargetTypeConstructorIL.EmitLoadArgument(0);
+            TargetTypeConstructorIL.EmitLoadArgument(0);
+
+            if (Options.HasFlagFast(UseLazyBinding))
+            {
+                var lambdaBuilder = GenerateSymbolLoadingLambda(entrypointName);
+                GenerateLazyLoadedObject(lambdaBuilder, backingFieldType);
+            }
+            else
+            {
+                var loadPointerMethod = typeof(NativeLibraryBase).GetMethod
+                (
+                    nameof(NativeLibraryBase.LoadSymbol),
+                    BindingFlags.NonPublic | BindingFlags.Instance
+                );
+
+                TargetTypeConstructorIL.EmitConstantString(entrypointName);
+                TargetTypeConstructorIL.EmitCallDirect(loadPointerMethod);
+            }
+
+            TargetTypeConstructorIL.EmitSetField(backingField);
+        }
+
+        /// <summary>
+        /// Augments the hosting type constructor with the logic required to initialize the backing delegate field.
+        /// </summary>
+        /// <param name="entrypointName">The name of the entry point.</param>
+        /// <param name="backingFieldType">The type of the backing field.</param>
+        /// <param name="backingField">The backing delegate field.</param>
+        private void AugmentHostingTypeConstructorWithDelegateInitialization
+        (
+            [NotNull] string entrypointName,
+            [NotNull] Type backingFieldType,
+            [NotNull] FieldInfo backingField
+        )
+        {
+            var loadFunctionMethod = typeof(NativeLibraryBase).GetMethod
+            (
+                nameof(NativeLibraryBase.LoadFunction),
+                BindingFlags.NonPublic | BindingFlags.Instance
+            ).MakeGenericMethod(backingFieldType);
+
+            TargetTypeConstructorIL.EmitLoadArgument(0);
+            TargetTypeConstructorIL.EmitLoadArgument(0);
+
+            if (Options.HasFlagFast(UseLazyBinding))
+            {
+                var lambdaBuilder = GenerateFunctionLoadingLambda(backingFieldType, entrypointName);
+                GenerateLazyLoadedObject(lambdaBuilder, backingFieldType);
+            }
+            else
+            {
+                TargetTypeConstructorIL.EmitConstantString(entrypointName);
+                TargetTypeConstructorIL.EmitCallDirect(loadFunctionMethod);
+            }
+
+            TargetTypeConstructorIL.EmitSetField(backingField);
         }
 
         /// <summary>
@@ -131,7 +197,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="methodDefinition">The method to invoke.</param>
         /// <returns>The generated invoker.</returns>
-        private IntrospectiveMethodInfo GenerateDelegateInvokerDefinition([NotNull] IntrospectiveMethodInfo methodDefinition)
+        [NotNull]
+        private IntrospectiveMethodInfo GenerateInvokerDefinition([NotNull] IntrospectiveMethodInfo methodDefinition)
         {
             var methodBuilder = TargetType.DefineMethod
             (
@@ -179,6 +246,43 @@ namespace AdvancedDLSupport.ImplementationGenerators
             }
 
             methodIL.EmitCall(OpCodes.Call, delegateBuilderType.GetMethod("Invoke"), null);
+            methodIL.Emit(OpCodes.Ret);
+        }
+
+        /// <summary>
+        /// Generates the method body for a native calli invocation.
+        /// </summary>
+        /// <param name="method">The method to generate the body for.</param>
+        /// <param name="backingFieldType">The type of the backing field.</param>
+        /// <param name="backingField">The backing field.</param>
+        private void GenerateNativeInvokerBody
+        (
+            [NotNull] IntrospectiveMethodInfo method,
+            [NotNull] Type backingFieldType,
+            [NotNull] FieldInfo backingField
+        )
+        {
+            if (!(method.GetWrappedMember() is MethodBuilder builder))
+            {
+                throw new ArgumentNullException(nameof(method), "Could not unwrap introspective method to method builder.");
+            }
+
+            // Let's create a method that simply invoke the delegate
+            var methodIL = builder.GetILGenerator();
+
+            if (Options.HasFlagFast(GenerateDisposalChecks))
+            {
+                EmitDisposalCheck(methodIL);
+            }
+
+            for (short p = 1; p <= method.ParameterTypes.Count; p++)
+            {
+                methodIL.EmitLoadArgument(p);
+            }
+
+            GenerateSymbolPush(methodIL, backingField);
+
+            methodIL.EmitCalli(OpCodes.Calli, Standard, method.ReturnType, method.ParameterTypes.ToArray(), null);
             methodIL.Emit(OpCodes.Ret);
         }
 

@@ -44,6 +44,12 @@ namespace AdvancedDLSupport
         /// Enable Mono dllmap support for library scanning.
         /// </summary>
         [PublicAPI]
-        EnableDllMapSupport = 1 << 2
+        EnableDllMapSupport = 1 << 2,
+
+        /// <summary>
+        /// Enables use of the `calli` opcode.
+        /// </summary>
+        [PublicAPI]
+        UseIndirectCalls = 1 << 3
     }
 }

@@ -181,7 +181,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="valueFactory">The value factory to use for the lazy loaded field.</param>
         /// <param name="type">The return type of the lazy field.</param>
         [PublicAPI]
-        protected void GenerateLazyLoadedField([NotNull] MethodBuilder valueFactory, [NotNull] Type type)
+        protected void GenerateLazyLoadedObject([NotNull] MethodBuilder valueFactory, [NotNull] Type type)
         {
             var funcType = typeof(Func<>).MakeGenericType(type);
             var lazyType = typeof(Lazy<>).MakeGenericType(type);
@@ -233,7 +233,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             var loadSymbolMethod = typeof(NativeLibraryBase).GetMethod
             (
-                "LoadSymbol",
+                nameof(NativeLibraryBase.LoadSymbol),
                 BindingFlags.NonPublic | BindingFlags.Instance
             );
 
@@ -267,7 +267,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             var loadFuncMethod = typeof(NativeLibraryBase).GetMethod
             (
-                "LoadFunction",
+                nameof(NativeLibraryBase.LoadFunction),
                 BindingFlags.NonPublic | BindingFlags.Instance
             );
 

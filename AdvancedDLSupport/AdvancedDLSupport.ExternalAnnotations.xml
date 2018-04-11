@@ -89,7 +89,7 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateLazyLoadedField(System.Reflection.Emit.MethodBuilder,System.Type)">
+  <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateLazyLoadedObject(System.Reflection.Emit.MethodBuilder,System.Type)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="valueFactory">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
@@ -136,6 +136,9 @@
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="F:AdvancedDLSupport.ImplementationOptions.GenerateDisposalChecks">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="F:AdvancedDLSupport.ImplementationOptions.UseIndirectCalls">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="F:AdvancedDLSupport.ImplementationOptions.UseLazyBinding">
