@@ -31,8 +31,13 @@ If `ImplementationOptions::EnableDllMapSupport` is enabled, then Mono [DllMaps][
 Note that the support is thus far only partial, and per-symbol library remapping (e.g, `dllentry`) is *not* supported 
 yet. Library remapping via `dllmap` works just fine, though.
 
+### Indirect calls
+If `ImplementationOptions::UseIndirectCalls` is enabled, the far more performant `calli` opcode will be used instead of 
+generating delegates under the hood. This warrants some more detailed information, which is available [here][2].
+
 ### Path Resolvers
 You can override the algorithms used to resolve the path to the library that DLSupport will load by passing an 
 `ILibraryPathResolver` to the implementation builder.
 
 [1]: http://www.mono-project.com/docs/advanced/pinvoke/dllmap
+[2]: indirect-calling.md
