@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", ".\docs", "{96E3AE84
 		docs\mixed_mode_classes.md = docs\mixed_mode_classes.md
 		docs\library_scanning.md = docs\library_scanning.md
 		docs\developer_docs.md = docs\developer_docs.md
+		docs\indirect-calling.md = docs\indirect-calling.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", ".\scripts", "{BB134437-F15D-42F6-B88C-46C7BA8FEFEB}"
