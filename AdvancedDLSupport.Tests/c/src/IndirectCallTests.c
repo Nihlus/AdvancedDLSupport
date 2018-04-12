@@ -45,7 +45,7 @@ __declspec(dllexport) TestStruct* GetNullTestStruct()
 __declspec(dllexport) bool IsTestStructNull(TestStruct* strct)
 {
     // This is magic. If it is not present, this function always returns true if compiled under MSVC
-    fprintf(stdout, "Pointer: %d", (int)strct);
+    fprintf(stdout, "Pointer: %zx", (size_t)strct);
 
     return strct == NULL;
 }
