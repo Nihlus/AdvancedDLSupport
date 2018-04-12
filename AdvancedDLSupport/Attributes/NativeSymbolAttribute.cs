@@ -47,6 +47,7 @@ namespace AdvancedDLSupport
         [PublicAPI]
         public NativeSymbolAttribute()
         {
+            CallingConvention = CallingConvention.StdCall;
         }
 
         /// <summary>
