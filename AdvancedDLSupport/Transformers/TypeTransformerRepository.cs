@@ -79,6 +79,7 @@ namespace AdvancedDLSupport
                     BindingFlags.Instance | BindingFlags.NonPublic
                 );
 
+                // ReSharper disable once PossibleNullReferenceException
                 var closedNullableGetter = openNullableGetter.MakeGenericMethod(innerType);
 
                 return (ITypeTransformer)closedNullableGetter.Invoke(this, null);

@@ -78,7 +78,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <inheritdoc />
-        [NotNull]
         public override IntrospectiveMethodInfo GenerateImplementationForDefinition(IntrospectiveMethodInfo definition, string symbolName, string uniqueMemberIdentifier)
         {
             var metadataAttribute = definition.GetCustomAttribute<NativeSymbolAttribute>() ??

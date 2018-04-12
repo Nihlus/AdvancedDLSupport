@@ -20,6 +20,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -136,10 +137,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="generatedMethods">The generated methods.</param>
         private void GenerateTopLevelMethodImplementation
         (
-            IntrospectiveMethodInfo baseMemberDefinition,
-            MethodBuilder topLevelMethod,
-            IReadOnlyList<IReadOnlyList<Type>> permutations,
-            IReadOnlyList<IntrospectiveMethodInfo> generatedMethods
+            [NotNull] IntrospectiveMethodInfo baseMemberDefinition,
+            [NotNull] MethodBuilder topLevelMethod,
+            [NotNull, ItemNotNull] IReadOnlyList<IReadOnlyList<Type>> permutations,
+            [NotNull, ItemNotNull] IReadOnlyList<IntrospectiveMethodInfo> generatedMethods
         )
         {
             var nextFreeLocalSlot = 0;
@@ -184,6 +185,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                     var permutationParameterType = permutationTypes[argumentIndex - 1];
                     if (originalParameterType.IsRefNullable() && permutationParameterType != typeof(IntPtr))
                     {
+                        // ReSharper disable once PossibleNullReferenceException
                         var wrappedType = originalParameterType.GetElementType().GetGenericArguments().First();
                         EmitNullableValueRef(methodIL, argumentIndex, ref nextFreeLocalSlot, wrappedType);
                     }
@@ -225,7 +227,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="argumentIndex">The argument index to load.</param>
         /// <param name="nextFreeLocalSlot">The next unused local variable index.</param>
         /// <param name="wrappedType">The type wrapped by the nullable.</param>
-        private static void EmitNullableValueRef(ILGenerator il, int argumentIndex, ref int nextFreeLocalSlot, Type wrappedType)
+        private static void EmitNullableValueRef
+        (
+            [NotNull] ILGenerator il,
+            int argumentIndex,
+            ref int nextFreeLocalSlot,
+            [NotNull] Type wrappedType
+        )
         {
             // Declare a pinned pointer local
             var localIndex = nextFreeLocalSlot;
@@ -234,24 +242,29 @@ namespace AdvancedDLSupport.ImplementationGenerators
             il.DeclareLocal(typeof(int*), true);
 
             // Now, we load the nullable as a pointer
-            EmitGetPinnedAddressOfNullable(typeof(Nullable<>).MakeGenericType(wrappedType), il, argumentIndex);
+            EmitGetPinnedAddressOfNullable(il, typeof(Nullable<>).MakeGenericType(wrappedType), argumentIndex);
 
             // Store the value so that it gets pinned
             il.Emit(OpCodes.Stloc, localIndex);
 
             // And extract a reference to the internal value
             il.Emit(OpCodes.Ldloc, localIndex);
-            EmitAccessInternalNullableValue(wrappedType, il);
+            EmitAccessInternalNullableValue(il, wrappedType);
         }
 
         /// <summary>
         /// Emits a set of IL instructions that loads the argument at the given index,
         /// treating it as a <see cref="Nullable{T}"/>, and gets a pinned pointer to it, pushing it onto the evaluation stack.
         /// </summary>
-        /// <param name="nullableType">The type that the nullable wraps.</param>
         /// <param name="il">The IL generator where the instructions should be emitted.</param>
+        /// <param name="nullableType">The type that the nullable wraps.</param>
         /// <param name="argumentIndex">The argument index to load.</param>
-        private static void EmitGetPinnedAddressOfNullable(Type nullableType, ILGenerator il, int argumentIndex)
+        private static void EmitGetPinnedAddressOfNullable
+        (
+            [NotNull] ILGenerator il,
+            [NotNull] Type nullableType,
+            int argumentIndex
+        )
         {
             il.Emit(OpCodes.Ldarg, argumentIndex);
 
@@ -271,10 +284,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// instance of a <see cref="Nullable{T}"/>, and retrieves a ByRef handle to its internal wrapped struct,
         /// pushing it onto the evaluation stack.
         /// </summary>
-        /// <param name="wrappedType">The type that the nullable wraps.</param>
         /// <param name="il">The IL generator where the instructions should be emitted.</param>
-        private static void EmitAccessInternalNullableValue(Type wrappedType, ILGenerator il)
+        /// <param name="wrappedType">The type that the nullable wraps.</param>
+        private static void EmitAccessInternalNullableValue([NotNull] ILGenerator il, [NotNull] Type wrappedType)
         {
+            // ReSharper disable once PossibleNullReferenceException
             var accessValueMethod = typeof(InternalNullableAccessor)
                 .GetMethod(nameof(InternalNullableAccessor.AccessUnderlyingValue))
                 .MakeGenericMethod(wrappedType);
@@ -289,7 +303,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// back on the evaluation stack.
         /// </summary>
         /// <param name="il">The IL generator where the instructions should be emitted.</param>
-        private static void EmitPermutationIndex(ILGenerator il)
+        private static void EmitPermutationIndex([NotNull] ILGenerator il)
         {
             // Create a new BitArray to use as the mask
             var bitArrayConstructor = typeof(BitArray).GetConstructor(new[] { typeof(bool[]) });
@@ -308,7 +322,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="nextFreeLocalSlot">The next unused local variable index.</param>
         /// <param name="parameters">The method parameters.</param>
         /// <returns>The index of the local variable used for the array.</returns>
-        private static int EmitHasValueArray(ILGenerator il, ref int nextFreeLocalSlot, IList<Type> parameters)
+        private static int EmitHasValueArray
+        (
+            [NotNull] ILGenerator il,
+            ref int nextFreeLocalSlot,
+            [NotNull, ItemNotNull] IList<Type> parameters
+        )
         {
             var localIndex = nextFreeLocalSlot;
             ++nextFreeLocalSlot;
@@ -343,7 +362,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             return localIndex;
         }
 
-        private static void EmitDefaultSwitchCase(ILGenerator methodIL, Label defaultCase)
+        private static void EmitDefaultSwitchCase([NotNull] ILGenerator methodIL, Label defaultCase)
         {
             // Generate default case
             methodIL.MarkLabel(defaultCase);
@@ -365,7 +384,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="methodIL">The IL generator where the instructions should be emitted.</param>
         /// <param name="parameter">A <see cref="ValueTuple"/> containing the parameter index, and its associated <see cref="ParameterInfo"/>.</param>
-        private static void EmitNullableGetHasValue(ILGenerator methodIL, (int Index, Type Type) parameter)
+        [SuppressMessage("ReSharper", "PossibleNullReferenceException", Justification = "Known at compile time.")]
+        private static void EmitNullableGetHasValue([NotNull] ILGenerator methodIL, (int Index, Type Type) parameter)
         {
             methodIL.Emit(OpCodes.Ldarg, parameter.Index);
 

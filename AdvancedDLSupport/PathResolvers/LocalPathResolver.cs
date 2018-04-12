@@ -48,10 +48,7 @@ namespace AdvancedDLSupport
                 ? null
                 : Directory.GetParent(entryAssembly.Location).FullName;
 
-            var executingAssembly = Assembly.GetExecutingAssembly();
-            _executingAssemblyDirectory = executingAssembly is null
-                ? null
-                : Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
+            _executingAssemblyDirectory = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
 
             _currentDirectory = Directory.GetCurrentDirectory();
         }
@@ -91,7 +88,7 @@ namespace AdvancedDLSupport
             return ResolvePathResult.FromError(new FileNotFoundException("No local copy of the given library could be found.", library));
         }
 
-        private ResolvePathResult ScanPathForLibrary(string path, string library)
+        private ResolvePathResult ScanPathForLibrary([NotNull] string path, [NotNull] string library)
         {
             var libraryLocation = Path.GetFullPath(Path.Combine(path, library));
             if (File.Exists(libraryLocation))

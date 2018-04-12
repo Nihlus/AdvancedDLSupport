@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 using static System.Runtime.InteropServices.UnmanagedType;
 
 #pragma warning disable SA1513
@@ -97,7 +98,7 @@ namespace AdvancedDLSupport
             return ptr;
         }
 
-        private UnmanagedType GetCustomUnmanagedTypeOrDefault(ParameterInfo parameter)
+        private UnmanagedType GetCustomUnmanagedTypeOrDefault([NotNull] ParameterInfo parameter)
         {
             var unmanagedType = LPStr;
             var marshalAsAttribute = parameter.GetCustomAttribute<MarshalAsAttribute>();

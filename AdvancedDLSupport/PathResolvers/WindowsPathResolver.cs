@@ -76,13 +76,17 @@ namespace AdvancedDLSupport
                 return ResolvePathResult.FromSuccess(libraryLocation);
             }
 
-            var pathDirs = Environment.GetEnvironmentVariable("PATH").Split(';').Where(p => !p.IsNullOrWhiteSpace());
-            foreach (var path in pathDirs)
+            var pathVar = Environment.GetEnvironmentVariable("PATH");
+            if (!(pathVar is null))
             {
-                libraryLocation = Path.GetFullPath(Path.Combine(path, library));
-                if (File.Exists(libraryLocation))
+                var pathDirs = pathVar.Split(';').Where(p => !p.IsNullOrWhiteSpace());
+                foreach (var path in pathDirs)
                 {
-                    return ResolvePathResult.FromSuccess(libraryLocation);
+                    libraryLocation = Path.GetFullPath(Path.Combine(path, library));
+                    if (File.Exists(libraryLocation))
+                    {
+                        return ResolvePathResult.FromSuccess(libraryLocation);
+                    }
                 }
             }
 

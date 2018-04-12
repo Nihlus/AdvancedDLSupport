@@ -98,7 +98,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             GenerateImplementation(member, symbolInfo.SymbolName, symbolInfo.MemberIdentifier);
         }
 
-        private (string SymbolName, string MemberIdentifier) GetSymbolNameAndIdentifier(T member)
+        private (string SymbolName, string MemberIdentifier) GetSymbolNameAndIdentifier([NotNull] T member)
         {
             NativeSymbolAttribute metadataAttribute;
 
@@ -159,7 +159,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="symbolName">The name of the symbol in the native library.</param>
         /// <param name="uniqueMemberIdentifier">The identifier to use for generated types and methods.</param>
         /// <returns>The implementation.</returns>
-        [PublicAPI]
+        [PublicAPI, NotNull]
         public abstract T GenerateImplementationForDefinition([NotNull] T member, [NotNull] string symbolName, [NotNull] string uniqueMemberIdentifier);
 
         /// <summary>
@@ -271,6 +271,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 BindingFlags.NonPublic | BindingFlags.Instance
             );
 
+            // ReSharper disable once PossibleNullReferenceException
             var loadFunc = loadFuncMethod.MakeGenericMethod(delegateType);
 
             // Generate lambda loader

@@ -85,6 +85,8 @@ namespace AdvancedDLSupport.Extensions
         public static void EmitGetCurrentMethodReturnParameter([NotNull] this ILGenerator il)
         {
             var getCurrentMethodFunc = typeof(MethodBase).GetMethod(nameof(MethodBase.GetCurrentMethod), BindingFlags.Public | BindingFlags.Static);
+
+            // ReSharper disable once PossibleNullReferenceException
             var getReturnParamFunc = typeof(MethodInfo).GetProperty(nameof(MethodInfo.ReturnParameter), BindingFlags.Public | BindingFlags.Instance).GetMethod;
 
             il.Emit(OpCodes.Call, getCurrentMethodFunc);

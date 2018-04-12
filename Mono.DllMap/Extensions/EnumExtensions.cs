@@ -61,7 +61,7 @@ namespace Mono.DllMap.Extensions
         /// Thrown if the type parameter is not an enum decorated with a flag attribute.
         /// </exception>
         [PublicAPI, Pure]
-        public static bool HasFlagsFast<TEnum>(this TEnum value, params TEnum[] flags)
+        public static bool HasFlagsFast<TEnum>(this TEnum value, [NotNull] params TEnum[] flags)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
             ThrowIfEnumIsNotEnumOrNotFlags<TEnum>();

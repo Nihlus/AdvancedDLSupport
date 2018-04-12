@@ -123,6 +123,7 @@ namespace AdvancedDLSupport
         /// <param name="sym">The symbol name.</param>
         /// <typeparam name="T">The delegate to load the symbol as.</typeparam>
         /// <returns>A function delegate.</returns>
+        [NotNull]
         internal T LoadFunction<T>([NotNull] string sym) => PlatformLoader.LoadFunction<T>(_libraryHandle, sym);
 
         /// <summary>

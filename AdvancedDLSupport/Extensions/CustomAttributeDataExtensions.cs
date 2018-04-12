@@ -60,6 +60,7 @@ namespace AdvancedDLSupport.Extensions
         /// <typeparam name="T">The encapsulated type of the attribute.</typeparam>
         /// <returns>An instance of the attribute as described by the attribute data.</returns>
         /// <exception cref="ArgumentException">Thrown if the attribute type and the generic type doesn't match.</exception>
+        [NotNull]
         public static T ToInstance<T>([NotNull] this CustomAttributeData @this) where T : Attribute
         {
             if (typeof(T) != @this.AttributeType)
@@ -69,19 +70,19 @@ namespace AdvancedDLSupport.Extensions
 
             var instance = @this.Constructor.Invoke(@this.ConstructorArguments.Select(a => a.Value).ToArray());
 
-            var namedFields = @this.NamedArguments.Where(a => a.IsField).ToList();
-            foreach (var field in namedFields)
+            var namedFields = @this.NamedArguments?.Where(a => a.IsField).ToList();
+            foreach (var field in namedFields ?? new List<CustomAttributeNamedArgument>())
             {
                 (field.MemberInfo as FieldInfo)?.SetValue(instance, field.TypedValue.Value);
             }
 
-            var namedProperties = @this.NamedArguments.Where(a => a.MemberInfo is PropertyInfo).ToList();
-            foreach (var property in namedProperties)
+            var namedProperties = @this.NamedArguments?.Where(a => a.MemberInfo is PropertyInfo).ToList();
+            foreach (var property in namedProperties ?? new List<CustomAttributeNamedArgument>())
             {
                 (property.MemberInfo as PropertyInfo)?.SetValue(instance, property.TypedValue.Value);
             }
 
-            return instance as T;
+            return (T)instance;
         }
     }
 }

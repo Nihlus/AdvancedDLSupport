@@ -108,6 +108,11 @@ namespace AdvancedDLSupport.Extensions
 
             var underlying = @this.GetElementType();
 
+            if (underlying is null)
+            {
+                return false;
+            }
+
             return underlying.IsGenericType &&
                    underlying.GetGenericTypeDefinition() == typeof(Nullable<>);
         }

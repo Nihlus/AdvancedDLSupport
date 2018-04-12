@@ -35,14 +35,14 @@ namespace AdvancedDLSupport
         /// Lowers the type information of the more complex type to the less complex type.
         /// </summary>
         /// <returns>The lowered type.</returns>
-        [PublicAPI]
+        [PublicAPI, NotNull]
         Type LowerType();
 
         /// <summary>
         /// Raises the type information of the less complex type to the more complex type.
         /// </summary>
         /// <returns>The lowered type.</returns>
-        [PublicAPI]
+        [PublicAPI, NotNull]
         Type RaiseType();
     }
 
