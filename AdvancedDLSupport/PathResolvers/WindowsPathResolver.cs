@@ -33,11 +33,18 @@ namespace AdvancedDLSupport
         /// <inheritdoc />
         public ResolvePathResult Resolve(string library)
         {
-            var executingDir = Directory.GetParent(Assembly.GetEntryAssembly().Location).FullName;
-            var libraryLocation = Path.GetFullPath(Path.Combine(executingDir, library));
-            if (File.Exists(libraryLocation))
+            string libraryLocation;
+
+            var entryAssembly = Assembly.GetEntryAssembly();
+            if (!(entryAssembly is null) && Directory.GetParent(entryAssembly.Location) is var parentDirectory)
             {
-                return ResolvePathResult.FromSuccess(libraryLocation);
+                var executingDir = parentDirectory.FullName;
+
+                libraryLocation = Path.GetFullPath(Path.Combine(executingDir, library));
+                if (File.Exists(libraryLocation))
+                {
+                    return ResolvePathResult.FromSuccess(libraryLocation);
+                }
             }
 
             var windowsDir = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
