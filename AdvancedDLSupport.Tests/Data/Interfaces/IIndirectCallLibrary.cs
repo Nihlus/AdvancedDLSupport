@@ -1,4 +1,6 @@
-﻿namespace AdvancedDLSupport.Tests.Data
+﻿using System.Runtime.InteropServices;
+
+namespace AdvancedDLSupport.Tests.Data
 {
     public interface IIndirectCallLibrary
     {
@@ -11,6 +13,8 @@
         TestStruct GetInitializedStructByValue(int a, int b);
 
         TestStruct? GetNullTestStruct();
+
+        [return: MarshalAs(UnmanagedType.I1)]
         bool IsTestStructNull(TestStruct? strct);
     }
 }
