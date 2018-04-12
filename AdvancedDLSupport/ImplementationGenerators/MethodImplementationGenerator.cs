@@ -41,6 +41,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// </summary>
     internal sealed class MethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
+        [CanBeNull]
+        private readonly MethodInfo _calliOverload;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MethodImplementationGenerator"/> class.
         /// </summary>
@@ -57,6 +60,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
         )
             : base(targetModule, targetType, targetTypeConstructorIL, options)
         {
+            _calliOverload = typeof(ILGenerator).GetMethod
+            (
+                nameof(ILGenerator.EmitCalli),
+                new[] { typeof(OpCode), typeof(CallingConvention), typeof(Type), typeof(Type[]) }
+            );
         }
 
         /// <inheritdoc />
@@ -95,7 +103,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 );
 
                 AugmentHostingTypeConstructorWithNativeInitialization(symbolName, backingFieldType, backingField);
-                GenerateNativeInvokerBody(definition, backingFieldType, backingField);
+                GenerateNativeInvokerBody(definition, metadataAttribute.CallingConvention, backingFieldType, backingField);
             }
             else
             {
@@ -253,11 +261,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// Generates the method body for a native calli invocation.
         /// </summary>
         /// <param name="method">The method to generate the body for.</param>
+        /// <param name="callingConvention">The unmanaged calling convention to use.</param>
         /// <param name="backingFieldType">The type of the backing field.</param>
         /// <param name="backingField">The backing field.</param>
         private void GenerateNativeInvokerBody
         (
             [NotNull] IntrospectiveMethodInfo method,
+            CallingConvention callingConvention,
             [NotNull] Type backingFieldType,
             [NotNull] FieldInfo backingField
         )
@@ -282,7 +292,18 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             GenerateSymbolPush(methodIL, backingField);
 
-            methodIL.EmitCalli(OpCodes.Calli, Standard, method.ReturnType, method.ParameterTypes.ToArray(), null);
+            // HACK: Workaround for missing overload of EmitCalli
+            if (_calliOverload is null)
+            {
+                // Use the existing overload - things may break
+                methodIL.EmitCalli(OpCodes.Calli, Standard, method.ReturnType, method.ParameterTypes.ToArray(), null);
+            }
+            else
+            {
+                // Use the correct overload via reflection
+                _calliOverload.Invoke(methodIL, new object[] { OpCodes.Calli, callingConvention, method.ReturnType, method.ParameterTypes.ToArray() });
+            }
+
             methodIL.Emit(OpCodes.Ret);
         }
 
