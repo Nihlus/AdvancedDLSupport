@@ -35,7 +35,7 @@ impacted.
 
 Furthermore, when running under 32-bit .NET Core on Windows, `calli` is restricted to the `__fastcall` calling 
 convention, and will ignore any hints to the contrary. This calling convention limitation is present on all .NET Core
-platforms, but is only relevant on x86. Calling conventions are, by designed, ignored on other platforms in native code.
+platforms, but is only relevant on x86. Calling conventions are, by design, ignored on other platforms in native code.
  
 
 
