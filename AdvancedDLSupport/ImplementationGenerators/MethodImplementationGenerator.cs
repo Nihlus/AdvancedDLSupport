@@ -119,8 +119,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                     typeof(Lazy<>).MakeGenericType(backingFieldType),
                     FieldAttributes.Private | FieldAttributes.InitOnly
                 )
-                :
-                TargetType.DefineField
+                : TargetType.DefineField
                 (
                     $"{uniqueMemberIdentifier}_delegate",
                     backingFieldType,
