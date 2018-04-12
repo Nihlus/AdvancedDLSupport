@@ -132,6 +132,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
             return definition;
         }
 
+        /// <summary>
+        /// Augments the hosting type constructor with the logic required to initialize the backing pointer field.
+        /// </summary>
+        /// <param name="entrypointName">The name of the entry point.</param>
+        /// <param name="backingFieldType">The type of the backing field.</param>
+        /// <param name="backingField">The backing pointer field.</param>
         private void AugmentHostingTypeConstructorWithNativeInitialization
         (
             [NotNull] string entrypointName,

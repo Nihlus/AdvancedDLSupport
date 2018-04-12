@@ -394,7 +394,7 @@ namespace AdvancedDLSupport
                 TransformerRepository
             );
 
-            foreach (var method in typeof(TInterface).GetIntrospectiveMethods())
+            foreach (var method in typeof(TInterface).GetIntrospectiveMethods(true))
             {
                 var targetMethod = method;
 
