@@ -79,7 +79,9 @@ namespace AdvancedDLSupport.Tests.Integration
         public void CanCallFunctionWithNullableParameter()
         {
             var resultNull = Library.IsTestStructNull(null);
-            var resultNotNull = Library.IsTestStructNull(new TestStruct());
+
+            var strct = new TestStruct { A = 5, B = 15 };
+            var resultNotNull = Library.IsTestStructNull(strct);
 
             Assert.True(resultNull);
             Assert.False(resultNotNull);

@@ -33,6 +33,11 @@ Windows platform.
 Under normal conditions, the default security policy on Windows is to run code under full trust, and `calli` will not be
 impacted.
 
+Furthermore, when running under 32-bit .NET Core on Windows, `calli` is restricted to the `__fastcall` calling 
+convention, and will ignore any hints to the contrary. This calling convention limitation is present on all .NET Core
+platforms, but is only relevant on x86. Calling conventions are, by designed, ignored on other platforms in native code.
+ 
+
 
 [calli-unverifiable]: https://blogs.msdn.microsoft.com/shawnfa/2004/06/14/calli-is-not-verifiable/
 [benchmark-netcore]: https://i.imgur.com/9sjFxkB.png
