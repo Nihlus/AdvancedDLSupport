@@ -12,7 +12,7 @@
   <PropertyGroup>
     <Title>AdvancedDLSupport</Title>
     <Authors>TheBlackCentipede;Jax</Authors>
-    <Version>1.2.0</Version>
+    <Version>1.2.1</Version>
     <Description>An alternative approach to your typical P/Invoke.</Description>
     <Copyright>Copyright Firwood Software 2017</Copyright>
   </PropertyGroup>
@@ -20,12 +20,15 @@
     <PackageId>AdvancedDLSupport</PackageId>
     <PackageLicenseUrl>https://www.gnu.org/licenses/gpl-3.0.en.html</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Implement an option to use calli when generating native code.</PackageReleaseNotes>
+    <PackageReleaseNotes>Correct release configuration.</PackageReleaseNotes>
     <PackageTags>p/invoke;cross-platform;mono;netcore;netstandard;native;interop</PackageTags>
     <PackageOutputPath>../nuget</PackageOutputPath>
     <IncludeSymbols>True</IncludeSymbols>
     <IncludeSource>True</IncludeSource>
     <RepositoryUrl>https://github.com/Firwood-Software/AdvanceDLSupport/</RepositoryUrl>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="AdvancedDLSupport.ExternalAnnotations.xml">
@@ -50,7 +53,7 @@
     <PackageReference Include="StrictEmit" Version="2.2.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" PrivateAssets="all" />
     <PackageReference Include="JetBrains.Annotations" Version="11.1.0" PrivateAssets="all" />
-    <PackageReference Include="JetBrainsAnnotations.Fody" Version="2.0.0" PrivateAssets="all" />
+    <PackageReference Include="JetBrainsAnnotations.Fody" Version="2.2.0" PrivateAssets="all" />
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
     <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.3.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.4.0" />
