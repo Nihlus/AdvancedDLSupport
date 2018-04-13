@@ -34,7 +34,7 @@
         <Exec Command="cmake -DCOMPONENT=x64-only -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDirx64)" />
     </Target>
 
-    <Target Name="CleanWinCMake" AfterTargets="AfterClean" Condition="Exists('$(CMakeBuildDir)')" >
+    <Target Name="CleanWinCMake" AfterTargets="AfterClean" Condition="Exists('$(CMakeBuildDirx86)') And Exists('$(CMakeBuildDirx64)')" >
         <RemoveDir Directories="$(CMakeBuildDirx86)"/>
         <RemoveDir Directories="$(CMakeBuildDirx64)"/>
     </Target>
