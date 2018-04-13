@@ -73,6 +73,9 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
+  <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateImplementation(`0)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
   <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateImplementation(`0,System.String,System.String)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="member">
@@ -84,9 +87,6 @@
     <parameter name="uniqueMemberIdentifier">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateImplementation(`0)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateImplementationForDefinition(`0,System.String,System.String)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
@@ -196,9 +196,24 @@
   <member name="M:AdvancedDLSupport.LibraryLoadingException.#ctor">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="M:AdvancedDLSupport.LibraryLoadingException.#ctor(System.String)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <parameter name="message">
+      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
+    </parameter>
+  </member>
   <member name="M:AdvancedDLSupport.LibraryLoadingException.#ctor(System.String,System.Exception)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="message">
+      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.LibraryLoadingException.#ctor(System.String,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <parameter name="message">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="libraryName">
       <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     </parameter>
   </member>
@@ -212,21 +227,6 @@
     </parameter>
     <parameter name="inner">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.LibraryLoadingException.#ctor(System.String,System.String)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <parameter name="message">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="libraryName">
-      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.LibraryLoadingException.#ctor(System.String)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <parameter name="message">
-      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="P:AdvancedDLSupport.LibraryLoadingException.LibraryName">
@@ -374,6 +374,12 @@
   <member name="T:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.#ctor(`0)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <parameter name="memberInfo">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
   <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.#ctor(`0,System.Collections.Generic.IEnumerable{System.Reflection.CustomAttributeData})">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="memberInfo">
@@ -382,12 +388,6 @@
     <parameter name="customAttributes">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
       <attribute ctor="M:JetBrains.Annotations.ItemNotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.#ctor(`0)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <parameter name="memberInfo">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="P:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.CustomAttributes">
@@ -544,22 +544,16 @@
   <member name="M:AdvancedDLSupport.SymbolLoadingException.#ctor">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="M:AdvancedDLSupport.SymbolLoadingException.#ctor(System.String)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <parameter name="message">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
   <member name="M:AdvancedDLSupport.SymbolLoadingException.#ctor(System.String,System.Exception)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="message">
       <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.SymbolLoadingException.#ctor(System.String,System.String,System.Exception)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <parameter name="message">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="symbolName">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="inner">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="M:AdvancedDLSupport.SymbolLoadingException.#ctor(System.String,System.String)">
@@ -571,9 +565,15 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.SymbolLoadingException.#ctor(System.String)">
+  <member name="M:AdvancedDLSupport.SymbolLoadingException.#ctor(System.String,System.String,System.Exception)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="message">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="symbolName">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="inner">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
