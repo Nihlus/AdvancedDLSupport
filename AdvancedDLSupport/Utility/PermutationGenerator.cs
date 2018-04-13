@@ -96,8 +96,8 @@ namespace AdvancedDLSupport
                 // Then, we pick out the mask value, offset by the number of irrelevant types we've skipped
                 var maskValue = mask[i - skipped];
 
+                // ReSharper disable once PossibleNullReferenceException
                 var newPermutationType = maskValue
-                    // ReSharper disable once PossibleNullReferenceException
                     ? type.GetElementType().GetGenericArguments().First().MakeByRefType()
                     : typeof(IntPtr);
 

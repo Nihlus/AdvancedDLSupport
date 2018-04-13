@@ -124,6 +124,7 @@ namespace AdvancedDLSupport.Reflection
                 parameterNames.Add(parameter.Name);
 
                 var customAttributes = new List<CustomAttributeData>(parameter.GetCustomAttributesData());
+
                 // HACK: Mono workaround until bug is fixed
                 var parameterMarshalAsAttribute = customAttributes
                 .FirstOrDefault

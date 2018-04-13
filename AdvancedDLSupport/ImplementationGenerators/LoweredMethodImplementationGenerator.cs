@@ -274,6 +274,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             );
 
             il.Emit(OpCodes.Ldarg_0);
+
             // ReSharper disable once PossibleNullReferenceException
             il.Emit(OpCodes.Call, repoProperty.GetMethod); // Get the type transformer repository
 
