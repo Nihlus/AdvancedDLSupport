@@ -33,11 +33,18 @@ namespace AdvancedDLSupport
         /// <inheritdoc />
         public ResolvePathResult Resolve(string library)
         {
-            var executingDir = Directory.GetParent(Assembly.GetEntryAssembly().Location).FullName;
-            var libraryLocation = Path.GetFullPath(Path.Combine(executingDir, library));
-            if (File.Exists(libraryLocation))
+            string libraryLocation;
+
+            var entryAssembly = Assembly.GetEntryAssembly();
+            if (!(entryAssembly is null) && Directory.GetParent(entryAssembly.Location) is var parentDirectory)
             {
-                return ResolvePathResult.FromSuccess(libraryLocation);
+                var executingDir = parentDirectory.FullName;
+
+                libraryLocation = Path.GetFullPath(Path.Combine(executingDir, library));
+                if (File.Exists(libraryLocation))
+                {
+                    return ResolvePathResult.FromSuccess(libraryLocation);
+                }
             }
 
             var sysDir = Environment.SystemDirectory;
@@ -68,13 +75,17 @@ namespace AdvancedDLSupport
                 return ResolvePathResult.FromSuccess(libraryLocation);
             }
 
-            var pathDirs = Environment.GetEnvironmentVariable("PATH").Split(';').Where(p => !p.IsNullOrWhiteSpace());
-            foreach (var path in pathDirs)
+            var pathVar = Environment.GetEnvironmentVariable("PATH");
+            if (!(pathVar is null))
             {
-                libraryLocation = Path.GetFullPath(Path.Combine(path, library));
-                if (File.Exists(libraryLocation))
+                var pathDirs = pathVar.Split(';').Where(p => !p.IsNullOrWhiteSpace());
+                foreach (var path in pathDirs)
                 {
-                    return ResolvePathResult.FromSuccess(libraryLocation);
+                    libraryLocation = Path.GetFullPath(Path.Combine(path, library));
+                    if (File.Exists(libraryLocation))
+                    {
+                        return ResolvePathResult.FromSuccess(libraryLocation);
+                    }
                 }
             }
 

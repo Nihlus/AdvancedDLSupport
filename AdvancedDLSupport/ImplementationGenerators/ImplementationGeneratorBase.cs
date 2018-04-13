@@ -98,7 +98,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             GenerateImplementation(member, symbolInfo.SymbolName, symbolInfo.MemberIdentifier);
         }
 
-        private (string SymbolName, string MemberIdentifier) GetSymbolNameAndIdentifier(T member)
+        private (string SymbolName, string MemberIdentifier) GetSymbolNameAndIdentifier([NotNull] T member)
         {
             NativeSymbolAttribute metadataAttribute;
 
@@ -159,7 +159,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="symbolName">The name of the symbol in the native library.</param>
         /// <param name="uniqueMemberIdentifier">The identifier to use for generated types and methods.</param>
         /// <returns>The implementation.</returns>
-        [PublicAPI]
+        [PublicAPI, NotNull]
         public abstract T GenerateImplementationForDefinition([NotNull] T member, [NotNull] string symbolName, [NotNull] string uniqueMemberIdentifier);
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="valueFactory">The value factory to use for the lazy loaded field.</param>
         /// <param name="type">The return type of the lazy field.</param>
         [PublicAPI]
-        protected void GenerateLazyLoadedField([NotNull] MethodBuilder valueFactory, [NotNull] Type type)
+        protected void GenerateLazyLoadedObject([NotNull] MethodBuilder valueFactory, [NotNull] Type type)
         {
             var funcType = typeof(Func<>).MakeGenericType(type);
             var lazyType = typeof(Lazy<>).MakeGenericType(type);
@@ -233,7 +233,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             var loadSymbolMethod = typeof(NativeLibraryBase).GetMethod
             (
-                "LoadSymbol",
+                nameof(NativeLibraryBase.LoadSymbol),
                 BindingFlags.NonPublic | BindingFlags.Instance
             );
 
@@ -267,10 +267,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             var loadFuncMethod = typeof(NativeLibraryBase).GetMethod
             (
-                "LoadFunction",
+                nameof(NativeLibraryBase.LoadFunction),
                 BindingFlags.NonPublic | BindingFlags.Instance
             );
 
+            // ReSharper disable once PossibleNullReferenceException
             var loadFunc = loadFuncMethod.MakeGenericMethod(delegateType);
 
             // Generate lambda loader

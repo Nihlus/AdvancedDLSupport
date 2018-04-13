@@ -6,12 +6,23 @@
   </member>
   <member name="M:AdvancedDLSupport.IEntrypointMangler.Demangle(System.String)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    <parameter name="mangledEntrypoint">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
   </member>
   <member name="M:AdvancedDLSupport.IEntrypointMangler.IsManglerApplicable(System.Reflection.MemberInfo)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <parameter name="member">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
   </member>
   <member name="M:AdvancedDLSupport.IEntrypointMangler.Mangle``1(``0)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    <parameter name="member">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
   </member>
   <member name="T:AdvancedDLSupport.ILibraryPathResolver">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
@@ -79,6 +90,7 @@
   </member>
   <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateImplementationForDefinition(`0,System.String,System.String)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     <parameter name="member">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
@@ -89,7 +101,7 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateLazyLoadedField(System.Reflection.Emit.MethodBuilder,System.Type)">
+  <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateLazyLoadedObject(System.Reflection.Emit.MethodBuilder,System.Type)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="valueFactory">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
@@ -138,6 +150,9 @@
   <member name="F:AdvancedDLSupport.ImplementationOptions.GenerateDisposalChecks">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="F:AdvancedDLSupport.ImplementationOptions.UseIndirectCalls">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
   <member name="F:AdvancedDLSupport.ImplementationOptions.UseLazyBinding">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
@@ -146,9 +161,11 @@
   </member>
   <member name="M:AdvancedDLSupport.ITypeTransformer.LowerType">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
   </member>
   <member name="M:AdvancedDLSupport.ITypeTransformer.RaiseType">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
   </member>
   <member name="T:AdvancedDLSupport.ITypeTransformer`2">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
@@ -255,6 +272,7 @@
   </member>
   <member name="M:AdvancedDLSupport.Loaders.PlatformLoaderBase.SelectPlatformLoader">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
   </member>
   <member name="T:AdvancedDLSupport.Loaders.SymbolFlag">
@@ -268,6 +286,8 @@
   </member>
   <member name="M:AdvancedDLSupport.ManglerRepository.GetApplicableManglers``1(``0)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.ItemNotNullAttribute.#ctor" />
   </member>
   <member name="T:AdvancedDLSupport.NativeLibraryBase">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />

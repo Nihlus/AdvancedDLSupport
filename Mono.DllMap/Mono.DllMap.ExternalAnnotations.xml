@@ -216,6 +216,9 @@
   <member name="M:Mono.DllMap.Extensions.EnumExtensions.HasFlagsFast``1(``0,``0[])">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+    <parameter name="flags">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
   </member>
   <member name="T:Mono.DllMap.MappingBase">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />

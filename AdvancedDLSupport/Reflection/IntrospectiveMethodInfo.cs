@@ -149,25 +149,28 @@ namespace AdvancedDLSupport.Reflection
             ParameterAttributes = parameterAttributes;
             ParameterCustomAttributes = parameterCustomAttributes.Select(pl => pl.ToList()).ToList();
 
-            ReturnParameterAttributes = methodInfo.ReturnParameter.Attributes;
-
-            var returnCustomAttributes = new List<CustomAttributeData>(methodInfo.ReturnParameter.GetCustomAttributesData());
-            ReturnParameterCustomAttributes = returnCustomAttributes;
-
-            // HACK: Mono workaround until bug is fixed
-            var returnParameterMarshalAsAttribute = methodInfo.ReturnParameter.GetCustomAttributesData()
-            .FirstOrDefault
-            (
-                a =>
-                    a.AttributeType == typeof(MarshalAsAttribute)
-            )?.ToInstance<MarshalAsAttribute>();
-
-            if (returnParameterMarshalAsAttribute is null && RuntimeInformation.FrameworkDescription.Contains("Mono"))
+            if (!(methodInfo.ReturnParameter is null))
             {
-                returnParameterMarshalAsAttribute = Attribute.GetCustomAttribute(methodInfo.ReturnParameter, typeof(MarshalAsAttribute)) as MarshalAsAttribute;
-                if (!(returnParameterMarshalAsAttribute is null))
+                ReturnParameterAttributes = methodInfo.ReturnParameter.Attributes;
+
+                var returnCustomAttributes = new List<CustomAttributeData>(methodInfo.ReturnParameter.GetCustomAttributesData());
+                ReturnParameterCustomAttributes = returnCustomAttributes;
+
+                // HACK: Mono workaround until bug is fixed
+                var returnParameterMarshalAsAttribute = methodInfo.ReturnParameter.GetCustomAttributesData()
+                    .FirstOrDefault
+                    (
+                        a =>
+                            a.AttributeType == typeof(MarshalAsAttribute)
+                    )?.ToInstance<MarshalAsAttribute>();
+
+                if (returnParameterMarshalAsAttribute is null && RuntimeInformation.FrameworkDescription.Contains("Mono"))
                 {
-                    returnCustomAttributes.Add(returnParameterMarshalAsAttribute.GetAttributeData());
+                    returnParameterMarshalAsAttribute = Attribute.GetCustomAttribute(methodInfo.ReturnParameter, typeof(MarshalAsAttribute)) as MarshalAsAttribute;
+                    if (!(returnParameterMarshalAsAttribute is null))
+                    {
+                        returnCustomAttributes.Add(returnParameterMarshalAsAttribute.GetAttributeData());
+                    }
                 }
             }
         }

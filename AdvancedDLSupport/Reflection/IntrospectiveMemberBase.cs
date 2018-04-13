@@ -144,7 +144,7 @@ namespace AdvancedDLSupport.Reflection
             var type = matchingData.AttributeType;
             var instance = Activator.CreateInstance(type, matchingData.ConstructorArguments.Select(a => a.Value).ToArray());
 
-            foreach (var namedArgument in matchingData.NamedArguments)
+            foreach (var namedArgument in matchingData.NamedArguments ?? new List<CustomAttributeNamedArgument>())
             {
                 if (namedArgument.MemberInfo is FieldInfo field)
                 {

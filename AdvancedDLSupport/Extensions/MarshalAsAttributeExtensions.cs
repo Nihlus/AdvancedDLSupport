@@ -52,6 +52,7 @@ namespace AdvancedDLSupport.Extensions
 
             var constructor = typeof(MarshalAsAttribute).GetConstructor(new[] { typeof(UnmanagedType) });
 
+            // ReSharper disable once PossibleNullReferenceException
             constructorBackingField.SetValue(instance, constructor);
 
             var constructorArgListBackingField = instance.GetType()
@@ -68,6 +69,7 @@ namespace AdvancedDLSupport.Extensions
                 }
             );
 
+            // ReSharper disable once PossibleNullReferenceException
             constructorArgListBackingField.SetValue(instance, constructorArgList);
 
             return instance;

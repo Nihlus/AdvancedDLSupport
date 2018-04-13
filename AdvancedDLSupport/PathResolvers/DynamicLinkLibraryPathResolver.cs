@@ -151,7 +151,7 @@ namespace AdvancedDLSupport
         private static IEnumerable<string> GenerateLibraryCandidates([NotNull] string library)
         {
             bool doesLibraryContainPath = false;
-            var parentDirectory = Path.GetDirectoryName(library);
+            var parentDirectory = Path.GetDirectoryName(library) ?? string.Empty;
             if (library.IsValidPath())
             {
                 library = Path.GetFileName(library);
@@ -183,12 +183,14 @@ namespace AdvancedDLSupport
             return candidates;
         }
 
-        private static IEnumerable<string> GenerateWindowsCandidates(string library)
+        [NotNull, ItemNotNull]
+        private static IEnumerable<string> GenerateWindowsCandidates([NotNull] string library)
         {
             yield return $"{library}.dll";
         }
 
-        private static IEnumerable<string> GenerateUnixCandidates(string library)
+        [NotNull, ItemNotNull]
+        private static IEnumerable<string> GenerateUnixCandidates([NotNull] string library)
         {
             const string prefix = "lib";
             var suffix = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? ".dylib" : ".so";

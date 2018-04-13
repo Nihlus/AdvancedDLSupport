@@ -120,7 +120,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             if (Options.HasFlagFast(UseLazyBinding))
             {
                 var lambdaBuilder = GenerateSymbolLoadingLambda(symbolName);
-                GenerateLazyLoadedField(lambdaBuilder, typeof(IntPtr));
+                GenerateLazyLoadedObject(lambdaBuilder, typeof(IntPtr));
             }
             else
             {

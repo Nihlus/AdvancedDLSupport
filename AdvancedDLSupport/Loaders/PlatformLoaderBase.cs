@@ -56,7 +56,7 @@ namespace AdvancedDLSupport.Loaders
         /// </summary>
         /// <returns>A platform loader for the current platform..</returns>
         /// <exception cref="PlatformNotSupportedException">Thrown if the current platform is not supported.</exception>
-        [PublicAPI, Pure]
+        [PublicAPI, NotNull, Pure]
         public static IPlatformLoader SelectPlatformLoader()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

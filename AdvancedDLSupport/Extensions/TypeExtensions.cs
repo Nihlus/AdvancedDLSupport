@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 
@@ -33,14 +34,34 @@ namespace AdvancedDLSupport.Extensions
         /// Gets the methods defined in the given type as wrapped introspective methods.
         /// </summary>
         /// <param name="this">The type to inspect.</param>
+        /// <param name="flattenHierarchy">Whether or not the hierarchy of the type should be flattened when scanning.</param>
         /// <returns>The methods.</returns>
         [Pure, NotNull, ItemNotNull]
-        public static IEnumerable<IntrospectiveMethodInfo> GetIntrospectiveMethods([NotNull] this Type @this)
+        public static IEnumerable<IntrospectiveMethodInfo> GetIntrospectiveMethods([NotNull] this Type @this, bool flattenHierarchy = false)
         {
-            var methods = @this.GetMethods();
+            var basicBindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
+            var flattenedBindingFlags = basicBindingFlags | BindingFlags.FlattenHierarchy;
+
+            var bindingFlags = flattenHierarchy ? flattenedBindingFlags : basicBindingFlags;
+
+            var methods = @this.GetMethods(bindingFlags);
             foreach (var method in methods)
             {
                 yield return new IntrospectiveMethodInfo(method);
+            }
+
+            if (!@this.IsInterface || !flattenHierarchy)
+            {
+                yield break;
+            }
+
+            foreach (var inf in @this.GetInterfaces())
+            {
+                var interfaceMethods = inf.GetMethods(bindingFlags);
+                foreach (var method in interfaceMethods)
+                {
+                    yield return new IntrospectiveMethodInfo(method);
+                }
             }
         }
 
@@ -107,6 +128,11 @@ namespace AdvancedDLSupport.Extensions
             }
 
             var underlying = @this.GetElementType();
+
+            if (underlying is null)
+            {
+                return false;
+            }
 
             return underlying.IsGenericType &&
                    underlying.GetGenericTypeDefinition() == typeof(Nullable<>);

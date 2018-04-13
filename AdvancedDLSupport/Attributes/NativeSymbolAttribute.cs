@@ -47,6 +47,7 @@ namespace AdvancedDLSupport
         [PublicAPI]
         public NativeSymbolAttribute()
         {
+            CallingConvention = CallingConvention.StdCall;
         }
 
         /// <summary>
@@ -55,6 +56,7 @@ namespace AdvancedDLSupport
         /// <param name="entrypoint">The name of the function's entry point.</param>
         [PublicAPI]
         public NativeSymbolAttribute([NotNull] string entrypoint)
+            : this()
         {
             Entrypoint = entrypoint;
         }

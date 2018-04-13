@@ -91,6 +91,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <returns>(
         /// A <see cref="ValueTuple{T1, T2}"/>, containing the generated method builder and its paramete types.
         /// </returns>
+        [NotNull]
         private IntrospectiveMethodInfo GenerateLoweredMethodDefinition
         (
             [NotNull] IntrospectiveMethodInfo complexInterfaceMethod,
@@ -122,6 +123,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="interfaceDefinition">The interface definition to base it on.</param>
         /// <returns>An introspective method info for the definition.</returns>
+        [NotNull]
         private IntrospectiveMethodInfo GenerateComplexMethodDefinition([NotNull] IntrospectiveMethodInfo interfaceDefinition)
         {
             var methodBuilder = TargetType.DefineMethod
@@ -145,6 +147,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="complexDefinition">The complex method definition.</param>
         /// <param name="loweredMethod">The lowered method definition.</param>
         /// <returns>The generated invoker.</returns>
+        [NotNull]
         private IntrospectiveMethodInfo GenerateComplexMethodBody
         (
             [NotNull] IntrospectiveMethodInfo complexDefinition,
@@ -271,6 +274,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             );
 
             il.Emit(OpCodes.Ldarg_0);
+            // ReSharper disable once PossibleNullReferenceException
             il.Emit(OpCodes.Call, repoProperty.GetMethod); // Get the type transformer repository
 
             il.EmitTypeOf(complexType);

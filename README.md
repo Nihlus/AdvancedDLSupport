@@ -7,6 +7,17 @@ Gone are the days of broken `DllImport` and annoying workarounds for the differe
 Fully compatible with Mono, .NET Framework, .NET Core, and .NET Standard. Compatible with Mono DLL mapping on all 
 platforms and runtimes. Configurable and adaptible.
 
+
+## Why use ADL?
+1) Modern API - no more static classes, no more `extern`. Use your native API as if it were first-class objects.
+2) Flexibility - Inject your native API into your classes, change the library scanning logic, mix your managed and
+   native code.
+3) [Speed][indirect-calls] - ADL is blazing fast, and gives your native interop an edge. See performance increases that
+   are at least 2 and up to 8 times faster than other, existing solutions.
+4) [Easy to use][quickstart] - Not only is ADL simple to set up and get working, it's a breeze to maintain, and reduces 
+   clutter in your codebase.
+
+
 ## Build & Test status
 |                   | Travis (Linux - Mono & .NET Core)          | Travis (OSX - Mono & .NET Core)        | AppVeyor (Windows - .NET & .NET Core)    | MyGet (Development)     |
 | ----------------- |------------------------------------------- | -------------------------------------- | ---------------------------------------- | ------------------------|
@@ -20,7 +31,8 @@ platforms and runtimes. Configurable and adaptible.
 
 Total project coverage: [![Codecov.io][codecov-coverage]][codecov]
 
-Read the [Docs][9], or get the [MyGet][10] development packages and [get started][11].
+Read the [Docs][9], or get the [MyGet][10] development packages and [get started][quickstart].
+
 
 ## Features
 * Supports all the typical P/Invoke patterns and constructs
@@ -32,6 +44,7 @@ Read the [Docs][9], or get the [MyGet][10] development packages and [get started
 * Import global variables 
 * Optional lazy loaded symbols
 * Optional Mono DllMap support
+
 
 ## Basic Usage
 
@@ -67,7 +80,7 @@ Read the [Docs][9], or get the [MyGet][10] development packages and [get started
 	library.MyOtherNativeFunction(myStruct, ref myOtherStruct);
 	```
 
-See the [Quickstart][11] for more information.
+See the [Quickstart][quickstart] for more information.
 
 ## Installation
 
@@ -125,7 +138,8 @@ See the [LICENSE][13] for details. Without the support of the open-source moveme
 [9]: https://firwood-software.github.io/AdvanceDLSupport
 [10]: https://www.myget.org/gallery/advancedlsupport
 
-[11]: docs/quickstart.md
+[quickstart]: docs/quickstart.md
+[indirect-calls]: docs/indirect-calling.md
 
 [12]: https://www.gnu.org/licenses/gpl-3.0.en.html
 [13]: LICENSE
