@@ -60,8 +60,8 @@ namespace AdvancedDLSupport
                 // Due to the fact that we only need to flip between two states for each instance of a nullable
                 // parameter, we can piggyback on the permutation count and use it as a bitmask which determines
                 // what to flip each parameter to.
-                var bits = new BitArray(new[] { i });
-                permutations.Add(GeneratePermutation(parameters, bits));
+                var mask = new BitArray(new[] { i });
+                permutations.Add(GeneratePermutation(parameters, mask));
             }
 
             return permutations;
