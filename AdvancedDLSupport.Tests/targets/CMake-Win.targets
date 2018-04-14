@@ -17,7 +17,6 @@
         <CMakeGenerator>"Visual Studio 15 2017 Win64"</CMakeGenerator>
     </PropertyGroup>
 
-
     <!-- Windows-specific targets -->
     <Target Name="InitWinCMake" AfterTargets="InitCMake" Condition="!Exists('$(CMakeBuildDirx86)') And !Exists('$(CMakeBuildDirx64)')">
         <Exec Command="mkdir $(CMakeBuildDirx86)" />
@@ -33,5 +32,10 @@
         <Exec Command="cmake -DCOMPONENT=standard -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDir)" />
         <Exec Command="cmake -DCOMPONENT=x32-only -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDirx86)" />
         <Exec Command="cmake -DCOMPONENT=x64-only -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDirx64)" />
+    </Target>
+
+    <Target Name="CleanWinCMake" AfterTargets="AfterClean" Condition="Exists('$(CMakeBuildDirx86)') And Exists('$(CMakeBuildDirx64)')" >
+        <RemoveDir Directories="$(CMakeBuildDirx86)"/>
+        <RemoveDir Directories="$(CMakeBuildDirx64)"/>
     </Target>
 </Project>
