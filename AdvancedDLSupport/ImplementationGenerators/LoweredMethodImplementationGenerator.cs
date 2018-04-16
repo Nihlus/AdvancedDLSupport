@@ -174,7 +174,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
             for (var i = 1; i <= parameterTypes.Count; ++i)
             {
                 var parameterType = parameterTypes[i - 1];
-                if (parameterType.RequiresLowering())
+                var parameterNeedsLowering = _transformerRepository.HasApplicableTransformer(parameterType, Options);
+                if (parameterNeedsLowering)
                 {
                     var loweredParameterType = loweredParameterTypes[i - 1];
                     EmitParameterValueLowering(il, parameterType, loweredParameterType, i);
@@ -189,7 +190,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
             il.Emit(OpCodes.Call, loweredMethod.GetWrappedMember());
 
             // Emit return value raising
-            if (complexDefinition.ReturnValueRequiresLowering())
+            var returnType = complexDefinition.ReturnType;
+            var returnValueNeedsRaising = _transformerRepository.HasApplicableTransformer(returnType, Options);
+            if (returnValueNeedsRaising)
             {
                 EmitValueRaising(il, complexDefinition.ReturnType, loweredMethod.ReturnType);
             }
@@ -290,7 +293,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         [Pure, NotNull]
         private Type LowerTypeIfRequired([NotNull] Type type)
         {
-            if (type.RequiresLowering())
+            if (_transformerRepository.HasApplicableTransformer(type, Options))
             {
                 var transformer = _transformerRepository.GetTypeTransformer(type);
                 type = transformer.LowerType();

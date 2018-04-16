@@ -11,7 +11,9 @@ namespace AdvancedDLSupport.Tests.Integration
 	public class PropertyIntegrationTests
 	{
 		private const string LibraryName = "PropertyTests";
+		private const string TestCollectionName = "VolatilePropertyData";
 
+		[Collection(TestCollectionName)]
 		public class Getter : LibraryTestBase<IPropertyLibrary>
 		{
 			public Getter() : base(LibraryName)
@@ -44,6 +46,7 @@ namespace AdvancedDLSupport.Tests.Integration
 			}
 		}
 
+		[Collection(TestCollectionName)]
 		public class Setter : LibraryTestBase<IPropertyLibrary>
 		{
 			public Setter() : base(LibraryName)

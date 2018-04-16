@@ -44,6 +44,14 @@ namespace AdvancedDLSupport
         /// <returns>The lowered type.</returns>
         [PublicAPI, NotNull]
         Type RaiseType();
+
+        /// <summary>
+        /// Determines whether or not the transformer is applicable for the given type under the given options.
+        /// </summary>
+        /// <param name="complexType">The more complex type.</param>
+        /// <param name="options">The implementation options in use.</param>
+        /// <returns>true if the transformer is applicable; otherwise, false.</returns>
+        bool IsApplicable([NotNull] Type complexType, ImplementationOptions options);
     }
 
     /// <summary>

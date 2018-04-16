@@ -20,6 +20,7 @@
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using AdvancedDLSupport.Extensions;
 
 namespace AdvancedDLSupport
 {
@@ -54,6 +55,12 @@ namespace AdvancedDLSupport
 
             var val = Marshal.PtrToStructure<T>(value);
             return val;
+        }
+
+        /// <inheritdoc />
+        public override bool IsApplicable(Type complexType, ImplementationOptions options)
+        {
+            return complexType.IsNonRefNullable() && complexType.GetElementType() == typeof(T);
         }
     }
 }

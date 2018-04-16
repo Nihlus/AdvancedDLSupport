@@ -18,6 +18,7 @@
 //
 
 using System;
+using System.Diagnostics;
 using AdvancedDLSupport.Loaders;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
@@ -103,14 +104,6 @@ namespace AdvancedDLSupport
         }
 
         /// <summary>
-        /// Finalizes an instance of the <see cref="NativeLibraryBase"/> class.
-        /// </summary>
-        ~NativeLibraryBase()
-        {
-            Dispose();
-        }
-
-        /// <summary>
         /// Forwards the symbol loading call to the wrapped platform loader.
         /// </summary>
         /// <param name="sym">The symbol name.</param>
@@ -147,8 +140,6 @@ namespace AdvancedDLSupport
             {
                 return;
             }
-
-            GC.SuppressFinalize(this);
 
             IsDisposed = true;
 

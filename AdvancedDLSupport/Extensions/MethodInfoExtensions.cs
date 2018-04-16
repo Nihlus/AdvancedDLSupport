@@ -41,44 +41,5 @@ namespace AdvancedDLSupport.Extensions
         {
             return @this.ParameterTypes.Any(p => p.IsRefNullable());
         }
-
-        /// <summary>
-        /// Determines whether or not the given method requires lowering, that is, whether or not any of its involved
-        /// types require lowering.
-        /// </summary>
-        /// <param name="this">The method to check.</param>
-        /// <returns>true if the method is complex; otherwise, false.</returns>
-        [Pure]
-        public static bool RequiresLowering([NotNull] this IntrospectiveMethodInfo @this)
-        {
-            return ParametersRequireLowering(@this) || ReturnValueRequiresLowering(@this);
-        }
-
-        /// <summary>
-        /// Determines whether or not the method's parameters require lowering.
-        /// </summary>
-        /// <param name="this">The method.</param>
-        /// <returns>true if the method has parameters that require lowering; otherwise, false.</returns>
-        [Pure]
-        public static bool ParametersRequireLowering([NotNull] this IntrospectiveMethodInfo @this)
-        {
-            var parameters = @this.ParameterTypes;
-            return parameters.Any
-            (
-                p =>
-                    p.RequiresLowering()
-            );
-        }
-
-        /// <summary>
-        /// Determines whether or not the given method has a return value that requires lowering.
-        /// </summary>
-        /// <param name="this">The method.</param>
-        /// <returns>true if the method has a return value that requires lowering; otherwise, false.</returns>
-        [Pure]
-        public static bool ReturnValueRequiresLowering([NotNull] this IntrospectiveMethodInfo @this)
-        {
-            return @this.ReturnType.RequiresLowering();
-        }
     }
 }

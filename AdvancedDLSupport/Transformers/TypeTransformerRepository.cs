@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using AdvancedDLSupport.Extensions;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
@@ -32,6 +33,15 @@ namespace AdvancedDLSupport
     public class TypeTransformerRepository
     {
         private readonly Dictionary<Type, ITypeTransformer> _typeTransformers = new Dictionary<Type, ITypeTransformer>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TypeTransformerRepository"/> class.
+        /// </summary>
+        public TypeTransformerRepository()
+        {
+            // Add default transformers
+            _typeTransformers.Add(typeof(string), new StringTransformer());
+        }
 
         /// <summary>
         /// Adds the given type transformer to the repository, making it available to complex generators.
@@ -57,6 +67,24 @@ namespace AdvancedDLSupport
         }
 
         /// <summary>
+        /// Determines whether or not the repository contains an applicable type transformer.
+        /// </summary>
+        /// <param name="complexType">The complex type to transform.</param>
+        /// <param name="options">The implementation options to use.</param>
+        /// <returns>true if the repository contains an applicable transformer; otherwise, false.</returns>
+        [PublicAPI]
+        public bool HasApplicableTransformer([NotNull] Type complexType, ImplementationOptions options)
+        {
+            // HACK: hard-coded option for nullable transformer
+            if (complexType.IsNonRefNullable())
+            {
+                return true;
+            }
+
+            return _typeTransformers.Values.Any(t => t.IsApplicable(complexType, options));
+        }
+
+        /// <summary>
         /// Gets the transformer for the given complex type.
         /// </summary>
         /// <param name="type">The complex type.</param>
@@ -65,12 +93,13 @@ namespace AdvancedDLSupport
         [PublicAPI, NotNull]
         public ITypeTransformer GetTypeTransformer([NotNull] Type type)
         {
-            if (type == typeof(string))
+            if (_typeTransformers.ContainsKey(type))
             {
-                return GetStringTransformer();
+                return _typeTransformers[type];
             }
 
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            // HACK: hard-coded option for nullable transformer
+            if (type.IsNonRefNullable())
             {
                 var innerType = type.GetGenericArguments().First();
                 var openNullableGetter = typeof(TypeTransformerRepository).GetMethod
@@ -85,11 +114,6 @@ namespace AdvancedDLSupport
                 return (ITypeTransformer)closedNullableGetter.Invoke(this, null);
             }
 
-            if (_typeTransformers.ContainsKey(type))
-            {
-                return _typeTransformers[type];
-            }
-
             throw new NotSupportedException("The given type doesn't have a compatible type transformer.");
         }
 
@@ -100,15 +124,7 @@ namespace AdvancedDLSupport
         [NotNull]
         internal StringTransformer GetStringTransformer()
         {
-            if (_typeTransformers.ContainsKey(typeof(string)))
-            {
-                return (StringTransformer)_typeTransformers[typeof(string)];
-            }
-
-            var transformer = new StringTransformer();
-            _typeTransformers.Add(typeof(string), transformer);
-
-            return transformer;
+            return (StringTransformer)_typeTransformers[typeof(string)];
         }
 
         /// <summary>

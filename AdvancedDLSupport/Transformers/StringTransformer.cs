@@ -169,5 +169,11 @@ namespace AdvancedDLSupport
 
             return val;
         }
+
+        /// <inheritdoc />
+        public override bool IsApplicable(Type complexType, ImplementationOptions options)
+        {
+            return complexType == typeof(string);
+        }
     }
 }

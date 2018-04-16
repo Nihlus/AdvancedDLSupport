@@ -159,6 +159,11 @@
   <member name="T:AdvancedDLSupport.ITypeTransformer">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="M:AdvancedDLSupport.ITypeTransformer.IsApplicable(System.Type,AdvancedDLSupport.ImplementationOptions)">
+    <parameter name="complexType">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
   <member name="M:AdvancedDLSupport.ITypeTransformer.LowerType">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
@@ -587,6 +592,12 @@
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     <parameter name="type">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.TypeTransformerRepository.HasApplicableTransformer(System.Type,AdvancedDLSupport.ImplementationOptions)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <parameter name="complexType">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>

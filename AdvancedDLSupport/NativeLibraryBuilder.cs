@@ -427,7 +427,11 @@ namespace AdvancedDLSupport
                 }
                 else
                 {
-                    if (method.RequiresLowering())
+                    var requiresLowering =
+                        TransformerRepository.HasApplicableTransformer(method.ReturnType, Options) ||
+                        method.ParameterTypes.Any(pt => TransformerRepository.HasApplicableTransformer(pt, Options));
+
+                    if (requiresLowering)
                     {
                         loweredGenerator.GenerateImplementation(targetMethod);
                     }

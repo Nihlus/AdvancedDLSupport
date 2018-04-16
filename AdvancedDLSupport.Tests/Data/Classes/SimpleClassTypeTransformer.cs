@@ -15,6 +15,11 @@ namespace AdvancedDLSupport.Tests.Data.Classes
             throw new NotImplementedException();
         }
 
+        public bool IsApplicable(Type complexType, ImplementationOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
         public SimpleClass LowerValue(IntPtr value, ParameterInfo parameter)
         {
             throw new NotImplementedException();

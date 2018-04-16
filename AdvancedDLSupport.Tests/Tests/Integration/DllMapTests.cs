@@ -18,7 +18,7 @@ namespace AdvancedDLSupport.Tests.Integration
         }
 
         [Fact]
-        void RemappedLibraryMapsToCorrectLibrary()
+        public void RemappedLibraryMapsToCorrectLibrary()
         {
             Assert.Equal(25, Library.Multiply(5, 5));
         }

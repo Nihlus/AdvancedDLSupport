@@ -43,6 +43,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         private readonly MethodImplementationGenerator _methodGenerator;
         private readonly LoweredMethodImplementationGenerator _loweredMethodGenerator;
 
+        [NotNull]
+        private readonly TypeTransformerRepository _transformerRepository;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RefPermutationImplementationGenerator"/> class.
         /// </summary>
@@ -62,6 +65,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
             : base(targetModule, targetType, targetTypeConstructorIL, options)
         {
             _permutationGenerator = new PermutationGenerator();
+
+            _transformerRepository = transformerRepository;
 
             _methodGenerator = new MethodImplementationGenerator(targetModule, targetType, targetTypeConstructorIL, options);
             _loweredMethodGenerator = new LoweredMethodImplementationGenerator(targetModule, targetType, targetTypeConstructorIL, options, transformerRepository);
@@ -98,7 +103,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
                 uniqueMemberIdentifier = memberIdentifier;
 
-                if (permutation.RequiresLowering())
+                var requiresLowering =
+                    _transformerRepository.HasApplicableTransformer(permutation.ReturnType, Options) ||
+                    permutation.ParameterTypes.Any(pt => _transformerRepository.HasApplicableTransformer(pt, Options));
+
+                if (requiresLowering)
                 {
                     _loweredMethodGenerator.GenerateImplementationForDefinition(permutation, symbolName, uniqueMemberIdentifier);
                 }

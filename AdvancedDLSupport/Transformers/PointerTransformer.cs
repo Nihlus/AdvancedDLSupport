@@ -36,6 +36,9 @@ namespace AdvancedDLSupport
         /// <inheritdoc />
         public abstract T RaiseValue(IntPtr value, ParameterInfo parameter);
 
+        /// <inheritdoc/>
+        public abstract bool IsApplicable(Type complexType, ImplementationOptions options);
+
         /// <inheritdoc />
         public Type LowerType()
         {
