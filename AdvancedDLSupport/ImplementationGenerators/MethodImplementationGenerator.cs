@@ -18,12 +18,14 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 
 using AdvancedDLSupport.Extensions;
+using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
@@ -68,18 +70,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <inheritdoc />
-        protected override void GenerateImplementation(IntrospectiveMethodInfo method, string symbolName, string uniqueMemberIdentifier)
+        public override IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> GenerateImplementation(PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {
-            var definition = GenerateInvokerDefinition(method);
+            var definition = workUnit.Definition;
 
-            GenerateImplementationForDefinition(definition, symbolName, uniqueMemberIdentifier);
-
-            TargetType.DefineMethodOverride(definition.GetWrappedMember(), method.GetWrappedMember());
-        }
-
-        /// <inheritdoc />
-        public override IntrospectiveMethodInfo GenerateImplementationForDefinition(IntrospectiveMethodInfo definition, string symbolName, string uniqueMemberIdentifier)
-        {
             var metadataAttribute = definition.GetCustomAttribute<NativeSymbolAttribute>() ??
                                     new NativeSymbolAttribute(definition.Name);
 
@@ -90,23 +84,23 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 var backingField = Options.HasFlagFast(UseLazyBinding)
                 ? TargetType.DefineField
                 (
-                    $"{uniqueMemberIdentifier}_ptr_lazy",
+                    $"{workUnit.GetUniqueBaseMemberName()}_ptr_lazy",
                     typeof(Lazy<>).MakeGenericType(backingFieldType),
                     FieldAttributes.Private | FieldAttributes.InitOnly
                 )
                 : TargetType.DefineField
                 (
-                    $"{uniqueMemberIdentifier}_ptr",
+                    $"{workUnit.GetUniqueBaseMemberName()}_ptr",
                     backingFieldType,
                     FieldAttributes.Private | FieldAttributes.InitOnly
                 );
 
-                AugmentHostingTypeConstructorWithNativeInitialization(symbolName, backingFieldType, backingField);
+                AugmentHostingTypeConstructorWithNativeInitialization(workUnit.SymbolName, backingFieldType, backingField);
                 GenerateNativeInvokerBody(definition, metadataAttribute.CallingConvention, backingFieldType, backingField);
             }
             else
             {
-                var delegateBuilder = GenerateDelegateType(definition, uniqueMemberIdentifier, metadataAttribute.CallingConvention);
+                var delegateBuilder = GenerateDelegateType(workUnit, metadataAttribute.CallingConvention);
 
                 // Create a delegate field
                 var backingFieldType = delegateBuilder.CreateTypeInfo();
@@ -114,22 +108,22 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 var backingField = Options.HasFlagFast(UseLazyBinding)
                 ? TargetType.DefineField
                 (
-                    $"{uniqueMemberIdentifier}_delegate_lazy",
+                    $"{workUnit.GetUniqueBaseMemberName()}_delegate_lazy",
                     typeof(Lazy<>).MakeGenericType(backingFieldType),
                     FieldAttributes.Private | FieldAttributes.InitOnly
                 )
                 : TargetType.DefineField
                 (
-                    $"{uniqueMemberIdentifier}_delegate",
+                    $"{workUnit.GetUniqueBaseMemberName()}_delegate",
                     backingFieldType,
                     FieldAttributes.Private | FieldAttributes.InitOnly
                 );
 
-                AugmentHostingTypeConstructorWithDelegateInitialization(symbolName, backingFieldType, backingField);
+                AugmentHostingTypeConstructorWithDelegateInitialization(workUnit.SymbolName, backingFieldType, backingField);
                 GenerateDelegateInvokerBody(definition, backingFieldType, backingField);
             }
 
-            return definition;
+            yield break;
         }
 
         /// <summary>
@@ -202,26 +196,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
             }
 
             TargetTypeConstructorIL.EmitSetField(backingField);
-        }
-
-        /// <summary>
-        /// Generates a method that invokes the method's delegate.
-        /// </summary>
-        /// <param name="methodDefinition">The method to invoke.</param>
-        /// <returns>The generated invoker.</returns>
-        [NotNull]
-        private IntrospectiveMethodInfo GenerateInvokerDefinition([NotNull] IntrospectiveMethodInfo methodDefinition)
-        {
-            var methodBuilder = TargetType.DefineMethod
-            (
-                methodDefinition.Name,
-                Public | Final | Virtual | HideBySig | NewSlot,
-                Standard,
-                methodDefinition.ReturnType,
-                methodDefinition.ParameterTypes.ToArray()
-            );
-
-            return new IntrospectiveMethodInfo(methodBuilder, methodDefinition.ReturnType, methodDefinition.ParameterTypes, methodDefinition);
         }
 
         /// <summary>
@@ -314,22 +288,22 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <summary>
         /// Generates a delegate type for the given method.
         /// </summary>
-        /// <param name="methodInfo">The method to generate a delegate type for.</param>
-        /// <param name="memberIdentifier">The member identifier to use for name generation.</param>
+        /// <param name="workUnit">The method to generate a delegate type for.</param>
         /// <param name="callingConvention">The unmanaged calling convention of the delegate.</param>
         /// <returns>A delegate type.</returns>
         [NotNull]
         private TypeBuilder GenerateDelegateType
         (
-            [NotNull] IntrospectiveMethodInfo methodInfo,
-            [NotNull] string memberIdentifier,
+            [NotNull] PipelineWorkUnit<IntrospectiveMethodInfo> workUnit,
             CallingConvention callingConvention
         )
         {
+            var definition = workUnit.Definition;
+
             // Declare a delegate type
             var delegateBuilder = TargetModule.DefineType
             (
-                $"{memberIdentifier}_dt",
+                $"{workUnit.GetUniqueBaseMemberName()}_delegate",
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AnsiClass | TypeAttributes.AutoClass,
                 typeof(MulticastDelegate)
             );
@@ -351,7 +325,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             );
 
             delegateBuilder.SetCustomAttribute(functionPointerAttributeBuilder);
-            foreach (var attribute in methodInfo.CustomAttributes)
+            foreach (var attribute in definition.CustomAttributes)
             {
                 delegateBuilder.SetCustomAttribute(attribute.GetAttributeBuilder());
             }
@@ -369,11 +343,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
             (
                 "Invoke",
                 Public | HideBySig | NewSlot | Virtual,
-                methodInfo.ReturnType,
-                methodInfo.ParameterTypes.ToArray()
+                definition.ReturnType,
+                definition.ParameterTypes.ToArray()
             );
 
-            delegateMethodBuilder.ApplyCustomAttributesFrom(methodInfo);
+            delegateMethodBuilder.ApplyCustomAttributesFrom(definition);
 
             delegateMethodBuilder.SetImplementationFlags(Runtime | Managed);
             return delegateBuilder;

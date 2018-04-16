@@ -18,10 +18,12 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
+using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
@@ -63,8 +65,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <inheritdoc />
-        protected override void GenerateImplementation(IntrospectivePropertyInfo property, string symbolName, string uniqueMemberIdentifier)
+        public override IEnumerable<PipelineWorkUnit<IntrospectivePropertyInfo>> GenerateImplementation(PipelineWorkUnit<IntrospectivePropertyInfo> workUnit)
         {
+            var property = workUnit.Definition;
+
             var propertyBuilder = TargetType.DefineProperty
             (
                 property.Name,
@@ -78,7 +82,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var fieldType = Options.HasFlagFast(UseLazyBinding) ? typeof(Lazy<IntPtr>) : typeof(IntPtr);
             var propertyFieldBuilder = TargetType.DefineField
             (
-                uniqueMemberIdentifier,
+                $"{workUnit.GetUniqueBaseMemberName()}_backing",
                 fieldType,
                 FieldAttributes.Private
             );
@@ -93,16 +97,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 GeneratePropertySetter(property, propertyFieldBuilder, propertyBuilder);
             }
 
-            PropertyInitializationInConstructor(symbolName, propertyFieldBuilder); // This is ok for all 3 types of properties.
+            AugmentHostingTypeConstructor(workUnit.SymbolName, propertyFieldBuilder);
+
+            yield break;
         }
 
-        /// <inheritdoc />
-        public override IntrospectivePropertyInfo GenerateImplementationForDefinition(IntrospectivePropertyInfo member, string symbolName, string uniqueMemberIdentifier)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void PropertyInitializationInConstructor
+        private void AugmentHostingTypeConstructor
         (
             [NotNull] string symbolName,
             [NotNull] FieldInfo propertyFieldBuilder
@@ -110,7 +110,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             var loadSymbolMethod = typeof(NativeLibraryBase).GetMethod
             (
-                "LoadSymbol",
+                nameof(NativeLibraryBase.LoadSymbol),
                 BindingFlags.NonPublic | BindingFlags.Instance
             );
 

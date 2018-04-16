@@ -26,6 +26,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using AdvancedDLSupport.Extensions;
+using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using static System.Reflection.MethodAttributes;
@@ -73,89 +74,59 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <inheritdoc />
-        protected override void GenerateImplementation(IntrospectiveMethodInfo member, string symbolName, string uniqueMemberIdentifier)
+        public override IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> GenerateImplementation(PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {
-            var generatedMethods = new List<IntrospectiveMethodInfo>();
+            var permutations = new List<IntrospectiveMethodInfo>();
+            var definition = workUnit.Definition;
 
             // Generate permutation definitions
-            var permutations = _permutationGenerator.Generate(member);
-            for (int i = 0; i < permutations.Count; ++i)
+            var parameterPermutations = _permutationGenerator.Generate(definition);
+            for (int i = 0; i < parameterPermutations.Count; ++i)
             {
-                var permutation = permutations[i];
+                var permutation = parameterPermutations[i];
                 var method = TargetType.DefineMethod
                 (
-                    $"{uniqueMemberIdentifier}_{i}",
+                    $"{workUnit.GetUniqueBaseMemberName()}_permutation_{i}",
                     Public | Final | Virtual | HideBySig | NewSlot,
                     CallingConventions.Standard,
-                    member.ReturnType,
+                    definition.ReturnType,
                     permutation.ToArray()
                 );
 
-                var methodInfo = new IntrospectiveMethodInfo(method, member.ReturnType, permutation, member);
-                generatedMethods.Add(methodInfo);
+                var methodInfo = new IntrospectiveMethodInfo(method, definition.ReturnType, permutation, definition);
+                permutations.Add(methodInfo);
             }
 
-            // Generate native implementations for the permutations
-            foreach (var permutation in generatedMethods)
+            GenerateTopLevelMethodImplementation(definition, permutations);
+
+            // Pass the permutations on for further processing
+            foreach (var permutation in permutations)
             {
-                var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
-                var memberIdentifier = $"{member.Name}_{uniqueIdentifier}";
-
-                uniqueMemberIdentifier = memberIdentifier;
-
-                var requiresLowering =
-                    _transformerRepository.HasApplicableTransformer(permutation.ReturnType, Options) ||
-                    permutation.ParameterTypes.Any(pt => _transformerRepository.HasApplicableTransformer(pt, Options));
-
-                if (requiresLowering)
-                {
-                    _loweredMethodGenerator.GenerateImplementationForDefinition(permutation, symbolName, uniqueMemberIdentifier);
-                }
-                else
-                {
-                    _methodGenerator.GenerateImplementationForDefinition(permutation, symbolName, uniqueMemberIdentifier);
-                }
+                yield return new PipelineWorkUnit<IntrospectiveMethodInfo>(permutation, workUnit);
             }
-
-            // Generate a definition for the top-level method
-            var topLevelMethod = TargetType.DefineMethod
-            (
-                symbolName,
-                Public | Final | Virtual | HideBySig | NewSlot,
-                member.ReturnType,
-                member.ParameterTypes.ToArray()
-            );
-
-            GenerateTopLevelMethodImplementation(member, topLevelMethod, permutations, generatedMethods);
-            TargetType.DefineMethodOverride(topLevelMethod, member.GetWrappedMember());
-        }
-
-        /// <inheritdoc />
-        public override IntrospectiveMethodInfo GenerateImplementationForDefinition(IntrospectiveMethodInfo member, string symbolName, string uniqueMemberIdentifier)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
         /// Generates the implementation body of the top-level method, producing a method that selects the appropriate
         /// permutation to use for its runtime input.
         /// </summary>
-        /// <param name="baseMemberDefinition">The <see cref="MethodInfo"/> describing the base definition of the method.</param>
-        /// <param name="topLevelMethod">The <see cref="MethodBuilder"/> to implement the body for.</param>
-        /// <param name="permutations">The posssible parameter list permutations.</param>
-        /// <param name="generatedMethods">The generated methods.</param>
+        /// <param name="definition">The <see cref="MethodInfo"/> describing the base definition of the method.</param>
+        /// <param name="permutations">The generated methods.</param>
         private void GenerateTopLevelMethodImplementation
         (
-            [NotNull] IntrospectiveMethodInfo baseMemberDefinition,
-            [NotNull] MethodBuilder topLevelMethod,
-            [NotNull, ItemNotNull] IReadOnlyList<IReadOnlyList<Type>> permutations,
-            [NotNull, ItemNotNull] IReadOnlyList<IntrospectiveMethodInfo> generatedMethods
+            [NotNull] IntrospectiveMethodInfo definition,
+            [NotNull, ItemNotNull] IReadOnlyList<IntrospectiveMethodInfo> permutations
         )
         {
+            if (!(definition.GetWrappedMember() is MethodBuilder builder))
+            {
+                throw new ArgumentNullException(nameof(definition), "Could not unwrap introspective method to method builder.");
+            }
+
             var nextFreeLocalSlot = 0;
 
-            var parameterTypes = baseMemberDefinition.ParameterTypes.ToList();
-            var methodIL = topLevelMethod.GetILGenerator();
+            var parameterTypes = definition.ParameterTypes.ToList();
+            var methodIL = builder.GetILGenerator();
 
             // Create a boolean array to store the data pertaining to which parameters have values
             var hasValueArrayIndex = EmitHasValueArray(methodIL, ref nextFreeLocalSlot, parameterTypes);
@@ -165,7 +136,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             // Generate a jump table for the upcoming switch
             var labelList = new List<Label>();
-            for (int i = 0; i < generatedMethods.Count; ++i)
+            for (int i = 0; i < permutations.Count; ++i)
             {
                 labelList.Add(methodIL.DefineLabel());
             }
@@ -181,11 +152,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
             EmitDefaultSwitchCase(methodIL, defaultCase);
 
             // Emit the switch cases, one for each permutation
-            for (int i = 0; i < generatedMethods.Count; ++i)
+            for (int i = 0; i < permutations.Count; ++i)
             {
                 methodIL.MarkLabel(jumpTable[i]);
 
-                var permutationTypes = permutations[i].ToList();
+                var permutationTypes = permutations[i].ParameterTypes;
 
                 methodIL.Emit(OpCodes.Ldarg_0);
                 for (int argumentIndex = 1; argumentIndex < permutationTypes.Count + 1; ++argumentIndex)
@@ -216,7 +187,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 }
 
                 // Call the permutation
-                methodIL.Emit(OpCodes.Call, generatedMethods[i].GetWrappedMember());
+                methodIL.Emit(OpCodes.Call, permutations[i].GetWrappedMember());
 
                 // break;
                 methodIL.Emit(OpCodes.Br, endOfSwitch);

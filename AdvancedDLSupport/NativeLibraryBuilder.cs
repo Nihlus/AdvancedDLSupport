@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -26,6 +27,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.ImplementationGenerators;
+using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap;
@@ -295,18 +297,27 @@ namespace AdvancedDLSupport
             );
 
             constructorBuilder.DefineParameter(1, ParameterAttributes.In, "libraryPath");
-            var ctorIL = constructorBuilder.GetILGenerator();
+            var constructorIL = constructorBuilder.GetILGenerator();
             for (int i = 0; i <= anonymousConstructor.GetParameters().Length; ++i)
             {
-                ctorIL.Emit(OpCodes.Ldarg, i);
+                constructorIL.Emit(OpCodes.Ldarg, i);
             }
 
-            ctorIL.Emit(OpCodes.Call, anonymousConstructor);
+            constructorIL.Emit(OpCodes.Call, anonymousConstructor);
 
-            ConstructMethods<TBaseClass, TInterface>(typeBuilder, ctorIL);
-            ConstructProperties<TBaseClass, TInterface>(typeBuilder, ctorIL);
+            var pipeline = new ImplementationPipeline
+            (
+                ModuleBuilder,
+                typeBuilder,
+                constructorIL,
+                Options,
+                TransformerRepository
+            );
 
-            ctorIL.Emit(OpCodes.Ret);
+            ConstructMethods<TBaseClass, TInterface>(pipeline);
+            ConstructProperties<TBaseClass, TInterface>(pipeline);
+
+            constructorIL.Emit(OpCodes.Ret);
             return typeBuilder.CreateTypeInfo();
         }
 
@@ -363,37 +374,14 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Constructs the implementations for all normal methods.
         /// </summary>
-        /// <param name="typeBuilder">Reference to TypeBuilder to define the methods in.</param>
-        /// <param name="constructorIL">Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.</param>
+        /// <param name="pipeline">The implementation pipeline that consumes the methods.</param>
         /// <typeparam name="TBaseClass">The base class of the type to generate methods for.</typeparam>
         /// <typeparam name="TInterface">The interface where the methods originate.</typeparam>
-        private void ConstructMethods<TBaseClass, TInterface>
-        (
-            [NotNull] TypeBuilder typeBuilder,
-            [NotNull] ILGenerator constructorIL
-        )
+        private void ConstructMethods<TBaseClass, TInterface>([NotNull] ImplementationPipeline pipeline)
             where TBaseClass : NativeLibraryBase
             where TInterface : class
         {
-            var methodGenerator = new MethodImplementationGenerator(ModuleBuilder, typeBuilder, constructorIL, Options);
-            var loweredGenerator = new LoweredMethodImplementationGenerator
-            (
-                ModuleBuilder,
-                typeBuilder,
-                constructorIL,
-                Options,
-                TransformerRepository
-            );
-
-            var refPermutationGenerator = new RefPermutationImplementationGenerator
-            (
-                ModuleBuilder,
-                typeBuilder,
-                constructorIL,
-                Options,
-                TransformerRepository
-            );
-
+            var methods = new List<PipelineWorkUnit<IntrospectiveMethodInfo>>();
             foreach (var method in typeof(TInterface).GetIntrospectiveMethods(true))
             {
                 var targetMethod = method;
@@ -421,56 +409,35 @@ namespace AdvancedDLSupport
                     targetMethod = baseClassMethod;
                 }
 
-                if (method.RequiresRefPermutations())
-                {
-                    refPermutationGenerator.GenerateImplementation(method);
-                }
-                else
-                {
-                    var requiresLowering =
-                        TransformerRepository.HasApplicableTransformer(method.ReturnType, Options) ||
-                        method.ParameterTypes.Any(pt => TransformerRepository.HasApplicableTransformer(pt, Options));
-
-                    if (requiresLowering)
-                    {
-                        loweredGenerator.GenerateImplementation(targetMethod);
-                    }
-                    else
-                    {
-                        methodGenerator.GenerateImplementation(targetMethod);
-                    }
-                }
+                var definition = pipeline.GenerateDefinitionFromSignature(targetMethod);
+                methods.Add
+                (
+                    new PipelineWorkUnit<IntrospectiveMethodInfo>
+                    (
+                        definition,
+                        targetMethod.GetSymbolName(),
+                        Options
+                    )
+                );
             }
+
+            pipeline.ConsumeMethodDefinitions(methods);
         }
 
         /// <summary>
         /// Constructs the implementations for all properties.
         /// </summary>
-        /// <param name="typeBuilder">Reference to TypeBuilder to define the methods in.</param>
-        /// <param name="constructorIL">
-        /// Constructor IL emitter to initialize methods by assigning symbol pointer to delegate.
-        /// </param>
+        /// <param name="pipeline">The implementation pipeline that consumes the methods.</param>
         /// <typeparam name="TBaseClass">The base class of the type to generator properties for.</typeparam>
         /// <typeparam name="TInterface">The interface where the properties originate.</typeparam>
         /// <exception cref="InvalidOperationException">
         /// Thrown if any property is declared as partially abstract.
         /// </exception>
-        private void ConstructProperties<TBaseClass, TInterface>
-        (
-            [NotNull] TypeBuilder typeBuilder,
-            [NotNull] ILGenerator constructorIL
-        )
+        private void ConstructProperties<TBaseClass, TInterface>([NotNull] ImplementationPipeline pipeline)
             where TBaseClass : NativeLibraryBase
             where TInterface : class
         {
-            var propertyGenerator = new PropertyImplementationGenerator
-            (
-                ModuleBuilder,
-                typeBuilder,
-                constructorIL,
-                Options
-            );
-
+            var properties = new List<PipelineWorkUnit<IntrospectivePropertyInfo>>();
             foreach (var property in typeof(TInterface).GetProperties())
             {
                 var targetProperty = property;
@@ -501,8 +468,19 @@ namespace AdvancedDLSupport
                     targetProperty = baseClassProperty;
                 }
 
-                propertyGenerator.GenerateImplementation(new IntrospectivePropertyInfo(targetProperty));
+                var introspectiveProperty = new IntrospectivePropertyInfo(targetProperty);
+                properties.Add
+                (
+                    new PipelineWorkUnit<IntrospectivePropertyInfo>
+                    (
+                        introspectiveProperty,
+                        introspectiveProperty.GetSymbolName(),
+                        Options
+                    )
+                );
             }
+
+            pipeline.ConsumePropertyDefinitions(properties);
         }
     }
 }
