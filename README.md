@@ -99,6 +99,9 @@ nuget sources Add -Name AdvancedDLSupport-develop -Source https://www.myget.org/
 Install-Package AdvancedDLSupport -ProjectName MyProject
 ```
 
+## Support us
+[![Become a Patron][patreon-button]][patreon]
+
 ## License
 If the library's license doesn't fit your project or product, please [contact us][14]. Custom licensing options are 
 available, and we are always open to working something out that fits you - be it modified, commercial, or otherwise.
@@ -144,3 +147,6 @@ See the [LICENSE][13] for details. Without the support of the open-source moveme
 [12]: https://www.gnu.org/licenses/lgpl-3.0.txt
 [13]: LICENSE
 [14]: mailto:jarl.gullberg@gmail.com
+
+[patreon-button]: https://c5.patreon.com/external/logo/become_a_patron_button.png (Become a Patron)
+[patreon]: https://www.patreon.com/jargon
