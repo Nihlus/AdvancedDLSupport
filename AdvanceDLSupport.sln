@@ -43,6 +43,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.DllMap", "Mono.DllMap\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.DllMap.Tests", "Mono.DllMap.Tests\Mono.DllMap.Tests.csproj", "{BAAA6344-0DCF-4DC9-B422-572E8640F8EC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDLSupport.Benchmark", "AdvancedDLSupport.Benchmark\AdvancedDLSupport.Benchmark.csproj", "{D9633011-4D7B-4285-B70C-D99EE6DA52DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,5 +103,17 @@ Global
 		{BAAA6344-0DCF-4DC9-B422-572E8640F8EC}.Debug|x64.Build.0 = Debug|x64
 		{BAAA6344-0DCF-4DC9-B422-572E8640F8EC}.Release|x64.ActiveCfg = Release|x64
 		{BAAA6344-0DCF-4DC9-B422-572E8640F8EC}.Release|x64.Build.0 = Release|x64
+		{D9633011-4D7B-4285-B70C-D99EE6DA52DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9633011-4D7B-4285-B70C-D99EE6DA52DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9633011-4D7B-4285-B70C-D99EE6DA52DF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D9633011-4D7B-4285-B70C-D99EE6DA52DF}.Debug|x86.Build.0 = Debug|Any CPU
+		{D9633011-4D7B-4285-B70C-D99EE6DA52DF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D9633011-4D7B-4285-B70C-D99EE6DA52DF}.Debug|x64.Build.0 = Debug|Any CPU
+		{D9633011-4D7B-4285-B70C-D99EE6DA52DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9633011-4D7B-4285-B70C-D99EE6DA52DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9633011-4D7B-4285-B70C-D99EE6DA52DF}.Release|x86.ActiveCfg = Release|Any CPU
+		{D9633011-4D7B-4285-B70C-D99EE6DA52DF}.Release|x86.Build.0 = Release|Any CPU
+		{D9633011-4D7B-4285-B70C-D99EE6DA52DF}.Release|x64.ActiveCfg = Release|Any CPU
+		{D9633011-4D7B-4285-B70C-D99EE6DA52DF}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

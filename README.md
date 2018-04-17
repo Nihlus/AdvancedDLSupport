@@ -99,11 +99,15 @@ nuget sources Add -Name AdvancedDLSupport-develop -Source https://www.myget.org/
 Install-Package AdvancedDLSupport -ProjectName MyProject
 ```
 
+## Support us
+[![Become a Patron][patreon-button]][patreon]
+<a href='https://ko-fi.com/H2H176VD' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi2.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+
 ## License
 If the library's license doesn't fit your project or product, please [contact us][14]. Custom licensing options are 
 available, and we are always open to working something out that fits you - be it modified, commercial, or otherwise.
 
-AdvancedDLSupport's public release is licensed under the [GNU General Public License, Version 3 (GPLv3)][12]. 
+AdvancedDLSupport's public release is licensed under the [GNU Lesser General Public License, Version 3 (LGPLv3)][12]. 
 See the [LICENSE][13] for details. Without the support of the open-source movement, it would never have existed.
 
 
@@ -141,6 +145,9 @@ See the [LICENSE][13] for details. Without the support of the open-source moveme
 [quickstart]: docs/quickstart.md
 [indirect-calls]: docs/indirect-calling.md
 
-[12]: https://www.gnu.org/licenses/gpl-3.0.en.html
+[12]: https://www.gnu.org/licenses/lgpl-3.0.txt
 [13]: LICENSE
 [14]: mailto:jarl.gullberg@gmail.com
+
+[patreon-button]: https://c5.patreon.com/external/logo/become_a_patron_button.png (Become a Patron)
+[patreon]: https://www.patreon.com/jargon

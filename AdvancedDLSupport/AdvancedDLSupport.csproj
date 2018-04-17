@@ -12,15 +12,15 @@
   <PropertyGroup>
     <Title>AdvancedDLSupport</Title>
     <Authors>TheBlackCentipede;Jax</Authors>
-    <Version>1.2.1</Version>
+    <Version>1.2.2</Version>
     <Description>An alternative approach to your typical P/Invoke.</Description>
     <Copyright>Copyright Firwood Software 2017</Copyright>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>AdvancedDLSupport</PackageId>
-    <PackageLicenseUrl>https://www.gnu.org/licenses/gpl-3.0.en.html</PackageLicenseUrl>
+    <PackageLicenseUrl>https://www.gnu.org/licenses/lgpl-3.0.txt</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Correct release configuration.</PackageReleaseNotes>
+    <PackageReleaseNotes>Relicense under LGPLv3.</PackageReleaseNotes>
     <PackageTags>p/invoke;cross-platform;mono;netcore;netstandard;native;interop</PackageTags>
     <PackageOutputPath>../nuget</PackageOutputPath>
     <IncludeSymbols>True</IncludeSymbols>
