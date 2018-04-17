@@ -173,24 +173,19 @@ namespace AdvancedDLSupport.Reflection
                                     ?? new NativeSymbolAttribute(Member.Name);
 
             var symbolName = metadataAttribute.Entrypoint;
-            if (metadataAttribute.Entrypoint.IsNullOrEmpty())
+            var applicableManglers = ManglerRepository.Default.GetApplicableManglers(Member).ToList();
+            if (applicableManglers.Count > 1)
             {
-                symbolName = Member.Name;
+                throw new AmbiguousMatchException
+                (
+                    "Multiple name manglers were deemed applicable to the member. Provide hinting information in the native symbol attribute."
+                );
+            }
 
-                var applicableManglers = ManglerRepository.Default.GetApplicableManglers(Member).ToList();
-                if (applicableManglers.Count > 1)
-                {
-                    throw new AmbiguousMatchException
-                    (
-                        "Multiple name manglers were deemed applicable to the member. Provide hinting information in the native symbol attribute."
-                    );
-                }
-
-                if (Member is IIntrospectiveMember introspectiveMember && applicableManglers.Any())
-                {
-                    var applicableMangler = applicableManglers.First();
-                    symbolName = applicableMangler.Mangle(introspectiveMember);
-                }
+            if (Member is IIntrospectiveMember introspectiveMember && applicableManglers.Any())
+            {
+                var applicableMangler = applicableManglers.First();
+                symbolName = applicableMangler.Mangle(introspectiveMember);
             }
 
             return symbolName;
