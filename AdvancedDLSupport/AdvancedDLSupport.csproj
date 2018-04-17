@@ -18,7 +18,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>AdvancedDLSupport</PackageId>
-    <PackageLicenseUrl>https://www.gnu.org/licenses/gpl-3.0.en.html</PackageLicenseUrl>
+    <PackageLicenseUrl>https://www.gnu.org/licenses/lgpl-3.0.txt</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Correct release configuration.</PackageReleaseNotes>
     <PackageTags>p/invoke;cross-platform;mono;netcore;netstandard;native;interop</PackageTags>
