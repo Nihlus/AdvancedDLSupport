@@ -25,6 +25,7 @@ using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.ImplementationGenerators;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
+using Mono.DllMap.Extensions;
 using static System.Reflection.MethodAttributes;
 
 namespace AdvancedDLSupport.Pipeline
@@ -40,7 +41,9 @@ namespace AdvancedDLSupport.Pipeline
 
         private readonly RefPermutationImplementationGenerator _refPermutationGenerator;
         private readonly LoweredMethodImplementationGenerator _loweredMethodGenerator;
-        private readonly MethodImplementationGenerator _methodGenerator;
+
+        private readonly DelegateMethodImplementationGenerator _delegateMethodGenerator;
+        private readonly IndirectCallMethodImplementationGenerator _indirectCallMethodGenerator;
 
         private readonly PropertyImplementationGenerator _propertyGenerator;
 
@@ -83,7 +86,15 @@ namespace AdvancedDLSupport.Pipeline
                 _transformerRepository
             );
 
-            _methodGenerator = new MethodImplementationGenerator
+            _delegateMethodGenerator = new DelegateMethodImplementationGenerator
+            (
+                targetModule,
+                _targetType,
+                constructorIL,
+                _options
+            );
+
+            _indirectCallMethodGenerator = new IndirectCallMethodImplementationGenerator
             (
                 targetModule,
                 _targetType,
@@ -154,9 +165,15 @@ namespace AdvancedDLSupport.Pipeline
                     {
                         generatedDefinitions = _loweredMethodGenerator.GenerateImplementation(workUnit);
                     }
+                    else if (_options.HasFlagFast(ImplementationOptions.UseIndirectCalls))
+                    {
+                        // This is a terminating processing branch - no new definitions should be generated.
+                        generatedDefinitions = _indirectCallMethodGenerator.GenerateImplementation(workUnit);
+                    }
                     else
                     {
-                        generatedDefinitions = _methodGenerator.GenerateImplementation(workUnit);
+                        // This is a terminating processing branch - no new definitions should be generated.
+                        generatedDefinitions = _delegateMethodGenerator.GenerateImplementation(workUnit);
                     }
                 }
 
