@@ -1,6 +1,5 @@
 ﻿using AdvancedDLSupport.Tests.Data;
 using AdvancedDLSupport.Tests.TestBases;
-using FsCheck.Xunit;
 using Xunit;
 
 namespace AdvancedDLSupport.Tests.Integration
@@ -13,9 +12,12 @@ namespace AdvancedDLSupport.Tests.Integration
         {
         }
 
-        [Property]
-        public void CanCallFunctionWithStructParameter(int value, int multiplier)
+        [Fact]
+        public void CanCallFunctionWithStructParameter()
         {
+            var value = 5;
+            var multiplier = 15;
+
             var strct =  new TestStruct { A = value };
 
             var expected = value * multiplier;
@@ -24,18 +26,24 @@ namespace AdvancedDLSupport.Tests.Integration
             Assert.Equal(expected, actual);
         }
 
-        [Property]
-        public void CanCallFunctionWithSimpleParameter(int value, int multiplier)
+        [Fact]
+        public void CanCallFunctionWithSimpleParameter()
         {
+            var value = 5;
+            var multiplier = 15;
+
             var expected = value * multiplier;
             var actual = Library.Multiply(value, multiplier);
 
             Assert.Equal(expected, actual);
         }
 
-        [Property]
-        public void CanCallFunctionWithDifferentEntryPoint(int value, int multiplier)
+        [Fact]
+        public void CanCallFunctionWithDifferentEntryPoint()
         {
+            var value = 5;
+            var multiplier = 15;
+
             var strct =  new TestStruct { A = value };
 
             var expected = value * multiplier;
@@ -44,18 +52,24 @@ namespace AdvancedDLSupport.Tests.Integration
             Assert.Equal(expected, actual);
         }
 
-        [Property]
-        public void CanCallFunctionWithDifferentCallingConvention(int value, int other)
+        [Fact]
+        public void CanCallFunctionWithDifferentCallingConvention()
         {
+            var value = 5;
+            var other = 15;
+
             var expected = value - other;
             var actual = Library.STDCALLSubtract(value, other);
 
             Assert.Equal(expected, actual);
         }
 
-        [Property]
-        public void CanCallDuplicateFunction(int value, int other)
+        [Fact]
+        public void CanCallDuplicateFunction()
         {
+            var value = 5;
+            var other = 15;
+
             var expected = value - other;
             var actual = Library.DuplicateSubtract(value, other);
 

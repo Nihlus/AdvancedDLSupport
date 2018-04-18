@@ -460,3 +460,9 @@ fabric.properties
 !.vscode/launch.json
 !.vscode/extensions.json
 .history
+
+### AltCover Coverage
+altcover
+instrumented
+coverage-*.xml
+coverage-*.acv
