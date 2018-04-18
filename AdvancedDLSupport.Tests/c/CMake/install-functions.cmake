@@ -14,6 +14,7 @@ function(install_for_frameworks FRAMEWORKS)
                     MixedModeTests
                     NullableTests
                     IndirectCallTests
+                    NameManglingTests
                 COMPONENT
                     standard
                 DESTINATION
