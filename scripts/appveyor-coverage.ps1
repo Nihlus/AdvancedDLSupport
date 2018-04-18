@@ -29,11 +29,11 @@ function Run-Coverage([string]$project, [string]$framework)
 
     Push-Location -Path $project
 
-    $DOTNET xunit -nobuild -noshadow -framework "$FRAMEWORK" -fxversion $RUNTIME_VERSION
+    & $DOTNET xunit -nobuild -noshadow -framework "$FRAMEWORK" -fxversion $RUNTIME_VERSION
 
     Pop-Location
 
-    dotnet $ALTCOVER_PATH runner --recorderDirectory $INPUT_DIRECTORY --collect
+    & $DOTNET $ALTCOVER_PATH runner --recorderDirectory $INPUT_DIRECTORY --collect
 }
 
 nuget install altcover -OutputDirectory altcover -Version $ALTCOVER_VERSION
