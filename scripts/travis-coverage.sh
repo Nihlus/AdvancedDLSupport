@@ -8,6 +8,8 @@ fi
 ALTCOVER_VERSION="3.0.422"
 ALTCOVER_PATH="altcover/altcover.$ALTCOVER_VERSION/tools/netcoreapp2.0/AltCover.dll"
 
+RUNTIME_VERSION=$(dotnet --info | sed -n '/Microsoft .NET Core Shared Framework Host/,$p' | grep Version | awk '{print $3}')
+
 function runCoverage
 {
 	PROJECT=$1
@@ -29,7 +31,7 @@ function runCoverage
 
 	cd ${PROJECT}
 
-	dotnet xunit -nobuild -noshadow -framework ${FRAMEWORK} -fxversion $(dotnet --info | sed -n '/Microsoft .NET Core Shared Framework Host/,$p' | grep Version | awk '{print $3}')
+	dotnet xunit -nobuild -noshadow -framework ${FRAMEWORK} -fxversion ${RUNTIME_VERSION}
 
 	cd -
 
