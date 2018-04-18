@@ -31,7 +31,7 @@ function runCoverage
 
 	cd ${PROJECT}
 
-	dotnet xunit -nobuild -noshadow -framework ${FRAMEWORK} -fxversion ${RUNTIME_VERSION}
+	dotnet xunit -nobuild -noshadow -framework ${FRAMEWORK} -fxversion ${RUNTIME_VERSION} -configuration ${Configuration}
 
 	cd -
 

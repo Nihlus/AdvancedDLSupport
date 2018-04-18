@@ -1,5 +1,5 @@
 $DOTNET = "C:\Program Files\dotnet\dotnet.exe"
-$ASSEMBLY_OUTPUT_DIR = $env:CONFIGURATION
+$ASSEMBLY_OUTPUT_DIR = "$env:CONFIGURATION"
 
 $ALTCOVER_VERSION = "3.0.422"
 $ALTCOVER_PATH = "altcover\altcover.$ALTCOVER_VERSION\tools\netcoreapp2.0\AltCover.dll"
@@ -34,7 +34,7 @@ function Run-Coverage([string]$project, [string]$framework)
 
     Push-Location -Path $project
 
-    & $DOTNET xunit -nobuild -noshadow -framework "$FRAMEWORK" -fxversion $RUNTIME_VERSION
+    & $DOTNET xunit -nobuild -noshadow -framework $FRAMEWORK -fxversion $RUNTIME_VERSION -configuration $env:CONFIGURATION
 
     Pop-Location
 
