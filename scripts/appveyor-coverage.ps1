@@ -1,4 +1,4 @@
-$DOTNET = "C:\Program Files (x86)\dotnet\dotnet.exe"
+$DOTNET = "C:\Program Files\dotnet\dotnet.exe"
 $ASSEMBLY_OUTPUT_DIR = $env:CONFIGURATION
 
 $ALTCOVER_VERSION = "3.0.422"
@@ -8,6 +8,11 @@ $RUNTIME_VERSION = (dotnet --info | Select-String -Pattern "Microsoft .NET Core 
 
 if ($env:PLATFORM -eq "x86" -Or $env:PLATFORM -eq "x64")
 {
+    if ($env:PLATFORM -eq "x86")
+    {
+        $DOTNET = "C:\Program Files (x86)\dotnet\dotnet.exe"
+    }
+
     $ASSEMBLY_OUTPUT_DIR = "$env:PLATFORM\$env:CONFIGURATION"
 }
 
