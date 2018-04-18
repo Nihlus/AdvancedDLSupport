@@ -1,51 +1,49 @@
 #!/bin/bash
 
 OutputDir="${Configuration}"
-if [ "${Platform}" == "x86" ]; then
-	OutputDir="x86/${Configuration}"
+if [ "${Platform}" == "x86" ] || [ "${Platform}" == "x64" ]; then
+	OutputDir="${Platform}/${Configuration}"
 fi
 
-if [ "${Platform}" == "x64" ]; then
-	OutputDir="x64/${Configuration}"
-fi
+ALTCOVER_VERSION="3.0.422"
+ALTCOVER_PATH="altcover/altcover.$ALTCOVER_VERSION/tools/netcoreapp2.0/AltCover.dll"
 
-AdditionalTestArgs=
-if [ "${Platform}" == "Any CPU" ]; then
-	AdditionalTestArgs="/property:Platform=AnyCPU"
-fi
+function runCoverage
+{
+	PROJECT=$1
+	FRAMEWORK=$2
+
+	INPUT_DIRECTORY="$PROJECT/bin/$OutputDir/$FRAMEWORK"
+	OUTPUT_DIRECTORY="instrumented/$PROJECT-$FRAMEWORK"
+	XMLREPORT="coverage-$PROJECT-$FRAMEWORK.xml"
+
+	dotnet ${ALTCOVER_PATH} \
+	--inputDirectory ${INPUT_DIRECTORY} \
+	--outputDirectory ${OUTPUT_DIRECTORY} \
+	--xmlReport ${XMLREPORT} \
+	--opencover \
+	--save \
+	--inplace \
+	--assemblyExcludeFilter ".+\.Tests" \
+	--assemblyExcludeFilter "AltCover.+"
+
+	cd ${PROJECT}
+
+	dotnet xunit -nobuild -noshadow -framework ${FRAMEWORK} -fxversion $(dotnet --info | sed -n '/Microsoft .NET Core Shared Framework Host/,$p' | grep Version | awk '{print $3}')
+
+	cd -
+
+	dotnet ${ALTCOVER_PATH} runner --recorderDirectory ${INPUT_DIRECTORY} --collect
+}
 
 # Install AltCover
-nuget install altcover -OutputDirectory altcover -Version 2.0.324
+nuget install altcover -OutputDirectory altcover -Version ${ALTCOVER_VERSION}
 
-# Instrument the test assemblies
-dotnet run --project altcover/altcover.2.0.324/tools/netcoreapp2.0/AltCover/altcover.core.fsproj --configuration ${Configuration} --\
- -i=AdvancedDLSupport.Tests/bin/${OutputDir}/netcoreapp2.0 -o=instrumented-adl-netcoreapp2.0 -x=coverage-adl-netcoreapp2.0.xml --opencover\
- --assemblyExcludeFilter=.+\.Tests --assemblyExcludeFilter=AltCover.+ --assemblyExcludeFilter=Mono\.DllMap.+
+# Run coverage
+runCoverage AdvancedDLSupport.Tests netcoreapp2.0
+runCoverage AdvancedDLSupport.Tests net461
 
-dotnet run --project altcover/altcover.2.0.324/tools/netcoreapp2.0/AltCover/altcover.core.fsproj --configuration ${Configuration} --\
- -i=Mono.DllMap.Tests/bin/${OutputDir}/netcoreapp2.0 -o=instrumented-mdl-netcoreapp2.0 -x=coverage-mdl-netcoreapp2.0.xml --opencover\
- --assemblyExcludeFilter=.+\.Tests --assemblyExcludeFilter=AltCover.+
+runCoverage Mono.DllMap.Tests netcoreapp2.0
+runCoverage Mono.DllMap.Tests net461
 
-dotnet run --project altcover/altcover.2.0.324/tools/netcoreapp2.0/AltCover/altcover.core.fsproj --configuration ${Configuration} --\
- -i=AdvancedDLSupport.Tests/bin/${OutputDir}/net461 -o=instrumented-adl-net461 -x=coverage-adl-net461.xml --opencover\
- --assemblyExcludeFilter=.+\.Tests --assemblyExcludeFilter=AltCover.+ --assemblyExcludeFilter=Mono\.DllMap.+
 
-dotnet run --project altcover/altcover.2.0.324/tools/netcoreapp2.0/AltCover/altcover.core.fsproj --configuration ${Configuration} --\
- -i=Mono.DllMap.Tests/bin/${OutputDir}/net461 -o=instrumented-mdl-net461 -x=coverage-mdl-net461.xml --opencover\
- --assemblyExcludeFilter=.+\.Tests --assemblyExcludeFilter=AltCover.+
-
-# Copy them to their build directories
-cp instrumented-adl-netcoreapp2.0/* AdvancedDLSupport.Tests/bin/${OutputDir}/netcoreapp2.0
-cp instrumented-mdl-netcoreapp2.0/* Mono.DllMap.Tests/bin/${OutputDir}/netcoreapp2.0
-
-cp instrumented-adl-net461/* AdvancedDLSupport.Tests/bin/${OutputDir}/net461
-cp instrumented-mdl-net461/* Mono.DllMap.Tests/bin/${OutputDir}/net461
-
-# And run coverage
-dotnet run --project altcover/altcover.2.0.324/tools/netcoreapp2.0/AltCover/altcover.core.fsproj --configuration ${Configuration} --no-build --\
- runner -x "dotnet" -r "AdvancedDLSupport.Tests/bin/${OutputDir}/netcoreapp2.0" --\
- test AdvancedDLSupport.Tests --no-build --framework netcoreapp2.0 ${AdditionalTestArgs}
-
-dotnet run --project altcover/altcover.2.0.324/tools/netcoreapp2.0/AltCover/altcover.core.fsproj --configuration ${Configuration} --no-build --\
- runner -x "dotnet" -r "Mono.DllMap.Tests/bin/${OutputDir}/netcoreapp2.0" --\
- test Mono.DllMap.Tests --no-build --framework netcoreapp2.0 ${AdditionalTestArgs}
