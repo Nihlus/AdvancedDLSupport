@@ -12,4 +12,8 @@
         <Exec Command="mkdir $(CMakeBuildDir)" />
         <Exec Command="cmake -G $(CMakeGenerator) '-DTARGET_FRAMEWORKS=$(TargetFrameworks)' -DBASE_INSTALL_PATH=$([System.IO.Path]::GetDirectoryName($(OutputPath.TrimEnd('/').TrimEnd('\\')))) -DPROJECT_PATH=$(MSBuildProjectDirectory) -DBUILD_PLATFORM=$(Platform) .." WorkingDirectory="$(CMakeBuildDir)" />
     </Target>
+
+    <Target Name="CleanCMake" AfterTargets="AfterClean" Condition="Exists('$(CMakeBuildDir)')" >
+        <RemoveDir Directories="$(CMakeBuildDir)"/>
+    </Target>
 </Project>
