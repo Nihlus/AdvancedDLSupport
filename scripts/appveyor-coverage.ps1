@@ -4,6 +4,8 @@ $ASSEMBLY_OUTPUT_DIR = $env:CONFIGURATION
 $ALTCOVER_VERSION = "3.0.422"
 $ALTCOVER_PATH = "altcover\altcover.$ALTCOVER_VERSION\tools\netcoreapp2.0\AltCover.dll"
 
+$RUNTIME_VERSION = (dotnet --info | Select-String -Pattern "Microsoft .NET Core Shared Framework Host" -Context 0,10).Context.PostContext[3] | % { [regex]::Match($_, "(\d\.?)+").Value }
+
 if ($env:PLATFORM -eq "x86" -Or $env:PLATFORM -eq "x64")
 {
     $ASSEMBLY_OUTPUT_DIR = "$env:PLATFORM\$env:CONFIGURATION"
@@ -27,7 +29,7 @@ function Run-Coverage([string]$project, [string]$framework)
 
     Push-Location -Path $project
 
-    dotnet xunit -nobuild -noshadow -framework $FRAMEWORK
+    dotnet xunit -nobuild -noshadow -framework "$FRAMEWORK" -fxversion $RUNTIME_VERSION
 
     Pop-Location
 
