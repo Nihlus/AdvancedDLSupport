@@ -35,8 +35,11 @@ namespace AdvancedDLSupport
         {
             if (member is IntrospectiveMethodInfo method)
             {
-                var argumentListSize = method.ParameterTypes.Sum(Marshal.SizeOf);
-                return $"_{method.Name}@{argumentListSize}";
+                var metadataAttribute = method.GetCustomAttribute<NativeSymbolAttribute>()
+                                        ?? new NativeSymbolAttribute(method.Name);
+
+                var argumentListSize = method.ParameterTypes.Sum(a => a.IsByRef ? IntPtr.Size : Marshal.SizeOf(a));
+                return $"_{metadataAttribute.Entrypoint}@{argumentListSize}";
             }
 
             throw new NotSupportedException("The given member cannot be mangled by this mangler.");

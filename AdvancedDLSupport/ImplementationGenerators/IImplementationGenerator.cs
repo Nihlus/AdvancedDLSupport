@@ -17,7 +17,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Collections.Generic;
 using System.Reflection;
+using AdvancedDLSupport.Pipeline;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.ImplementationGenerators
@@ -27,17 +29,20 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// </summary>
     /// <typeparam name="TAccepted">The type of member that the class will generate for.</typeparam>
     [PublicAPI]
-    public interface IImplementationGenerator<in TAccepted> where TAccepted : MemberInfo
+    public interface IImplementationGenerator<TAccepted> where TAccepted : MemberInfo
     {
         /// <summary>
         /// Gets the implementation configuration object to use.
         /// </summary>
+        [PublicAPI]
         ImplementationOptions Options { get; }
 
         /// <summary>
-        /// Generates a definition and implementation for the given member.
+        /// Generates an implementation for the given member, optionally producing more definitions for processing.
         /// </summary>
-        /// <param name="member">The member to generate the implementation for.</param>
-        void GenerateImplementation([NotNull] TAccepted member);
+        /// <param name="workUnit">The member to generate the implementation for.</param>
+        /// <returns>An optional set of more definitions to be processed.</returns>
+        [PublicAPI, NotNull, ItemNotNull]
+        IEnumerable<PipelineWorkUnit<TAccepted>> GenerateImplementation([NotNull] PipelineWorkUnit<TAccepted> workUnit);
     }
 }

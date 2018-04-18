@@ -18,10 +18,12 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using AdvancedDLSupport.Extensions;
+using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
@@ -61,11 +63,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
         protected ILGenerator TargetTypeConstructorIL { get; }
 
         /// <summary>
-        /// Gets the repository object containing name manglers.
-        /// </summary>
-        protected ManglerRepository ManglerRepository { get; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ImplementationGeneratorBase{T}"/> class.
         /// </summary>
         /// <param name="targetModule">The module where the implementation should be generated.</param>
@@ -85,82 +82,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
             TargetType = targetType;
             TargetTypeConstructorIL = targetTypeConstructorIL;
             Options = options;
-
-            ManglerRepository = ManglerRepository.Default;
         }
 
         /// <inheritdoc />
         [PublicAPI]
-        public void GenerateImplementation(T member)
-        {
-            var symbolInfo = GetSymbolNameAndIdentifier(member);
-
-            GenerateImplementation(member, symbolInfo.SymbolName, symbolInfo.MemberIdentifier);
-        }
-
-        private (string SymbolName, string MemberIdentifier) GetSymbolNameAndIdentifier([NotNull] T member)
-        {
-            NativeSymbolAttribute metadataAttribute;
-
-            // HACK: Working around weird casting behaviour in the CLR
-            if (member is IIntrospectiveMember introspective)
-            {
-                metadataAttribute = introspective.GetCustomAttribute<NativeSymbolAttribute>() ??
-                                    new NativeSymbolAttribute(member.Name);
-            }
-            else
-            {
-                metadataAttribute =
-                    member.GetCustomAttribute<NativeSymbolAttribute>() ?? new NativeSymbolAttribute(member.Name);
-            }
-
-            var symbolName = metadataAttribute.Entrypoint;
-            if (metadataAttribute.Entrypoint.IsNullOrEmpty())
-            {
-                symbolName = member.Name;
-
-                var applicableManglers = ManglerRepository.GetApplicableManglers(member).ToList();
-                if (applicableManglers.Count > 1)
-                {
-                    throw new AmbiguousMatchException
-                    (
-                        "Multiple name manglers were deemed applicable to the member. Provide hinting information in the native symbol attribute."
-                    );
-                }
-
-                if (member is IIntrospectiveMember introspectiveMember && applicableManglers.Any())
-                {
-                    var applicableMangler = applicableManglers.First();
-                    symbolName = applicableMangler.Mangle(introspectiveMember);
-                }
-            }
-
-            var uniqueIdentifier = Guid.NewGuid().ToString().Replace("-", "_");
-            var memberIdentifier = $"{member.Name}_{uniqueIdentifier}";
-
-            return (symbolName, memberIdentifier);
-        }
-
-        /// <summary>
-        /// Generates a definition and implementation for the given member info, using the given symbol name and member
-        /// identifier.
-        /// </summary>
-        /// <param name="member">The undefined member.</param>
-        /// <param name="symbolName">The name of the symbol in the native library.</param>
-        /// <param name="uniqueMemberIdentifier">The identifier to use for generated types and methods.</param>
-        [PublicAPI]
-        protected abstract void GenerateImplementation([NotNull] T member, [NotNull] string symbolName, [NotNull] string uniqueMemberIdentifier);
-
-        /// <summary>
-        /// Generates an implementation for the given member info, which is already defined, using the given symbol name
-        /// and member identifier.
-        /// </summary>
-        /// <param name="member">The defined member.</param>
-        /// <param name="symbolName">The name of the symbol in the native library.</param>
-        /// <param name="uniqueMemberIdentifier">The identifier to use for generated types and methods.</param>
-        /// <returns>The implementation.</returns>
-        [PublicAPI, NotNull]
-        public abstract T GenerateImplementationForDefinition([NotNull] T member, [NotNull] string symbolName, [NotNull] string uniqueMemberIdentifier);
+        public abstract IEnumerable<PipelineWorkUnit<T>> GenerateImplementation(PipelineWorkUnit<T> workUnit);
 
         /// <summary>
         /// Emits a call to <see cref="NativeLibraryBase.ThrowIfDisposed"/>.

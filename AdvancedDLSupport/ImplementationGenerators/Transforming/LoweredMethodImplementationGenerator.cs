@@ -23,6 +23,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using AdvancedDLSupport.Extensions;
+using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
@@ -37,8 +38,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// </summary>
     internal sealed class LoweredMethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
-        private readonly MethodImplementationGenerator _methodGenerator;
-
         [NotNull]
         private readonly TypeTransformerRepository _transformerRepository;
 
@@ -61,102 +60,69 @@ namespace AdvancedDLSupport.ImplementationGenerators
             : base(targetModule, targetType, targetTypeConstructorIL, options)
         {
             _transformerRepository = transformerRepository;
-            _methodGenerator = new MethodImplementationGenerator(targetModule, targetType, targetTypeConstructorIL, options);
         }
 
         /// <inheritdoc />
-        protected override void GenerateImplementation(IntrospectiveMethodInfo method, string symbolName, string uniqueMemberIdentifier)
+        public override IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> GenerateImplementation(PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {
-            var complexMethodDefinition = GenerateComplexMethodDefinition(method);
+            var loweredMethod = GenerateLoweredMethodDefinition(workUnit);
+            yield return new PipelineWorkUnit<IntrospectiveMethodInfo>(loweredMethod, workUnit);
 
-            var implementation = GenerateImplementationForDefinition(complexMethodDefinition, symbolName, uniqueMemberIdentifier);
-
-            TargetType.DefineMethodOverride(implementation.GetWrappedMember(), method.GetWrappedMember());
-        }
-
-        /// <inheritdoc />
-        public override IntrospectiveMethodInfo GenerateImplementationForDefinition(IntrospectiveMethodInfo complexMethodDefinition, string symbolName, string uniqueMemberIdentifier)
-        {
-            var loweredMethod = GenerateLoweredMethodDefinition(complexMethodDefinition, uniqueMemberIdentifier);
-            _methodGenerator.GenerateImplementationForDefinition(loweredMethod, symbolName, uniqueMemberIdentifier);
-
-            return GenerateComplexMethodBody(complexMethodDefinition, loweredMethod);
+            GenerateComplexMethodImplementation(workUnit, loweredMethod);
         }
 
         /// <summary>
         /// Generates a lowered method based on the given complex method, lowering its return value and parameters.
         /// </summary>
-        /// <param name="complexInterfaceMethod">The complex interface method.</param>
-        /// <param name="memberIdentifier">The unique member identifier to use.</param>
+        /// <param name="workUnit">The complex interface method.</param>
         /// <returns>(
         /// A <see cref="ValueTuple{T1, T2}"/>, containing the generated method builder and its paramete types.
         /// </returns>
         [NotNull]
         private IntrospectiveMethodInfo GenerateLoweredMethodDefinition
         (
-            [NotNull] IntrospectiveMethodInfo complexInterfaceMethod,
-            [NotNull] string memberIdentifier
+            [NotNull] PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
         )
         {
-            var newReturnType = LowerTypeIfRequired(complexInterfaceMethod.ReturnType);
+            var definition = workUnit.Definition;
+
+            var newReturnType = LowerTypeIfRequired(definition.ReturnType);
 
             var newParameterTypes = new List<Type>();
-            foreach (var parameterType in complexInterfaceMethod.ParameterTypes)
+            foreach (var parameterType in definition.ParameterTypes)
             {
                 newParameterTypes.Add(LowerTypeIfRequired(parameterType));
             }
 
             var loweredMethodBuilder = TargetType.DefineMethod
             (
-                $"{memberIdentifier}_lowered",
+                $"{workUnit.GetUniqueBaseMemberName()}_lowered",
                 Public | Final | Virtual | HideBySig | NewSlot,
                 CallingConventions.Standard,
                 newReturnType,
                 newParameterTypes.ToArray()
             );
 
-            return new IntrospectiveMethodInfo(loweredMethodBuilder, newReturnType, newParameterTypes, complexInterfaceMethod);
-        }
-
-        /// <summary>
-        /// Generates the definition of the complex method.
-        /// </summary>
-        /// <param name="interfaceDefinition">The interface definition to base it on.</param>
-        /// <returns>An introspective method info for the definition.</returns>
-        [NotNull]
-        private IntrospectiveMethodInfo GenerateComplexMethodDefinition([NotNull] IntrospectiveMethodInfo interfaceDefinition)
-        {
-            var methodBuilder = TargetType.DefineMethod
-            (
-                interfaceDefinition.Name,
-                Public | Final | Virtual | HideBySig | NewSlot,
-                CallingConventions.Standard,
-                interfaceDefinition.ReturnType,
-                interfaceDefinition.ParameterTypes.ToArray()
-            );
-
-            methodBuilder.ApplyCustomAttributesFrom(interfaceDefinition);
-
-            return new IntrospectiveMethodInfo(methodBuilder, interfaceDefinition.ReturnType, interfaceDefinition.ParameterTypes, interfaceDefinition);
+            return new IntrospectiveMethodInfo(loweredMethodBuilder, newReturnType, newParameterTypes, definition);
         }
 
         /// <summary>
         /// Generates the method body for the complex method implementation. This method will lower all required
         /// arguments and call the lowered method, then raise the return value if required.
         /// </summary>
-        /// <param name="complexDefinition">The complex method definition.</param>
+        /// <param name="workUnit">The complex method definition.</param>
         /// <param name="loweredMethod">The lowered method definition.</param>
-        /// <returns>The generated invoker.</returns>
-        [NotNull]
-        private IntrospectiveMethodInfo GenerateComplexMethodBody
+        private void GenerateComplexMethodImplementation
         (
-            [NotNull] IntrospectiveMethodInfo complexDefinition,
+            [NotNull] PipelineWorkUnit<IntrospectiveMethodInfo> workUnit,
             [NotNull] IntrospectiveMethodInfo loweredMethod
         )
         {
-            if (!(complexDefinition.GetWrappedMember() is MethodBuilder builder))
+            var definition = workUnit.Definition;
+
+            if (!(definition.GetWrappedMember() is MethodBuilder builder))
             {
-                throw new ArgumentNullException(nameof(complexDefinition), "Could not unwrap introspective method to method builder.");
+                throw new ArgumentNullException(nameof(workUnit), "Could not unwrap introspective method to method builder.");
             }
 
             var il = builder.GetILGenerator();
@@ -166,7 +132,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 EmitDisposalCheck(il);
             }
 
-            var parameterTypes = complexDefinition.ParameterTypes;
+            var parameterTypes = definition.ParameterTypes;
             var loweredParameterTypes = loweredMethod.ParameterTypes;
 
             // Emit lowered parameters
@@ -190,16 +156,14 @@ namespace AdvancedDLSupport.ImplementationGenerators
             il.Emit(OpCodes.Call, loweredMethod.GetWrappedMember());
 
             // Emit return value raising
-            var returnType = complexDefinition.ReturnType;
+            var returnType = definition.ReturnType;
             var returnValueNeedsRaising = _transformerRepository.HasApplicableTransformer(returnType, Options);
             if (returnValueNeedsRaising)
             {
-                EmitValueRaising(il, complexDefinition.ReturnType, loweredMethod.ReturnType);
+                EmitValueRaising(il, definition.ReturnType, loweredMethod.ReturnType);
             }
 
             il.Emit(OpCodes.Ret);
-
-            return complexDefinition;
         }
 
         /// <summary>

@@ -44,6 +44,7 @@ add_library(AttributePassthroughTests SHARED src/AttributePassthroughTests.c ${S
 add_library(MixedModeTests SHARED src/MixedModeTests.c ${SHARED_HEADERS})
 add_library(NullableTests SHARED src/NullableTests.c ${SHARED_HEADERS})
 add_library(IndirectCallTests SHARED src/IndirectCallTests.c ${SHARED_HEADERS})
+add_library(NameManglingTests SHARED src/NameManglingTests.c ${SHARED_HEADERS})
 
 if (IS_UNIX_COMPILER)
     # Any CPU is assumed to be 64-bit
@@ -60,6 +61,7 @@ if (IS_UNIX_COMPILER)
         set_target_properties(MixedModeTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
         set_target_properties(NullableTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
         set_target_properties(IndirectCallTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+        set_target_properties(NameManglingTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
     elseif (BUILD_PLATFORM STREQUAL "x86")
         set_target_properties(BaseTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
         set_target_properties(DisposeTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
@@ -73,6 +75,7 @@ if (IS_UNIX_COMPILER)
         set_target_properties(MixedModeTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
         set_target_properties(NullableTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
         set_target_properties(IndirectCallTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+        set_target_properties(NameManglingTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
     endif()
 
     set_target_properties(BaseTests-x64 PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")

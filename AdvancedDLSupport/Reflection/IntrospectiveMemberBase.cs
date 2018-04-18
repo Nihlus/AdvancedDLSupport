@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using AdvancedDLSupport.Extensions;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.Reflection
@@ -158,6 +159,36 @@ namespace AdvancedDLSupport.Reflection
             }
 
             return instance as TAttribute;
+        }
+
+        /// <summary>
+        /// Gets the name of the native symbol that the member maps to.
+        /// </summary>
+        /// <returns>The native symbol.</returns>
+        /// <exception cref="AmbiguousMatchException">Thrown if multiple applicable name manglers were found.</exception>
+        [PublicAPI, NotNull, Pure]
+        public string GetSymbolName()
+        {
+            var metadataAttribute = GetCustomAttribute<NativeSymbolAttribute>()
+                                    ?? new NativeSymbolAttribute(Name);
+
+            var symbolName = metadataAttribute.Entrypoint;
+            var applicableManglers = ManglerRepository.Default.GetApplicableManglers(this).ToList();
+            if (applicableManglers.Count > 1)
+            {
+                throw new AmbiguousMatchException
+                (
+                    "Multiple name manglers were deemed applicable to the member. Provide hinting information in the native symbol attribute."
+                );
+            }
+
+            if (applicableManglers.Any())
+            {
+                var applicableMangler = applicableManglers.First();
+                symbolName = applicableMangler.Mangle(this);
+            }
+
+            return symbolName;
         }
 
         /// <summary>

@@ -18,6 +18,7 @@
 //
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
@@ -44,20 +45,11 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Initializes a new instance of the <see cref="NativeSymbolAttribute"/> class.
         /// </summary>
-        [PublicAPI]
-        public NativeSymbolAttribute()
-        {
-            CallingConvention = CallingConvention.StdCall;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NativeSymbolAttribute"/> class.
-        /// </summary>
         /// <param name="entrypoint">The name of the function's entry point.</param>
         [PublicAPI]
-        public NativeSymbolAttribute([NotNull] string entrypoint)
-            : this()
+        public NativeSymbolAttribute([NotNull, CallerMemberName] string entrypoint = "")
         {
+            CallingConvention = CallingConvention.Cdecl;
             Entrypoint = entrypoint;
         }
     }
