@@ -169,11 +169,11 @@ namespace AdvancedDLSupport.Reflection
         [PublicAPI, NotNull, Pure]
         public string GetSymbolName()
         {
-            var metadataAttribute = Member.GetCustomAttribute<NativeSymbolAttribute>()
-                                    ?? new NativeSymbolAttribute(Member.Name);
+            var metadataAttribute = GetCustomAttribute<NativeSymbolAttribute>()
+                                    ?? new NativeSymbolAttribute(Name);
 
             var symbolName = metadataAttribute.Entrypoint;
-            var applicableManglers = ManglerRepository.Default.GetApplicableManglers(Member).ToList();
+            var applicableManglers = ManglerRepository.Default.GetApplicableManglers(this).ToList();
             if (applicableManglers.Count > 1)
             {
                 throw new AmbiguousMatchException
@@ -182,10 +182,10 @@ namespace AdvancedDLSupport.Reflection
                 );
             }
 
-            if (Member is IIntrospectiveMember introspectiveMember && applicableManglers.Any())
+            if (applicableManglers.Any())
             {
                 var applicableMangler = applicableManglers.First();
-                symbolName = applicableMangler.Mangle(introspectiveMember);
+                symbolName = applicableMangler.Mangle(this);
             }
 
             return symbolName;
