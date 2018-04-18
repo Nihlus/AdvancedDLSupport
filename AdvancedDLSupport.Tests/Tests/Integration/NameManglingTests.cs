@@ -1,6 +1,5 @@
 ﻿using AdvancedDLSupport.Tests.Data;
 using AdvancedDLSupport.Tests.TestBases;
-using FsCheck.Xunit;
 using Xunit;
 
 namespace AdvancedDLSupport.Tests.Integration
@@ -13,9 +12,12 @@ namespace AdvancedDLSupport.Tests.Integration
         {
         }
 
-        [Property]
-        public void CanMangleSimpleFunction(int a, int b)
+        [Fact]
+        public void CanMangleSimpleFunction()
         {
+            var a = 5;
+            var b = 15;
+
             var expected = a * b;
 
             var actual = Library.Multiply(a, b);
@@ -23,9 +25,12 @@ namespace AdvancedDLSupport.Tests.Integration
             Assert.Equal(expected, actual);
         }
 
-        [Property]
-        public void CanMangleFunctionWithStructByVal(int a, int b)
+        [Fact]
+        public void CanMangleFunctionWithStructByVal()
         {
+            var a = 5;
+            var b = 15;
+
             var expected = a * b;
             var value = new TestStruct { A = a, B = b };
 
@@ -34,9 +39,12 @@ namespace AdvancedDLSupport.Tests.Integration
             Assert.Equal(expected, actual);
         }
 
-        [Property]
-        public void CanMangleFunctionWithStructByRef(int a, int b)
+        [Fact]
+        public void CanMangleFunctionWithStructByRef()
         {
+            var a = 5;
+            var b = 15;
+
             var expected = a * b;
             var value = new TestStruct { A = a, B = b };
 
@@ -45,9 +53,12 @@ namespace AdvancedDLSupport.Tests.Integration
             Assert.Equal(expected, actual);
         }
 
-        [Property]
-        public unsafe void CanMangleFunctionWithStructByPtr(int a, int b)
+        [Fact]
+        public unsafe void CanMangleFunctionWithStructByPtr()
         {
+            var a = 5;
+            var b = 15;
+
             var expected = a * b;
             var value = new TestStruct { A = a, B = b };
 
