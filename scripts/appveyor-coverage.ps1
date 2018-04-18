@@ -18,6 +18,12 @@ if ($env:PLATFORM -eq "x86" -Or $env:PLATFORM -eq "x64")
     $ASSEMBLY_OUTPUT_DIR = "$env:PLATFORM\$env:CONFIGURATION"
 }
 
+# Fix inconsistent spacing in platform targets
+if ($env:PLATFORM -eq "Any CPU")
+{
+    $env:PLATFORM = "AnyCPU"
+}
+
 function Run-Coverage([string]$project, [string]$framework)
 {
     $INPUT_DIRECTORY = "$project\bin\$ASSEMBLY_OUTPUT_DIR\$framework"
@@ -50,3 +56,9 @@ Run-Coverage "AdvancedDLSupport.Tests" "net461"
 
 Run-Coverage "Mono.DllMap.Tests" "netcoreapp2.0"
 Run-Coverage "Mono.DllMap.Tests" "net461"
+
+# Restore inconsistent spacing in platform targets
+if ($env:PLATFORM -eq "AnyCPU")
+{
+    $env:PLATFORM = "Any CPU"
+}

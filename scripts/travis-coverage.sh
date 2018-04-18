@@ -5,6 +5,11 @@ if [ "${Platform}" == "x86" ] || [ "${Platform}" == "x64" ]; then
 	OutputDir="${Platform}/${Configuration}"
 fi
 
+# Fix inconsistent spacing in platform targets
+if [ "${Platform}" == "Any CPU" ]; then
+	Platform="AnyCPU"
+fi
+
 ALTCOVER_VERSION="3.0.422"
 ALTCOVER_PATH="altcover/altcover.$ALTCOVER_VERSION/tools/netcoreapp2.0/AltCover.dll"
 
@@ -48,4 +53,8 @@ runCoverage AdvancedDLSupport.Tests net461
 runCoverage Mono.DllMap.Tests netcoreapp2.0
 runCoverage Mono.DllMap.Tests net461
 
+# Restore inconsistent spacing in platform targets
+if [ "${Platform}" == "AnyCPU" ]; then
+	Platform="Any CPU"
+fi
 
