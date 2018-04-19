@@ -23,6 +23,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Threading;
 using AdvancedDLSupport.Extensions;
 using JetBrains.Annotations;
 using NLog;
@@ -225,11 +226,23 @@ namespace AdvancedDLSupport.AOT
 
             lock (_fileCopyLock)
             {
-                File.Copy(outputFileName, Path.Combine(outputDirectory, outputFileName), true);
-                File.Copy(outputModuleName, Path.Combine(outputDirectory, outputModuleName), true);
+                // Spin until the assembly isn't locked
+                var outputAssembly = new FileInfo(outputFileName);
+                while (IsFileLocked(outputAssembly))
+                {
+                }
 
-                File.Delete(outputFileName);
-                File.Delete(persistentAssemblyProvider.GetDynamicModule().FullyQualifiedName);
+                outputAssembly.CopyTo(Path.Combine(outputDirectory, outputFileName), true);
+                outputAssembly.Delete();
+
+                // Spin until the module isn't locked
+                var outputModule = new FileInfo(outputModuleName);
+                while (IsFileLocked(outputModule))
+                {
+                }
+
+                outputModule.CopyTo(Path.Combine(outputDirectory, outputModuleName), true);
+                outputModule.Delete();
             }
         }
 
@@ -339,6 +352,37 @@ namespace AdvancedDLSupport.AOT
             constructorIL.EmitConstantInt((int)entryKey.Options);
 
             constructorIL.EmitNewObject(constructor);
+        }
+
+        /// <summary>
+        /// Determines whether or not a given file is locked. A file being locked is typically due to either it still
+        /// being written to, being accessed by anothet thread or process, or does not exist at all.
+        /// </summary>
+        /// <param name="file">The file.</param>
+        /// <returns>true if the file is locked; otherwise, false.</returns>
+        private bool IsFileLocked([NotNull] FileInfo file)
+        {
+            FileStream stream = null;
+
+            try
+            {
+                stream = file.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            }
+            catch (IOException)
+            {
+                // The file is unavailable because it is:
+                // * Still being written to
+                // * Being processed by another thread
+                // * Does not exist (has already been processed)
+
+                return true;
+            }
+            finally
+            {
+                stream?.Close();
+            }
+
+            return false;
         }
     }
 }
