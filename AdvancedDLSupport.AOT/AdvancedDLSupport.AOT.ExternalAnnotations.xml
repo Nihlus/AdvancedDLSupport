@@ -17,11 +17,11 @@
   </member>
   <member name="M:AdvancedDLSupport.AOT.PersistentDynamicAssemblyProvider.#ctor(System.String,System.Boolean)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <parameter name="assemblyName">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
   </member>
   <member name="P:AdvancedDLSupport.AOT.PersistentDynamicAssemblyProvider.IsDebuggable">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="P:AdvancedDLSupport.AOT.PersistentDynamicAssemblyProvider.UniqueIdentifier">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="T:AdvancedDLSupport.AOT.PregeneratedAssemblyBuilder">
@@ -31,6 +31,8 @@
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:AdvancedDLSupport.AOT.PregeneratedAssemblyBuilder.Build(System.String)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     <parameter name="outputPath">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>

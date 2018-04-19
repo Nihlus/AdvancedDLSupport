@@ -15,9 +15,9 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
             {
                 // Pregenerate the types
                 Builder.WithSourceAssembly(GetType().Assembly);
-                Builder.Build(Path.Combine(AOTDirectory, OutputName));
+                Builder.Build(OutputDirectory);
 
-                NativeLibraryBuilder.DiscoverCompiledTypes(AOTDirectory);
+                NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory);
             }
         }
 
@@ -26,9 +26,9 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
         {
             // Pregenerate the types
             Builder.WithSourceAssembly(GetType().Assembly);
-            Builder.Build(Path.Combine(AOTDirectory, OutputName));
+            Builder.Build(OutputDirectory);
 
-            NativeLibraryBuilder.DiscoverCompiledTypes(AOTDirectory);
+            NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory);
 
             var library = LibraryBuilder.ActivateInterface<IAOTLibrary>("AOTTests");
 

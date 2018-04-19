@@ -7,7 +7,9 @@ namespace AdvancedDLSupport.AOT.Tests.TestBases
 {
     public class PregeneratedAssemblyBuilderTestBase : IDisposable
     {
-        protected const string OutputName = "DLSupportDynamicAssembly.dll";
+        private const string OutputBaseName = "DLSupportDynamicAssembly";
+
+        protected string OutputDirectory { get; }
 
         protected Assembly SourceAssembly { get; }
         protected PregeneratedAssemblyBuilder Builder { get; }
@@ -17,6 +19,8 @@ namespace AdvancedDLSupport.AOT.Tests.TestBases
         {
             SourceAssembly = Assembly.GetAssembly(typeof(PregeneratedAssemblyBuilderTestBase));
             Builder = new PregeneratedAssemblyBuilder(GetImplementationOptions());
+
+            OutputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "aot-test");
         }
 
         protected virtual ImplementationOptions GetImplementationOptions()
@@ -26,13 +30,14 @@ namespace AdvancedDLSupport.AOT.Tests.TestBases
 
         public virtual void Dispose()
         {
-            var currentDirectory = Directory.GetCurrentDirectory();
-            var generatedAssemblies = Directory.EnumerateFiles(currentDirectory, $"{Path.GetFileNameWithoutExtension(OutputName)}*");
+            var generatedAssemblies = Directory.EnumerateFiles(OutputDirectory, $"{OutputBaseName}*");
 
             foreach (var assembly in generatedAssemblies)
             {
                  File.Delete(assembly);
             }
+
+            Directory.Delete(OutputDirectory, true);
         }
     }
 }

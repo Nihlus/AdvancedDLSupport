@@ -37,7 +37,16 @@ namespace AdvancedDLSupport.AOT
         [PublicAPI]
         public bool IsDebuggable { get; }
 
-        private string _assemblyName;
+        /// <summary>
+        /// Gets the unique identifier for the assembly.
+        /// </summary>
+        [PublicAPI]
+        public string UniqueIdentifier { get; }
+
+        /// <summary>
+        /// Gets the name of the dynamic assembly.
+        /// </summary>
+        public const string DynamicAssemblyName = "DLSupportDynamicAssembly";
 
         private AssemblyBuilder _dynamicAssembly;
 
@@ -46,22 +55,21 @@ namespace AdvancedDLSupport.AOT
         /// <summary>
         /// Initializes a new instance of the <see cref="PersistentDynamicAssemblyProvider"/> class.
         /// </summary>
-        /// <param name="assemblyName">
-        /// The name of the dynamic assembly. This name will be suffixed with a unique identifier.
-        /// </param>
         /// <param name="debuggable">
         /// Whether or not the assembly should be marked as debuggable. This disables any compiler optimizations.
         /// </param>
+        /// <param name="outputDirectory">The directory where the dynamic assembly should be saved.</param>
         [PublicAPI]
-        public PersistentDynamicAssemblyProvider([NotNull] string assemblyName, bool debuggable)
+        public PersistentDynamicAssemblyProvider(string outputDirectory, bool debuggable)
         {
             IsDebuggable = debuggable;
+            UniqueIdentifier = Guid.NewGuid().ToString().ToLowerInvariant();
 
-            _assemblyName = assemblyName;
-
-            _dynamicAssembly = AssemblyBuilder.DefineDynamicAssembly
+            _dynamicAssembly = AppDomain.CurrentDomain.DefineDynamicAssembly
             (
-                new AssemblyName(_assemblyName), AssemblyBuilderAccess.RunAndSave
+                new AssemblyName(DynamicAssemblyName),
+                AssemblyBuilderAccess.RunAndSave,
+                outputDirectory
             );
 
             if (!debuggable)
@@ -99,7 +107,9 @@ namespace AdvancedDLSupport.AOT
             (
                 _dynamicModule = _dynamicAssembly.DefineDynamicModule
                 (
-                    "DLSupportDynamicModule", $"DLSupportDynamicModule_{Guid.NewGuid().ToString().ToLowerInvariant()}.module"
+                    "DLSupportDynamicModule",
+                    $"DLSupportDynamicModule_{UniqueIdentifier}.module",
+                    IsDebuggable
                 )
             );
         }

@@ -14,18 +14,20 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
             public void GeneratesAnOutputFileForASourceAssembly()
             {
                 Builder.WithSourceAssembly(SourceAssembly);
-                Builder.Build(OutputName);
+                var result = Builder.Build(OutputDirectory);
 
-                Assert.True(File.Exists(OutputName));
+                var outputFile = Path.Combine(OutputDirectory, result);
+                Assert.True(File.Exists(outputFile));
             }
 
             [Fact]
             public void GeneratesAnOutputFileForASourceExplicitCombination()
             {
                 Builder.WithSourceExplicitTypeCombination<AOTMixedModeClass, IAOTLibrary>();
-                Builder.Build(OutputName);
+                var result = Builder.Build(OutputDirectory);
 
-                Assert.True(File.Exists(OutputName));
+                var outputFile = Path.Combine(OutputDirectory, result);
+                Assert.True(File.Exists(outputFile));
             }
         }
     }

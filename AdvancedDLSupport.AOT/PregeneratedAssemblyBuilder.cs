@@ -23,7 +23,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Threading;
 using AdvancedDLSupport.Extensions;
 using JetBrains.Annotations;
 using NLog;
@@ -48,7 +47,7 @@ namespace AdvancedDLSupport.AOT
         [NotNull]
         private List<(Type ClassType, Type InterfaceType)> SourceExplicitTypeCombinations { get; }
 
-        private ImplementationOptions Options { get; }
+        private ImplementationOptions _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PregeneratedAssemblyBuilder"/> class.
@@ -57,7 +56,8 @@ namespace AdvancedDLSupport.AOT
         [PublicAPI]
         public PregeneratedAssemblyBuilder(ImplementationOptions options = 0)
         {
-            Options = options;
+            _options = options;
+
             SourceAssemblies = new List<Assembly>();
             SourceExplicitTypeCombinations = new List<(Type, Type)>();
         }
@@ -150,8 +150,14 @@ namespace AdvancedDLSupport.AOT
         /// Builds the implementation assembly, saving it to the given path.
         /// </summary>
         /// <param name="outputPath">The path where the assembly should be saved.</param>
-        public void Build([NotNull] string outputPath)
+        /// <returns>The name of the output assembly.</returns>
+        [PublicAPI, NotNull]
+        public string Build([NotNull] string outputPath)
         {
+            outputPath = outputPath.IsNullOrWhiteSpace()
+                ? Directory.GetCurrentDirectory()
+                : Path.GetFullPath(outputPath);
+
             // Discover automatic interfaces
             var automaticInterfaces = new List<Type>();
             foreach (var sourceAssembly in SourceAssemblies)
@@ -180,13 +186,12 @@ namespace AdvancedDLSupport.AOT
                 combinationList.Add(explicitCombination);
             }
 
-            var assemblyName = $"{Path.GetFileNameWithoutExtension(outputPath)}";
-            var persistentAssemblyProvider = new PersistentDynamicAssemblyProvider(assemblyName, true);
+            var persistentAssemblyProvider = new PersistentDynamicAssemblyProvider(outputPath, true);
 
             // And build the types
             var generatedTypeDictionary = new Dictionary<GeneratedImplementationTypeIdentifier, Type>();
 
-            var libraryBuilder = new NativeLibraryBuilder(Options, assemblyProvider: persistentAssemblyProvider);
+            var libraryBuilder = new NativeLibraryBuilder(_options, assemblyProvider: persistentAssemblyProvider);
             foreach (var combination in combinationList)
             {
                 var generatedCombination = libraryBuilder.PregenerateImplementationType(combination.ClassType, combination.InterfaceType);
@@ -204,46 +209,15 @@ namespace AdvancedDLSupport.AOT
             // Create the metadata class
             CreateMetadataType(persistentAssemblyProvider.GetDynamicModule(), generatedTypeDictionary);
 
-            var outputDirectory = Path.GetDirectoryName(outputPath) ?? outputPath;
-            outputDirectory = outputDirectory.IsNullOrWhiteSpace()
-                ? Directory.GetCurrentDirectory()
-                : Path.GetFullPath(outputDirectory);
-
-            var outputFileName = Path.GetFileName(outputPath);
-            var outputModuleName = persistentAssemblyProvider.GetDynamicModule().FullyQualifiedName;
-
-            if (!outputDirectory.IsNullOrWhiteSpace())
+            if (!outputPath.IsNullOrWhiteSpace())
             {
-                Directory.CreateDirectory(outputDirectory);
+                Directory.CreateDirectory(outputPath);
             }
 
+            var outputFileName = $"{PersistentDynamicAssemblyProvider.DynamicAssemblyName}_{persistentAssemblyProvider.UniqueIdentifier}.dll";
             assembly.Save(outputFileName);
 
-            if (outputDirectory == Directory.GetCurrentDirectory())
-            {
-                return;
-            }
-
-            lock (_fileCopyLock)
-            {
-                // Spin until the assembly isn't locked
-                var outputAssembly = new FileInfo(outputFileName);
-                while (IsFileLocked(outputAssembly))
-                {
-                }
-
-                outputAssembly.CopyTo(Path.Combine(outputDirectory, outputFileName), true);
-                outputAssembly.Delete();
-
-                // Spin until the module isn't locked
-                var outputModule = new FileInfo(outputModuleName);
-                while (IsFileLocked(outputModule))
-                {
-                }
-
-                outputModule.CopyTo(Path.Combine(outputDirectory, outputModuleName), true);
-                outputModule.Delete();
-            }
+            return outputFileName;
         }
 
         /// <summary>
@@ -352,37 +326,6 @@ namespace AdvancedDLSupport.AOT
             constructorIL.EmitConstantInt((int)entryKey.Options);
 
             constructorIL.EmitNewObject(constructor);
-        }
-
-        /// <summary>
-        /// Determines whether or not a given file is locked. A file being locked is typically due to either it still
-        /// being written to, being accessed by anothet thread or process, or does not exist at all.
-        /// </summary>
-        /// <param name="file">The file.</param>
-        /// <returns>true if the file is locked; otherwise, false.</returns>
-        private bool IsFileLocked([NotNull] FileInfo file)
-        {
-            FileStream stream = null;
-
-            try
-            {
-                stream = file.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.None);
-            }
-            catch (IOException)
-            {
-                // The file is unavailable because it is:
-                // * Still being written to
-                // * Being processed by another thread
-                // * Does not exist (has already been processed)
-
-                return true;
-            }
-            finally
-            {
-                stream?.Close();
-            }
-
-            return false;
         }
     }
 }
