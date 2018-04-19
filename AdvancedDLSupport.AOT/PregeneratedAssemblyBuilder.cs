@@ -190,7 +190,7 @@ namespace AdvancedDLSupport.AOT
             {
                 var generatedCombination = libraryBuilder.PregenerateImplementationType(combination.ClassType, combination.InterfaceType);
 
-                generatedTypeDictionary.Add(generatedCombination.Key, generatedCombination.Value);
+                generatedTypeDictionary.Add(generatedCombination.Item1, generatedCombination.Item2);
             }
 
             var assembly = persistentAssemblyProvider.GetDynamicAssembly();

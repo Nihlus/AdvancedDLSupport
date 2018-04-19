@@ -345,7 +345,7 @@ namespace AdvancedDLSupport
         /// Thrown if the specified library can't be found in any of the loader paths.
         /// </exception>
         /// <returns>A key-value tuple of the generated type identifier and the type.</returns>
-        internal (GeneratedImplementationTypeIdentifier Key, Type Value) PregenerateImplementationType
+        internal Tuple<GeneratedImplementationTypeIdentifier, Type> PregenerateImplementationType
         (
             [NotNull] Type classType,
             [NotNull] Type interfaceType
@@ -385,14 +385,14 @@ namespace AdvancedDLSupport
             {
                 if (TypeCache.TryGetValue(key, out generatedType))
                 {
-                    return (key, generatedType);
+                    return new Tuple<GeneratedImplementationTypeIdentifier, Type>(key, generatedType);
                 }
 
                 generatedType = GenerateInterfaceImplementationType(classType, interfaceType);
                 TypeCache.TryAdd(key, generatedType);
             }
 
-            return (key, generatedType);
+            return new Tuple<GeneratedImplementationTypeIdentifier, Type>(key, generatedType);
         }
 
         /// <summary>
