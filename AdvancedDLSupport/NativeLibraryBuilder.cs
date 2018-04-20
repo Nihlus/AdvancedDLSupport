@@ -123,10 +123,13 @@ namespace AdvancedDLSupport
         /// Scans the given directory for assemblies, attempting to discover pregenerated native binding types.
         /// </summary>
         /// <param name="searchDirectory">The directory to search.</param>
+        /// <param name ="searchPattern">
+        /// The pattern to search for in file names. Defaults to all files ending with .dll.
+        /// </param>
         [PublicAPI]
-        public static void DiscoverCompiledTypes([NotNull] string searchDirectory)
+        public static void DiscoverCompiledTypes([NotNull] string searchDirectory, [NotNull] string searchPattern = "*.dll")
         {
-            var assemblyPaths = Directory.EnumerateFiles(searchDirectory, "*.dll", SearchOption.AllDirectories);
+            var assemblyPaths = Directory.EnumerateFiles(searchDirectory, searchPattern, SearchOption.AllDirectories);
 
             foreach (var assemblyPath in assemblyPaths)
             {

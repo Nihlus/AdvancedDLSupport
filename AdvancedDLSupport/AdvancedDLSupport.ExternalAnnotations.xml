@@ -372,9 +372,12 @@
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.NativeLibraryBuilder.DiscoverCompiledTypes(System.String)">
+  <member name="M:AdvancedDLSupport.NativeLibraryBuilder.DiscoverCompiledTypes(System.String,System.String)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="searchDirectory">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="searchPattern">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>

@@ -187,7 +187,6 @@ namespace AdvancedDLSupport.AOT
             }
 
             var persistentAssemblyProvider = new PersistentDynamicAssemblyProvider(outputPath, true);
-
             // And build the types
             var generatedTypeDictionary = new Dictionary<GeneratedImplementationTypeIdentifier, Type>();
 
@@ -215,6 +214,7 @@ namespace AdvancedDLSupport.AOT
             }
 
             var outputFileName = $"{PersistentDynamicAssemblyProvider.DynamicAssemblyName}_{persistentAssemblyProvider.UniqueIdentifier}.dll";
+
             assembly.Save(outputFileName);
 
             return outputFileName;

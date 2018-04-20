@@ -19,6 +19,7 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
 using AdvancedDLSupport.DynamicAssemblyProviders;
@@ -47,6 +48,8 @@ namespace AdvancedDLSupport.AOT
         /// Gets the name of the dynamic assembly.
         /// </summary>
         public const string DynamicAssemblyName = "DLSupportDynamicAssembly";
+
+        private bool _isDisposed;
 
         private AssemblyBuilder _dynamicAssembly;
 

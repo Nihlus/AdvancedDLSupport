@@ -89,8 +89,7 @@ namespace AdvancedDLSupport.AOT
                 }
             }
 
-            var outputFilename = Path.Combine(Arguments.OutputPath, "DLSupportDynamicAssembly.dll");
-            builder.Build(outputFilename);
+            builder.Build(Arguments.OutputPath);
 
             return (int)ExitCodes.Success;
         }

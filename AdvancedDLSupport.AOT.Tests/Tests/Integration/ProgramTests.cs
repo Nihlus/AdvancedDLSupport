@@ -1,9 +1,10 @@
 ﻿using System.IO;
+using AdvancedDLSupport.AOT.Tests.Fixtures;
 using Xunit;
 
 namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
 {
-    public class ProgramTests
+    public class ProgramTests : IClassFixture<InitialCleanupFixture>
     {
         [Fact]
         public void ReturnsInputAssemblyNotFoundIfOneOrMoreAssembliesDoNotExist()
@@ -18,7 +19,7 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
         [Fact]
         public void ReturnsFailedToLoadAssemblyIfOneOrMoreAssembliesCouldNotBeLoaded()
         {
-            File.Create("empty.dll");
+            File.Create("empty.dll").Close();
             var args = "--input-assemblies empty.dll".Split(' ');
 
             var result = Program.Main(args);
@@ -34,7 +35,6 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
 
             var result = Program.Main(args);
 
-            Directory.Delete("aot-test", true);
             Assert.Equal(ExitCodes.Success, (ExitCodes)result);
         }
     }
