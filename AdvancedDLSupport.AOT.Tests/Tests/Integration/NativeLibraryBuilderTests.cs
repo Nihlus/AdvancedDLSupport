@@ -37,25 +37,6 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
 
                 Assert.False(libraryAssembly.GetCustomAttribute<AOTAssemblyAttribute>() is null);
             }
-
-            [Fact]
-            public void SkipsAlreadyGeneratedTypes()
-            {
-                // Activate the library before scanning for compiled types
-                LibraryBuilder.ActivateInterface<IAOTLibrary>("AOTTests");
-
-                // Pregenerate the types
-                Builder.WithSourceAssembly(GetType().Assembly);
-                var result = Builder.Build(OutputDirectory);
-
-                var searchPattern = $"*{result}*.dll";
-                NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
-
-                var library = LibraryBuilder.ActivateInterface<IAOTLibrary>("AOTTests");
-                var libraryAssembly = library.GetType().Assembly;
-
-                Assert.True(libraryAssembly.GetCustomAttribute<AOTAssemblyAttribute>() is null);
-            }
         }
     }
 }
