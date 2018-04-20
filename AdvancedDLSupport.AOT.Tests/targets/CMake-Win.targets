@@ -1,0 +1,24 @@
+﻿<Project>
+    <Import Project="CMake.targets"/>
+
+    <!-- Windows-specific properties -->
+    <PropertyGroup>
+        <CMakeGeneratorx86>"Visual Studio 15 2017"</CMakeGeneratorx86>
+        <CMakeGeneratorx64>"Visual Studio 15 2017 Win64"</CMakeGeneratorx64>
+        <CMakeBuildDirx86>$(CMakeBuildDir)-x86</CMakeBuildDirx86>
+        <CMakeBuildDirx64>$(CMakeBuildDir)-x64</CMakeBuildDirx64>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Platform)' == 'x86'">
+        <CMakeGenerator>"Visual Studio 15 2017"</CMakeGenerator>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Platform)' == 'x64' Or '$(Platform)' == 'AnyCPU'">
+        <CMakeGenerator>"Visual Studio 15 2017 Win64"</CMakeGenerator>
+    </PropertyGroup>
+
+    <Target Name="CompileWinTestLibraries" AfterTargets="AfterBuild">
+        <Exec Command="cmake --build . --config Release" WorkingDirectory="$(CMakeBuildDir)" />
+        <Exec Command="cmake -DCOMPONENT=standard -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDir)" />
+    </Target>
+</Project>

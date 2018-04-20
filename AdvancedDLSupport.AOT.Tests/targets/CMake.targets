@@ -1,0 +1,19 @@
+﻿<Project>
+    <!-- Common properties -->
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-debug</CMakeBuildDir>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-release</CMakeBuildDir>
+    </PropertyGroup>
+
+    <!-- Common targets -->
+    <Target Name="InitCMake" AfterTargets="BeforeBuild" Condition="!Exists('$(CMakeBuildDir)')">
+        <Exec Command="mkdir $(CMakeBuildDir)" />
+        <Exec Command="cmake -G $(CMakeGenerator) '-DTARGET_FRAMEWORKS=$(TargetFrameworks)' -DBASE_INSTALL_PATH=$([System.IO.Path]::GetDirectoryName($(OutputPath.TrimEnd('/').TrimEnd('\\')))) -DPROJECT_PATH=$(MSBuildProjectDirectory) -DBUILD_PLATFORM=$(Platform) .." WorkingDirectory="$(CMakeBuildDir)" />
+    </Target>
+
+    <Target Name="CleanCMake" AfterTargets="AfterClean" Condition="Exists('$(CMakeBuildDir)')" >
+        <RemoveDir Directories="$(CMakeBuildDir)"/>
+    </Target>
+</Project>

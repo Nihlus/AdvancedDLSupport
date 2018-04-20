@@ -25,3 +25,4 @@ using AdvancedDLSupport;
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 [assembly: InternalsVisibleTo(NativeLibraryBuilder.DynamicAssemblyName)]
+[assembly: InternalsVisibleTo("AdvancedDLSupport.AOT")]

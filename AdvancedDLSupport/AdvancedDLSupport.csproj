@@ -12,7 +12,7 @@
   <PropertyGroup>
     <Title>AdvancedDLSupport</Title>
     <Authors>TheBlackCentipede;Jax</Authors>
-    <Version>1.2.2</Version>
+    <Version>1.3.0</Version>
     <Description>An alternative approach to your typical P/Invoke.</Description>
     <Copyright>Copyright Firwood Software 2017</Copyright>
   </PropertyGroup>
@@ -20,7 +20,7 @@
     <PackageId>AdvancedDLSupport</PackageId>
     <PackageLicenseUrl>https://www.gnu.org/licenses/lgpl-3.0.txt</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Relicense under LGPLv3.</PackageReleaseNotes>
+    <PackageReleaseNotes>Add support for AOT compilation of native binding types.</PackageReleaseNotes>
     <PackageTags>p/invoke;cross-platform;mono;netcore;netstandard;native;interop</PackageTags>
     <PackageOutputPath>../nuget</PackageOutputPath>
     <IncludeSymbols>True</IncludeSymbols>
@@ -57,6 +57,7 @@
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
     <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.3.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.4.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.DllMap\Mono.DllMap.csproj" />

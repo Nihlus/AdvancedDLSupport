@@ -20,6 +20,7 @@
 using System;
 using JetBrains.Annotations;
 
+// ReSharper disable MultipleSpaces
 // ReSharper disable InconsistentNaming
 #pragma warning disable CS1591, SA1600, SA1602, SA1025, SA1300
 

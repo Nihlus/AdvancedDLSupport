@@ -54,6 +54,8 @@ nuget install altcover -OutputDirectory altcover -Version $ALTCOVER_VERSION
 Run-Coverage "AdvancedDLSupport.Tests" "netcoreapp2.0"
 Run-Coverage "AdvancedDLSupport.Tests" "net461"
 
+Run-Coverage "AdvancedDLSupport.AOT.Tests" "net461"
+
 Run-Coverage "Mono.DllMap.Tests" "netcoreapp2.0"
 Run-Coverage "Mono.DllMap.Tests" "net461"
 

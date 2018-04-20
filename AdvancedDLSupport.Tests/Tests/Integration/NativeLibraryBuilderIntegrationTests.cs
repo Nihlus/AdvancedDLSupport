@@ -47,7 +47,7 @@ namespace AdvancedDLSupport.Tests.Integration
             }
 
             [Fact]
-            public void LoadingSameInterfaceAndSameFileTwiceUsesSameGeneratedType()
+            public void LoadingSameInterfaceWithSameOptionsAndSameFileTwiceUsesSameGeneratedType()
             {
                 var secondLoad = new NativeLibraryBuilder(ImplementationOptions.GenerateDisposalChecks)
                     .ActivateInterface<IBaseLibrary>(LibraryName);

@@ -18,7 +18,6 @@
 //
 
 using System;
-using System.IO;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
@@ -33,54 +32,45 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="baseClassType">The base class of the library.</param>
         /// <param name="interfaceType">The interface type.</param>
-        /// <param name="libraryPath">The path to the library. Will be resolved to an absolute path.</param>
         /// <param name="options">The configuration used for the library.</param>
         public GeneratedImplementationTypeIdentifier
         (
             [NotNull] Type baseClassType,
             [NotNull] Type interfaceType,
-            [NotNull] string libraryPath,
             ImplementationOptions options
         )
         {
-            _baseClassType = baseClassType;
-            _interfaceType = interfaceType;
-            _options = options;
-            _absoluteLibraryPath = Path.GetFullPath(libraryPath);
+            BaseClassType = baseClassType;
+            InterfaceType = interfaceType;
+            Options = options;
         }
 
         /// <summary>
-        /// The base class type of the library.
+        /// Gets the base class type of the library.
         /// </summary>
-        private readonly Type _baseClassType;
+        internal Type BaseClassType { get; }
 
         /// <summary>
-        /// The interface type for the library.
+        /// Gets the interface type for the library.
         /// </summary>
-        private readonly Type _interfaceType;
+        internal Type InterfaceType { get; }
 
         /// <summary>
-        /// The absolute path to the library on disk.
+        /// Gets the configuration used for the library at construction time.
         /// </summary>
-        private readonly string _absoluteLibraryPath;
-
-        /// <summary>
-        /// The configuration used for the library at construction time.
-        /// </summary>
-        private readonly ImplementationOptions _options;
+        internal ImplementationOptions Options { get; }
 
         /// <inheritdoc />
         public bool Equals(GeneratedImplementationTypeIdentifier other)
         {
             return
-                _baseClassType == other._baseClassType &&
-                _interfaceType == other._interfaceType &&
-                string.Equals(_absoluteLibraryPath, other._absoluteLibraryPath) &&
-                _options == other._options;
+                BaseClassType == other.BaseClassType &&
+                InterfaceType == other.InterfaceType &&
+                Options == other.Options;
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
+        public override bool Equals([CanBeNull] object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -96,10 +86,9 @@ namespace AdvancedDLSupport
             unchecked
             {
                 return
-                    ((_baseClassType != null ? _interfaceType.GetHashCode() : 0) * 397) ^
-                    (_interfaceType != null ? _interfaceType.GetHashCode() : 0) * 397 ^
-                    (_absoluteLibraryPath != null ? _absoluteLibraryPath.GetHashCode() : 0) ^
-                    ((int)_options * 397);
+                    ((BaseClassType != null ? InterfaceType.GetHashCode() : 0) * 397) ^
+                    ((InterfaceType != null ? InterfaceType.GetHashCode() : 0) * 397) ^
+                    ((int)Options * 397);
             }
         }
     }

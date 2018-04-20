@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net461</TargetFrameworks>
+    <IsPackable>false</IsPackable>
+    <Configurations>Debug;Release</Configurations>
+    <Platforms>AnyCPU;x86;x64</Platforms>
+    <Prefer32bit>false</Prefer32bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AdvancedDLSupport.AOT\AdvancedDLSupport.AOT.csproj" />
+  </ItemGroup>
+  <!-- Common CMake build steps -->
+  <Import Project="targets\CMake-Unix.targets" Condition="'$(OS)' == 'Unix'" />
+  <Import Project="targets\CMake-Win.targets" Condition="'$(OS)' == 'Windows_NT'" />
+</Project>

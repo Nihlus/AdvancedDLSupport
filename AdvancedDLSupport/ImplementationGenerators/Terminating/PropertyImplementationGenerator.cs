@@ -194,9 +194,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 );
 
                 GenerateSymbolPush(setterIL, propertyFieldBuilder); // Push Symbol address to stack
-                setterIL.Emit(OpCodes.Ldc_I4, 0);                   // Push 0 offset to stack
+                setterIL.Emit(OpCodes.Ldc_I4, 0); // Push 0 offset to stack
 
-                setterIL.Emit(OpCodes.Ldarg_1);                     // Push value to stack
+                setterIL.Emit(OpCodes.Ldarg_1); // Push value to stack
                 setterIL.EmitCall(OpCodes.Call, explicitConvertToIntPtrFunc, null); // Explicit Convert Pointer to IntPtr object
             }
             else
