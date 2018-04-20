@@ -43,9 +43,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// </summary>
     internal sealed class DelegateMethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
-        [CanBeNull]
-        private readonly MethodInfo _calliOverload;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegateMethodImplementationGenerator"/> class.
         /// </summary>
@@ -62,11 +59,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
         )
             : base(targetModule, targetType, targetTypeConstructorIL, options)
         {
-            _calliOverload = typeof(ILGenerator).GetMethod
-            (
-                nameof(ILGenerator.EmitCalli),
-                new[] { typeof(OpCode), typeof(CallingConvention), typeof(Type), typeof(Type[]) }
-            );
         }
 
         /// <inheritdoc />

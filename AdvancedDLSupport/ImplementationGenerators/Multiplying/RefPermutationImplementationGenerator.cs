@@ -41,9 +41,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
     {
         private readonly PermutationGenerator _permutationGenerator;
 
-        private readonly DelegateMethodImplementationGenerator _delegateMethodGenerator;
-        private readonly LoweredMethodImplementationGenerator _loweredMethodGenerator;
-
         [NotNull]
         private readonly TypeTransformerRepository _transformerRepository;
 
@@ -68,9 +65,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
             _permutationGenerator = new PermutationGenerator();
 
             _transformerRepository = transformerRepository;
-
-            _delegateMethodGenerator = new DelegateMethodImplementationGenerator(targetModule, targetType, targetTypeConstructorIL, options);
-            _loweredMethodGenerator = new LoweredMethodImplementationGenerator(targetModule, targetType, targetTypeConstructorIL, options, transformerRepository);
         }
 
         /// <inheritdoc />

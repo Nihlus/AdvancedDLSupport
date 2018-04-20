@@ -1,38 +1,60 @@
-﻿using System;
+﻿//
+//  MixedModeClass.cs
+//
+//  Copyright (c) 2018 Firwood Software
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+using System;
+
+#pragma warning disable SA1600, CS1591
 
 // ReSharper disable ValueParameterNotUsed
 namespace AdvancedDLSupport.Tests.Data.Classes
 {
-	public abstract class MixedModeClass : NativeLibraryBase, IMixedModeLibrary
-	{
-		public MixedModeClass(string path, Type interfaceType, ImplementationOptions options, TypeTransformerRepository transformerRepository)
-			: base(path, interfaceType, options, transformerRepository)
-		{
-		}
+    public abstract class MixedModeClass : NativeLibraryBase, IMixedModeLibrary
+    {
+        public MixedModeClass(string path, Type interfaceType, ImplementationOptions options, TypeTransformerRepository transformerRepository)
+            : base(path, options, transformerRepository)
+        {
+        }
 
-		public bool RanManagedSubtract { get; private set; }
+        public bool RanManagedSubtract { get; private set; }
 
-		public bool RanManagedSetter { get; private set; }
+        public bool RanManagedSetter { get; private set; }
 
-		public int ManagedAdd(int a, int b)
-		{
-			return a + b;
-		}
+        public int ManagedAdd(int a, int b)
+        {
+            return a + b;
+        }
 
-		public int OtherNativeProperty
-		{
-			get => 32;
+        public int OtherNativeProperty
+        {
+            get => 32;
 
-			set => RanManagedSetter = true;
-		}
+            set => RanManagedSetter = true;
+        }
 
-		public abstract int NativeProperty { get; set; }
-		public abstract int Multiply(int value, int multiplier);
+        public abstract int NativeProperty { get; set; }
 
-		public int Subtract(int value, int other)
-		{
-			RanManagedSubtract = true;
-			return value - other;
-		}
-	}
+        public abstract int Multiply(int value, int multiplier);
+
+        public int Subtract(int value, int other)
+        {
+            RanManagedSubtract = true;
+            return value - other;
+        }
+    }
 }

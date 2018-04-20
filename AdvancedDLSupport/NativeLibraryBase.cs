@@ -49,18 +49,6 @@ namespace AdvancedDLSupport
         internal ImplementationOptions Options { get; set; }
 
         /// <summary>
-        /// Gets the path to or name of the encapsulated library.
-        /// </summary>
-        [NotNull]
-        private readonly string _path;
-
-        /// <summary>
-        /// Gets the type of the interface that the library implements.
-        /// </summary>
-        [NotNull]
-        private readonly Type _interfaceType;
-
-        /// <summary>
         /// Gets an opaque native handle to the library.
         /// </summary>
         private IntPtr _libraryHandle;
@@ -83,23 +71,18 @@ namespace AdvancedDLSupport
         /// Initializes a new instance of the <see cref="NativeLibraryBase"/> class.
         /// </summary>
         /// <param name="path">The path to the library.</param>
-        /// <param name="interfaceType">The interface type that the anonymous type implements.</param>
         /// <param name="options">Whether or not this library can be disposed.</param>
         /// <param name="transformerRepository">The repository containing type transformers.</param>
         [PublicAPI, AnonymousConstructor]
         protected NativeLibraryBase
         (
             [NotNull] string path,
-            [NotNull] Type interfaceType,
             ImplementationOptions options,
-            [NotNull] TypeTransformerRepository transformerRepository
-        )
+            [NotNull] TypeTransformerRepository transformerRepository)
         {
             Options = options;
             TransformerRepository = transformerRepository;
             _libraryHandle = PlatformLoader.LoadLibrary(path);
-            _path = path;
-            _interfaceType = interfaceType;
         }
 
         /// <summary>

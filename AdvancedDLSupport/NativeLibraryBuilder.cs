@@ -551,7 +551,6 @@ namespace AdvancedDLSupport
             (
                 finalType,
                 library,
-                typeof(TInterface),
                 options,
                 transformerRepository
             );

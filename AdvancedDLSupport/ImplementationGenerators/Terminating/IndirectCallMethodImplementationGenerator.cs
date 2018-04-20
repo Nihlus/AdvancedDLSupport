@@ -90,7 +90,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             );
 
             AugmentHostingTypeConstructorWithNativeInitialization(workUnit.SymbolName, backingFieldType, backingField);
-            GenerateNativeInvokerBody(definition, metadataAttribute.CallingConvention, backingFieldType, backingField);
+            GenerateNativeInvokerBody(definition, metadataAttribute.CallingConvention, backingField);
 
             yield break;
         }
@@ -136,13 +136,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="method">The method to generate the body for.</param>
         /// <param name="callingConvention">The unmanaged calling convention to use.</param>
-        /// <param name="backingFieldType">The type of the backing field.</param>
         /// <param name="backingField">The backing field.</param>
         private void GenerateNativeInvokerBody
         (
             [NotNull] IntrospectiveMethodInfo method,
             CallingConvention callingConvention,
-            [NotNull] Type backingFieldType,
             [NotNull] FieldInfo backingField
         )
         {
