@@ -6,7 +6,7 @@ using Xunit;
 
 namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
 {
-    public class NativeLibraryBuilderTests : NativeLibraryBuilderTestBase
+    public class NativeLibraryBuilderTests
     {
         public class DiscoverCompiledTypes : NativeLibraryBuilderTestBase
         {
@@ -20,23 +20,42 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
                 var searchPattern = $"*{result}*.dll";
                 NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
             }
-        }
 
-        [Fact]
-        public void UsesPrecompiledTypesIfDiscovered()
-        {
-            // Pregenerate the types
-            Builder.WithSourceAssembly(GetType().Assembly);
-            var result = Builder.Build(OutputDirectory);
+            [Fact]
+            public void UsesPrecompiledTypesIfDiscovered()
+            {
+                // Pregenerate the types
+                Builder.WithSourceAssembly(GetType().Assembly);
+                var result = Builder.Build(OutputDirectory);
 
-            var searchPattern = $"*{result}*.dll";
-            NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
+                var searchPattern = $"*{result}*.dll";
+                NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
 
-            var library = LibraryBuilder.ActivateInterface<IAOTLibrary>("AOTTests");
+                var library = LibraryBuilder.ActivateInterface<IAOTLibrary>("AOTTests");
 
-            var libraryAssembly = library.GetType().Assembly;
+                var libraryAssembly = library.GetType().Assembly;
 
-            Assert.False(libraryAssembly.GetCustomAttribute<AOTAssemblyAttribute>() is null);
+                Assert.False(libraryAssembly.GetCustomAttribute<AOTAssemblyAttribute>() is null);
+            }
+
+            [Fact]
+            public void SkipsAlreadyGeneratedTypes()
+            {
+                // Activate the library before scanning for compiled types
+                LibraryBuilder.ActivateInterface<IAOTLibrary>("AOTTests");
+
+                // Pregenerate the types
+                Builder.WithSourceAssembly(GetType().Assembly);
+                var result = Builder.Build(OutputDirectory);
+
+                var searchPattern = $"*{result}*.dll";
+                NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
+
+                var library = LibraryBuilder.ActivateInterface<IAOTLibrary>("AOTTests");;
+                var libraryAssembly = library.GetType().Assembly;
+
+                Assert.True(libraryAssembly.GetCustomAttribute<AOTAssemblyAttribute>() is null);
+            }
         }
     }
 }
