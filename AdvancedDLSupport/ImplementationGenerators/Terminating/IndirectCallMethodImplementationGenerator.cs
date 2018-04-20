@@ -23,8 +23,6 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
-
-using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
@@ -32,8 +30,6 @@ using Mono.DllMap.Extensions;
 using StrictEmit;
 using static AdvancedDLSupport.ImplementationOptions;
 using static System.Reflection.CallingConventions;
-using static System.Reflection.MethodAttributes;
-using static System.Reflection.MethodImplAttributes;
 
 // ReSharper disable BitwiseOperatorOnEnumWithoutFlags
 namespace AdvancedDLSupport.ImplementationGenerators

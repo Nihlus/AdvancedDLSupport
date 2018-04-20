@@ -18,7 +18,6 @@
 //
 
 using System;
-using System.Diagnostics;
 using AdvancedDLSupport.Loaders;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;

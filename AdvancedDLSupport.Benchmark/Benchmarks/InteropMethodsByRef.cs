@@ -17,6 +17,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using AdvancedDLSupport.Benchmark.Data;
+using AdvancedDLSupport.Benchmark.Native;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Exporters;
 using BenchmarkDotNet.Attributes.Jobs;
@@ -30,7 +32,6 @@ namespace AdvancedDLSupport.Benchmark.Benchmarks
     public class InteropMethodsByRef
     {
         private static readonly Matrix2 Source = new Matrix2 { Row0 = { X = 4, Y = 7 }, Row1 = { X = 2, Y = 6 } };
-        private static readonly Matrix2 Result = new Matrix2 { Row0 = { X = 0.6f, Y = -0.7f }, Row1 = { X = -0.2f, Y = 0.4f } };
 
         private static ITest _adlLibrary;
         private static ITest _adlLibraryWithoutDisposeChecks;

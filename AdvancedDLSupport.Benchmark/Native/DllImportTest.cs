@@ -18,8 +18,9 @@
 //
 
 using System.Runtime.InteropServices;
+using AdvancedDLSupport.Benchmark.Data;
 
-namespace AdvancedDLSupport.Benchmark
+namespace AdvancedDLSupport.Benchmark.Native
 {
     /// <summary>
     /// <see cref="DllImportAttribute"/> interop methods.

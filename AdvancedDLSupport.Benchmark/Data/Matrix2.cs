@@ -20,7 +20,7 @@
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Benchmark
+namespace AdvancedDLSupport.Benchmark.Data
 {
     /// <summary>
     /// A 2x2 matrix of 32-bit floating-point values.

@@ -18,13 +18,9 @@
 //
 
 using System;
-using System.Linq;
 using AdvancedDLSupport.Benchmark.Benchmarks;
-using BenchmarkDotNet.Analysers;
 using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Filters;
-using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Running;
 
 namespace AdvancedDLSupport.Benchmark
@@ -64,8 +60,8 @@ namespace AdvancedDLSupport.Benchmark
                 )
             );
 
-            var refSummary = BenchmarkRunner.Run<InteropMethodsByRef>(config);
-            var valueSummary = BenchmarkRunner.Run<InteropMethodsByValue>(config);
+            BenchmarkRunner.Run<InteropMethodsByRef>(config);
+            BenchmarkRunner.Run<InteropMethodsByValue>(config);
 
             /*var logger = ConsoleLogger.Default;
             MarkdownExporter.Console.ExportToLog(refSummary, logger);
