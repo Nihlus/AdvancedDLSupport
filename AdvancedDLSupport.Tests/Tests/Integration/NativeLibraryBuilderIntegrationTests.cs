@@ -41,7 +41,7 @@ namespace AdvancedDLSupport.Tests.Integration
             [Fact]
             public void LoadingSameInterfaceAndSameFileTwiceProducesDifferentReferences()
             {
-                var secondLoad = new NativeLibraryBuilder().ActivateInterface<IBaseLibrary>(LibraryName);
+                var secondLoad = Builder.ActivateInterface<IBaseLibrary>(LibraryName);
 
                 Assert.NotSame(Library, secondLoad);
             }
@@ -49,30 +49,9 @@ namespace AdvancedDLSupport.Tests.Integration
             [Fact]
             public void LoadingSameInterfaceWithSameOptionsAndSameFileTwiceUsesSameGeneratedType()
             {
-                var secondLoad = new NativeLibraryBuilder(ImplementationOptions.GenerateDisposalChecks)
-                    .ActivateInterface<IBaseLibrary>(LibraryName);
+                var secondLoad = Builder.ActivateInterface<IBaseLibrary>(LibraryName);
 
                 Assert.IsType(Library.GetType(), secondLoad);
-            }
-
-            [Fact]
-            public void LoadingSameInterfaceAndSameFileButWithDifferentOptionsDoesNotUseSameGeneratedType()
-            {
-                var options = ImplementationOptions.UseLazyBinding;
-
-                var secondLoad = new NativeLibraryBuilder(options).ActivateInterface<IBaseLibrary>(LibraryName);
-
-                Assert.IsNotType(Library.GetType(), secondLoad);
-            }
-
-            [Fact]
-            public void LoadingSameInterfaceAndSameFileButWithDifferentOptionsProducesDifferentReferences()
-            {
-                var options = ImplementationOptions.UseLazyBinding;
-
-                var secondLoad = new NativeLibraryBuilder(options).ActivateInterface<IBaseLibrary>(LibraryName);
-
-                Assert.NotSame(Library, secondLoad);
             }
 
             [Fact]

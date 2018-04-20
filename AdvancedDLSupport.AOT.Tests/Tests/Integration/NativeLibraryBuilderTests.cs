@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Reflection;
 using AdvancedDLSupport.AOT.Tests.Data.Interfaces;
 using AdvancedDLSupport.AOT.Tests.TestBases;
@@ -17,8 +18,8 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
                 Builder.WithSourceAssembly(GetType().Assembly);
                 var result = Builder.Build(OutputDirectory);
 
-                var searchPattern = $"*{result}*.dll";
-                NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
+                var searchPattern = $"*{new string(result.SkipWhile(c => c == '_').TakeWhile(c => c != '_').ToArray())}*.dll";
+                LibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
             }
 
             [Fact]
@@ -28,8 +29,8 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
                 Builder.WithSourceAssembly(GetType().Assembly);
                 var result = Builder.Build(OutputDirectory);
 
-                var searchPattern = $"*{result}*.dll";
-                NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
+                var searchPattern = $"*{new string(result.SkipWhile(c => c == '_').TakeWhile(c => c != '_').ToArray())}*.dll";
+                LibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
 
                 var library = LibraryBuilder.ActivateInterface<IAOTLibrary>("AOTTests");
 
@@ -48,8 +49,8 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
                 Builder.WithSourceAssembly(GetType().Assembly);
                 var result = Builder.Build(OutputDirectory);
 
-                var searchPattern = $"*{result}*.dll";
-                NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
+                var searchPattern = $"*{new string(result.SkipWhile(c => c == '_').TakeWhile(c => c != '_').ToArray())}*.dll";
+                LibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
 
                 var library = LibraryBuilder.ActivateInterface<IAOTLibrary>("AOTTests");
                 var libraryAssembly = library.GetType().Assembly;
