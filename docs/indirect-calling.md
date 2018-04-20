@@ -36,7 +36,7 @@ impacted.
 Furthermore, when running under 32-bit .NET Core on Windows, `calli` is restricted to the `__fastcall` calling 
 convention, and will ignore any hints to the contrary. This calling convention limitation is present on all .NET Core
 platforms, but is only relevant on x86. Calling conventions are, by design, ignored on other platforms in native code.
- 
+The limitation in question is scheduled to be fixed in .NET Core 2.1.
 
 
 [calli-unverifiable]: https://blogs.msdn.microsoft.com/shawnfa/2004/06/14/calli-is-not-verifiable/
