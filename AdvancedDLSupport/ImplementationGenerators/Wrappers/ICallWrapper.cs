@@ -18,12 +18,11 @@
 //
 
 using System.Reflection.Emit;
-using AdvancedDLSupport.ImplementationGenerators;
 using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.CallWrappers
+namespace AdvancedDLSupport.ImplementationGenerators
 {
     /// <summary>
     /// Represents a wrapper emitter that accepts a method, emits arbitrary prologue instructions, calls the method, and

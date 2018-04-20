@@ -23,13 +23,12 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using AdvancedDLSupport.Extensions;
-using AdvancedDLSupport.ImplementationGenerators;
 using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using StrictEmit;
 
-namespace AdvancedDLSupport.CallWrappers
+namespace AdvancedDLSupport.ImplementationGenerators
 {
     /// <summary>
     /// Base class for call wrappers. This class implements some base functionality which allows inheritors to abstain
