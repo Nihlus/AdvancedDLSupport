@@ -73,13 +73,20 @@ namespace AdvancedDLSupport
         private readonly IDynamicAssemblyProvider _assemblyProvider;
         private readonly ModuleBuilder _moduleBuilder;
 
-        private readonly object _builderLock = new object();
+        private static readonly object BuilderLock = new object();
 
-        private readonly ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type> _typeCache;
-        private readonly TypeTransformerRepository _transformerRepository;
+        private static readonly ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type> TypeCache;
+        private static readonly TypeTransformerRepository TransformerRepository;
 
         static NativeLibraryBuilder()
         {
+            TypeCache = new ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type>
+            (
+                new LibraryIdentifierEqualityComparer()
+            );
+
+            TransformerRepository = new TypeTransformerRepository();
+
             Default = new NativeLibraryBuilder
             (
                 GenerateDisposalChecks | EnableDllMapSupport
@@ -110,13 +117,6 @@ namespace AdvancedDLSupport
 
             Options = options;
             PathResolver = pathResolver ?? new DynamicLinkLibraryPathResolver();
-
-            _typeCache = new ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type>
-            (
-                new LibraryIdentifierEqualityComparer()
-            );
-
-            _transformerRepository = new TypeTransformerRepository();
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace AdvancedDLSupport
         /// The pattern to search for in file names. Defaults to all files ending with .dll.
         /// </param>
         [PublicAPI]
-        public void DiscoverCompiledTypes([NotNull] string searchDirectory, [NotNull] string searchPattern = "*.dll")
+        public static void DiscoverCompiledTypes([NotNull] string searchDirectory, [NotNull] string searchPattern = "*.dll")
         {
             var assemblyPaths = Directory.EnumerateFiles(searchDirectory, searchPattern, SearchOption.AllDirectories);
 
@@ -157,14 +157,14 @@ namespace AdvancedDLSupport
 
                 foreach (var generatedType in typeDictionary)
                 {
-                    lock (_builderLock)
+                    lock (BuilderLock)
                     {
-                        if (_typeCache.ContainsKey(generatedType.Key))
+                        if (TypeCache.ContainsKey(generatedType.Key))
                         {
                             continue;
                         }
 
-                        _typeCache.TryAdd(generatedType.Key, generatedType.Value);
+                        TypeCache.TryAdd(generatedType.Key, generatedType.Value);
                     }
                 }
             }
@@ -254,12 +254,12 @@ namespace AdvancedDLSupport
 
             // Check if we've already generated a type for this configuration
             var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, Options);
-            lock (_builderLock)
+            lock (BuilderLock)
             {
-                if (!_typeCache.TryGetValue(key, out var generatedType))
+                if (!TypeCache.TryGetValue(key, out var generatedType))
                 {
                     generatedType = GenerateInterfaceImplementationType<TClass, TInterface>();
-                    _typeCache.TryAdd(key, generatedType);
+                    TypeCache.TryAdd(key, generatedType);
                 }
 
                 try
@@ -269,7 +269,7 @@ namespace AdvancedDLSupport
                         generatedType,
                         libraryPath,
                         Options,
-                        _transformerRepository
+                        TransformerRepository
                     );
 
                     return anonymousInstance as TClass
@@ -326,15 +326,15 @@ namespace AdvancedDLSupport
 
             // Check if we've already generated a type for this configuration
             var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, Options);
-            lock (_builderLock)
+            lock (BuilderLock)
             {
-                if (_typeCache.TryGetValue(key, out var generatedType))
+                if (TypeCache.TryGetValue(key, out var generatedType))
                 {
                     return;
                 }
 
                 generatedType = GenerateInterfaceImplementationType<TBaseClass, TInterface>();
-                _typeCache.TryAdd(key, generatedType);
+                TypeCache.TryAdd(key, generatedType);
             }
         }
 
@@ -384,15 +384,15 @@ namespace AdvancedDLSupport
             // Check if we've already generated a type for this configuration
             var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, Options);
             Type generatedType;
-            lock (_builderLock)
+            lock (BuilderLock)
             {
-                if (_typeCache.TryGetValue(key, out generatedType))
+                if (TypeCache.TryGetValue(key, out generatedType))
                 {
                     return new Tuple<GeneratedImplementationTypeIdentifier, Type>(key, generatedType);
                 }
 
                 generatedType = GenerateInterfaceImplementationType(classType, interfaceType);
-                _typeCache.TryAdd(key, generatedType);
+                TypeCache.TryAdd(key, generatedType);
             }
 
             return new Tuple<GeneratedImplementationTypeIdentifier, Type>(key, generatedType);
@@ -494,7 +494,7 @@ namespace AdvancedDLSupport
                 typeBuilder,
                 constructorIL,
                 Options,
-                _transformerRepository
+                TransformerRepository
             );
 
             ConstructMethods(pipeline, classType, interfaceType);

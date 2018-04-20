@@ -8,20 +8,21 @@ namespace AdvancedDLSupport.Tests.TestBases
         protected readonly ImplementationOptions Config;
         protected readonly T Library;
 
-        protected readonly NativeLibraryBuilder Builder;
-
         [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")]
         public LibraryTestBase(string libraryLocation)
         {
             Config = GetImplementationOptions();
-
-            Builder = new NativeLibraryBuilder(Config);
-            Library = Builder.ActivateInterface<T>(libraryLocation);
+            Library = GetImplementationBuilder().ActivateInterface<T>(libraryLocation);
         }
 
         protected virtual ImplementationOptions GetImplementationOptions()
         {
             return ImplementationOptions.GenerateDisposalChecks;
+        }
+
+        protected virtual NativeLibraryBuilder GetImplementationBuilder()
+        {
+            return new NativeLibraryBuilder(Config);
         }
 
         public void Dispose()
