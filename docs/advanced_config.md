@@ -4,7 +4,7 @@ Advanced Configuration
 AdvancedDLSupport supports some alternate generation options for more advanced use cases. These are enabled by passing 
 an `ImplementationOptions` flag set to the `AnonymousImplementationBuilder`.
 
-```cs
+```c#
 var config = ImplementationOptions.UseLazyBinding | ImplementationOptions.GenerateDisposalChecks;
 var library = new NativeLibraryBuilder(config).ActivateInterface<IMyLibrary>(LibraryName);
 ```
