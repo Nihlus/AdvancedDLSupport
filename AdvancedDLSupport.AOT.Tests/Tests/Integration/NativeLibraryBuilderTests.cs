@@ -51,7 +51,7 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
                 var searchPattern = $"*{result}*.dll";
                 NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
 
-                var library = LibraryBuilder.ActivateInterface<IAOTLibrary>("AOTTests");;
+                var library = LibraryBuilder.ActivateInterface<IAOTLibrary>("AOTTests");
                 var libraryAssembly = library.GetType().Assembly;
 
                 Assert.True(libraryAssembly.GetCustomAttribute<AOTAssemblyAttribute>() is null);
