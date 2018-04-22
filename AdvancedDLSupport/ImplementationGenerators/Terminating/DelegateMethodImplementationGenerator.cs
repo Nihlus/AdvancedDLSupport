@@ -61,6 +61,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
         }
 
+        /// <inheritdoc/>
+        public override bool IsApplicable(IntrospectiveMethodInfo member)
+        {
+            return true;
+        }
+
         /// <inheritdoc />
         public override IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> GenerateImplementation(PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {

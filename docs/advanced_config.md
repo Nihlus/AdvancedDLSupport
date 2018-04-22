@@ -35,6 +35,11 @@ yet. Library remapping via `dllmap` works just fine, though.
 If `ImplementationOptions::UseIndirectCalls` is enabled, the far more performant `calli` opcode will be used instead of 
 generating delegates under the hood. This warrants some more detailed information, which is available [here][2].
 
+### Code optimizations
+If `ImplementationOptions::EnableOptimizations` is enabled, the generated dynamic assembly is marked as eligible for 
+JIT code optimizations. This is generally safe to enable, but may produce unexpected results. At present, it appears to 
+break boolean parameters when using indirect calls on .NET Core.
+
 ### Path Resolvers
 You can override the algorithms used to resolve the path to the library that DLSupport will load by passing an 
 `ILibraryPathResolver` to the implementation builder.

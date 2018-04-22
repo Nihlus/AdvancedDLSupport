@@ -25,7 +25,6 @@ using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.ImplementationGenerators;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
-using Mono.DllMap.Extensions;
 using static System.Reflection.MethodAttributes;
 
 namespace AdvancedDLSupport.Pipeline
@@ -39,15 +38,9 @@ namespace AdvancedDLSupport.Pipeline
         private readonly ImplementationOptions _options;
         private readonly TypeTransformerRepository _transformerRepository;
 
-        private readonly RefPermutationImplementationGenerator _refPermutationGenerator;
-        private readonly LoweredMethodImplementationGenerator _loweredMethodGenerator;
-
-        private readonly DelegateMethodImplementationGenerator _delegateMethodGenerator;
-        private readonly IndirectCallMethodImplementationGenerator _indirectCallMethodGenerator;
-
         private readonly PropertyImplementationGenerator _propertyGenerator;
 
-        private readonly BooleanMarshallingWrapper _booleanMarshallingWrapper;
+        private readonly IReadOnlyList<IImplementationGenerator<IntrospectiveMethodInfo>> _methodGeneratorPipeline;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImplementationPipeline"/> class.
@@ -70,7 +63,7 @@ namespace AdvancedDLSupport.Pipeline
             _options = options;
             _transformerRepository = transformerRepository;
 
-            _refPermutationGenerator = new RefPermutationImplementationGenerator
+            var refPermutationGenerator = new RefPermutationImplementationGenerator
             (
                 targetModule,
                 _targetType,
@@ -79,7 +72,7 @@ namespace AdvancedDLSupport.Pipeline
                 _transformerRepository
             );
 
-            _loweredMethodGenerator = new LoweredMethodImplementationGenerator
+            var loweredMethodGenerator = new LoweredMethodImplementationGenerator
             (
                 targetModule,
                 _targetType,
@@ -88,7 +81,7 @@ namespace AdvancedDLSupport.Pipeline
                 _transformerRepository
             );
 
-            _delegateMethodGenerator = new DelegateMethodImplementationGenerator
+            var delegateMethodGenerator = new DelegateMethodImplementationGenerator
             (
                 targetModule,
                 _targetType,
@@ -96,7 +89,15 @@ namespace AdvancedDLSupport.Pipeline
                 _options
             );
 
-            _indirectCallMethodGenerator = new IndirectCallMethodImplementationGenerator
+            var indirectCallMethodGenerator = new IndirectCallMethodImplementationGenerator
+            (
+                targetModule,
+                _targetType,
+                constructorIL,
+                _options
+            );
+
+            var booleanMarshallingWrapper = new BooleanMarshallingWrapper
             (
                 targetModule,
                 _targetType,
@@ -112,13 +113,14 @@ namespace AdvancedDLSupport.Pipeline
                 _options
             );
 
-            _booleanMarshallingWrapper = new BooleanMarshallingWrapper
-            (
-                targetModule,
-                _targetType,
-                constructorIL,
-                _options
-            );
+            _methodGeneratorPipeline = new IImplementationGenerator<IntrospectiveMethodInfo>[]
+            {
+                booleanMarshallingWrapper,
+                refPermutationGenerator,
+                loweredMethodGenerator,
+                indirectCallMethodGenerator,
+                delegateMethodGenerator
+            };
         }
 
         /// <summary>
@@ -157,37 +159,25 @@ namespace AdvancedDLSupport.Pipeline
             while (definitionQueue.Any())
             {
                 var workUnit = definitionQueue.Dequeue();
-                var method = workUnit.Definition;
+                var definition = workUnit.Definition;
 
-                IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> generatedDefinitions;
+                IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> generatedDefinitions = new List<PipelineWorkUnit<IntrospectiveMethodInfo>>();
 
-                if (_booleanMarshallingWrapper.IsApplicable(workUnit.Definition, _options))
+                // Go through each stage in the pipeline, pushing the work unit through a stage if the stage is
+                // applicable. If any additional work units are generated, terminate this unit and enqueue the new
+                // units for further processing.
+                foreach (var stage in _methodGeneratorPipeline)
                 {
-                    generatedDefinitions = _booleanMarshallingWrapper.GenerateImplementation(workUnit);
-                }
-                else if (method.RequiresRefPermutations())
-                {
-                    generatedDefinitions = _refPermutationGenerator.GenerateImplementation(workUnit);
-                }
-                else
-                {
-                    var requiresLowering =
-                        _transformerRepository.HasApplicableTransformer(method.ReturnType, _options) ||
-                        method.ParameterTypes.Any(pt => _transformerRepository.HasApplicableTransformer(pt, _options));
-
-                    if (requiresLowering)
+                    if (!stage.IsApplicable(definition))
                     {
-                        generatedDefinitions = _loweredMethodGenerator.GenerateImplementation(workUnit);
+                        continue;
                     }
-                    else if (_options.HasFlagFast(ImplementationOptions.UseIndirectCalls))
+
+                    generatedDefinitions = stage.GenerateImplementation(workUnit).ToList();
+
+                    if (generatedDefinitions.Any())
                     {
-                        // This is a terminating processing branch - no new definitions should be generated.
-                        generatedDefinitions = _indirectCallMethodGenerator.GenerateImplementation(workUnit);
-                    }
-                    else
-                    {
-                        // This is a terminating processing branch - no new definitions should be generated.
-                        generatedDefinitions = _delegateMethodGenerator.GenerateImplementation(workUnit);
+                        break;
                     }
                 }
 

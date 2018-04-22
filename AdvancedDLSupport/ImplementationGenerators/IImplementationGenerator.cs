@@ -38,6 +38,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
         ImplementationOptions Options { get; }
 
         /// <summary>
+        /// Determines whether or not the implementation generator is applicable for the given member definition.
+        /// </summary>
+        /// <param name="member">The member definition.</param>
+        /// <returns>true if the generator is applicable; otherwise, false.</returns>
+        bool IsApplicable([NotNull] TAccepted member);
+
+        /// <summary>
         /// Generates an implementation for the given member, optionally producing more definitions for processing.
         /// </summary>
         /// <param name="workUnit">The member to generate the implementation for.</param>

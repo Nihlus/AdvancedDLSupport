@@ -68,11 +68,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <inheritdoc />
-        public override bool IsApplicable(IntrospectiveMethodInfo method, ImplementationOptions options)
+        public override bool IsApplicable(IntrospectiveMethodInfo method)
         {
             var hasAnyBooleanParameters = method.ReturnType == typeof(bool) || method.ParameterTypes.Any(t => t == typeof(bool));
 
-            return hasAnyBooleanParameters && options.HasFlagFast(UseIndirectCalls);
+            return hasAnyBooleanParameters && Options.HasFlagFast(UseIndirectCalls);
         }
 
         /// <inheritdoc />
@@ -153,6 +153,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var endOfCondition = il.DefineLabel();
 
             il.EmitBranchTrue(trueCase);
+
             // false case
             if (unmanagedType == U8 || unmanagedType == I8)
             {

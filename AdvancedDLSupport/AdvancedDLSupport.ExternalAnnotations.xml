@@ -95,27 +95,6 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="T:AdvancedDLSupport.ImplementationGenerators.CallWrapperRepository">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.CallWrapperRepository.GetApplicableWrappers(AdvancedDLSupport.Reflection.IntrospectiveMethodInfo,AdvancedDLSupport.ImplementationOptions)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.ItemNotNullAttribute.#ctor" />
-    <parameter name="definition">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.CallWrapperRepository.HasApplicableWrapper(AdvancedDLSupport.Reflection.IntrospectiveMethodInfo,AdvancedDLSupport.ImplementationOptions)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <parameter name="definition">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.CallWrapperRepository.WithCallWrapper(AdvancedDLSupport.ImplementationGenerators.ICallWrapper)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-  </member>
   <member name="M:AdvancedDLSupport.ImplementationGenerators.ICallWrapper.EmitEpilogue(System.Reflection.Emit.ILGenerator,AdvancedDLSupport.Pipeline.PipelineWorkUnit{AdvancedDLSupport.Reflection.IntrospectiveMethodInfo})">
     <parameter name="il">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
@@ -132,11 +111,6 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.ICallWrapper.IsApplicable(AdvancedDLSupport.Reflection.IntrospectiveMethodInfo,AdvancedDLSupport.ImplementationOptions)">
-    <parameter name="method">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
   <member name="T:AdvancedDLSupport.ImplementationGenerators.IImplementationGenerator`1">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
@@ -145,6 +119,11 @@
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.ItemNotNullAttribute.#ctor" />
     <parameter name="workUnit">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.ImplementationGenerators.IImplementationGenerator`1.IsApplicable(`0)">
+    <parameter name="member">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
@@ -210,6 +189,13 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
+  <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.IsApplicable(`0)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+    <parameter name="member">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
   <member name="P:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.Options">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
@@ -229,6 +215,9 @@
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="F:AdvancedDLSupport.ImplementationOptions.EnableDllMapSupport">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="F:AdvancedDLSupport.ImplementationOptions.EnableOptimizations">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="F:AdvancedDLSupport.ImplementationOptions.GenerateDisposalChecks">

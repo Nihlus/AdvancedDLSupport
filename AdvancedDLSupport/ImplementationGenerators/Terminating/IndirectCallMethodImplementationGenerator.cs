@@ -65,6 +65,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
             );
         }
 
+        /// <inheritdoc/>
+        public override bool IsApplicable(IntrospectiveMethodInfo member)
+        {
+            return Options.HasFlagFast(UseIndirectCalls);
+        }
+
         /// <inheritdoc />
         public override IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> GenerateImplementation(PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {

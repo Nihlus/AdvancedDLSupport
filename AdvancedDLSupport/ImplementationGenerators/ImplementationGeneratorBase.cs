@@ -82,6 +82,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
             Options = options;
         }
 
+        /// <inheritdoc/>
+        [PublicAPI, Pure]
+        public abstract bool IsApplicable([NotNull] T member);
+
         /// <inheritdoc />
         [PublicAPI]
         public abstract IEnumerable<PipelineWorkUnit<T>> GenerateImplementation(PipelineWorkUnit<T> workUnit);

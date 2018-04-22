@@ -37,7 +37,7 @@ namespace AdvancedDLSupport.Tests.Data
 
         TestStruct? GetNullTestStruct();
 
-        [return: MarshalAs(UnmanagedType.I1)]
+        [return: MarshalAs(UnmanagedType.U1)]
         bool IsTestStructNull(TestStruct? strct);
     }
 }

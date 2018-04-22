@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using AdvancedDLSupport.Extensions;
@@ -59,6 +60,16 @@ namespace AdvancedDLSupport.ImplementationGenerators
             : base(targetModule, targetType, targetTypeConstructorIL, options)
         {
             _transformerRepository = transformerRepository;
+        }
+
+        /// <inheritdoc/>
+        public override bool IsApplicable(IntrospectiveMethodInfo member)
+        {
+            var hasAnyApplicableTransformers =
+                _transformerRepository.HasApplicableTransformer(member.ReturnType, Options) ||
+                member.ParameterTypes.Any(pt => _transformerRepository.HasApplicableTransformer(pt, Options));
+
+            return hasAnyApplicableTransformers;
         }
 
         /// <inheritdoc />

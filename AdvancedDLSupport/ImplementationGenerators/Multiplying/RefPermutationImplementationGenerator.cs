@@ -67,6 +67,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
             _transformerRepository = transformerRepository;
         }
 
+        /// <inheritdoc/>
+        public override bool IsApplicable(IntrospectiveMethodInfo member)
+        {
+            return member.ParameterTypes.Any(p => p.IsRefNullable());
+        }
+
         /// <inheritdoc />
         public override IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> GenerateImplementation(PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {

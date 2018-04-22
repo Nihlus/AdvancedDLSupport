@@ -31,14 +31,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
     public interface ICallWrapper : IImplementationGenerator<IntrospectiveMethodInfo>
     {
         /// <summary>
-        /// Determines whether or not the call wrapper is applicable for the given method definition.
-        /// </summary>
-        /// <param name="method">The method definition.</param>
-        /// <param name="options">The relevant implementation options.</param>
-        /// <returns>true if the wrapper is applicable; otherwise, false.</returns>
-        bool IsApplicable([NotNull] IntrospectiveMethodInfo method, ImplementationOptions options);
-
-        /// <summary>
         /// Emits the wrapper prologue, that is, the instructions before the method call. The evaluation stack is clean
         /// at the start of this method. Immediately following this method, a call to the wrapped method will be made.
         /// </summary>

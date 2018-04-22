@@ -107,11 +107,7 @@ namespace AdvancedDLSupport
             [CanBeNull] IDynamicAssemblyProvider assemblyProvider = default
         )
         {
-            #if DEBUG
-            _assemblyProvider = assemblyProvider ?? new TransientDynamicAssemblyProvider(DynamicAssemblyName, true);
-            #else
-            _assemblyProvider = assemblyProvider ?? new TransientDynamicAssemblyProvider(DynamicAssemblyName, false);
-            #endif
+            _assemblyProvider = assemblyProvider ?? new TransientDynamicAssemblyProvider(DynamicAssemblyName, !options.HasFlagFast(EnableOptimizations));
 
             _moduleBuilder = _assemblyProvider.GetDynamicModule();
 

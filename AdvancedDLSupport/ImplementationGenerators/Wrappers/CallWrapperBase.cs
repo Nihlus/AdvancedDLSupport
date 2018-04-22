@@ -77,12 +77,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
             il.EmitReturn();
 
             // Pass through the method
-
             yield return new PipelineWorkUnit<IntrospectiveMethodInfo>(passthroughMethod, workUnit);
         }
-
-        /// <inheritdoc />
-        public abstract bool IsApplicable(IntrospectiveMethodInfo method, ImplementationOptions options);
 
         /// <summary>
         /// Generates the method that should be passed through for further processing.
