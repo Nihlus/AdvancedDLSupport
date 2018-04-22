@@ -95,6 +95,17 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
+  <member name="M:AdvancedDLSupport.ImplementationGenerators.DisposalCallWrapper.#ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.Emit.TypeBuilder,System.Reflection.Emit.ILGenerator,AdvancedDLSupport.ImplementationOptions)">
+    <parameter name="targetModule">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="targetType">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="targetTypeConstructorIL">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
   <member name="M:AdvancedDLSupport.ImplementationGenerators.ICallWrapper.EmitEpilogue(System.Reflection.Emit.ILGenerator,AdvancedDLSupport.Pipeline.PipelineWorkUnit{AdvancedDLSupport.Reflection.IntrospectiveMethodInfo})">
     <parameter name="il">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
@@ -150,12 +161,6 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.EmitDisposalCheck(System.Reflection.Emit.ILGenerator)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <parameter name="il">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
   <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateFunctionLoadingLambda(System.Type,System.String)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
@@ -165,9 +170,6 @@
     <parameter name="functionName">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateImplementation(AdvancedDLSupport.Pipeline.PipelineWorkUnit{`0})">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateLazyLoadedObject(System.Reflection.Emit.MethodBuilder,System.Type)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
@@ -191,13 +193,6 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
     <parameter name="symbolField">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.IsApplicable(`0)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
-    <parameter name="member">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>

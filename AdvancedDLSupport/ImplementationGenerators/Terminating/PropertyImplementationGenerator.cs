@@ -297,5 +297,18 @@ namespace AdvancedDLSupport.ImplementationGenerators
             propertyBuilder.SetGetMethod(getterMethod);
             TargetType.DefineMethodOverride(getterMethod, actualGetMethod);
         }
+
+        /// <summary>
+        /// Emits a call to <see cref="NativeLibraryBase.ThrowIfDisposed"/>.
+        /// </summary>
+        /// <param name="il">The IL generator.</param>
+        [PublicAPI]
+        private void EmitDisposalCheck([NotNull] ILGenerator il)
+        {
+            var throwMethod = typeof(NativeLibraryBase).GetMethod("ThrowIfDisposed", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Call, throwMethod);
+        }
     }
 }

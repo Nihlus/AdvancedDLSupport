@@ -138,6 +138,14 @@ namespace AdvancedDLSupport.Pipeline
                 _constructorIL,
                 _options
             );
+
+            yield return new DisposalCallWrapper
+            (
+                _targetModule,
+                _targetType,
+                _constructorIL,
+                _options
+            );
         }
 
         /// <summary>
@@ -211,7 +219,8 @@ namespace AdvancedDLSupport.Pipeline
         }
 
         /// <summary>
-        /// Consumes a set of definitions, passing them through the given pipeline.
+        /// Consumes a set of definitions, passing them through the given pipeline. Each stage is guaranteed to run only
+        /// once for any given
         /// </summary>
         /// <param name="definitions">The definitions to process.</param>
         /// <param name="pipeline">A sorted list of generators, acting as the process pipeline</param>
@@ -230,30 +239,19 @@ namespace AdvancedDLSupport.Pipeline
                 var workUnit = definitionQueue.Dequeue();
                 var definition = workUnit.Definition;
 
-                IEnumerable<PipelineWorkUnit<T>> generatedDefinitions = new List<PipelineWorkUnit<T>>();
+                // Find the entry stage of the pipeline
+                var stage = pipeline.First(s => s.IsApplicable(definition));
 
-                // Go through each stage in the pipeline, pushing the work unit through a stage if the stage is
-                // applicable. If any additional work units are generated, terminate this unit and enqueue the new
-                // units for further processing.
-                foreach (var stage in pipeline)
+                // Process the definitions through the stage
+                var generatedDefinitions = stage.GenerateImplementation(workUnit).ToList();
+
+                if (!generatedDefinitions.Any())
                 {
-                    if (!stage.IsApplicable(definition))
-                    {
-                        continue;
-                    }
-
-                    generatedDefinitions = stage.GenerateImplementation(workUnit).ToList();
-
-                    if (generatedDefinitions.Any())
-                    {
-                        break;
-                    }
+                    continue;
                 }
 
-                foreach (var generatedDefinition in generatedDefinitions)
-                {
-                    definitionQueue.Enqueue(generatedDefinition);
-                }
+                // Run the new definitions through the remaining stages of the pipeline
+                ConsumeDefinitions(generatedDefinitions, pipeline.Except(new[] { stage }).ToList());
             }
         }
     }

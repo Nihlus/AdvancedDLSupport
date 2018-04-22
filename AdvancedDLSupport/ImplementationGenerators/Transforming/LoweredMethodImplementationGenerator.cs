@@ -141,11 +141,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             var il = builder.GetILGenerator();
 
-            if (Options.HasFlagFast(GenerateDisposalChecks))
-            {
-                EmitDisposalCheck(il);
-            }
-
             var parameterTypes = definition.ParameterTypes;
             var loweredParameterTypes = loweredMethod.ParameterTypes;
 

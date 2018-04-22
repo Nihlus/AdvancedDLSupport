@@ -86,25 +86,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <inheritdoc/>
-        [PublicAPI, Pure]
-        public abstract bool IsApplicable([NotNull] T member);
+        public abstract bool IsApplicable(T member);
 
         /// <inheritdoc />
-        [PublicAPI]
         public abstract IEnumerable<PipelineWorkUnit<T>> GenerateImplementation(PipelineWorkUnit<T> workUnit);
-
-        /// <summary>
-        /// Emits a call to <see cref="NativeLibraryBase.ThrowIfDisposed"/>.
-        /// </summary>
-        /// <param name="il">The IL generator.</param>
-        [PublicAPI]
-        protected void EmitDisposalCheck([NotNull] ILGenerator il)
-        {
-            var throwMethod = typeof(NativeLibraryBase).GetMethod("ThrowIfDisposed", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Call, throwMethod);
-        }
 
         /// <summary>
         /// Generates a lazy loaded field with the specified value factory.

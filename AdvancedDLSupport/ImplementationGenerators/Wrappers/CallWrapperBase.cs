@@ -27,6 +27,7 @@ using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using StrictEmit;
+using static System.Reflection.MethodAttributes;
 
 namespace AdvancedDLSupport.ImplementationGenerators
 {
@@ -93,7 +94,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var passthroughMethod = TargetType.DefineMethod
             (
                 $"{workUnit.GetUniqueBaseMemberName()}_wrapper",
-                definition.Attributes,
+                Private | Virtual | HideBySig,
                 CallingConventions.Standard,
                 definition.ReturnType,
                 definition.ParameterTypes.ToArray()

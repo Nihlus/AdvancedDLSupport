@@ -163,11 +163,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
             // Let's create a method that simply invoke the delegate
             var methodIL = builder.GetILGenerator();
 
-            if (Options.HasFlagFast(GenerateDisposalChecks))
-            {
-                EmitDisposalCheck(methodIL);
-            }
-
             GenerateSymbolPush(methodIL, delegateField);
 
             for (int p = 1; p <= method.ParameterTypes.Count; p++)
