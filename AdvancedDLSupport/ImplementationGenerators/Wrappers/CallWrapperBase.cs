@@ -36,9 +36,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// </summary>
     public abstract class CallWrapperBase : ImplementationGeneratorBase<IntrospectiveMethodInfo>, ICallWrapper
     {
-        /// <inheritdoc />
-        public abstract ImplementationOptions Options { get; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="CallWrapperBase"/> class.
         /// </summary>
@@ -70,35 +67,53 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 throw new ArgumentNullException(nameof(workUnit), "Could not unwrap introspective method to method builder.");
             }
 
-            var passthroughMethod = TargetType.DefineMethod
-            (
-                $"{workUnit.GetUniqueBaseMemberName()}_wrapper",
-                workUnit.Definition.Attributes,
-                CallingConventions.Standard,
-                workUnit.Definition.ReturnType,
-                workUnit.Definition.ParameterTypes.ToArray()
-            );
-
-            passthroughMethod.ApplyCustomAttributesFrom(definition);
+            var passthroughMethod = GeneratePassthroughDefinition(workUnit);
 
             var il = builder.GetILGenerator();
 
             EmitPrologue(il, workUnit);
-            il.EmitCallDirect(passthroughMethod);
+            il.EmitCallDirect(passthroughMethod.GetWrappedMember());
             EmitEpilogue(il, workUnit);
             il.EmitReturn();
 
             // Pass through the method
-            var newMethodInfo = new IntrospectiveMethodInfo(passthroughMethod);
-            yield return new PipelineWorkUnit<IntrospectiveMethodInfo>(newMethodInfo, workUnit);
+
+            yield return new PipelineWorkUnit<IntrospectiveMethodInfo>(passthroughMethod, workUnit);
         }
 
         /// <inheritdoc />
         public abstract bool IsApplicable(IntrospectiveMethodInfo method, ImplementationOptions options);
 
+        /// <summary>
+        /// Generates the method that should be passed through for further processing.
+        /// </summary>
+        /// <param name="workUnit">The original definition.</param>
+        /// <returns>The passthrough method.</returns>
+        [NotNull]
+        public virtual IntrospectiveMethodInfo GeneratePassthroughDefinition([NotNull] PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
+        {
+            var definition = workUnit.Definition;
+
+            var passthroughMethod = TargetType.DefineMethod
+            (
+                $"{workUnit.GetUniqueBaseMemberName()}_wrapper",
+                definition.Attributes,
+                CallingConventions.Standard,
+                definition.ReturnType,
+                definition.ParameterTypes.ToArray()
+            );
+
+            passthroughMethod.ApplyCustomAttributesFrom(workUnit.Definition);
+
+            return new IntrospectiveMethodInfo(passthroughMethod, definition.ReturnType, definition.ParameterTypes, definition);
+        }
+
         /// <inheritdoc />
         public virtual void EmitPrologue(ILGenerator il, PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {
+            // Load the "this" reference
+            il.EmitLoadArgument(0);
+
             for (short i = 1; i <= workUnit.Definition.ParameterTypes.Count; ++i)
             {
                 il.EmitLoadArgument(i);

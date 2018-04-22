@@ -47,6 +47,8 @@ namespace AdvancedDLSupport.Pipeline
 
         private readonly PropertyImplementationGenerator _propertyGenerator;
 
+        private readonly BooleanMarshallingWrapper _booleanMarshallingWrapper;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ImplementationPipeline"/> class.
         /// </summary>
@@ -109,6 +111,14 @@ namespace AdvancedDLSupport.Pipeline
                 constructorIL,
                 _options
             );
+
+            _booleanMarshallingWrapper = new BooleanMarshallingWrapper
+            (
+                targetModule,
+                _targetType,
+                constructorIL,
+                _options
+            );
         }
 
         /// <summary>
@@ -151,7 +161,11 @@ namespace AdvancedDLSupport.Pipeline
 
                 IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> generatedDefinitions;
 
-                if (method.RequiresRefPermutations())
+                if (_booleanMarshallingWrapper.IsApplicable(workUnit.Definition, _options))
+                {
+                    generatedDefinitions = _booleanMarshallingWrapper.GenerateImplementation(workUnit);
+                }
+                else if (method.RequiresRefPermutations())
                 {
                     generatedDefinitions = _refPermutationGenerator.GenerateImplementation(workUnit);
                 }
