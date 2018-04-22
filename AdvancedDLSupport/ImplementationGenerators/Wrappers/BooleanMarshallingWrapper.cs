@@ -30,6 +30,7 @@ using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
 using StrictEmit;
 
+using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 using static AdvancedDLSupport.ImplementationOptions;
 using static System.Runtime.InteropServices.UnmanagedType;
 
@@ -43,6 +44,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// </summary>
     public class BooleanMarshallingWrapper : CallWrapperBase
     {
+        /// <inheritdoc/>
+        public override GeneratorComplexity Complexity => MemberDependent | OptionDependent | TransformsParameters;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BooleanMarshallingWrapper"/> class.
         /// </summary>

@@ -28,6 +28,7 @@ using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
 
+using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 using static AdvancedDLSupport.ImplementationOptions;
 using static System.Reflection.MethodAttributes;
 
@@ -38,6 +39,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// </summary>
     internal sealed class LoweredMethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
+        /// <inheritdoc/>
+        public override GeneratorComplexity Complexity => MemberDependent | TransformsParameters;
+
         [NotNull]
         private readonly TypeTransformerRepository _transformerRepository;
 

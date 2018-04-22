@@ -114,6 +114,9 @@
   <member name="T:AdvancedDLSupport.ImplementationGenerators.IImplementationGenerator`1">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="P:AdvancedDLSupport.ImplementationGenerators.IImplementationGenerator`1.Complexity">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
   <member name="M:AdvancedDLSupport.ImplementationGenerators.IImplementationGenerator`1.GenerateImplementation(AdvancedDLSupport.Pipeline.PipelineWorkUnit{`0})">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
@@ -123,6 +126,8 @@
     </parameter>
   </member>
   <member name="M:AdvancedDLSupport.ImplementationGenerators.IImplementationGenerator`1.IsApplicable(`0)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <parameter name="member">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>

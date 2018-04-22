@@ -28,6 +28,8 @@ using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
 using StrictEmit;
+
+using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 using static AdvancedDLSupport.ImplementationOptions;
 using static System.Reflection.CallingConventions;
 
@@ -39,6 +41,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// </summary>
     internal sealed class IndirectCallMethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
+        /// <inheritdoc/>
+        public override GeneratorComplexity Complexity => OptionDependent | Terminating;
+
         [CanBeNull]
         private readonly MethodInfo _calliOverload;
 

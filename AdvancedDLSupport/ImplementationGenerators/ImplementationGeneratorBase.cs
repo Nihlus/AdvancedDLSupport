@@ -42,6 +42,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         [PublicAPI]
         public ImplementationOptions Options { get; }
 
+        /// <inheritdoc/>
+        public abstract GeneratorComplexity Complexity { get; }
+
         /// <summary>
         /// Gets the module in which the implementation should be generated.
         /// </summary>

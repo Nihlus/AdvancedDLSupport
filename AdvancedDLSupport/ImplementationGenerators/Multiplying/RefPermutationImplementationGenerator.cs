@@ -29,6 +29,8 @@ using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
+
+using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 using static System.Reflection.MethodAttributes;
 
 namespace AdvancedDLSupport.ImplementationGenerators
@@ -39,6 +41,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// </summary>
     internal sealed class RefPermutationImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
+        /// <inheritdoc/>
+        public override GeneratorComplexity Complexity => MemberDependent | TransformsParameters;
+
         private readonly PermutationGenerator _permutationGenerator;
 
         [NotNull]

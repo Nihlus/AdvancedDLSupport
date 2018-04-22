@@ -30,6 +30,9 @@ using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
 using StrictEmit;
+
+using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
+
 using static AdvancedDLSupport.ImplementationOptions;
 using static System.Reflection.CallingConventions;
 using static System.Reflection.MethodAttributes;
@@ -43,6 +46,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// </summary>
     internal sealed class DelegateMethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
+        /// <inheritdoc/>
+        public override GeneratorComplexity Complexity => Terminating;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegateMethodImplementationGenerator"/> class.
         /// </summary>

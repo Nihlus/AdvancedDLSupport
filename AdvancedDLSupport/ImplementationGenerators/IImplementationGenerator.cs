@@ -38,10 +38,17 @@ namespace AdvancedDLSupport.ImplementationGenerators
         ImplementationOptions Options { get; }
 
         /// <summary>
+        /// Gets the complexity levels of the implementation generator.
+        /// </summary>
+        [PublicAPI]
+        GeneratorComplexity Complexity { get; }
+
+        /// <summary>
         /// Determines whether or not the implementation generator is applicable for the given member definition.
         /// </summary>
         /// <param name="member">The member definition.</param>
         /// <returns>true if the generator is applicable; otherwise, false.</returns>
+        [PublicAPI, Pure]
         bool IsApplicable([NotNull] TAccepted member);
 
         /// <summary>

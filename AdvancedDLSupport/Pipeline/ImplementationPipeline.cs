@@ -38,9 +38,8 @@ namespace AdvancedDLSupport.Pipeline
         private readonly ImplementationOptions _options;
         private readonly TypeTransformerRepository _transformerRepository;
 
-        private readonly PropertyImplementationGenerator _propertyGenerator;
-
         private readonly IReadOnlyList<IImplementationGenerator<IntrospectiveMethodInfo>> _methodGeneratorPipeline;
+        private readonly IReadOnlyList<IImplementationGenerator<IntrospectivePropertyInfo>> _propertyGeneratorPipeline;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImplementationPipeline"/> class.
@@ -62,6 +61,8 @@ namespace AdvancedDLSupport.Pipeline
             _targetType = targetType;
             _options = options;
             _transformerRepository = transformerRepository;
+
+            var generatorSorter = new ComplexitySorter();
 
             var refPermutationGenerator = new RefPermutationImplementationGenerator
             (
@@ -105,15 +106,7 @@ namespace AdvancedDLSupport.Pipeline
                 _options
             );
 
-            _propertyGenerator = new PropertyImplementationGenerator
-            (
-                targetModule,
-                _targetType,
-                constructorIL,
-                _options
-            );
-
-            _methodGeneratorPipeline = new IImplementationGenerator<IntrospectiveMethodInfo>[]
+            var methodGenerators = new IImplementationGenerator<IntrospectiveMethodInfo>[]
             {
                 booleanMarshallingWrapper,
                 refPermutationGenerator,
@@ -121,6 +114,23 @@ namespace AdvancedDLSupport.Pipeline
                 indirectCallMethodGenerator,
                 delegateMethodGenerator
             };
+
+            _methodGeneratorPipeline = generatorSorter.SortGenerators(methodGenerators).ToList();
+
+            var propertyGenerator = new PropertyImplementationGenerator
+            (
+                targetModule,
+                _targetType,
+                constructorIL,
+                _options
+            );
+
+            var propertyGenerators = new IImplementationGenerator<IntrospectivePropertyInfo>[]
+            {
+                propertyGenerator
+            };
+
+            _propertyGeneratorPipeline = generatorSorter.SortGenerators(propertyGenerators).ToList();
         }
 
         /// <summary>
@@ -153,20 +163,44 @@ namespace AdvancedDLSupport.Pipeline
         /// <param name="methods">The definitions.</param>
         public void ConsumeMethodDefinitions([NotNull, ItemNotNull] IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> methods)
         {
-            // Add the initial pool of methods
-            var definitionQueue = new Queue<PipelineWorkUnit<IntrospectiveMethodInfo>>(methods);
+            ConsumeDefinitions(methods, _methodGeneratorPipeline);
+        }
+
+        /// <summary>
+        /// Consumes a set of property definitions, passing them through the pipeline.
+        /// </summary>
+        /// <param name="properties">The properties.</param>
+        public void ConsumePropertyDefinitions([NotNull] IEnumerable<PipelineWorkUnit<IntrospectivePropertyInfo>> properties)
+        {
+            ConsumeDefinitions(properties, _propertyGeneratorPipeline);
+        }
+
+        /// <summary>
+        /// Consumes a set of definitions, passing them through the given pipeline.
+        /// </summary>
+        /// <param name="definitions">The definitions to process.</param>
+        /// <param name="pipeline">A sorted list of generators, acting as the process pipeline</param>
+        /// <typeparam name="T">The type of definition to process.</typeparam>
+        private void ConsumeDefinitions<T>
+        (
+            [NotNull] IEnumerable<PipelineWorkUnit<T>> definitions,
+            [NotNull] IReadOnlyList<IImplementationGenerator<T>> pipeline
+        )
+            where T : MemberInfo
+        {
+            var definitionQueue = new Queue<PipelineWorkUnit<T>>(definitions);
 
             while (definitionQueue.Any())
             {
                 var workUnit = definitionQueue.Dequeue();
                 var definition = workUnit.Definition;
 
-                IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> generatedDefinitions = new List<PipelineWorkUnit<IntrospectiveMethodInfo>>();
+                IEnumerable<PipelineWorkUnit<T>> generatedDefinitions = new List<PipelineWorkUnit<T>>();
 
                 // Go through each stage in the pipeline, pushing the work unit through a stage if the stage is
                 // applicable. If any additional work units are generated, terminate this unit and enqueue the new
                 // units for further processing.
-                foreach (var stage in _methodGeneratorPipeline)
+                foreach (var stage in pipeline)
                 {
                     if (!stage.IsApplicable(definition))
                     {
@@ -180,27 +214,6 @@ namespace AdvancedDLSupport.Pipeline
                         break;
                     }
                 }
-
-                foreach (var generatedDefinition in generatedDefinitions)
-                {
-                    definitionQueue.Enqueue(generatedDefinition);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Consumes a set of property definitions, passing them through the pipeline.
-        /// </summary>
-        /// <param name="properties">The properties.</param>
-        public void ConsumePropertyDefinitions([NotNull] IEnumerable<PipelineWorkUnit<IntrospectivePropertyInfo>> properties)
-        {
-            var definitionQueue = new Queue<PipelineWorkUnit<IntrospectivePropertyInfo>>(properties);
-
-            while (definitionQueue.Any())
-            {
-                var workUnit = definitionQueue.Dequeue();
-
-                var generatedDefinitions = _propertyGenerator.GenerateImplementation(workUnit);
 
                 foreach (var generatedDefinition in generatedDefinitions)
                 {
