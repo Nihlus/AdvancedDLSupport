@@ -1,5 +1,5 @@
 ﻿//
-//  ComplexitySorter.cs
+//  ImplementationGeneratorSorter.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -30,7 +30,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// <summary>
     /// Sorts a set of input generators based on their complexity.
     /// </summary>
-    internal class ComplexitySorter
+    internal class ImplementationGeneratorSorter
     {
         /// <summary>
         /// Sorts the input generators based on their complexity.
@@ -41,27 +41,19 @@ namespace AdvancedDLSupport.ImplementationGenerators
         [NotNull, ItemNotNull]
         public IEnumerable<IImplementationGenerator<T>> SortGenerators<T>
         (
-            [NotNull] IReadOnlyCollection<IImplementationGenerator<T>> generators
+            [NotNull] IEnumerable<IImplementationGenerator<T>> generators
         )
             where T : MemberInfo
         {
-            var terminatingGenerators = generators.Where
-            (
-                c =>
-                    c.Complexity.HasFlagFast(Terminating)
-            );
+            var generatorGroups = generators
+                .OrderByDescending(c => CalculateComplexityScore(c.Complexity))
+                .GroupBy
+                (
+                    c =>
+                        c.Complexity.HasFlagFast(Terminating)
+                ).OrderBy(c => c.Key);
 
-            terminatingGenerators = terminatingGenerators.OrderByDescending(c => CalculateComplexityScore(c.Complexity));
-
-            var nonterminatingGenerators = generators.Where
-            (
-                c =>
-                    !c.Complexity.HasFlagFast(Terminating)
-            );
-
-            nonterminatingGenerators = nonterminatingGenerators.OrderByDescending(c => CalculateComplexityScore(c.Complexity));
-
-            return nonterminatingGenerators.Concat(terminatingGenerators);
+            return generatorGroups.SelectMany(g => g);
         }
 
         /// <summary>

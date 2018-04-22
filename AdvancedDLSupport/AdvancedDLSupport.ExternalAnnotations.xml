@@ -455,6 +455,9 @@
   <member name="P:AdvancedDLSupport.NativeSymbolAttribute.Entrypoint">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="T:AdvancedDLSupport.Pipeline.ImplementationPipeline">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
   <member name="M:AdvancedDLSupport.Pipeline.ImplementationPipeline.#ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.Emit.TypeBuilder,System.Reflection.Emit.ILGenerator,AdvancedDLSupport.ImplementationOptions,AdvancedDLSupport.TypeTransformerRepository)">
     <parameter name="targetModule">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
@@ -470,19 +473,27 @@
     </parameter>
   </member>
   <member name="M:AdvancedDLSupport.Pipeline.ImplementationPipeline.ConsumeMethodDefinitions(System.Collections.Generic.IEnumerable{AdvancedDLSupport.Pipeline.PipelineWorkUnit{AdvancedDLSupport.Reflection.IntrospectiveMethodInfo}})">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="methods">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
       <attribute ctor="M:JetBrains.Annotations.ItemNotNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="M:AdvancedDLSupport.Pipeline.ImplementationPipeline.ConsumePropertyDefinitions(System.Collections.Generic.IEnumerable{AdvancedDLSupport.Pipeline.PipelineWorkUnit{AdvancedDLSupport.Reflection.IntrospectivePropertyInfo}})">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="properties">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.Pipeline.ImplementationPipeline.GenerateDefinitionFromSignature(AdvancedDLSupport.Reflection.IntrospectiveMethodInfo)">
-    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    <parameter name="interfaceDefinition">
+  <member name="M:AdvancedDLSupport.Pipeline.ImplementationPipeline.InjectMethodStages(AdvancedDLSupport.ImplementationGenerators.IImplementationGenerator{AdvancedDLSupport.Reflection.IntrospectiveMethodInfo}[])">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <parameter name="stages">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.Pipeline.ImplementationPipeline.InjectPropertyStage(AdvancedDLSupport.ImplementationGenerators.IImplementationGenerator{AdvancedDLSupport.Reflection.IntrospectivePropertyInfo}[])">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <parameter name="stages">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>

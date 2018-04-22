@@ -32,14 +32,24 @@ namespace AdvancedDLSupport.Pipeline
     /// <summary>
     /// Represents a pipeline which consumes definitions, and processes them to generate a dynamic type.
     /// </summary>
+    [PublicAPI]
     public class ImplementationPipeline
     {
+        [NotNull]
+        private readonly ModuleBuilder _targetModule;
+
+        [NotNull]
         private readonly TypeBuilder _targetType;
+
+        [NotNull]
+        private readonly ILGenerator _constructorIL;
+
         private readonly ImplementationOptions _options;
         private readonly TypeTransformerRepository _transformerRepository;
+        private readonly ImplementationGeneratorSorter _generatorSorter;
 
-        private readonly IReadOnlyList<IImplementationGenerator<IntrospectiveMethodInfo>> _methodGeneratorPipeline;
-        private readonly IReadOnlyList<IImplementationGenerator<IntrospectivePropertyInfo>> _propertyGeneratorPipeline;
+        private IReadOnlyList<IImplementationGenerator<IntrospectiveMethodInfo>> _methodGeneratorPipeline;
+        private IReadOnlyList<IImplementationGenerator<IntrospectivePropertyInfo>> _propertyGeneratorPipeline;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImplementationPipeline"/> class.
@@ -58,79 +68,102 @@ namespace AdvancedDLSupport.Pipeline
             [NotNull] TypeTransformerRepository transformerRepository
         )
         {
+            _targetModule = targetModule;
             _targetType = targetType;
+            _constructorIL = constructorIL;
             _options = options;
             _transformerRepository = transformerRepository;
 
-            var generatorSorter = new ComplexitySorter();
+            _generatorSorter = new ImplementationGeneratorSorter();
 
-            var refPermutationGenerator = new RefPermutationImplementationGenerator
+            _methodGeneratorPipeline = _generatorSorter.SortGenerators(GetBaselineMethodGenerators()).ToList();
+            _propertyGeneratorPipeline = _generatorSorter.SortGenerators(GetBaselinePropertyGenerators()).ToList();
+        }
+
+        /// <summary>
+        /// Injects a set of method implementation generation stages into the pipeline.
+        /// </summary>
+        /// <param name="stages">The stages to inject.</param>
+        [PublicAPI]
+        public void InjectMethodStages([NotNull] params IImplementationGenerator<IntrospectiveMethodInfo>[] stages)
+        {
+            _methodGeneratorPipeline = _generatorSorter.SortGenerators(GetBaselineMethodGenerators().Concat(stages)).ToList();
+        }
+
+        /// <summary>
+        /// Gets the baseline set of method implementation generators.
+        /// </summary>
+        /// <returns>The baseline set.</returns>
+        [NotNull, ItemNotNull, Pure]
+        private IEnumerable<IImplementationGenerator<IntrospectiveMethodInfo>> GetBaselineMethodGenerators()
+        {
+            yield return new RefPermutationImplementationGenerator
             (
-                targetModule,
+                _targetModule,
                 _targetType,
-                constructorIL,
+                _constructorIL,
                 _options,
                 _transformerRepository
             );
 
-            var loweredMethodGenerator = new LoweredMethodImplementationGenerator
+            yield return new LoweredMethodImplementationGenerator
             (
-                targetModule,
+                _targetModule,
                 _targetType,
-                constructorIL,
+                _constructorIL,
                 _options,
                 _transformerRepository
             );
 
-            var delegateMethodGenerator = new DelegateMethodImplementationGenerator
+            yield return new DelegateMethodImplementationGenerator
             (
-                targetModule,
+                _targetModule,
                 _targetType,
-                constructorIL,
+                _constructorIL,
                 _options
             );
 
-            var indirectCallMethodGenerator = new IndirectCallMethodImplementationGenerator
+            yield return new IndirectCallMethodImplementationGenerator
             (
-                targetModule,
+                _targetModule,
                 _targetType,
-                constructorIL,
+                _constructorIL,
                 _options
             );
 
-            var booleanMarshallingWrapper = new BooleanMarshallingWrapper
+            yield return new BooleanMarshallingWrapper
             (
-                targetModule,
+                _targetModule,
                 _targetType,
-                constructorIL,
+                _constructorIL,
                 _options
             );
+        }
 
-            var methodGenerators = new IImplementationGenerator<IntrospectiveMethodInfo>[]
-            {
-                booleanMarshallingWrapper,
-                refPermutationGenerator,
-                loweredMethodGenerator,
-                indirectCallMethodGenerator,
-                delegateMethodGenerator
-            };
+        /// <summary>
+        /// Injects a set of property implementation stages into the pipeline.
+        /// </summary>
+        /// <param name="stages">The stages to inject.</param>
+        [PublicAPI]
+        public void InjectPropertyStage([NotNull] params IImplementationGenerator<IntrospectivePropertyInfo>[] stages)
+        {
+            _propertyGeneratorPipeline = _generatorSorter.SortGenerators(GetBaselinePropertyGenerators().Concat(stages)).ToList();
+        }
 
-            _methodGeneratorPipeline = generatorSorter.SortGenerators(methodGenerators).ToList();
-
-            var propertyGenerator = new PropertyImplementationGenerator
+        /// <summary>
+        /// Gets the baseline set of property implementation generators.
+        /// </summary>
+        /// <returns>The baseline set.</returns>
+        [NotNull, ItemNotNull, Pure]
+        private IEnumerable<IImplementationGenerator<IntrospectivePropertyInfo>> GetBaselinePropertyGenerators()
+        {
+            yield return new PropertyImplementationGenerator
             (
-                targetModule,
+                _targetModule,
                 _targetType,
-                constructorIL,
+                _constructorIL,
                 _options
             );
-
-            var propertyGenerators = new IImplementationGenerator<IntrospectivePropertyInfo>[]
-            {
-                propertyGenerator
-            };
-
-            _propertyGeneratorPipeline = generatorSorter.SortGenerators(propertyGenerators).ToList();
         }
 
         /// <summary>
@@ -139,7 +172,7 @@ namespace AdvancedDLSupport.Pipeline
         /// <param name="interfaceDefinition">The interface definition to base it on.</param>
         /// <returns>An introspective method info for the definition.</returns>
         [NotNull]
-        public IntrospectiveMethodInfo GenerateDefinitionFromSignature([NotNull] IntrospectiveMethodInfo interfaceDefinition)
+        internal IntrospectiveMethodInfo GenerateDefinitionFromSignature([NotNull] IntrospectiveMethodInfo interfaceDefinition)
         {
             var methodBuilder = _targetType.DefineMethod
             (
@@ -161,6 +194,7 @@ namespace AdvancedDLSupport.Pipeline
         /// Consumes a set of method definitions, passing them through the pipeline.
         /// </summary>
         /// <param name="methods">The definitions.</param>
+        [PublicAPI]
         public void ConsumeMethodDefinitions([NotNull, ItemNotNull] IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> methods)
         {
             ConsumeDefinitions(methods, _methodGeneratorPipeline);
@@ -170,6 +204,7 @@ namespace AdvancedDLSupport.Pipeline
         /// Consumes a set of property definitions, passing them through the pipeline.
         /// </summary>
         /// <param name="properties">The properties.</param>
+        [PublicAPI]
         public void ConsumePropertyDefinitions([NotNull] IEnumerable<PipelineWorkUnit<IntrospectivePropertyInfo>> properties)
         {
             ConsumeDefinitions(properties, _propertyGeneratorPipeline);
