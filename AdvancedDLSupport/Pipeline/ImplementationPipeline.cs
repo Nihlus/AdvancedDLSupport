@@ -220,7 +220,8 @@ namespace AdvancedDLSupport.Pipeline
 
         /// <summary>
         /// Consumes a set of definitions, passing them through the given pipeline. Each stage is guaranteed to run only
-        /// once for any given
+        /// once for any given branch of the input definitions. The generation process follows a recursive depth-first
+        /// reductive algorithm.
         /// </summary>
         /// <param name="definitions">The definitions to process.</param>
         /// <param name="pipeline">A sorted list of generators, acting as the process pipeline</param>

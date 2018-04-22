@@ -89,7 +89,7 @@ namespace AdvancedDLSupport
 
             Default = new NativeLibraryBuilder
             (
-                GenerateDisposalChecks | EnableDllMapSupport
+                GenerateDisposalChecks | EnableDllMapSupport | EnableOptimizations
             );
         }
 
