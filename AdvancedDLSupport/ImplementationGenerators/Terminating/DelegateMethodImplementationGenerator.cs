@@ -23,7 +23,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
-
+using System.Security;
 using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
@@ -197,7 +197,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 typeof(MulticastDelegate)
             );
 
-            var attributeConstructor = typeof(UnmanagedFunctionPointerAttribute).GetConstructors().First
+            var unmanagedPtrAttributeConstructor = typeof(UnmanagedFunctionPointerAttribute).GetConstructors().First
             (
                 c =>
                     c.GetParameters().Any() &&
@@ -207,13 +207,27 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             var functionPointerAttributeBuilder = new CustomAttributeBuilder
             (
-                attributeConstructor,
+                unmanagedPtrAttributeConstructor,
                 new object[] { callingConvention },
                 new[] { typeof(UnmanagedFunctionPointerAttribute).GetField(nameof(UnmanagedFunctionPointerAttribute.SetLastError)) },
                 new object[] { true }
             );
 
             delegateBuilder.SetCustomAttribute(functionPointerAttributeBuilder);
+
+            if (Options.HasFlagFast(SuppressSecurity))
+            {
+                var suppressSecurityConstructor = typeof(SuppressUnmanagedCodeSecurityAttribute).GetConstructors().First();
+
+                var suppressSecurityAttributeBuilder = new CustomAttributeBuilder
+                (
+                    suppressSecurityConstructor,
+                    new object[] { }
+                );
+
+                delegateBuilder.SetCustomAttribute(suppressSecurityAttributeBuilder);
+            }
+
             foreach (var attribute in definition.CustomAttributes)
             {
                 delegateBuilder.SetCustomAttribute(attribute.GetAttributeBuilder());

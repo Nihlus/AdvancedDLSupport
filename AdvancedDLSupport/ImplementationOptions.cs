@@ -56,6 +56,12 @@ namespace AdvancedDLSupport
         /// Enables code optimizations for the generated assembly.
         /// </summary>
         [PublicAPI]
-        EnableOptimizations = 1 << 4
+        EnableOptimizations = 1 << 4,
+
+        /// <summary>
+        /// Suppresses code security whenever possible.
+        /// </summary>
+        [PublicAPI]
+        SuppressSecurity = 1 << 5
     }
 }
