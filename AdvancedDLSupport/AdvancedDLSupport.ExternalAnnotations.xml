@@ -223,6 +223,9 @@
   <member name="F:AdvancedDLSupport.ImplementationOptions.GenerateDisposalChecks">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="F:AdvancedDLSupport.ImplementationOptions.SuppressSecurity">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
   <member name="F:AdvancedDLSupport.ImplementationOptions.UseIndirectCalls">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
