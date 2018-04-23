@@ -25,7 +25,7 @@ using System.Reflection.Emit;
 using AdvancedDLSupport.Pipeline;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
-
+using StrictEmit;
 using static AdvancedDLSupport.ImplementationOptions;
 using static System.Reflection.MethodAttributes;
 
@@ -112,9 +112,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
             );
 
             // Use the lambda instead of the function directly.
-            TargetTypeConstructorIL.Emit(OpCodes.Ldftn, valueFactory);
-            TargetTypeConstructorIL.Emit(OpCodes.Newobj, funcConstructor);
-            TargetTypeConstructorIL.Emit(OpCodes.Newobj, lazyConstructor);
+            TargetTypeConstructorIL.EmitLoadFunctionPointer(valueFactory);
+            TargetTypeConstructorIL.EmitNewObject(funcConstructor);
+            TargetTypeConstructorIL.EmitNewObject(lazyConstructor);
         }
 
         /// <summary>
@@ -126,15 +126,15 @@ namespace AdvancedDLSupport.ImplementationGenerators
         [PublicAPI]
         protected void GenerateSymbolPush([NotNull] ILGenerator il, [NotNull] FieldInfo symbolField)
         {
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Ldfld, symbolField);
+            il.EmitLoadArgument(0);
+            il.EmitLoadField(symbolField);
             if (!Options.HasFlagFast(UseLazyBinding))
             {
                 return;
             }
 
             var getMethod = typeof(Lazy<IntPtr>).GetMethod("get_Value", BindingFlags.Instance | BindingFlags.Public);
-            il.Emit(OpCodes.Callvirt, getMethod);
+            il.EmitCallVirtual(getMethod);
         }
 
         /// <summary>
@@ -163,10 +163,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
             );
 
             var lambdaIL = lambdaBuilder.GetILGenerator();
-            lambdaIL.Emit(OpCodes.Ldarg_0);
-            lambdaIL.Emit(OpCodes.Ldstr, symbolName);
-            lambdaIL.Emit(OpCodes.Call, loadSymbolMethod);
-            lambdaIL.Emit(OpCodes.Ret);
+
+            lambdaIL.EmitLoadArgument(0);
+            lambdaIL.EmitConstantString(symbolName);
+            lambdaIL.EmitCallDirect(loadSymbolMethod);
+            lambdaIL.EmitReturn();
+
             return lambdaBuilder;
         }
 
@@ -200,10 +202,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
             );
 
             var lambdaIL = lambdaBuilder.GetILGenerator();
-            lambdaIL.Emit(OpCodes.Ldarg_0);
-            lambdaIL.Emit(OpCodes.Ldstr, functionName);
-            lambdaIL.Emit(OpCodes.Call, loadFunc);
-            lambdaIL.Emit(OpCodes.Ret);
+
+            lambdaIL.EmitLoadArgument(0);
+            lambdaIL.EmitConstantString(functionName);
+            lambdaIL.EmitCallDirect(loadFunc);
+            lambdaIL.EmitReturn();
+
             return lambdaBuilder;
         }
     }

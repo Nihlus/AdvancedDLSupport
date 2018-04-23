@@ -29,7 +29,7 @@ using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
-
+using StrictEmit;
 using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 using static System.Reflection.MethodAttributes;
 
@@ -128,15 +128,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 throw new ArgumentNullException(nameof(definition), "Could not unwrap introspective method to method builder.");
             }
 
-            var nextFreeLocalSlot = 0;
-
             var parameterTypes = definition.ParameterTypes.ToList();
             var methodIL = builder.GetILGenerator();
 
             // Create a boolean array to store the data pertaining to which parameters have values
-            var hasValueArrayIndex = EmitHasValueArray(methodIL, ref nextFreeLocalSlot, parameterTypes);
+            var hasValueArrayLocal = EmitHasValueArray(methodIL, parameterTypes);
 
-            methodIL.Emit(OpCodes.Ldloc, hasValueArrayIndex);
+            methodIL.EmitLoadLocalVariable(hasValueArrayLocal);
             EmitPermutationIndex(methodIL);
 
             // Generate a jump table for the upcoming switch
@@ -151,20 +149,20 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             var jumpTable = labelList.ToArray();
 
-            methodIL.Emit(OpCodes.Switch, jumpTable);
-            methodIL.Emit(OpCodes.Br, defaultCase);
+            methodIL.EmitSwitch(jumpTable);
+            methodIL.EmitBranch(defaultCase);
 
             EmitDefaultSwitchCase(methodIL, defaultCase);
 
             // Emit the switch cases, one for each permutation
-            for (int i = 0; i < permutations.Count; ++i)
+            for (var i = 0; i < permutations.Count; ++i)
             {
                 methodIL.MarkLabel(jumpTable[i]);
 
                 var permutationTypes = permutations[i].ParameterTypes;
 
-                methodIL.Emit(OpCodes.Ldarg_0);
-                for (int argumentIndex = 1; argumentIndex < permutationTypes.Count + 1; ++argumentIndex)
+                methodIL.EmitLoadArgument(0);
+                for (short argumentIndex = 1; argumentIndex < permutationTypes.Count + 1; ++argumentIndex)
                 {
                     var originalParameterType = parameterTypes[argumentIndex - 1];
                     var permutationParameterType = permutationTypes[argumentIndex - 1];
@@ -172,7 +170,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                     {
                         // ReSharper disable once PossibleNullReferenceException
                         var wrappedType = originalParameterType.GetElementType().GetGenericArguments().First();
-                        EmitNullableValueRef(methodIL, argumentIndex, ref nextFreeLocalSlot, wrappedType);
+                        EmitNullableValueRef(methodIL, argumentIndex, wrappedType);
                     }
                     else if (permutationParameterType == typeof(IntPtr) && parameterTypes[argumentIndex - 1].IsRefNullable())
                     {
@@ -183,24 +181,24 @@ namespace AdvancedDLSupport.ImplementationGenerators
                             BindingFlags.Public | BindingFlags.Static
                         );
 
-                        methodIL.Emit(OpCodes.Ldsfld, zeroPointerField);
+                        methodIL.EmitLoadStaticField(zeroPointerField);
                     }
                     else
                     {
-                        methodIL.Emit(OpCodes.Ldarg, argumentIndex);
+                        methodIL.EmitLoadArgument(argumentIndex);
                     }
                 }
 
                 // Call the permutation
-                methodIL.Emit(OpCodes.Call, permutations[i].GetWrappedMember());
+                methodIL.EmitCallDirect(permutations[i].GetWrappedMember());
 
                 // break;
-                methodIL.Emit(OpCodes.Br, endOfSwitch);
+                methodIL.EmitBranch(endOfSwitch);
             }
 
             // Mark end of switch
             methodIL.MarkLabel(endOfSwitch);
-            methodIL.Emit(OpCodes.Ret);
+            methodIL.EmitReturn();
         }
 
         /// <summary>
@@ -210,31 +208,28 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="il">The IL generator where the instructions should be emitted.</param>
         /// <param name="argumentIndex">The argument index to load.</param>
-        /// <param name="nextFreeLocalSlot">The next unused local variable index.</param>
         /// <param name="wrappedType">The type wrapped by the nullable.</param>
-        private static void EmitNullableValueRef
+        [NotNull]
+        private static LocalBuilder EmitNullableValueRef
         (
             [NotNull] ILGenerator il,
-            int argumentIndex,
-            ref int nextFreeLocalSlot,
+            short argumentIndex,
             [NotNull] Type wrappedType
         )
         {
-            // Declare a pinned pointer local
-            var localIndex = nextFreeLocalSlot;
-            ++nextFreeLocalSlot;
-
-            il.DeclareLocal(typeof(int*), true);
+            var local = il.DeclareLocal(typeof(int*), true);
 
             // Now, we load the nullable as a pointer
             EmitGetPinnedAddressOfNullable(il, typeof(Nullable<>).MakeGenericType(wrappedType), argumentIndex);
 
             // Store the value so that it gets pinned
-            il.Emit(OpCodes.Stloc, localIndex);
+            il.EmitSetLocalVariable(local);
 
             // And extract a reference to the internal value
-            il.Emit(OpCodes.Ldloc, localIndex);
+            il.EmitLoadLocalVariable(local);
             EmitAccessInternalNullableValue(il, wrappedType);
+
+            return local;
         }
 
         /// <summary>
@@ -248,10 +243,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
         (
             [NotNull] ILGenerator il,
             [NotNull] Type nullableType,
-            int argumentIndex
+            short argumentIndex
         )
         {
-            il.Emit(OpCodes.Ldarg, argumentIndex);
+            il.EmitLoadArgument(argumentIndex);
 
             var unsafeAsMethod = typeof(Unsafe).GetMethods().First
             (
@@ -261,7 +256,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             )
             .MakeGenericMethod(nullableType, typeof(int));
 
-            il.Emit(OpCodes.Call, unsafeAsMethod);
+            il.EmitCallDirect(unsafeAsMethod);
         }
 
         /// <summary>
@@ -278,8 +273,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 .GetMethod(nameof(InternalNullableAccessor.AccessUnderlyingValue))
                 .MakeGenericMethod(wrappedType);
 
-            il.Emit(OpCodes.Conv_I);
-            il.Emit(OpCodes.Call, accessValueMethod);
+            il.EmitConvertToNativeInt();
+            il.EmitCallDirect(accessValueMethod);
         }
 
         /// <summary>
@@ -292,10 +287,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             // Create a new BitArray to use as the mask
             var bitArrayConstructor = typeof(BitArray).GetConstructor(new[] { typeof(bool[]) });
-            il.Emit(OpCodes.Newobj, bitArrayConstructor);
+            il.EmitNewObject(bitArrayConstructor);
 
             var bitArrayToInteger = typeof(BitArrayExtensions).GetMethod(nameof(BitArrayExtensions.ToInt32));
-            il.Emit(OpCodes.Call, bitArrayToInteger);
+            il.EmitCallDirect(bitArrayToInteger);
         }
 
         /// <summary>
@@ -304,19 +299,16 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// stores whether or not that parameter has an underlying value in the array.
         /// </summary>
         /// <param name="il">The IL generator where the instructions should be emitted.</param>
-        /// <param name="nextFreeLocalSlot">The next unused local variable index.</param>
         /// <param name="parameters">The method parameters.</param>
         /// <returns>The index of the local variable used for the array.</returns>
-        private static int EmitHasValueArray
+        [NotNull]
+        private static LocalBuilder EmitHasValueArray
         (
             [NotNull] ILGenerator il,
-            ref int nextFreeLocalSlot,
             [NotNull, ItemNotNull] IList<Type> parameters
         )
         {
-            var localIndex = nextFreeLocalSlot;
-            ++nextFreeLocalSlot;
-            il.DeclareLocal(typeof(bool[]));
+            var local = il.DeclareLocal(typeof(bool[]));
 
             var refNullableParameters = parameters.Where
             (
@@ -330,37 +322,38 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             var refNullableCount = refNullableParameters.Count;
 
-            il.Emit(OpCodes.Ldc_I4, refNullableCount);
-            il.Emit(OpCodes.Newarr, typeof(bool));
-            il.Emit(OpCodes.Stloc, localIndex);
+            il.EmitConstantInt(refNullableCount);
+            il.EmitNewArray<bool>();
+            il.EmitSetLocalVariable(local);
 
             // Emit checks for whether or not the nullable has a value
-            for (int i = 0; i < refNullableCount; ++i)
+            for (var i = 0; i < refNullableCount; ++i)
             {
-                il.Emit(OpCodes.Ldloc, localIndex);
-                il.Emit(OpCodes.Ldc_I4, i);
+                il.EmitLoadLocalVariable(local);
+                il.EmitConstantInt(i);
                 EmitNullableGetHasValue(il, refNullableParameters[i]);
 
-                il.Emit(OpCodes.Stelem_I1);
+                il.EmitSetArrayElement<bool>();
             }
 
-            return localIndex;
+            return local;
         }
 
         private static void EmitDefaultSwitchCase([NotNull] ILGenerator methodIL, Label defaultCase)
         {
             // Generate default case
             methodIL.MarkLabel(defaultCase);
-            methodIL.Emit(OpCodes.Ldstr, "index");
-            methodIL.Emit(OpCodes.Ldstr, "No method permutation known for that index.");
+            methodIL.EmitConstantString("index");
+
+            methodIL.EmitConstantString("No method permutation known for that index.");
 
             var exceptionConstructor = typeof(ArgumentOutOfRangeException).GetConstructor
             (
                 new[] { typeof(string), typeof(string) }
             );
 
-            methodIL.Emit(OpCodes.Newobj, exceptionConstructor);
-            methodIL.Emit(OpCodes.Throw);
+            methodIL.EmitNewObject(exceptionConstructor);
+            methodIL.EmitThrow();
         }
 
         /// <summary>
@@ -372,14 +365,14 @@ namespace AdvancedDLSupport.ImplementationGenerators
         [SuppressMessage("ReSharper", "PossibleNullReferenceException", Justification = "Known at compile time.")]
         private static void EmitNullableGetHasValue([NotNull] ILGenerator methodIL, (int Index, Type Type) parameter)
         {
-            methodIL.Emit(OpCodes.Ldarg, parameter.Index);
+            methodIL.EmitLoadArgument((short)parameter.Index);
 
             var getHasValueMethod = parameter.Type
                 .GetElementType()
                 .GetProperty(nameof(Nullable<int>.HasValue))
                 .GetGetMethod();
 
-            methodIL.Emit(OpCodes.Call, getHasValueMethod);
+            methodIL.EmitCallDirect(getHasValueMethod);
         }
     }
 }

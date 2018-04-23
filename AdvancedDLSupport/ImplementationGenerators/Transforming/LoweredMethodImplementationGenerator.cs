@@ -26,6 +26,7 @@ using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
+using StrictEmit;
 using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 using static System.Reflection.MethodAttributes;
 
@@ -142,8 +143,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var loweredParameterTypes = loweredMethod.ParameterTypes;
 
             // Emit lowered parameters
-            il.Emit(OpCodes.Ldarg_0);
-            for (var i = 1; i <= parameterTypes.Count; ++i)
+            il.EmitLoadArgument(0);
+            for (short i = 1; i <= parameterTypes.Count; ++i)
             {
                 var parameterType = parameterTypes[i - 1];
                 var parameterNeedsLowering = _transformerRepository.HasApplicableTransformer(parameterType, Options);
@@ -154,12 +155,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 }
                 else
                 {
-                    il.Emit(OpCodes.Ldarg, i);
+                    il.EmitLoadArgument(i);
                 }
             }
 
             // Call lowered method
-            il.Emit(OpCodes.Call, loweredMethod.GetWrappedMember());
+            il.EmitCallDirect(loweredMethod.GetWrappedMember());
 
             // Emit return value raising
             var returnType = definition.ReturnType;
@@ -169,7 +170,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 EmitValueRaising(il, definition.ReturnType, loweredMethod.ReturnType);
             }
 
-            il.Emit(OpCodes.Ret);
+            il.EmitReturn();
         }
 
         /// <summary>
@@ -185,7 +186,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             [NotNull] ILGenerator il,
             [NotNull] Type complexType,
             [NotNull] Type simpleType,
-            int argumentIndex
+            short argumentIndex
         )
         {
             var transformerType = typeof(ITypeTransformer<,>).MakeGenericType(complexType, simpleType);
@@ -193,10 +194,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             EmitGetTypeTransformerCall(il, complexType);
 
-            il.Emit(OpCodes.Ldarg, argumentIndex); // Load the complex argument
+            il.EmitLoadArgument(argumentIndex);
             il.EmitGetCurrentMethodArgumentByIndex(argumentIndex); // Load the relevant parameter
 
-            il.Emit(OpCodes.Callvirt, lowerValueFunc); // Lower it
+            il.EmitCallVirtual(lowerValueFunc);
         }
 
         /// <summary>
@@ -220,15 +221,15 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var transformerType = typeof(ITypeTransformer<,>).MakeGenericType(complexType, simpleType);
             var raiseValueFunc = transformerType.GetMethod(nameof(ITypeTransformer<object, object>.RaiseValue));
 
-            il.DeclareLocal(simpleType);
-            il.Emit(OpCodes.Stloc_0); // Store the current value on the stack
+            var local = il.DeclareLocal(simpleType);
+            il.EmitSetLocalVariable(local);
 
             EmitGetTypeTransformerCall(il, complexType);
 
-            il.Emit(OpCodes.Ldloc_0); // Load the result again
+            il.EmitLoadLocalVariable(local);
             il.EmitGetCurrentMethodArgumentByIndex(argumentIndex);
 
-            il.Emit(OpCodes.Callvirt, raiseValueFunc); // Raise it
+            il.EmitCallVirtual(raiseValueFunc);
         }
 
         /// <summary>
@@ -246,13 +247,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 BindingFlags.NonPublic | BindingFlags.Instance
             );
 
-            il.Emit(OpCodes.Ldarg_0);
+            il.EmitLoadArgument(0);
 
             // ReSharper disable once PossibleNullReferenceException
-            il.Emit(OpCodes.Call, repoProperty.GetMethod); // Get the type transformer repository
+            il.EmitCallDirect(repoProperty.GetMethod);
 
             il.EmitTypeOf(complexType);
-            il.Emit(OpCodes.Callvirt, getTransformerFunc); // Get the relevant type transformer
+            il.EmitCallVirtual(getTransformerFunc);
         }
 
         /// <summary>

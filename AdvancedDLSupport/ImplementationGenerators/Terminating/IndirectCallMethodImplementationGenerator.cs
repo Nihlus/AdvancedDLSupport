@@ -182,7 +182,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 _calliOverload.Invoke(methodIL, new object[] { OpCodes.Calli, callingConvention, method.ReturnType, method.ParameterTypes.ToArray() });
             }
 
-            methodIL.Emit(OpCodes.Ret);
+            methodIL.EmitReturn();
         }
     }
 }

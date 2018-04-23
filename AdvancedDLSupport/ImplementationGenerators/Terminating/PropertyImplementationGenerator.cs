@@ -27,7 +27,7 @@ using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
-
+using StrictEmit;
 using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 using static AdvancedDLSupport.ImplementationOptions;
 using static System.Reflection.MethodAttributes;
@@ -124,8 +124,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 BindingFlags.NonPublic | BindingFlags.Instance
             );
 
-            TargetTypeConstructorIL.Emit(OpCodes.Ldarg_0);
-            TargetTypeConstructorIL.Emit(OpCodes.Ldarg_0);
+            TargetTypeConstructorIL.EmitLoadArgument(0);
+            TargetTypeConstructorIL.EmitLoadArgument(0);
 
             if (Options.HasFlagFast(UseLazyBinding))
             {
@@ -134,11 +134,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
             }
             else
             {
-                TargetTypeConstructorIL.Emit(OpCodes.Ldstr, symbolName);
-                TargetTypeConstructorIL.EmitCall(OpCodes.Call, loadSymbolMethod, null);
+                TargetTypeConstructorIL.EmitConstantString(symbolName);
+                TargetTypeConstructorIL.EmitCallDirect(loadSymbolMethod);
             }
 
-            TargetTypeConstructorIL.Emit(OpCodes.Stfld, propertyFieldBuilder);
+            TargetTypeConstructorIL.EmitSetField(propertyFieldBuilder);
         }
 
         private void GeneratePropertySetter
@@ -203,27 +203,21 @@ namespace AdvancedDLSupport.ImplementationGenerators
                         m.Name == "op_Explicit"
                 );
 
-                GenerateSymbolPush(setterIL, propertyFieldBuilder); // Push Symbol address to stack
-                setterIL.Emit(OpCodes.Ldc_I4, 0); // Push 0 offset to stack
+                GenerateSymbolPush(setterIL, propertyFieldBuilder);
+                setterIL.EmitConstantInt(0);
 
-                setterIL.Emit(OpCodes.Ldarg_1); // Push value to stack
-                setterIL.EmitCall(OpCodes.Call, explicitConvertToIntPtrFunc, null); // Explicit Convert Pointer to IntPtr object
+                setterIL.EmitLoadArgument(1);
+                setterIL.EmitCallDirect(explicitConvertToIntPtrFunc);
             }
             else
             {
-                setterIL.Emit(OpCodes.Ldarg_1);
+                setterIL.EmitLoadArgument(1);
                 GenerateSymbolPush(setterIL, propertyFieldBuilder);
-                setterIL.Emit(OpCodes.Ldc_I4, 0); // false for deleting structure that is already stored in pointer
+                setterIL.EmitConstantInt(0);
             }
 
-            setterIL.EmitCall
-            (
-                OpCodes.Call,
-                underlyingMethod,
-                null
-            );
-
-            setterIL.Emit(OpCodes.Ret);
+            setterIL.EmitCallDirect(underlyingMethod);
+            setterIL.EmitReturn();
 
             propertyBuilder.SetSetMethod(setterMethod);
             TargetType.DefineMethodOverride(setterMethod, actualSetMethod);
@@ -285,14 +279,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             GenerateSymbolPush(getterIL, propertyFieldBuilder);
 
-            getterIL.EmitCall
-            (
-                OpCodes.Call,
-                underlyingMethod,
-                null
-            );
-
-            getterIL.Emit(OpCodes.Ret);
+            getterIL.EmitCallDirect(underlyingMethod);
+            getterIL.EmitReturn();
 
             propertyBuilder.SetGetMethod(getterMethod);
             TargetType.DefineMethodOverride(getterMethod, actualGetMethod);
@@ -307,8 +295,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             var throwMethod = typeof(NativeLibraryBase).GetMethod("ThrowIfDisposed", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Call, throwMethod);
+            il.EmitLoadArgument(0);
+            il.EmitCallDirect(throwMethod);
         }
     }
 }

@@ -165,13 +165,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             GenerateSymbolPush(methodIL, delegateField);
 
-            for (int p = 1; p <= method.ParameterTypes.Count; p++)
+            for (short p = 1; p <= method.ParameterTypes.Count; p++)
             {
-                methodIL.Emit(OpCodes.Ldarg, p);
+                methodIL.EmitLoadArgument(p);
             }
 
-            methodIL.EmitCall(OpCodes.Call, delegateBuilderType.GetMethod("Invoke"), null);
-            methodIL.Emit(OpCodes.Ret);
+            methodIL.EmitCallDirect(delegateBuilderType.GetMethod("Invoke"));
+            methodIL.EmitReturn();
         }
 
         /// <summary>
