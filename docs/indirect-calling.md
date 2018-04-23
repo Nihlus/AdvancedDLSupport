@@ -109,6 +109,13 @@ Windows platform.
 Under normal conditions, the default security policy on Windows is to run code under full trust, and `calli` will not be
 impacted.
 
+In addition, one of the main contributing factors to `calli`'s speed improvements is that it skips certain types of call
+marshalling that would normally be performed. As such, you may see unexpected results if you rely on them. However, 
+anything that ADL implements explicit support for will work fine under `calli`.
+
+In particular, ADL with `calli` supports nullable structs by value or by ref, string and boolean marshalling with 
+`[MarshalAs]`, and normal structs by value and by ref.
+
 Furthermore, when running under 32-bit .NET Core on Windows, `calli` is restricted to the `__fastcall` calling 
 convention, and will ignore any hints to the contrary. This calling convention limitation is present on all .NET Core
 platforms, but is only relevant on x86. Calling conventions are, by design, ignored on other platforms in native code.
