@@ -25,7 +25,6 @@ using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.ImplementationGenerators;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
-using Mono.DllMap.Extensions;
 using static System.Reflection.MethodAttributes;
 
 namespace AdvancedDLSupport.Pipeline
@@ -33,19 +32,24 @@ namespace AdvancedDLSupport.Pipeline
     /// <summary>
     /// Represents a pipeline which consumes definitions, and processes them to generate a dynamic type.
     /// </summary>
+    [PublicAPI]
     public class ImplementationPipeline
     {
+        [NotNull]
+        private readonly ModuleBuilder _targetModule;
+
+        [NotNull]
         private readonly TypeBuilder _targetType;
+
+        [NotNull]
+        private readonly ILGenerator _constructorIL;
+
         private readonly ImplementationOptions _options;
         private readonly TypeTransformerRepository _transformerRepository;
+        private readonly ImplementationGeneratorSorter _generatorSorter;
 
-        private readonly RefPermutationImplementationGenerator _refPermutationGenerator;
-        private readonly LoweredMethodImplementationGenerator _loweredMethodGenerator;
-
-        private readonly DelegateMethodImplementationGenerator _delegateMethodGenerator;
-        private readonly IndirectCallMethodImplementationGenerator _indirectCallMethodGenerator;
-
-        private readonly PropertyImplementationGenerator _propertyGenerator;
+        private IReadOnlyList<IImplementationGenerator<IntrospectiveMethodInfo>> _methodGeneratorPipeline;
+        private IReadOnlyList<IImplementationGenerator<IntrospectivePropertyInfo>> _propertyGeneratorPipeline;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImplementationPipeline"/> class.
@@ -64,49 +68,108 @@ namespace AdvancedDLSupport.Pipeline
             [NotNull] TypeTransformerRepository transformerRepository
         )
         {
+            _targetModule = targetModule;
             _targetType = targetType;
+            _constructorIL = constructorIL;
             _options = options;
             _transformerRepository = transformerRepository;
 
-            _refPermutationGenerator = new RefPermutationImplementationGenerator
+            _generatorSorter = new ImplementationGeneratorSorter();
+
+            _methodGeneratorPipeline = _generatorSorter.SortGenerators(GetBaselineMethodGenerators()).ToList();
+            _propertyGeneratorPipeline = _generatorSorter.SortGenerators(GetBaselinePropertyGenerators()).ToList();
+        }
+
+        /// <summary>
+        /// Injects a set of method implementation generation stages into the pipeline.
+        /// </summary>
+        /// <param name="stages">The stages to inject.</param>
+        [PublicAPI]
+        public void InjectMethodStages([NotNull] params IImplementationGenerator<IntrospectiveMethodInfo>[] stages)
+        {
+            _methodGeneratorPipeline = _generatorSorter.SortGenerators(GetBaselineMethodGenerators().Concat(stages)).ToList();
+        }
+
+        /// <summary>
+        /// Gets the baseline set of method implementation generators.
+        /// </summary>
+        /// <returns>The baseline set.</returns>
+        [NotNull, ItemNotNull, Pure]
+        private IEnumerable<IImplementationGenerator<IntrospectiveMethodInfo>> GetBaselineMethodGenerators()
+        {
+            yield return new RefPermutationImplementationGenerator
             (
-                targetModule,
+                _targetModule,
                 _targetType,
-                constructorIL,
+                _constructorIL,
                 _options,
                 _transformerRepository
             );
 
-            _loweredMethodGenerator = new LoweredMethodImplementationGenerator
+            yield return new LoweredMethodImplementationGenerator
             (
-                targetModule,
+                _targetModule,
                 _targetType,
-                constructorIL,
+                _constructorIL,
                 _options,
                 _transformerRepository
             );
 
-            _delegateMethodGenerator = new DelegateMethodImplementationGenerator
+            yield return new DelegateMethodImplementationGenerator
             (
-                targetModule,
+                _targetModule,
                 _targetType,
-                constructorIL,
+                _constructorIL,
                 _options
             );
 
-            _indirectCallMethodGenerator = new IndirectCallMethodImplementationGenerator
+            yield return new IndirectCallMethodImplementationGenerator
             (
-                targetModule,
+                _targetModule,
                 _targetType,
-                constructorIL,
+                _constructorIL,
                 _options
             );
 
-            _propertyGenerator = new PropertyImplementationGenerator
+            yield return new BooleanMarshallingWrapper
             (
-                targetModule,
+                _targetModule,
                 _targetType,
-                constructorIL,
+                _constructorIL,
+                _options
+            );
+
+            yield return new DisposalCallWrapper
+            (
+                _targetModule,
+                _targetType,
+                _constructorIL,
+                _options
+            );
+        }
+
+        /// <summary>
+        /// Injects a set of property implementation stages into the pipeline.
+        /// </summary>
+        /// <param name="stages">The stages to inject.</param>
+        [PublicAPI]
+        public void InjectPropertyStage([NotNull] params IImplementationGenerator<IntrospectivePropertyInfo>[] stages)
+        {
+            _propertyGeneratorPipeline = _generatorSorter.SortGenerators(GetBaselinePropertyGenerators().Concat(stages)).ToList();
+        }
+
+        /// <summary>
+        /// Gets the baseline set of property implementation generators.
+        /// </summary>
+        /// <returns>The baseline set.</returns>
+        [NotNull, ItemNotNull, Pure]
+        private IEnumerable<IImplementationGenerator<IntrospectivePropertyInfo>> GetBaselinePropertyGenerators()
+        {
+            yield return new PropertyImplementationGenerator
+            (
+                _targetModule,
+                _targetType,
+                _constructorIL,
                 _options
             );
         }
@@ -117,7 +180,7 @@ namespace AdvancedDLSupport.Pipeline
         /// <param name="interfaceDefinition">The interface definition to base it on.</param>
         /// <returns>An introspective method info for the definition.</returns>
         [NotNull]
-        public IntrospectiveMethodInfo GenerateDefinitionFromSignature([NotNull] IntrospectiveMethodInfo interfaceDefinition)
+        internal IntrospectiveMethodInfo GenerateDefinitionFromSignature([NotNull] IntrospectiveMethodInfo interfaceDefinition)
         {
             var methodBuilder = _targetType.DefineMethod
             (
@@ -139,69 +202,57 @@ namespace AdvancedDLSupport.Pipeline
         /// Consumes a set of method definitions, passing them through the pipeline.
         /// </summary>
         /// <param name="methods">The definitions.</param>
+        [PublicAPI]
         public void ConsumeMethodDefinitions([NotNull, ItemNotNull] IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> methods)
         {
-            // Add the initial pool of methods
-            var definitionQueue = new Queue<PipelineWorkUnit<IntrospectiveMethodInfo>>(methods);
-
-            while (definitionQueue.Any())
-            {
-                var workUnit = definitionQueue.Dequeue();
-                var method = workUnit.Definition;
-
-                IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> generatedDefinitions;
-
-                if (method.RequiresRefPermutations())
-                {
-                    generatedDefinitions = _refPermutationGenerator.GenerateImplementation(workUnit);
-                }
-                else
-                {
-                    var requiresLowering =
-                        _transformerRepository.HasApplicableTransformer(method.ReturnType, _options) ||
-                        method.ParameterTypes.Any(pt => _transformerRepository.HasApplicableTransformer(pt, _options));
-
-                    if (requiresLowering)
-                    {
-                        generatedDefinitions = _loweredMethodGenerator.GenerateImplementation(workUnit);
-                    }
-                    else if (_options.HasFlagFast(ImplementationOptions.UseIndirectCalls))
-                    {
-                        // This is a terminating processing branch - no new definitions should be generated.
-                        generatedDefinitions = _indirectCallMethodGenerator.GenerateImplementation(workUnit);
-                    }
-                    else
-                    {
-                        // This is a terminating processing branch - no new definitions should be generated.
-                        generatedDefinitions = _delegateMethodGenerator.GenerateImplementation(workUnit);
-                    }
-                }
-
-                foreach (var generatedDefinition in generatedDefinitions)
-                {
-                    definitionQueue.Enqueue(generatedDefinition);
-                }
-            }
+            ConsumeDefinitions(methods, _methodGeneratorPipeline);
         }
 
         /// <summary>
         /// Consumes a set of property definitions, passing them through the pipeline.
         /// </summary>
         /// <param name="properties">The properties.</param>
+        [PublicAPI]
         public void ConsumePropertyDefinitions([NotNull] IEnumerable<PipelineWorkUnit<IntrospectivePropertyInfo>> properties)
         {
-            var definitionQueue = new Queue<PipelineWorkUnit<IntrospectivePropertyInfo>>(properties);
+            ConsumeDefinitions(properties, _propertyGeneratorPipeline);
+        }
+
+        /// <summary>
+        /// Consumes a set of definitions, passing them through the given pipeline. Each stage is guaranteed to run only
+        /// once for any given branch of the input definitions. The generation process follows a recursive depth-first
+        /// reductive algorithm.
+        /// </summary>
+        /// <param name="definitions">The definitions to process.</param>
+        /// <param name="pipeline">A sorted list of generators, acting as the process pipeline</param>
+        /// <typeparam name="T">The type of definition to process.</typeparam>
+        private void ConsumeDefinitions<T>
+        (
+            [NotNull] IEnumerable<PipelineWorkUnit<T>> definitions,
+            [NotNull] IReadOnlyList<IImplementationGenerator<T>> pipeline
+        )
+            where T : MemberInfo
+        {
+            var definitionQueue = new Queue<PipelineWorkUnit<T>>(definitions);
 
             while (definitionQueue.Any())
             {
                 var workUnit = definitionQueue.Dequeue();
+                var definition = workUnit.Definition;
 
-                var generatedDefinitions = _propertyGenerator.GenerateImplementation(workUnit);
+                // Find the entry stage of the pipeline
+                var stage = pipeline.First(s => s.IsApplicable(definition));
 
-                foreach (var generatedDefinition in generatedDefinitions)
+                // Process the definitions through the stage
+                var generatedDefinitions = stage.GenerateImplementation(workUnit).ToList();
+
+                if (!generatedDefinitions.Any())
                 {
-                    definitionQueue.Enqueue(generatedDefinition);
+                    continue;
                 }
+
+                // Run the new definitions through the remaining stages of the pipeline
+                ConsumeDefinitions(generatedDefinitions, pipeline.Except(new[] { stage }).ToList());
             }
         }
     }

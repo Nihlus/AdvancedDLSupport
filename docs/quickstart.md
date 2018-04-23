@@ -31,7 +31,7 @@ another approach.
 
 Instead, we declare a matching C# interface.
 
-```cs
+```c#
 public interface IMath
 {
     int TimesUsed { get; }
@@ -44,7 +44,7 @@ public interface IMath
 Using this interface, we can then initialize a generated type which implements our interface, and allows us to use the 
 native library.
 
-```cs
+```c#
 using (var mathLibrary = NativeLibraryBuilder.Default.ActivateInterface<IMath>(LibraryName))
 {
     int mySubtraction = mathLibrary.Subtract(10, 5);

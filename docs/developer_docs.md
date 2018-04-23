@@ -24,7 +24,7 @@ int32_t Add(int32_t a, int32_t b)
 ```
 
 Assume we have the complementary interface code in C#:
-```cs
+```c#
 public interface IMyLibrary
 {
 	int Add(int a, int b);
@@ -33,7 +33,7 @@ public interface IMyLibrary
 
 The final code would be produced by Advance DL Support as an anonymous instance for interface above:
 
-```cs
+```c#
 public class AnonymousClass : NativeLibraryBase, IMyLibrary 
 {
 	public delegate int Add_dt(int a, int b);

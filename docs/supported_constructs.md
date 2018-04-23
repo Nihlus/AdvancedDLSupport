@@ -13,7 +13,7 @@ Functions can be marshalled into methods on the interface. Virtually any configu
 int32_t MyFunction(int32_t a, int32_t b);
 ```
 `C#`
-```cs
+```c#
 public interface IMyLibrary
 {
     int MyFunction(int a, int b);
@@ -32,7 +32,7 @@ int32_t MyStructPointerFunc(MyStruct* struc, int multiplier);
 int32_t MyStructFunc(MyStruct struc, int multiplier);
 ```
 `C#`
-```cs
+```c#
 public struct MyStruct
 {
     int A;
@@ -51,7 +51,7 @@ public interface IMyLibrary
 int32_t MyFunction(int32_t* a, int32_t b);
 ```
 `C#`
-```cs
+```c#
 public interface IMyLibrary
 {
     int MyFunction(ref int a, int b);
@@ -67,7 +67,7 @@ You can also bind to and access global variables. These are bound to properties.
 int32_t GlobalVariableA = 5;
 ```
 `C#`
-```cs
+```c#
 public interface IMyLibrary
 {
     int GlobalVariableA { get; set; }
@@ -80,7 +80,7 @@ public interface IMyLibrary
 int32_t* GlobalPointerVariable;
 ```
 `C#`
-```cs
+```c#
 public unsafe interface IMyLibrary
 {
     int* GlobalVariableA { get; set; }

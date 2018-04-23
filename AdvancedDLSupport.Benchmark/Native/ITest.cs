@@ -17,9 +17,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using AdvancedDLSupport.Benchmark.Data;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Benchmark
+namespace AdvancedDLSupport.Benchmark.Native
 {
     /// <summary>
     /// Represents an interface to a native library, providing <see cref="Matrix2"/> inversion math.

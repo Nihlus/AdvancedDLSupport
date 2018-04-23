@@ -25,8 +25,11 @@ using System.Reflection;
 using System.Reflection.Emit;
 using AdvancedDLSupport.Extensions;
 using JetBrains.Annotations;
+using Mono.DllMap.Extensions;
 using NLog;
 using StrictEmit;
+
+using static AdvancedDLSupport.ImplementationOptions;
 using static System.Reflection.MethodAttributes;
 
 namespace AdvancedDLSupport.AOT
@@ -186,7 +189,7 @@ namespace AdvancedDLSupport.AOT
                 combinationList.Add(explicitCombination);
             }
 
-            var persistentAssemblyProvider = new PersistentDynamicAssemblyProvider(outputPath, true);
+            var persistentAssemblyProvider = new PersistentDynamicAssemblyProvider(outputPath, !_options.HasFlagFast(EnableOptimizations));
             // And build the types
             var generatedTypeDictionary = new Dictionary<GeneratedImplementationTypeIdentifier, Type>();
 

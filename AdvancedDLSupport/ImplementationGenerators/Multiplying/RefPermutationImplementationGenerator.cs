@@ -29,6 +29,8 @@ using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
+
+using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 using static System.Reflection.MethodAttributes;
 
 namespace AdvancedDLSupport.ImplementationGenerators
@@ -39,10 +41,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// </summary>
     internal sealed class RefPermutationImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
-        private readonly PermutationGenerator _permutationGenerator;
+        /// <inheritdoc/>
+        public override GeneratorComplexity Complexity => MemberDependent | TransformsParameters;
 
-        private readonly DelegateMethodImplementationGenerator _delegateMethodGenerator;
-        private readonly LoweredMethodImplementationGenerator _loweredMethodGenerator;
+        private readonly PermutationGenerator _permutationGenerator;
 
         [NotNull]
         private readonly TypeTransformerRepository _transformerRepository;
@@ -68,9 +70,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
             _permutationGenerator = new PermutationGenerator();
 
             _transformerRepository = transformerRepository;
+        }
 
-            _delegateMethodGenerator = new DelegateMethodImplementationGenerator(targetModule, targetType, targetTypeConstructorIL, options);
-            _loweredMethodGenerator = new LoweredMethodImplementationGenerator(targetModule, targetType, targetTypeConstructorIL, options, transformerRepository);
+        /// <inheritdoc/>
+        public override bool IsApplicable(IntrospectiveMethodInfo member)
+        {
+            return member.ParameterTypes.Any(p => p.IsRefNullable());
         }
 
         /// <inheritdoc />

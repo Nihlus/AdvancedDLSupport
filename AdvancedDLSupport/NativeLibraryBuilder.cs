@@ -89,7 +89,7 @@ namespace AdvancedDLSupport
 
             Default = new NativeLibraryBuilder
             (
-                GenerateDisposalChecks | EnableDllMapSupport
+                GenerateDisposalChecks | EnableDllMapSupport | EnableOptimizations
             );
         }
 
@@ -107,11 +107,7 @@ namespace AdvancedDLSupport
             [CanBeNull] IDynamicAssemblyProvider assemblyProvider = default
         )
         {
-            #if DEBUG
-            _assemblyProvider = assemblyProvider ?? new TransientDynamicAssemblyProvider(DynamicAssemblyName, true);
-            #else
-            _assemblyProvider = assemblyProvider ?? new TransientDynamicAssemblyProvider(DynamicAssemblyName, false);
-            #endif
+            _assemblyProvider = assemblyProvider ?? new TransientDynamicAssemblyProvider(DynamicAssemblyName, !options.HasFlagFast(EnableOptimizations));
 
             _moduleBuilder = _assemblyProvider.GetDynamicModule();
 
@@ -153,6 +149,8 @@ namespace AdvancedDLSupport
                 var typeDictionaryProperty = metadataType.GetProperty(nameof(IAOTMetadata.GeneratedTypes));
 
                 var metadataInstance = Activator.CreateInstance(metadataType);
+
+                // ReSharper disable once PossibleNullReferenceException
                 var typeDictionary = (IReadOnlyDictionary<GeneratedImplementationTypeIdentifier, Type>)typeDictionaryProperty.GetValue(metadataInstance);
 
                 foreach (var generatedType in typeDictionary)
@@ -348,6 +346,7 @@ namespace AdvancedDLSupport
         /// Thrown if the specified library can't be found in any of the loader paths.
         /// </exception>
         /// <returns>A key-value tuple of the generated type identifier and the type.</returns>
+        [NotNull]
         internal Tuple<GeneratedImplementationTypeIdentifier, Type> PregenerateImplementationType
         (
             [NotNull] Type classType,
@@ -548,7 +547,6 @@ namespace AdvancedDLSupport
             (
                 finalType,
                 library,
-                typeof(TInterface),
                 options,
                 transformerRepository
             );

@@ -50,6 +50,12 @@ namespace AdvancedDLSupport
         /// Enables use of the `calli` opcode.
         /// </summary>
         [PublicAPI]
-        UseIndirectCalls = 1 << 3
+        UseIndirectCalls = 1 << 3,
+
+        /// <summary>
+        /// Enables code optimizations for the generated assembly.
+        /// </summary>
+        [PublicAPI]
+        EnableOptimizations = 1 << 4
     }
 }

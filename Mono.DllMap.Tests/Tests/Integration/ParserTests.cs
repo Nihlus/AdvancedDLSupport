@@ -1,8 +1,29 @@
-﻿using System.IO;
+﻿//
+//  ParserTests.cs
+//
+//  Copyright (c) 2018 Firwood Software
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+using System.IO;
 using System.Linq;
 using Mono.DllMap.Extensions;
 using Xunit;
 using static Mono.DllMap.DllMapOS;
+
+#pragma warning disable SA1600, CS1591
 
 namespace Mono.DllMap.Tests.Integration
 {
@@ -37,7 +58,7 @@ namespace Mono.DllMap.Tests.Integration
             public void CanParseXmlString()
             {
                 var text = File.ReadAllText(Path.Combine("Data", "DllMap.config.xml"));
-                var _ = DllConfiguration.Parse(text);
+                _ = DllConfiguration.Parse(text);
             }
 
             [Fact]
@@ -45,7 +66,7 @@ namespace Mono.DllMap.Tests.Integration
             {
                 using (var fs = File.OpenRead(Path.Combine("Data", "DllMap.config.xml")))
                 {
-                    var _ = DllConfiguration.Parse(fs);
+                    _ = DllConfiguration.Parse(fs);
                 }
             }
 
@@ -54,7 +75,7 @@ namespace Mono.DllMap.Tests.Integration
             {
                 using (var fs = File.OpenText(Path.Combine("Data", "DllMap.config.xml")))
                 {
-                    var _ = DllConfiguration.Parse(fs);
+                    _ = DllConfiguration.Parse(fs);
                 }
             }
 

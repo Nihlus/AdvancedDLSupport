@@ -4,7 +4,7 @@ Advanced Configuration
 AdvancedDLSupport supports some alternate generation options for more advanced use cases. These are enabled by passing 
 an `ImplementationOptions` flag set to the `AnonymousImplementationBuilder`.
 
-```cs
+```c#
 var config = ImplementationOptions.UseLazyBinding | ImplementationOptions.GenerateDisposalChecks;
 var library = new NativeLibraryBuilder(config).ActivateInterface<IMyLibrary>(LibraryName);
 ```
@@ -34,6 +34,10 @@ yet. Library remapping via `dllmap` works just fine, though.
 ### Indirect calls
 If `ImplementationOptions::UseIndirectCalls` is enabled, the far more performant `calli` opcode will be used instead of 
 generating delegates under the hood. This warrants some more detailed information, which is available [here][2].
+
+### Code optimizations
+If `ImplementationOptions::EnableOptimizations` is enabled, the generated dynamic assembly is marked as eligible for 
+JIT code optimizations. This is enabled by default, but may produce unexpected results.
 
 ### Path Resolvers
 You can override the algorithms used to resolve the path to the library that DLSupport will load by passing an 

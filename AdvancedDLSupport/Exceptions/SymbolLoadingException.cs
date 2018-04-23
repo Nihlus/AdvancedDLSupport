@@ -103,7 +103,7 @@ namespace AdvancedDLSupport
 
         /// <inheritdoc />
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-        public override void GetObjectData([NotNull] SerializationInfo info, StreamingContext context)
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue(nameof(SymbolName), SymbolName);
             base.GetObjectData(info, context);

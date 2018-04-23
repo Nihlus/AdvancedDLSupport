@@ -23,17 +23,15 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
-
-using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
 using StrictEmit;
+
+using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 using static AdvancedDLSupport.ImplementationOptions;
 using static System.Reflection.CallingConventions;
-using static System.Reflection.MethodAttributes;
-using static System.Reflection.MethodImplAttributes;
 
 // ReSharper disable BitwiseOperatorOnEnumWithoutFlags
 namespace AdvancedDLSupport.ImplementationGenerators
@@ -43,6 +41,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// </summary>
     internal sealed class IndirectCallMethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
+        /// <inheritdoc/>
+        public override GeneratorComplexity Complexity => OptionDependent | Terminating;
+
         [CanBeNull]
         private readonly MethodInfo _calliOverload;
 
@@ -67,6 +68,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 nameof(ILGenerator.EmitCalli),
                 new[] { typeof(OpCode), typeof(CallingConvention), typeof(Type), typeof(Type[]) }
             );
+        }
+
+        /// <inheritdoc/>
+        public override bool IsApplicable(IntrospectiveMethodInfo member)
+        {
+            return Options.HasFlagFast(UseIndirectCalls);
         }
 
         /// <inheritdoc />
@@ -94,7 +101,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             );
 
             AugmentHostingTypeConstructorWithNativeInitialization(workUnit.SymbolName, backingFieldType, backingField);
-            GenerateNativeInvokerBody(definition, metadataAttribute.CallingConvention, backingFieldType, backingField);
+            GenerateNativeInvokerBody(definition, metadataAttribute.CallingConvention, backingField);
 
             yield break;
         }
@@ -140,13 +147,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="method">The method to generate the body for.</param>
         /// <param name="callingConvention">The unmanaged calling convention to use.</param>
-        /// <param name="backingFieldType">The type of the backing field.</param>
         /// <param name="backingField">The backing field.</param>
         private void GenerateNativeInvokerBody
         (
             [NotNull] IntrospectiveMethodInfo method,
             CallingConvention callingConvention,
-            [NotNull] Type backingFieldType,
             [NotNull] FieldInfo backingField
         )
         {
@@ -157,11 +162,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             // Let's create a method that simply invoke the delegate
             var methodIL = builder.GetILGenerator();
-
-            if (Options.HasFlagFast(GenerateDisposalChecks))
-            {
-                EmitDisposalCheck(methodIL);
-            }
 
             for (short p = 1; p <= method.ParameterTypes.Count; p++)
             {

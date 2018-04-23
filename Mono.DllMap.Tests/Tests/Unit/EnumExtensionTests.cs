@@ -1,8 +1,29 @@
-﻿using System;
+﻿//
+//  EnumExtensionTests.cs
+//
+//  Copyright (c) 2018 Firwood Software
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+using System;
 using System.Linq;
 using Mono.DllMap.Extensions;
 using Mono.DllMap.Tests.Data;
 using Xunit;
+
+#pragma warning disable SA1600, CS1591
 
 namespace Mono.DllMap.Tests.Unit
 {
@@ -33,11 +54,11 @@ namespace Mono.DllMap.Tests.Unit
                 Assert.Throws<ArgumentException>
                 (
                     () =>
-                        new int().HasFlagFast(new int())
+                        default(int).HasFlagFast(default(int))
                 );
             }
 
-             [Fact]
+            [Fact]
             public void ThrowsIfTypeArgumentIsNotAFlagsEnum()
             {
                 Assert.Throws<ArgumentException>
@@ -72,7 +93,7 @@ namespace Mono.DllMap.Tests.Unit
                 Assert.Throws<ArgumentException>
                 (
                     () =>
-                        new int().HasFlagsFast(new int(), new int())
+                        default(int).HasFlagsFast(default(int), default(int))
                 );
             }
 
@@ -111,7 +132,7 @@ namespace Mono.DllMap.Tests.Unit
                 Assert.Throws<ArgumentException>
                 (
                     () =>
-                        new int().HasAll()
+                        default(int).HasAll()
                 );
             }
 
@@ -144,7 +165,7 @@ namespace Mono.DllMap.Tests.Unit
                 Assert.Throws<ArgumentException>
                 (
                     () =>
-                        new int().GetFlags().ToList()
+                        default(int).GetFlags().ToList()
                 );
             }
 

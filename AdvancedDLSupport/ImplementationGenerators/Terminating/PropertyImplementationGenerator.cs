@@ -28,6 +28,7 @@ using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
 
+using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 using static AdvancedDLSupport.ImplementationOptions;
 using static System.Reflection.MethodAttributes;
 
@@ -38,6 +39,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// </summary>
     internal sealed class PropertyImplementationGenerator : ImplementationGeneratorBase<IntrospectivePropertyInfo>
     {
+        /// <inheritdoc/>
+        public override GeneratorComplexity Complexity => Terminating;
+
         private const MethodAttributes PropertyMethodAttributes =
             PrivateScope |
             Public |
@@ -62,6 +66,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
         )
             : base(targetModule, targetType, targetTypeConstructorIL, options)
         {
+        }
+
+        /// <inheritdoc/>
+        public override bool IsApplicable(IntrospectivePropertyInfo member)
+        {
+            return true;
         }
 
         /// <inheritdoc />
@@ -286,6 +296,19 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             propertyBuilder.SetGetMethod(getterMethod);
             TargetType.DefineMethodOverride(getterMethod, actualGetMethod);
+        }
+
+        /// <summary>
+        /// Emits a call to <see cref="NativeLibraryBase.ThrowIfDisposed"/>.
+        /// </summary>
+        /// <param name="il">The IL generator.</param>
+        [PublicAPI]
+        private void EmitDisposalCheck([NotNull] ILGenerator il)
+        {
+            var throwMethod = typeof(NativeLibraryBase).GetMethod("ThrowIfDisposed", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Call, throwMethod);
         }
     }
 }

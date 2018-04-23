@@ -67,7 +67,65 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
+  <member name="M:AdvancedDLSupport.ImplementationGenerators.BooleanMarshallingWrapper.#ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.Emit.TypeBuilder,System.Reflection.Emit.ILGenerator,AdvancedDLSupport.ImplementationOptions)">
+    <parameter name="targetModule">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="targetType">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="targetTypeConstructorIL">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.ImplementationGenerators.CallWrapperBase.#ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.Emit.TypeBuilder,System.Reflection.Emit.ILGenerator,AdvancedDLSupport.ImplementationOptions)">
+    <parameter name="targetModule">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="targetType">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="targetTypeConstructorIL">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.ImplementationGenerators.CallWrapperBase.GeneratePassthroughDefinition(AdvancedDLSupport.Pipeline.PipelineWorkUnit{AdvancedDLSupport.Reflection.IntrospectiveMethodInfo})">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    <parameter name="workUnit">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.ImplementationGenerators.DisposalCallWrapper.#ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.Emit.TypeBuilder,System.Reflection.Emit.ILGenerator,AdvancedDLSupport.ImplementationOptions)">
+    <parameter name="targetModule">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="targetType">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="targetTypeConstructorIL">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.ImplementationGenerators.ICallWrapper.EmitEpilogue(System.Reflection.Emit.ILGenerator,AdvancedDLSupport.Pipeline.PipelineWorkUnit{AdvancedDLSupport.Reflection.IntrospectiveMethodInfo})">
+    <parameter name="il">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="workUnit">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.ImplementationGenerators.ICallWrapper.EmitPrologue(System.Reflection.Emit.ILGenerator,AdvancedDLSupport.Pipeline.PipelineWorkUnit{AdvancedDLSupport.Reflection.IntrospectiveMethodInfo})">
+    <parameter name="il">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="workUnit">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
   <member name="T:AdvancedDLSupport.ImplementationGenerators.IImplementationGenerator`1">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="P:AdvancedDLSupport.ImplementationGenerators.IImplementationGenerator`1.Complexity">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:AdvancedDLSupport.ImplementationGenerators.IImplementationGenerator`1.GenerateImplementation(AdvancedDLSupport.Pipeline.PipelineWorkUnit{`0})">
@@ -75,6 +133,13 @@
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.ItemNotNullAttribute.#ctor" />
     <parameter name="workUnit">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.ImplementationGenerators.IImplementationGenerator`1.IsApplicable(`0)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+    <parameter name="member">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
@@ -96,12 +161,6 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.EmitDisposalCheck(System.Reflection.Emit.ILGenerator)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <parameter name="il">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
   <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateFunctionLoadingLambda(System.Type,System.String)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
@@ -111,9 +170,6 @@
     <parameter name="functionName">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateImplementation(AdvancedDLSupport.Pipeline.PipelineWorkUnit{`0})">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.GenerateLazyLoadedObject(System.Reflection.Emit.MethodBuilder,System.Type)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
@@ -159,6 +215,9 @@
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="F:AdvancedDLSupport.ImplementationOptions.EnableDllMapSupport">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="F:AdvancedDLSupport.ImplementationOptions.EnableOptimizations">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="F:AdvancedDLSupport.ImplementationOptions.GenerateDisposalChecks">
@@ -253,11 +312,6 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.LibraryLoadingException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-    <parameter name="info">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
   <member name="P:AdvancedDLSupport.LibraryLoadingException.LibraryName">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
@@ -321,12 +375,9 @@
   <member name="T:AdvancedDLSupport.NativeLibraryBase">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.NativeLibraryBase.#ctor(System.String,System.Type,AdvancedDLSupport.ImplementationOptions,AdvancedDLSupport.TypeTransformerRepository)">
+  <member name="M:AdvancedDLSupport.NativeLibraryBase.#ctor(System.String,AdvancedDLSupport.ImplementationOptions,AdvancedDLSupport.TypeTransformerRepository)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="path">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="interfaceType">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
     <parameter name="transformerRepository">
@@ -399,6 +450,9 @@
   <member name="P:AdvancedDLSupport.NativeSymbolAttribute.Entrypoint">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="T:AdvancedDLSupport.Pipeline.ImplementationPipeline">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
   <member name="M:AdvancedDLSupport.Pipeline.ImplementationPipeline.#ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.Emit.TypeBuilder,System.Reflection.Emit.ILGenerator,AdvancedDLSupport.ImplementationOptions,AdvancedDLSupport.TypeTransformerRepository)">
     <parameter name="targetModule">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
@@ -414,19 +468,27 @@
     </parameter>
   </member>
   <member name="M:AdvancedDLSupport.Pipeline.ImplementationPipeline.ConsumeMethodDefinitions(System.Collections.Generic.IEnumerable{AdvancedDLSupport.Pipeline.PipelineWorkUnit{AdvancedDLSupport.Reflection.IntrospectiveMethodInfo}})">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="methods">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
       <attribute ctor="M:JetBrains.Annotations.ItemNotNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="M:AdvancedDLSupport.Pipeline.ImplementationPipeline.ConsumePropertyDefinitions(System.Collections.Generic.IEnumerable{AdvancedDLSupport.Pipeline.PipelineWorkUnit{AdvancedDLSupport.Reflection.IntrospectivePropertyInfo}})">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="properties">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.Pipeline.ImplementationPipeline.GenerateDefinitionFromSignature(AdvancedDLSupport.Reflection.IntrospectiveMethodInfo)">
-    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    <parameter name="interfaceDefinition">
+  <member name="M:AdvancedDLSupport.Pipeline.ImplementationPipeline.InjectMethodStages(AdvancedDLSupport.ImplementationGenerators.IImplementationGenerator{AdvancedDLSupport.Reflection.IntrospectiveMethodInfo}[])">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <parameter name="stages">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.Pipeline.ImplementationPipeline.InjectPropertyStage(AdvancedDLSupport.ImplementationGenerators.IImplementationGenerator{AdvancedDLSupport.Reflection.IntrospectivePropertyInfo}[])">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <parameter name="stages">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
@@ -669,11 +731,6 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
     <parameter name="inner">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.SymbolLoadingException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-    <parameter name="info">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>

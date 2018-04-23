@@ -30,6 +30,9 @@ using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
 using StrictEmit;
+
+using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
+
 using static AdvancedDLSupport.ImplementationOptions;
 using static System.Reflection.CallingConventions;
 using static System.Reflection.MethodAttributes;
@@ -43,8 +46,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// </summary>
     internal sealed class DelegateMethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
-        [CanBeNull]
-        private readonly MethodInfo _calliOverload;
+        /// <inheritdoc/>
+        public override GeneratorComplexity Complexity => Terminating;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegateMethodImplementationGenerator"/> class.
@@ -62,11 +65,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
         )
             : base(targetModule, targetType, targetTypeConstructorIL, options)
         {
-            _calliOverload = typeof(ILGenerator).GetMethod
-            (
-                nameof(ILGenerator.EmitCalli),
-                new[] { typeof(OpCode), typeof(CallingConvention), typeof(Type), typeof(Type[]) }
-            );
+        }
+
+        /// <inheritdoc/>
+        public override bool IsApplicable(IntrospectiveMethodInfo member)
+        {
+            return true;
         }
 
         /// <inheritdoc />
@@ -158,11 +162,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             // Let's create a method that simply invoke the delegate
             var methodIL = builder.GetILGenerator();
-
-            if (Options.HasFlagFast(GenerateDisposalChecks))
-            {
-                EmitDisposalCheck(methodIL);
-            }
 
             GenerateSymbolPush(methodIL, delegateField);
 

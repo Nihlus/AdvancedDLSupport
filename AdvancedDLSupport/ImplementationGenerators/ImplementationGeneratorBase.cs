@@ -22,9 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.Pipeline;
-using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
 
@@ -43,6 +41,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <inheritdoc />
         [PublicAPI]
         public ImplementationOptions Options { get; }
+
+        /// <inheritdoc/>
+        public abstract GeneratorComplexity Complexity { get; }
 
         /// <summary>
         /// Gets the module in which the implementation should be generated.
@@ -84,22 +85,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
             Options = options;
         }
 
+        /// <inheritdoc/>
+        public abstract bool IsApplicable(T member);
+
         /// <inheritdoc />
-        [PublicAPI]
         public abstract IEnumerable<PipelineWorkUnit<T>> GenerateImplementation(PipelineWorkUnit<T> workUnit);
-
-        /// <summary>
-        /// Emits a call to <see cref="NativeLibraryBase.ThrowIfDisposed"/>.
-        /// </summary>
-        /// <param name="il">The IL generator.</param>
-        [PublicAPI]
-        protected void EmitDisposalCheck([NotNull] ILGenerator il)
-        {
-            var throwMethod = typeof(NativeLibraryBase).GetMethod("ThrowIfDisposed", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Call, throwMethod);
-        }
 
         /// <summary>
         /// Generates a lazy loaded field with the specified value factory.

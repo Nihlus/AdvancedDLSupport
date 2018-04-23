@@ -28,6 +28,7 @@ using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
 
+using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 using static AdvancedDLSupport.ImplementationOptions;
 using static System.Reflection.MethodAttributes;
 
@@ -38,6 +39,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// </summary>
     internal sealed class LoweredMethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
+        /// <inheritdoc/>
+        public override GeneratorComplexity Complexity => MemberDependent | TransformsParameters;
+
         [NotNull]
         private readonly TypeTransformerRepository _transformerRepository;
 
@@ -60,6 +64,16 @@ namespace AdvancedDLSupport.ImplementationGenerators
             : base(targetModule, targetType, targetTypeConstructorIL, options)
         {
             _transformerRepository = transformerRepository;
+        }
+
+        /// <inheritdoc/>
+        public override bool IsApplicable(IntrospectiveMethodInfo member)
+        {
+            var hasAnyApplicableTransformers =
+                _transformerRepository.HasApplicableTransformer(member.ReturnType, Options) ||
+                member.ParameterTypes.Any(pt => _transformerRepository.HasApplicableTransformer(pt, Options));
+
+            return hasAnyApplicableTransformers;
         }
 
         /// <inheritdoc />
@@ -126,11 +140,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
             }
 
             var il = builder.GetILGenerator();
-
-            if (Options.HasFlagFast(GenerateDisposalChecks))
-            {
-                EmitDisposalCheck(il);
-            }
 
             var parameterTypes = definition.ParameterTypes;
             var loweredParameterTypes = loweredMethod.ParameterTypes;

@@ -48,7 +48,7 @@ pa_usec_t pa_simple_get_latency(pa_simple *s, int *error);
 int pa_simple_flush(pa_simple *s, int *error);
 ```
 
-```cs
+```c#
 public interface IPulseSimple
 {
     IntPtr pa_simple_new
@@ -90,7 +90,7 @@ is also supported.
 
 When running under Mono, `LPTSTR` is handled as a unicode string.
 
-```cs
+```c#
 public interface IMyStringLibrary
 {
     string GetSomeString();

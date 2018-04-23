@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using AdvancedDLSupport.Reflection;
@@ -46,24 +47,46 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The builder to copy the attributes to.</param>
         /// <param name="source">The method to copy the attributes from.</param>
-        /// <param name="newReturnParameterType">The return type of the target method.</param>
-        /// <param name="newParameterTypes">The parameter types of the target method.</param>
+        /// <param name="newReturnParameterType">
+        /// The return type of the target method. Defaults to the source return type.
+        /// </param>
+        /// <param name="newParameterTypes">
+        /// The parameter types of the target method. Defaults to the source parameter types.
+        /// </param>
+        /// <param name="returnParameterAttributeFilter">
+        /// A filter predicate for the attributes being copied to the return parameter. If the predicate returns true,
+        /// the attribute is not copied.
+        /// </param>
+        /// <param name="parameterAttributeFilter">
+        /// A filter predicate for the attributes being copied to the method parameters. The predicate receives the
+        /// zero-based index of the parameter. If the predicate returns true, the attribute is not copied.
+        /// </param>
         public static void ApplyCustomAttributesFrom
         (
             [NotNull] this MethodBuilder @this,
             [NotNull] IntrospectiveMethodInfo source,
             [CanBeNull] Type newReturnParameterType = null,
-            [CanBeNull, ItemNotNull] IReadOnlyList<Type> newParameterTypes = null
+            [CanBeNull, ItemNotNull] IReadOnlyList<Type> newParameterTypes = null,
+            [CanBeNull] Func<CustomAttributeData, bool> returnParameterAttributeFilter = null,
+            [CanBeNull] Func<CustomAttributeData, int, bool> parameterAttributeFilter = null
         )
         {
             newReturnParameterType = newReturnParameterType ?? source.ReturnType;
             newParameterTypes = newParameterTypes ?? source.ParameterTypes;
+
+            returnParameterAttributeFilter = returnParameterAttributeFilter ?? (attribute => false);
+            parameterAttributeFilter = parameterAttributeFilter ?? ((attribute, parameterIndex) => false);
 
             // Pass through all applied attributes
             var returnValueBuilder = @this.DefineParameter(0, source.ReturnParameterAttributes, null);
             foreach (var attribute in source.ReturnParameterCustomAttributes)
             {
                 if (AttributeBlacklist.ContainsKey(newReturnParameterType) && AttributeBlacklist[newReturnParameterType].Contains(attribute.AttributeType))
+                {
+                    continue;
+                }
+
+                if (returnParameterAttributeFilter(attribute))
                 {
                     continue;
                 }
@@ -84,6 +107,11 @@ namespace AdvancedDLSupport.Extensions
                     foreach (var attribute in methodParameterCustomAttributes)
                     {
                         if (AttributeBlacklist.ContainsKey(targetParameterType) && AttributeBlacklist[targetParameterType].Contains(attribute.AttributeType))
+                        {
+                            continue;
+                        }
+
+                        if (parameterAttributeFilter(attribute, i))
                         {
                             continue;
                         }
