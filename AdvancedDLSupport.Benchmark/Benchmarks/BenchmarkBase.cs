@@ -63,7 +63,7 @@ namespace AdvancedDLSupport.Benchmark.Benchmarks
         [GlobalSetup]
         public void Setup()
         {
-            ADLLibrary = NativeLibraryBuilder.Default.ActivateInterface<ITest>(Program.LibraryName);
+            ADLLibrary = new NativeLibraryBuilder(GenerateDisposalChecks).ActivateInterface<ITest>(Program.LibraryName);
             ADLLibraryWithoutDisposeChecks = new NativeLibraryBuilder().ActivateInterface<ITest>(Program.LibraryName);
             ADLLibraryWithSuppressedSecurity = new NativeLibraryBuilder(SuppressSecurity).ActivateInterface<ITest>(Program.LibraryName);
             ADLLibraryWithCalli = new NativeLibraryBuilder(UseIndirectCalls).ActivateInterface<ITest>(Program.LibraryName);
