@@ -102,5 +102,16 @@ public interface IMyStringLibrary
 }
 ```
 
+You, the developer, can also decide who should clean up the unmanaged memory allocated for the string. By annotating a
+parameter or return value with the `CallerFree` attribute, ADL will automatically free the unmanaged memory for the 
+string that was allocated while marshalling.
+
+```c#
+[return: CallerFree]
+string GetStringAndFree();
+
+UIntPtr GetStringLengthAndFree([CallerFree] string value);
+```
+
 [1]: https://freedesktop.org/software/pulseaudio/doxygen/simple_8h_source.html
 [2]: http://mattwarren.org/2017/05/25/Lowering-in-the-C-Compiler
