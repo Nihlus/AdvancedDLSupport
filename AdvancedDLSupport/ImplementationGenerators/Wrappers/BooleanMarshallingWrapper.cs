@@ -98,7 +98,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 }
 
                 // Convert the input boolean to an unmanaged integer
-                var unmanagedType = GetParameterUnmanagedType(definition.ParameterCustomAttributes[i]);
+                var unmanagedType = GetParameterUnmanagedType(definition.ParameterCustomAttributes[i - 1]);
                 EmitBooleanToUnmanagedIntegerConversion(il, unmanagedType);
             }
         }

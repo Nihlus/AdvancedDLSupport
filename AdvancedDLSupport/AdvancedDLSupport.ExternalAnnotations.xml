@@ -9,6 +9,9 @@
   <member name="T:AdvancedDLSupport.AOT.AOTTypeAttribute">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="T:AdvancedDLSupport.CallerFreeAttribute">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
   <member name="T:AdvancedDLSupport.DynamicAssemblyProviders.IDynamicAssemblyProvider">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
@@ -210,6 +213,17 @@
   <member name="P:AdvancedDLSupport.ImplementationGenerators.ImplementationGeneratorBase`1.TargetTypeConstructorIL">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  <member name="M:AdvancedDLSupport.ImplementationGenerators.StringMarshallingWrapper.#ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.Emit.TypeBuilder,System.Reflection.Emit.ILGenerator,AdvancedDLSupport.ImplementationOptions)">
+    <parameter name="targetModule">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="targetType">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="targetTypeConstructorIL">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
   </member>
   <member name="T:AdvancedDLSupport.ImplementationOptions">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
