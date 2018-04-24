@@ -45,14 +45,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <inheritdoc/>
         public override GeneratorComplexity Complexity => MemberDependent | TransformsParameters;
 
-        private static readonly IReadOnlyList<UnmanagedType> SupportedTypes = new[]
-        {
-            BStr,
-            LPStr,
-            LPTStr,
-            LPWStr
-        };
-
         /// <summary>
         /// Holds local variables defined for a given work unit. The nested dictionary contains the 0-based input
         /// parameter index matched with the local variable containing an unmanaged pointer.
