@@ -60,69 +60,100 @@ namespace AdvancedDLSupport.ImplementationGenerators
         private Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>> _workUnitLocals
             = new Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>>();
 
-        private static MethodInfo _stringToBStrMethod;
-        private static MethodInfo _stringToUniStrMethod;
-        private static MethodInfo _stringToAnsiStrMethod;
-        private static MethodInfo _stringToAutoStrMethod;
+        [NotNull]
+        private static Dictionary<UnmanagedType, MethodInfo> _stringToPtrMethods;
 
-        private static MethodInfo _bStrPtrToStringMethod;
-        private static MethodInfo _uniPtrToStringMethod;
-        private static MethodInfo _ansiPtrToStringMethod;
-        private static MethodInfo _autoPtrToStringMethod;
+        [NotNull]
+        private static Dictionary<UnmanagedType, MethodInfo> _ptrToStringMethods;
 
         private static MethodInfo _freeBStrMethod;
         private static MethodInfo _freeHGlobalMethod;
 
         static StringMarshallingWrapper()
         {
+            _stringToPtrMethods = new Dictionary<UnmanagedType, MethodInfo>();
+            _ptrToStringMethods = new Dictionary<UnmanagedType, MethodInfo>();
+
             // Managed-to-unmanaged methods
-            _stringToBStrMethod = typeof(Marshal).GetMethod
+            _stringToPtrMethods.Add
             (
-                nameof(Marshal.StringToBSTR),
-                new[] { typeof(string) }
+                BStr,
+                typeof(Marshal).GetMethod
+                (
+                    nameof(Marshal.StringToBSTR),
+                    new[] { typeof(string) }
+                )
             );
 
-            _stringToUniStrMethod = typeof(Marshal).GetMethod
+            _stringToPtrMethods.Add
             (
-                nameof(Marshal.StringToHGlobalUni),
-                new[] { typeof(string) }
+                LPWStr,
+                typeof(Marshal).GetMethod
+                (
+                    nameof(Marshal.StringToHGlobalUni),
+                    new[] { typeof(string) }
+                )
             );
 
-            _stringToAnsiStrMethod = typeof(Marshal).GetMethod
+            _stringToPtrMethods.Add
             (
-                nameof(Marshal.StringToHGlobalAnsi),
-                new[] { typeof(string) }
+                LPStr,
+                typeof(Marshal).GetMethod
+                (
+                    nameof(Marshal.StringToHGlobalAnsi),
+                    new[] { typeof(string) }
+                )
             );
 
-            _stringToAutoStrMethod = typeof(Marshal).GetMethod
+            _stringToPtrMethods.Add
             (
-                nameof(Marshal.StringToHGlobalAuto),
-                new[] { typeof(string) }
+                LPTStr,
+                typeof(Marshal).GetMethod
+                (
+                    nameof(Marshal.StringToHGlobalAuto),
+                    new[] { typeof(string) }
+                )
             );
 
             // Unmanaged-to-managed methods
-            _bStrPtrToStringMethod = typeof(Marshal).GetMethod
+            _ptrToStringMethods.Add
             (
-                nameof(Marshal.PtrToStringBSTR),
-                new[] { typeof(IntPtr) }
+                BStr,
+                typeof(Marshal).GetMethod
+                (
+                    nameof(Marshal.PtrToStringBSTR),
+                    new[] { typeof(IntPtr) }
+                )
             );
 
-            _uniPtrToStringMethod = typeof(Marshal).GetMethod
+            _ptrToStringMethods.Add
             (
-                nameof(Marshal.PtrToStringUni),
-                new[] { typeof(IntPtr) }
+                LPWStr,
+                typeof(Marshal).GetMethod
+                (
+                    nameof(Marshal.PtrToStringUni),
+                    new[] { typeof(IntPtr) }
+                )
             );
 
-            _ansiPtrToStringMethod = typeof(Marshal).GetMethod
+            _ptrToStringMethods.Add
             (
-                nameof(Marshal.PtrToStringAnsi),
-                new[] { typeof(IntPtr) }
+                LPStr,
+                typeof(Marshal).GetMethod
+                (
+                    nameof(Marshal.PtrToStringAnsi),
+                    new[] { typeof(IntPtr) }
+                )
             );
 
-            _autoPtrToStringMethod = typeof(Marshal).GetMethod
+            _ptrToStringMethods.Add
             (
-                nameof(Marshal.PtrToStringAuto),
-                new[] { typeof(IntPtr) }
+                LPTStr,
+                typeof(Marshal).GetMethod
+                (
+                    nameof(Marshal.PtrToStringAuto),
+                    new[] { typeof(IntPtr) }
+                )
             );
 
             // Memory freeing methods
@@ -308,27 +339,21 @@ namespace AdvancedDLSupport.ImplementationGenerators
             switch (unmanagedType)
             {
                 case BStr:
-                {
-                    return _stringToBStrMethod;
-                }
                 case LPStr:
+                case LPWStr:
                 {
-                    return _stringToAnsiStrMethod;
+                    return _stringToPtrMethods[unmanagedType];
                 }
                 case LPTStr:
                 {
                     if (RuntimeInformation.FrameworkDescription.Contains("Mono"))
                     {
                         // Mono uses ANSI for Auto, but ANSI is no longer a supported charset. Use Unicode.
-                        return _stringToUniStrMethod;
+                        return _stringToPtrMethods[LPWStr];
                     }
 
                     // Use automatic selection
-                    return _stringToAutoStrMethod;
-                }
-                case LPWStr:
-                {
-                    return _stringToUniStrMethod;
+                    return _stringToPtrMethods[LPTStr];
                 }
                 default:
                 {
@@ -355,27 +380,21 @@ namespace AdvancedDLSupport.ImplementationGenerators
             switch (unmanagedType)
             {
                 case BStr:
-                {
-                    return _bStrPtrToStringMethod;
-                }
                 case LPStr:
+                case LPWStr:
                 {
-                    return _ansiPtrToStringMethod;
+                    return _ptrToStringMethods[unmanagedType];
                 }
                 case LPTStr:
                 {
                     if (RuntimeInformation.FrameworkDescription.Contains("Mono"))
                     {
                         // Mono uses ANSI for Auto, but ANSI is no longer a supported charset. Use Unicode.
-                        return _uniPtrToStringMethod;
+                        return _ptrToStringMethods[LPWStr];
                     }
 
                     // Use automatic selection
-                    return _autoPtrToStringMethod;
-                }
-                case LPWStr:
-                {
-                    return _uniPtrToStringMethod;
+                    return _ptrToStringMethods[LPTStr];
                 }
                 default:
                 {
