@@ -40,7 +40,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// Generates wrapper instructions for marshalling string parameters, with an optional attribute-controlled
     /// cleanup step to free the marshalled memory afterwards.
     /// </summary>
-    public class StringMarshallingWrapper : CallWrapperBase
+    internal sealed class StringMarshallingWrapper : CallWrapperBase
     {
         /// <inheritdoc/>
         public override GeneratorComplexity Complexity => MemberDependent | TransformsParameters;
@@ -326,6 +326,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown if the given unmanaged type is not a string type.
         /// </exception>
+        [NotNull, Pure]
         private MethodInfo SelectManagedToUnmanagedTransformationMethod(UnmanagedType unmanagedType)
         {
             switch (unmanagedType)
@@ -367,6 +368,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown if the given unmanaged type is not a string type.
         /// </exception>
+        [NotNull, Pure]
         private MethodInfo SelectUnmanagedToManagedTransformationMethod(UnmanagedType unmanagedType)
         {
             switch (unmanagedType)
@@ -407,6 +409,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown if the given unmanaged type is not a string type.
         /// </exception>
+        [NotNull, Pure]
         private MethodInfo SelectUnmanagedFreeMethod(UnmanagedType unmanagedType)
         {
             switch (unmanagedType)

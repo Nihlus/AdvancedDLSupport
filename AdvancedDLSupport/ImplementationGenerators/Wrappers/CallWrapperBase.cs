@@ -35,6 +35,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// Base class for call wrappers. This class implements some base functionality which allows inheritors to abstain
     /// from emitting prologues or epilogues.
     /// </summary>
+    [PublicAPI]
     public abstract class CallWrapperBase : ImplementationGeneratorBase<IntrospectiveMethodInfo>, ICallWrapper
     {
         /// <summary>

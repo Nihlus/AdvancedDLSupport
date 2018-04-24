@@ -42,7 +42,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// Generates wrapper instructions for marshalling boolean parameters under indirect calling conditions, where
     /// normal marshalling is not available.
     /// </summary>
-    public class BooleanMarshallingWrapper : CallWrapperBase
+    internal sealed class BooleanMarshallingWrapper : CallWrapperBase
     {
         /// <inheritdoc/>
         public override GeneratorComplexity Complexity => MemberDependent | OptionDependent | TransformsParameters;
@@ -219,6 +219,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="unmanagedType">The unmanaged type.</param>
         /// <param name="value">The boolean value.</param>
         /// <returns>The integer representation.</returns>
+        [Pure]
         private long GetBooleanIntegerValueForUnmanagedType(UnmanagedType unmanagedType, bool value)
         {
             switch (unmanagedType)
@@ -253,6 +254,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="customAttributes">The custom attributes applied to the parameter.</param>
         /// <returns>The parameter type.</returns>
+        [Pure]
         private UnmanagedType GetParameterUnmanagedType([NotNull, ItemNotNull] IEnumerable<CustomAttributeData> customAttributes)
         {
             var marshalAsAttribute = customAttributes.FirstOrDefault
@@ -277,7 +279,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="customAttributes">The custom attributes applied to the parameter.</param>
         /// <returns>The parameter type.</returns>
-        [NotNull]
+        [NotNull, Pure]
         private Type GetParameterMarshallingType([NotNull, ItemNotNull] IEnumerable<CustomAttributeData> customAttributes)
         {
             var unmanagedType = GetParameterUnmanagedType(customAttributes);
