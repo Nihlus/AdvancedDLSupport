@@ -8,6 +8,14 @@ __declspec(dllexport) LPCSTR GetString()
     return "Hello from C!";
 }
 
+__declspec(dllexport) LPCSTR GetAllocatedString()
+{
+    char* ptr = malloc(strlen(GetString()) + 1);
+    strcpy(ptr, GetString());
+
+    return ptr;
+}
+
 __declspec(dllexport) LPCSTR GetNullString()
 {
     return NULL;

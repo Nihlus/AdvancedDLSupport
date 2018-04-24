@@ -1,5 +1,5 @@
 ﻿//
-//  ITypeLoweringLibrary.cs
+//  IStringLibrary.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -24,7 +24,7 @@ using System.Runtime.InteropServices;
 
 namespace AdvancedDLSupport.Tests.Data
 {
-    public interface ITypeLoweringLibrary
+    public interface IStringLibrary
     {
         string GetString();
 
@@ -41,6 +41,14 @@ namespace AdvancedDLSupport.Tests.Data
 
         [return: MarshalAs(UnmanagedType.I1)]
         bool CheckIfStringIsNull(string value);
+
+        // ReSharper disable once ExplicitCallerInfoArgument
+        [NativeSymbol("GetAllocatedString")]
+        [return: CallerFree]
+        string GetStringAndFree();
+
+        [NativeSymbol(nameof(StringLength))]
+        UIntPtr GetStringLengthAndFree([CallerFree] string value);
 
         UIntPtr StringLength(string value);
 
