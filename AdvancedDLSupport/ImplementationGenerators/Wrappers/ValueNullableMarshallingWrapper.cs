@@ -153,35 +153,37 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 var hasValueMethod = GetHasValueMethod(nullableType);
                 var getValueMethod = GetGetValueMethod(nullableType);
 
-                var trueCase = il.DefineLabel();
+                var hasValueLabel = il.DefineLabel();
                 var branchEnd = il.DefineLabel();
 
                 var ptrLocal = il.DeclareLocal(typeof(IntPtr));
 
                 il.EmitLoadArgumentAddress(i);
                 il.EmitCallDirect(hasValueMethod);
-                il.EmitBranchTrue(trueCase);
 
-                // false case
-                il.EmitLoadStaticField(_nullPtrField);
-                il.EmitBranch(branchEnd);
+                il.EmitBranchTrue(hasValueLabel);
+                // false case - no value, pass null
+                {
+                    il.EmitLoadStaticField(_nullPtrField);
+                    il.EmitBranch(branchEnd);
+                }
+                // true case - marshal the structure to a pointer, pass it
+                il.MarkLabel(hasValueLabel);
+                {
+                    il.EmitSizeOf(nullableType);
+                    il.EmitCallDirect(_allocHGlobalMethod);
+                    il.EmitSetLocalVariable(ptrLocal);
 
-                // true case
-                il.MarkLabel(trueCase);
+                    il.EmitLoadArgumentAddress(i);
+                    il.EmitCallDirect(getValueMethod);
+                    il.EmitBox(nullableType);
+                    il.EmitLoadLocalVariable(ptrLocal);
+                    il.EmitConstantInt(0);
 
-                il.EmitSizeOf(nullableType);
-                il.EmitCallDirect(_allocHGlobalMethod);
-                il.EmitSetLocalVariable(ptrLocal);
+                    il.EmitCallDirect(_structureToPtrMethod);
 
-                il.EmitLoadArgumentAddress(i);
-                il.EmitCallDirect(getValueMethod);
-                il.EmitBox(nullableType);
-                il.EmitLoadLocalVariable(ptrLocal);
-                il.EmitConstantInt(0);
-
-                il.EmitCallDirect(_structureToPtrMethod);
-
-                il.EmitLoadLocalVariable(ptrLocal);
+                    il.EmitLoadLocalVariable(ptrLocal);
+                }
 
                 il.MarkLabel(branchEnd);
 
@@ -207,7 +209,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 foreach (var localCombo in locals)
                 {
                     var local = localCombo.Value;
-
                     var hasPointerLabel = il.DefineLabel();
                     var branchEnd = il.DefineLabel();
 
@@ -222,8 +223,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
                         il.EmitBranch(branchEnd);
                     }
                     // true case, has pointer
+                    il.MarkLabel(hasPointerLabel);
                     {
-                        il.MarkLabel(hasPointerLabel);
                         il.EmitLoadLocalVariable(local);
                         il.EmitCallDirect(_freeHGlobalMethod);
                     }
@@ -317,6 +318,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
             return new IntrospectiveMethodInfo(passthroughMethod, newReturnType, newParameterTypes, definition);
         }
 
+        /// <summary>
+        /// Gets the getter method of the <see cref="Nullable{T}.HasValue"/> property.
+        /// </summary>
+        /// <param name="nullableType">The type T of the nullable.</param>
+        /// <returns>The method</returns>
         [NotNull]
         private MethodInfo GetHasValueMethod(Type nullableType)
         {
@@ -326,6 +332,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
                    ?? throw new NullReferenceException();
         }
 
+        /// <summary>
+        /// Gets the getter method of the <see cref="Nullable{T}.Value"/> property.
+        /// </summary>
+        /// <param name="nullableType">The type T of the nullable.</param>
+        /// <returns>The method</returns>
         [NotNull]
         private MethodInfo GetGetValueMethod(Type nullableType)
         {
@@ -335,6 +346,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
                    ?? throw new NullReferenceException();
         }
 
+        /// <summary>
+        /// Gets the <see cref="Nullable{T}"/>(T item) constructor, based on the given input type.
+        /// </summary>
+        /// <param name="nullableType">The type T of the nullable.</param>
+        /// <returns>The constructor.</returns>
         [NotNull]
         private ConstructorInfo GetNullableConstructor(Type nullableType)
         {
