@@ -26,8 +26,8 @@ namespace AdvancedDLSupport.Tests.Data.Classes
 {
     public abstract class MixedModeClass : NativeLibraryBase, IMixedModeLibrary
     {
-        public MixedModeClass(string path, Type interfaceType, ImplementationOptions options, TypeTransformerRepository transformerRepository)
-            : base(path, options, transformerRepository)
+        public MixedModeClass(string path, Type interfaceType, ImplementationOptions options)
+            : base(path, options)
         {
         }
 

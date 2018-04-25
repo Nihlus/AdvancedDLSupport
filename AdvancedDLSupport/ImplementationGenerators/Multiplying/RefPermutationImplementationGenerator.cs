@@ -46,9 +46,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
         private readonly PermutationGenerator _permutationGenerator;
 
-        [NotNull]
-        private readonly TypeTransformerRepository _transformerRepository;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="RefPermutationImplementationGenerator"/> class.
         /// </summary>
@@ -56,20 +53,16 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="targetType">The type in which the method implementation should be generated.</param>
         /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
         /// <param name="options">The configuration object to use.</param>
-        /// <param name="transformerRepository">The repository where type transformers are stored.</param>
         public RefPermutationImplementationGenerator
         (
             [NotNull] ModuleBuilder targetModule,
             [NotNull] TypeBuilder targetType,
             [NotNull] ILGenerator targetTypeConstructorIL,
-            ImplementationOptions options,
-            [NotNull] TypeTransformerRepository transformerRepository
+            ImplementationOptions options
         )
             : base(targetModule, targetType, targetTypeConstructorIL, options)
         {
             _permutationGenerator = new PermutationGenerator();
-
-            _transformerRepository = transformerRepository;
         }
 
         /// <inheritdoc/>

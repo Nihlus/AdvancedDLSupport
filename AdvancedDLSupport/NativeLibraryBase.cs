@@ -38,12 +38,6 @@ namespace AdvancedDLSupport
         public bool IsDisposed { get; private set; }
 
         /// <summary>
-        /// Gets the type transformer repository.
-        /// </summary>
-        [NotNull]
-        internal TypeTransformerRepository TransformerRepository { get; }
-
-        /// <summary>
         /// Gets or sets the set of options that were used to construct the type.
         /// </summary>
         internal ImplementationOptions Options { get; set; }
@@ -72,16 +66,14 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="path">The path to the library.</param>
         /// <param name="options">Whether or not this library can be disposed.</param>
-        /// <param name="transformerRepository">The repository containing type transformers.</param>
         [PublicAPI, AnonymousConstructor]
         protected NativeLibraryBase
         (
             [NotNull] string path,
-            ImplementationOptions options,
-            [NotNull] TypeTransformerRepository transformerRepository)
+            ImplementationOptions options
+        )
         {
             Options = options;
-            TransformerRepository = transformerRepository;
             _libraryHandle = PlatformLoader.LoadLibrary(path);
         }
 

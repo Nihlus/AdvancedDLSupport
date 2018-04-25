@@ -45,7 +45,6 @@ namespace AdvancedDLSupport.Pipeline
         private readonly ILGenerator _constructorIL;
 
         private readonly ImplementationOptions _options;
-        private readonly TypeTransformerRepository _transformerRepository;
         private readonly ImplementationGeneratorSorter _generatorSorter;
 
         private IReadOnlyList<IImplementationGenerator<IntrospectiveMethodInfo>> _methodGeneratorPipeline;
@@ -58,21 +57,18 @@ namespace AdvancedDLSupport.Pipeline
         /// <param name="targetType">The target type to generate implementations in.</param>
         /// <param name="constructorIL">The <see cref="ILGenerator"/> of the target type's constructor.</param>
         /// <param name="options">The implementation options to use.</param>
-        /// <param name="transformerRepository">The repository containing the type transformers.</param>
         public ImplementationPipeline
         (
             [NotNull] ModuleBuilder targetModule,
             [NotNull] TypeBuilder targetType,
             [NotNull] ILGenerator constructorIL,
-            ImplementationOptions options,
-            [NotNull] TypeTransformerRepository transformerRepository
+            ImplementationOptions options
         )
         {
             _targetModule = targetModule;
             _targetType = targetType;
             _constructorIL = constructorIL;
             _options = options;
-            _transformerRepository = transformerRepository;
 
             _generatorSorter = new ImplementationGeneratorSorter();
 
@@ -102,17 +98,7 @@ namespace AdvancedDLSupport.Pipeline
                 _targetModule,
                 _targetType,
                 _constructorIL,
-                _options,
-                _transformerRepository
-            );
-
-            yield return new LoweredMethodImplementationGenerator
-            (
-                _targetModule,
-                _targetType,
-                _constructorIL,
-                _options,
-                _transformerRepository
+                _options
             );
 
             yield return new DelegateMethodImplementationGenerator
@@ -148,6 +134,14 @@ namespace AdvancedDLSupport.Pipeline
             );
 
             yield return new StringMarshallingWrapper
+            (
+                _targetModule,
+                _targetType,
+                _constructorIL,
+                _options
+            );
+
+            yield return new ValueNullableMarshallingWrapper
             (
                 _targetModule,
                 _targetType,

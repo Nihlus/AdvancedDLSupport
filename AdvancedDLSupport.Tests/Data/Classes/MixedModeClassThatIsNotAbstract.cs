@@ -25,8 +25,8 @@ namespace AdvancedDLSupport.Tests.Data.Classes
 {
     public class MixedModeClassThatIsNotAbstract : NativeLibraryBase, IMixedModeLibrary
     {
-        public MixedModeClassThatIsNotAbstract(string path, Type interfaceType, ImplementationOptions options, TypeTransformerRepository transformerRepository)
-            : base(path, options, transformerRepository)
+        public MixedModeClassThatIsNotAbstract(string path, Type interfaceType, ImplementationOptions options)
+            : base(path, options)
         {
         }
 

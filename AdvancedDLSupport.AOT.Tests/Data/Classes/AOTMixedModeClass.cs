@@ -26,8 +26,8 @@ namespace AdvancedDLSupport.AOT.Tests.Data.Classes
 {
     public abstract class AOTMixedModeClass : NativeLibraryBase, IAOTLibrary
     {
-        public AOTMixedModeClass(string path, Type interfaceType, ImplementationOptions options, TypeTransformerRepository transformerRepository)
-            : base(path, options, transformerRepository)
+        public AOTMixedModeClass(string path, Type interfaceType, ImplementationOptions options)
+            : base(path, options)
         {
         }
 

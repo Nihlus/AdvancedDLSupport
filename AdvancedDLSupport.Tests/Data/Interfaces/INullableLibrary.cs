@@ -27,10 +27,22 @@ namespace AdvancedDLSupport.Tests.Data
     {
         TestStruct? GetAllocatedTestStruct();
 
+        [NativeSymbol(nameof(GetAllocatedTestStruct))]
+        [return: CallerFree]
+        TestStruct? GetAllocatedTestStructAndFree();
+
         TestStruct? GetNullTestStruct();
+
+        [NativeSymbol(nameof(GetNullTestStruct))]
+        [return: CallerFree]
+        TestStruct? GetNullTestStructAndFree();
 
         [return: MarshalAs(UnmanagedType.I1)]
         bool CheckIfStructIsNull(TestStruct? testStruct);
+
+        [NativeSymbol(nameof(CheckIfStructIsNull))]
+        [return: MarshalAs(UnmanagedType.I1)]
+        bool CheckIfStructIsNullAndFree([CallerFree] TestStruct? testStruct);
 
         long GetStructPtrValue(ref TestStruct? testStruct);
 

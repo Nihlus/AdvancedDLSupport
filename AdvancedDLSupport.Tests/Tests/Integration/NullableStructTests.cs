@@ -121,5 +121,35 @@ namespace AdvancedDLSupport.Tests.Integration
 
             Assert.Equal(10 * multiplier, result);
         }
+
+        [Fact]
+        public void CanCallFunctionWithNullableReturnReturnValueAndCallerFreeReturnValue()
+        {
+            var result = Library.GetAllocatedTestStructAndFree();
+
+            Assert.NotNull(result);
+            Assert.Equal(10, result.Value.A);
+            Assert.Equal(20, result.Value.B);
+        }
+
+        [Fact]
+        public void CanCallFunctionWithNullableReturnReturnValueAndCallerFreeReturnValueWhereResultIsNull()
+        {
+            var result = Library.GetNullTestStructAndFree();
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void CanCallFunctionWithNullableParameterAndCallerFree()
+        {
+            Assert.False(Library.CheckIfStructIsNullAndFree(new TestStruct { A = 10, B = 20 }));
+        }
+
+        [Fact]
+        public void CanCallFunctionWithNullableParameterAndCallerFreeWhereParameterIsNull()
+        {
+            Assert.True(Library.CheckIfStructIsNullAndFree(null));
+        }
     }
 }

@@ -76,7 +76,6 @@ namespace AdvancedDLSupport
         private static readonly object BuilderLock = new object();
 
         private static readonly ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type> TypeCache;
-        private static readonly TypeTransformerRepository TransformerRepository;
 
         static NativeLibraryBuilder()
         {
@@ -84,8 +83,6 @@ namespace AdvancedDLSupport
             (
                 new LibraryIdentifierEqualityComparer()
             );
-
-            TransformerRepository = new TypeTransformerRepository();
 
             Default = new NativeLibraryBuilder
             (
@@ -266,8 +263,7 @@ namespace AdvancedDLSupport
                     (
                         generatedType,
                         libraryPath,
-                        Options,
-                        TransformerRepository
+                        Options
                     );
 
                     return anonymousInstance as TClass
@@ -492,8 +488,7 @@ namespace AdvancedDLSupport
                 _moduleBuilder,
                 typeBuilder,
                 constructorIL,
-                Options,
-                TransformerRepository
+                Options
             );
 
             ConstructMethods(pipeline, classType, interfaceType);
@@ -531,7 +526,6 @@ namespace AdvancedDLSupport
         /// <param name="finalType">The constructed anonymous type.</param>
         /// <param name="library">The path to or name of the library</param>
         /// <param name="options">The generator options.</param>
-        /// <param name="transformerRepository">The type transformer repository.</param>
         /// <typeparam name="TInterface">The interface type.</typeparam>
         /// <returns>An instance of the anonymous type implementing <typeparamref name="TInterface"/>.</returns>
         [NotNull, Pure]
@@ -539,16 +533,14 @@ namespace AdvancedDLSupport
         (
             [NotNull] Type finalType,
             [NotNull] string library,
-            ImplementationOptions options,
-            [NotNull] TypeTransformerRepository transformerRepository
+            ImplementationOptions options
         )
         {
             return (TInterface)Activator.CreateInstance
             (
                 finalType,
                 library,
-                options,
-                transformerRepository
+                options
             );
         }
 
