@@ -35,15 +35,6 @@ namespace AdvancedDLSupport
         private readonly Dictionary<Type, ITypeTransformer> _typeTransformers = new Dictionary<Type, ITypeTransformer>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TypeTransformerRepository"/> class.
-        /// </summary>
-        public TypeTransformerRepository()
-        {
-            // Add default transformers
-            _typeTransformers.Add(typeof(string), new StringTransformer());
-        }
-
-        /// <summary>
         /// Adds the given type transformer to the repository, making it available to complex generators.
         /// </summary>
         /// <param name="type">The type to map the transformer to.</param>
@@ -115,16 +106,6 @@ namespace AdvancedDLSupport
             }
 
             throw new NotSupportedException("The given type doesn't have a compatible type transformer.");
-        }
-
-        /// <summary>
-        /// Gets a type transformer which can transform strings to pointers and vice versa.
-        /// </summary>
-        /// <returns>A string transformer.</returns>
-        [NotNull]
-        internal StringTransformer GetStringTransformer()
-        {
-            return (StringTransformer)_typeTransformers[typeof(string)];
         }
 
         /// <summary>

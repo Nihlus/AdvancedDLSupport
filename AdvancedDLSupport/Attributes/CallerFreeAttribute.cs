@@ -1,5 +1,5 @@
 ﻿//
-//  MemberInfoExtensions.cs
+//  CallerFreeAttribute.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -18,25 +18,15 @@
 //
 
 using System;
-using System.Reflection;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Extensions
+namespace AdvancedDLSupport
 {
     /// <summary>
-    /// Extension methods for the <see cref="MemberInfo"/> class.
+    /// Parameters which are marshalled into unmanaged memory with this attribute are freed by the caller after the conclusion of the call.
     /// </summary>
-    internal static class MemberInfoExtensions
+    [PublicAPI, AttributeUsage(AttributeTargets.Parameter | AttributeTargets.ReturnValue)]
+    public class CallerFreeAttribute : Attribute
     {
-        /// <summary>
-        /// Determines whether or not the given member has a custom attribute of the given type.
-        /// </summary>
-        /// <param name="this">The member info.</param>
-        /// <typeparam name="T">The attribute type.</typeparam>
-        /// <returns>true if it has one; otherwise, false.</returns>
-        public static bool HasCustomAttribute<T>([NotNull] this MemberInfo @this) where T : Attribute
-        {
-            return !(@this.GetCustomAttribute<T>() is null);
-        }
     }
 }

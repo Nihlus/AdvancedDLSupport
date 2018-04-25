@@ -9,7 +9,7 @@ function(install_for_frameworks FRAMEWORKS)
                     LazyLoadingTests
                     PropertyTests
                     RemappingTests
-                    TypeLoweringTests
+                    StringTests
                     AttributePassthroughTests
                     MixedModeTests
                     NullableTests

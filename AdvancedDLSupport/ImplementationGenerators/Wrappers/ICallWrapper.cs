@@ -28,6 +28,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// Represents a wrapper emitter that accepts a method, emits arbitrary prologue instructions, calls the method, and
     /// then emits arbitrary epilogue instructions. Typically, the input method is passed through without modifications.
     /// </summary>
+    [PublicAPI]
     public interface ICallWrapper : IImplementationGenerator<IntrospectiveMethodInfo>
     {
         /// <summary>
@@ -36,6 +37,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="il">The generator where the instructions will be emitted.</param>
         /// <param name="workUnit">The method being worked on.</param>
+        [PublicAPI]
         void EmitPrologue([NotNull] ILGenerator il, [NotNull] PipelineWorkUnit<IntrospectiveMethodInfo> workUnit);
 
         /// <summary>
@@ -45,6 +47,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="il">The generator where the instructions will be emitted.</param>
         /// <param name="workUnit">The method being worked on.</param>
+        [PublicAPI]
         void EmitEpilogue([NotNull] ILGenerator il, [NotNull] PipelineWorkUnit<IntrospectiveMethodInfo> workUnit);
     }
 }

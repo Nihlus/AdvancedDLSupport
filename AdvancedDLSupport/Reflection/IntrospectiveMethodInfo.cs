@@ -212,5 +212,34 @@ namespace AdvancedDLSupport.Reflection
                 ReturnParameterCustomAttributes = definitionToCopyAttributesFrom.ReturnParameterCustomAttributes;
             }
         }
+
+        /// <summary>
+        /// Determines whether or not the method's return parameter has an attribute of the given type.
+        /// </summary>
+        /// <typeparam name="T">The attribute type.</typeparam>
+        /// <returns>true if the parameter has an attribute of the given type; otherwise, false.</returns>
+        public bool ReturnParameterHasCustomAttribute<T>() where T : Attribute
+        {
+            return ReturnParameterCustomAttributes.Any(d => d.AttributeType == typeof(T));
+        }
+
+        /// <summary>
+        /// Determines whether or not the parameter at the given index has an attribute of the given type.
+        /// </summary>
+        /// <param name="parameterIndex">The index of the parameter.</param>
+        /// <typeparam name="T">The attribute type.</typeparam>
+        /// <returns>true if the parameter has an attribute of the given type; otherwise, false.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if the parameter index is out of range.</exception>
+        public bool ParameterHasCustomAttribute<T>(int parameterIndex) where T : Attribute
+        {
+            if (parameterIndex >= ParameterCustomAttributes.Count || parameterIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(parameterIndex), "Parameter index out of range.");
+            }
+
+            var parameterCustomAttributes = ParameterCustomAttributes[parameterIndex];
+
+            return parameterCustomAttributes.Any(d => d.AttributeType == typeof(T));
+        }
     }
 }

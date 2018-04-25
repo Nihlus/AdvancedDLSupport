@@ -62,11 +62,7 @@ namespace AdvancedDLSupport.Tests.Unit
             [Fact]
             public void DoesNotThrowForGettingBuiltInTypesWithoutFirstAddingThem()
             {
-                var result = Repository.GetTypeTransformer(typeof(string));
-
-                Assert.NotNull(result);
-
-                result = Repository.GetTypeTransformer(typeof(TestStruct?));
+                var result = Repository.GetTypeTransformer(typeof(TestStruct?));
 
                 Assert.NotNull(result);
             }

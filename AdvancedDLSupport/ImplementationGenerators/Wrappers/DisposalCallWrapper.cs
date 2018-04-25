@@ -32,7 +32,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// <summary>
     /// Generates a disposal check before the method call.
     /// </summary>
-    public class DisposalCallWrapper : CallWrapperBase
+    internal sealed class DisposalCallWrapper : CallWrapperBase
     {
         /// <inheritdoc />
         public override GeneratorComplexity Complexity => OptionDependent;
