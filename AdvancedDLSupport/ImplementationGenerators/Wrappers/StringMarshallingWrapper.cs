@@ -304,14 +304,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             (
                 definition,
                 newReturnType,
-                newParameterTypes,
-                data => data.AttributeType == typeof(MarshalAsAttribute) && definition.ReturnType == typeof(IntPtr),
-                (data, parameterIndex) =>
-                {
-                    var parameterType = definition.ParameterTypes[parameterIndex];
-
-                    return data.AttributeType == typeof(MarshalAsAttribute) && parameterType == typeof(IntPtr);
-                }
+                newParameterTypes
             );
 
             return new IntrospectiveMethodInfo(passthroughMethod, newReturnType, newParameterTypes, definition);

@@ -70,16 +70,8 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.BooleanMarshallingWrapper.#ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.Emit.TypeBuilder,System.Reflection.Emit.ILGenerator,AdvancedDLSupport.ImplementationOptions)">
-    <parameter name="targetModule">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="targetType">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="targetTypeConstructorIL">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
+  <member name="T:AdvancedDLSupport.ImplementationGenerators.CallWrapperBase">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:AdvancedDLSupport.ImplementationGenerators.CallWrapperBase.#ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.Emit.TypeBuilder,System.Reflection.Emit.ILGenerator,AdvancedDLSupport.ImplementationOptions)">
     <parameter name="targetModule">
@@ -98,18 +90,11 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.DisposalCallWrapper.#ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.Emit.TypeBuilder,System.Reflection.Emit.ILGenerator,AdvancedDLSupport.ImplementationOptions)">
-    <parameter name="targetModule">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="targetType">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="targetTypeConstructorIL">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
+  <member name="T:AdvancedDLSupport.ImplementationGenerators.ICallWrapper">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="M:AdvancedDLSupport.ImplementationGenerators.ICallWrapper.EmitEpilogue(System.Reflection.Emit.ILGenerator,AdvancedDLSupport.Pipeline.PipelineWorkUnit{AdvancedDLSupport.Reflection.IntrospectiveMethodInfo})">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="il">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
@@ -118,6 +103,7 @@
     </parameter>
   </member>
   <member name="M:AdvancedDLSupport.ImplementationGenerators.ICallWrapper.EmitPrologue(System.Reflection.Emit.ILGenerator,AdvancedDLSupport.Pipeline.PipelineWorkUnit{AdvancedDLSupport.Reflection.IntrospectiveMethodInfo})">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="il">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
@@ -214,17 +200,6 @@
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.ImplementationGenerators.StringMarshallingWrapper.#ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.Emit.TypeBuilder,System.Reflection.Emit.ILGenerator,AdvancedDLSupport.ImplementationOptions)">
-    <parameter name="targetModule">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="targetType">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="targetTypeConstructorIL">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
   <member name="T:AdvancedDLSupport.ImplementationOptions">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
@@ -245,45 +220,6 @@
   </member>
   <member name="F:AdvancedDLSupport.ImplementationOptions.UseLazyBinding">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="T:AdvancedDLSupport.ITypeTransformer">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="M:AdvancedDLSupport.ITypeTransformer.IsApplicable(System.Type,AdvancedDLSupport.ImplementationOptions)">
-    <parameter name="complexType">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.ITypeTransformer.LowerType">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-  </member>
-  <member name="M:AdvancedDLSupport.ITypeTransformer.RaiseType">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-  </member>
-  <member name="T:AdvancedDLSupport.ITypeTransformer`2">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="M:AdvancedDLSupport.ITypeTransformer`2.LowerValue(`0,System.Reflection.ParameterInfo)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
-    <parameter name="value">
-      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="parameter">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.ITypeTransformer`2.RaiseValue(`1,System.Reflection.ParameterInfo)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
-    <parameter name="value">
-      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="parameter">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
   </member>
   <member name="T:AdvancedDLSupport.LibraryLoadingException">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
@@ -392,12 +328,9 @@
   <member name="T:AdvancedDLSupport.NativeLibraryBase">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.NativeLibraryBase.#ctor(System.String,AdvancedDLSupport.ImplementationOptions,AdvancedDLSupport.TypeTransformerRepository)">
+  <member name="M:AdvancedDLSupport.NativeLibraryBase.#ctor(System.String,AdvancedDLSupport.ImplementationOptions)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="path">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="transformerRepository">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
@@ -470,7 +403,7 @@
   <member name="T:AdvancedDLSupport.Pipeline.ImplementationPipeline">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.Pipeline.ImplementationPipeline.#ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.Emit.TypeBuilder,System.Reflection.Emit.ILGenerator,AdvancedDLSupport.ImplementationOptions,AdvancedDLSupport.TypeTransformerRepository)">
+  <member name="M:AdvancedDLSupport.Pipeline.ImplementationPipeline.#ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.Emit.TypeBuilder,System.Reflection.Emit.ILGenerator,AdvancedDLSupport.ImplementationOptions)">
     <parameter name="targetModule">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
@@ -478,9 +411,6 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
     <parameter name="constructorIL">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="transformerRepository">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
@@ -524,9 +454,6 @@
   </member>
   <member name="M:AdvancedDLSupport.Pipeline.PipelineWorkUnit`1.GetUniqueBaseMemberName">
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-  </member>
-  <member name="T:AdvancedDLSupport.PointerTransformer`1">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="T:AdvancedDLSupport.Reflection.IIntrospectiveMember">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
@@ -753,31 +680,5 @@
   </member>
   <member name="P:AdvancedDLSupport.SymbolLoadingException.SymbolName">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="T:AdvancedDLSupport.TypeTransformerRepository">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="M:AdvancedDLSupport.TypeTransformerRepository.GetTypeTransformer(System.Type)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    <parameter name="type">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.TypeTransformerRepository.HasApplicableTransformer(System.Type,AdvancedDLSupport.ImplementationOptions)">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <parameter name="complexType">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:AdvancedDLSupport.TypeTransformerRepository.WithTypeTransformer``2(System.Type,AdvancedDLSupport.ITypeTransformer{``0,``1})">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    <parameter name="type">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="transformer">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
   </member>
 </assembly>
