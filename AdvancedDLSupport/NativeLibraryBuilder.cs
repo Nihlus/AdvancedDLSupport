@@ -557,6 +557,7 @@ namespace AdvancedDLSupport
             [NotNull] Type interfaceType
         )
         {
+            var symbolTransformer = SymbolTransformer.Default;
             var methods = new List<PipelineWorkUnit<IntrospectiveMethodInfo>>();
             foreach (var method in interfaceType.GetIntrospectiveMethods(true))
             {
@@ -591,7 +592,7 @@ namespace AdvancedDLSupport
                     new PipelineWorkUnit<IntrospectiveMethodInfo>
                     (
                         definition,
-                        targetMethod.GetSymbolName(),
+                        symbolTransformer.GetTransformedSymbol(interfaceType, definition),
                         Options
                     )
                 );
@@ -616,6 +617,7 @@ namespace AdvancedDLSupport
             [NotNull] Type interfaceType
         )
         {
+            var symbolTransformer = SymbolTransformer.Default;
             var properties = new List<PipelineWorkUnit<IntrospectivePropertyInfo>>();
             foreach (var property in interfaceType.GetProperties())
             {
@@ -647,13 +649,13 @@ namespace AdvancedDLSupport
                     targetProperty = baseClassProperty;
                 }
 
-                var introspectiveProperty = new IntrospectivePropertyInfo(targetProperty);
+                var definition = new IntrospectivePropertyInfo(targetProperty);
                 properties.Add
                 (
                     new PipelineWorkUnit<IntrospectivePropertyInfo>
                     (
-                        introspectiveProperty,
-                        introspectiveProperty.GetSymbolName(),
+                        definition,
+                        symbolTransformer.GetTransformedSymbol(interfaceType, definition),
                         Options
                     )
                 );

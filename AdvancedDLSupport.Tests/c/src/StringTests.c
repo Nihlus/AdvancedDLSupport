@@ -46,6 +46,8 @@ __declspec(dllexport) size_t BStringLength(BCSTR value)
     size_t length = 0;
     memcpy(&length, (char*)value, 2);
 
+
+
     return (length / sizeof(char16_t)) - 1;
 }
 
