@@ -400,6 +400,21 @@
   <member name="P:AdvancedDLSupport.NativeSymbolAttribute.Entrypoint">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="T:AdvancedDLSupport.NativeSymbolsAttribute">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="M:AdvancedDLSupport.NativeSymbolsAttribute.#ctor(System.String,AdvancedDLSupport.SymbolTransformationMethod)">
+    <parameter name="prefix">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="P:AdvancedDLSupport.NativeSymbolsAttribute.Prefix">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  <member name="P:AdvancedDLSupport.NativeSymbolsAttribute.SymbolTransformationMethod">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
   <member name="T:AdvancedDLSupport.Pipeline.ImplementationPipeline">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
@@ -495,11 +510,6 @@
   </member>
   <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.GetCustomAttributes(System.Type,System.Boolean)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-  <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.GetSymbolName">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
   </member>
   <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.GetWrappedMember">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
@@ -680,5 +690,13 @@
   </member>
   <member name="P:AdvancedDLSupport.SymbolLoadingException.SymbolName">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="M:AdvancedDLSupport.SymbolTransformer.GetTransformedSymbol``1(System.Type,``0)">
+    <parameter name="containingInterface">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="memberInfo">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
   </member>
 </assembly>

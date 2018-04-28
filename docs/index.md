@@ -10,4 +10,5 @@ below.
 7. [Indirect Calling](indirect-calling.md)
 8. [Ahead-of-Time Compilation](ahead-of-time.md)
 9. [Interface Composition](interface-composition.md)
-10. [Dev Notes](developer_docs.md)
+10. [Symbol Transformation](symbol-transformation.md)
+11. [Dev Notes](developer_docs.md)

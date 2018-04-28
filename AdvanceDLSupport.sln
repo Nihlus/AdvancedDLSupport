@@ -26,6 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", ".\docs", "{96E3AE84
 		docs\indirect-calling.md = docs\indirect-calling.md
 		docs\ahead-of-time.md = docs\ahead-of-time.md
 		docs\interface-composition.md = docs\interface-composition.md
+		docs\symbol-transformation.md = docs\symbol-transformation.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", ".\scripts", "{BB134437-F15D-42F6-B88C-46C7BA8FEFEB}"

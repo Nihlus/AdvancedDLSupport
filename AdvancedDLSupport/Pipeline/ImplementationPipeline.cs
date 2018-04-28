@@ -245,7 +245,7 @@ namespace AdvancedDLSupport.Pipeline
                 // Find the entry stage of the pipeline
                 var stage = pipeline.First(s => s.IsApplicable(definition));
 
-                // Process the definitions through the stage
+                // GetTransformedSymbol the definitions through the stage
                 var generatedDefinitions = stage.GenerateImplementation(workUnit).ToList();
 
                 if (!generatedDefinitions.Any())
