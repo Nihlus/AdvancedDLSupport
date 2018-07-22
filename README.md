@@ -1,6 +1,8 @@
 # AdvanceDLSupport
 Alternative approach to your usual P/Invoke!
 
+[![Join the chat at https://discord.gg/fDy5Vhb](https://img.shields.io/badge/chat-on%20discord-7289DA.svg)](https://discord.gg/fDy5Vhb)
+
 Use C# interfaces to bind to native code - quick and easy usage of C API in C# code, on any platform. 
 Gone are the days of broken `DllImport` and annoying workarounds for the different runtimes.
 
