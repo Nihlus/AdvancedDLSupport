@@ -65,11 +65,11 @@ namespace AdvancedDLSupport.Extensions
         }
 
         /// <summary>
-        /// Determines whether or not the given type is a generic <see cref="Func{TResult}"/> delegate.
+        /// Determines whether or not the given type is a generic <see cref="Action"/> delegate.
         /// </summary>
         /// <param name="this">The type.</param>
-        /// <returns>true if the type is a func delegate; otherwise, false.</returns>
-        public static bool IsGenericFuncDelegate([NotNull] this Type @this)
+        /// <returns>true if the type is an action delegate; otherwise, false.</returns>
+        public static bool IsGenericActionDelegate([NotNull] this Type @this)
         {
             // ReSharper disable once PossibleNullReferenceException
             var genericBaseName = @this.FullName.Split('`').First();
@@ -83,11 +83,11 @@ namespace AdvancedDLSupport.Extensions
         }
 
         /// <summary>
-        /// Determines whether or not the given type is a generic <see cref="Action"/> delegate.
+        /// Determines whether or not the given type is a generic <see cref="Func{TResult}"/> delegate.
         /// </summary>
         /// <param name="this">The type.</param>
-        /// <returns>true if the type is an action delegate; otherwise, false.</returns>
-        public static bool IsGenericActionDelegate([NotNull] this Type @this)
+        /// <returns>true if the type is a func delegate; otherwise, false.</returns>
+        public static bool IsGenericFuncDelegate([NotNull] this Type @this)
         {
             // ReSharper disable once PossibleNullReferenceException
             var genericBaseName = @this.FullName.Split('`').First();
