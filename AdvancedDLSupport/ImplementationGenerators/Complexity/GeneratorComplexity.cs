@@ -18,13 +18,14 @@
 //
 
 using System;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.ImplementationGenerators
 {
     /// <summary>
     /// Represents levels of complexity in a generator.
     /// </summary>
-    [Flags]
+    [PublicAPI, Flags]
     public enum GeneratorComplexity
     {
         /// <summary>
@@ -53,6 +54,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// The generator is a terminating generator, and will not produce any output definitions. These generators are
         /// sorted apart from the normal generators, and are always executed last.
         /// </summary>
-        Terminating = 1 << 3
+        Terminating = 1 << 3,
+
+        /// <summary>
+        /// The generator will create additional types in the assembly.
+        /// </summary>
+        CreatesTypes = 1 << 4
     }
 }

@@ -56,6 +56,19 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
         }
 
+        /// <summary>
+        /// Emits any additional types that a work unit requires. By default, this does nothing.
+        /// </summary>
+        /// <param name="module">The module to emit the types in.</param>
+        /// <param name="workUnit">The unit to generate the types from.</param>
+        public virtual void EmitAdditionalTypes
+        (
+            ModuleBuilder module,
+            PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
+        )
+        {
+        }
+
         /// <inheritdoc />
         public sealed override IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> GenerateImplementation
         (
@@ -69,6 +82,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 throw new ArgumentNullException(nameof(workUnit), "Could not unwrap introspective method to method builder.");
             }
 
+            EmitAdditionalTypes(TargetModule, workUnit);
             var passthroughMethod = GeneratePassthroughDefinition(workUnit);
 
             var il = builder.GetILGenerator();
