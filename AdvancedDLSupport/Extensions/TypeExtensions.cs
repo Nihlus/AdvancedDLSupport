@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
@@ -30,6 +31,42 @@ namespace AdvancedDLSupport.Extensions
     /// </summary>
     internal static class TypeExtensions
     {
+        /// <summary>
+        /// Determines whether the given type is a generic delegate type - that is, a <see cref="Func{TResult}"/> or
+        /// <see cref="Action"/>.
+        /// </summary>
+        /// <param name="this">The type.</param>
+        /// <returns>true if the type is a generic delegate type; Otherwise, false.</returns>
+        public static bool IsGenericDelegate([NotNull] this Type @this)
+        {
+            // The parameterless action is technically not a generic type, so it'll get caught here
+            if (!@this.IsGenericType)
+            {
+                return false;
+            }
+
+            var genericType = @this.GetGenericTypeDefinition();
+            if (genericType.FullName is null)
+            {
+                throw new InvalidOperationException("Couldn't get the full name of the given type.");
+            }
+
+            var genericBaseName = genericType.FullName.Split('`').First();
+            if (genericBaseName == typeof(Action).FullName)
+            {
+                return true;
+            }
+
+            // ReSharper disable once PossibleNullReferenceException
+            var funcBaseName = typeof(Func<>).FullName.Split('`').First();
+            if (genericType.FullName == funcBaseName)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Gets the methods defined in the given type as wrapped introspective methods.
         /// </summary>

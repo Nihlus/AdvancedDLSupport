@@ -38,7 +38,6 @@ using static System.Reflection.CallingConventions;
 using static System.Reflection.MethodAttributes;
 using static System.Reflection.MethodImplAttributes;
 
-// ReSharper disable BitwiseOperatorOnEnumWithoutFlags
 namespace AdvancedDLSupport.ImplementationGenerators
 {
     /// <summary>
@@ -190,69 +189,15 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var definition = workUnit.Definition;
 
             // Declare a delegate type
-            var delegateBuilder = TargetModule.DefineType
+            var delegateBuilder = ModuleBuilderExtensions.DefineDelegate
             (
-                $"{workUnit.GetUniqueBaseMemberName()}_delegate",
-                TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AnsiClass | TypeAttributes.AutoClass,
-                typeof(MulticastDelegate)
+                TargetModule,
+                workUnit.GetUniqueBaseMemberName(),
+                callingConvention,
+                definition,
+                Options.HasFlagFast(SuppressSecurity)
             );
 
-            var unmanagedPtrAttributeConstructor = typeof(UnmanagedFunctionPointerAttribute).GetConstructors().First
-            (
-                c =>
-                    c.GetParameters().Any() &&
-                    c.GetParameters().Length == 1 &&
-                    c.GetParameters().First().ParameterType == typeof(CallingConvention)
-            );
-
-            var functionPointerAttributeBuilder = new CustomAttributeBuilder
-            (
-                unmanagedPtrAttributeConstructor,
-                new object[] { callingConvention },
-                new[] { typeof(UnmanagedFunctionPointerAttribute).GetField(nameof(UnmanagedFunctionPointerAttribute.SetLastError)) },
-                new object[] { true }
-            );
-
-            delegateBuilder.SetCustomAttribute(functionPointerAttributeBuilder);
-
-            if (Options.HasFlagFast(SuppressSecurity))
-            {
-                var suppressSecurityConstructor = typeof(SuppressUnmanagedCodeSecurityAttribute).GetConstructors().First();
-
-                var suppressSecurityAttributeBuilder = new CustomAttributeBuilder
-                (
-                    suppressSecurityConstructor,
-                    new object[] { }
-                );
-
-                delegateBuilder.SetCustomAttribute(suppressSecurityAttributeBuilder);
-            }
-
-            foreach (var attribute in definition.CustomAttributes)
-            {
-                delegateBuilder.SetCustomAttribute(attribute.GetAttributeBuilder());
-            }
-
-            var delegateCtorBuilder = delegateBuilder.DefineConstructor
-            (
-                RTSpecialName | HideBySig | Public,
-                Standard,
-                new[] { typeof(object), typeof(IntPtr) }
-            );
-
-            delegateCtorBuilder.SetImplementationFlags(Runtime | Managed);
-
-            var delegateMethodBuilder = delegateBuilder.DefineMethod
-            (
-                "Invoke",
-                Public | HideBySig | NewSlot | Virtual,
-                definition.ReturnType,
-                definition.ParameterTypes.ToArray()
-            );
-
-            delegateMethodBuilder.ApplyCustomAttributesFrom(definition);
-
-            delegateMethodBuilder.SetImplementationFlags(Runtime | Managed);
             return delegateBuilder;
         }
     }
