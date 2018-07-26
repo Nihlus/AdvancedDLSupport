@@ -38,7 +38,6 @@ using static System.Reflection.CallingConventions;
 using static System.Reflection.MethodAttributes;
 using static System.Reflection.MethodImplAttributes;
 
-// ReSharper disable BitwiseOperatorOnEnumWithoutFlags
 namespace AdvancedDLSupport.ImplementationGenerators
 {
     /// <summary>
@@ -78,10 +77,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             var definition = workUnit.Definition;
 
-            var metadataAttribute = definition.GetCustomAttribute<NativeSymbolAttribute>() ??
-                                    new NativeSymbolAttribute(definition.Name);
-
-            var delegateBuilder = GenerateDelegateType(workUnit, metadataAttribute.CallingConvention);
+            var delegateBuilder = GenerateDelegateType(workUnit);
 
             // Create a delegate field
             var backingFieldType = delegateBuilder.CreateTypeInfo();
@@ -178,81 +174,23 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// Generates a delegate type for the given method.
         /// </summary>
         /// <param name="workUnit">The method to generate a delegate type for.</param>
-        /// <param name="callingConvention">The unmanaged calling convention of the delegate.</param>
         /// <returns>A delegate type.</returns>
         [NotNull]
         private TypeBuilder GenerateDelegateType
         (
-            [NotNull] PipelineWorkUnit<IntrospectiveMethodInfo> workUnit,
-            CallingConvention callingConvention
+            [NotNull] PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
         )
         {
             var definition = workUnit.Definition;
 
             // Declare a delegate type
-            var delegateBuilder = TargetModule.DefineType
+            var delegateBuilder = TargetModule.DefineDelegate
             (
                 $"{workUnit.GetUniqueBaseMemberName()}_delegate",
-                TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AnsiClass | TypeAttributes.AutoClass,
-                typeof(MulticastDelegate)
+                definition,
+                Options.HasFlagFast(SuppressSecurity)
             );
 
-            var unmanagedPtrAttributeConstructor = typeof(UnmanagedFunctionPointerAttribute).GetConstructors().First
-            (
-                c =>
-                    c.GetParameters().Any() &&
-                    c.GetParameters().Length == 1 &&
-                    c.GetParameters().First().ParameterType == typeof(CallingConvention)
-            );
-
-            var functionPointerAttributeBuilder = new CustomAttributeBuilder
-            (
-                unmanagedPtrAttributeConstructor,
-                new object[] { callingConvention },
-                new[] { typeof(UnmanagedFunctionPointerAttribute).GetField(nameof(UnmanagedFunctionPointerAttribute.SetLastError)) },
-                new object[] { true }
-            );
-
-            delegateBuilder.SetCustomAttribute(functionPointerAttributeBuilder);
-
-            if (Options.HasFlagFast(SuppressSecurity))
-            {
-                var suppressSecurityConstructor = typeof(SuppressUnmanagedCodeSecurityAttribute).GetConstructors().First();
-
-                var suppressSecurityAttributeBuilder = new CustomAttributeBuilder
-                (
-                    suppressSecurityConstructor,
-                    new object[] { }
-                );
-
-                delegateBuilder.SetCustomAttribute(suppressSecurityAttributeBuilder);
-            }
-
-            foreach (var attribute in definition.CustomAttributes)
-            {
-                delegateBuilder.SetCustomAttribute(attribute.GetAttributeBuilder());
-            }
-
-            var delegateCtorBuilder = delegateBuilder.DefineConstructor
-            (
-                RTSpecialName | HideBySig | Public,
-                Standard,
-                new[] { typeof(object), typeof(IntPtr) }
-            );
-
-            delegateCtorBuilder.SetImplementationFlags(Runtime | Managed);
-
-            var delegateMethodBuilder = delegateBuilder.DefineMethod
-            (
-                "Invoke",
-                Public | HideBySig | NewSlot | Virtual,
-                definition.ReturnType,
-                definition.ParameterTypes.ToArray()
-            );
-
-            delegateMethodBuilder.ApplyCustomAttributesFrom(definition);
-
-            delegateMethodBuilder.SetImplementationFlags(Runtime | Managed);
             return delegateBuilder;
         }
     }

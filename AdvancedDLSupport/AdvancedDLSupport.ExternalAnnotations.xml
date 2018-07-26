@@ -36,6 +36,33 @@
   <member name="P:AdvancedDLSupport.DynamicAssemblyProviders.TransientDynamicAssemblyProvider.IsDebuggable">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="M:AdvancedDLSupport.Extensions.ModuleBuilderExtensions.DefineDelegate(System.Reflection.Emit.ModuleBuilder,System.String,AdvancedDLSupport.Reflection.IntrospectiveMethodInfo,System.Boolean)">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    <parameter name="module">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="name">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="baseMember">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.Extensions.ModuleBuilderExtensions.DefineDelegate(System.Reflection.Emit.ModuleBuilder,System.String,System.Runtime.InteropServices.CallingConvention,System.Type,System.Type[],System.Boolean)">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    <parameter name="module">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="name">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="returnType">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="parameterTypes">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
   <member name="T:AdvancedDLSupport.IEntrypointMangler">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.UsedImplicitlyAttribute.#ctor" />
@@ -84,11 +111,22 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
+  <member name="M:AdvancedDLSupport.ImplementationGenerators.CallWrapperBase.EmitAdditionalTypes(System.Reflection.Emit.ModuleBuilder,AdvancedDLSupport.Pipeline.PipelineWorkUnit{AdvancedDLSupport.Reflection.IntrospectiveMethodInfo})">
+    <parameter name="module">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="workUnit">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
   <member name="M:AdvancedDLSupport.ImplementationGenerators.CallWrapperBase.GeneratePassthroughDefinition(AdvancedDLSupport.Pipeline.PipelineWorkUnit{AdvancedDLSupport.Reflection.IntrospectiveMethodInfo})">
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     <parameter name="workUnit">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
+  </member>
+  <member name="T:AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
   <member name="T:AdvancedDLSupport.ImplementationGenerators.ICallWrapper">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />

@@ -148,6 +148,14 @@ namespace AdvancedDLSupport.Pipeline
                 _constructorIL,
                 _options
             );
+
+            yield return new GenericDelegateWrapper
+            (
+                _targetModule,
+                _targetType,
+                _constructorIL,
+                _options
+            );
         }
 
         /// <summary>
