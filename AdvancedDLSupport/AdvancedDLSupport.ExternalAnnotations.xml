@@ -36,7 +36,7 @@
   <member name="P:AdvancedDLSupport.DynamicAssemblyProviders.TransientDynamicAssemblyProvider.IsDebuggable">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.Extensions.ModuleBuilderExtensions.DefineDelegate(System.Reflection.Emit.ModuleBuilder,System.String,System.Runtime.InteropServices.CallingConvention,AdvancedDLSupport.Reflection.IntrospectiveMethodInfo,System.Boolean)">
+  <member name="M:AdvancedDLSupport.Extensions.ModuleBuilderExtensions.DefineDelegate(System.Reflection.Emit.ModuleBuilder,System.String,AdvancedDLSupport.Reflection.IntrospectiveMethodInfo,System.Boolean)">
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     <parameter name="module">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
@@ -108,6 +108,14 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
     <parameter name="targetTypeConstructorIL">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.ImplementationGenerators.CallWrapperBase.EmitAdditionalTypes(System.Reflection.Emit.ModuleBuilder,AdvancedDLSupport.Pipeline.PipelineWorkUnit{AdvancedDLSupport.Reflection.IntrospectiveMethodInfo})">
+    <parameter name="module">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="workUnit">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>

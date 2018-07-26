@@ -29,6 +29,7 @@ using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
+using StrictEmit;
 using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 
 namespace AdvancedDLSupport.ImplementationGenerators
@@ -93,10 +94,15 @@ namespace AdvancedDLSupport.ImplementationGenerators
                     continue;
                 }
 
+                if (!(GetCreatedExplicitDelegateType(parameterType) is null))
+                {
+                    continue;
+                }
+
                 var signature = GetSignatureTypesFromGenericDelegate(parameterType);
                 var delegateName = GetDelegateTypeName(signature.ReturnType, signature.ParameterTypes);
 
-                module.DefineDelegate
+                var delegateDefinition = module.DefineDelegate
                 (
                     delegateName,
                     CallingConvention.Cdecl,
@@ -104,21 +110,51 @@ namespace AdvancedDLSupport.ImplementationGenerators
                     signature.ParameterTypes.ToArray(),
                     Options.HasFlagFast(ImplementationOptions.SuppressSecurity)
                 );
+
+                delegateDefinition.CreateTypeInfo();
             }
         }
 
         /// <inheritdoc/>
         public override void EmitPrologue(ILGenerator il, PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {
-            // Construct explict delegates from generic ones
-            throw new NotImplementedException();
+            var definition = workUnit.Definition;
+
+            // Load the "this" reference
+            il.EmitLoadArgument(0);
+
+            for (short i = 1; i <= definition.ParameterTypes.Count; ++i)
+            {
+                il.EmitLoadArgument(i);
+
+                var parameterType = definition.ParameterTypes[i - 1];
+                if (!parameterType.IsGenericDelegate())
+                {
+                    continue;
+                }
+
+                // Convert the input generic delegate to an explicit delegate
+                var delegateType = GetCreatedExplicitDelegateType(parameterType);
+
+                if (delegateType is null)
+                {
+                    throw new InvalidOperationException("No delegate type has been created for the given type.");
+                }
+
+                var delegateConstructor = delegateType.GetConstructors().First();
+                var invokeMethod = parameterType.GetMethod("Invoke");
+
+                il.EmitLoadNull();
+                il.EmitLoadFunctionPointer(invokeMethod);
+                il.EmitNewObject(delegateConstructor);
+            }
         }
 
         /// <inheritdoc/>
         public override void EmitEpilogue(ILGenerator il, PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {
             // If the return type is a delegate, convert it back into its generic representation
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
@@ -156,13 +192,24 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             if (originalType.IsGenericDelegate())
             {
-                var signature = GetSignatureTypesFromGenericDelegate(originalType);
-                var delegateName = GetDelegateTypeName(signature.ReturnType, signature.ParameterTypes);
-
-                return TargetModule.GetType(delegateName);
+                return GetCreatedExplicitDelegateType(originalType);
             }
 
             return originalType;
+        }
+
+        /// <summary>
+        /// Gets an already created explicit delegate type, based on the original generic delegate type.
+        /// </summary>
+        /// <param name="originalType">The generic type.</param>
+        /// <returns>The explicitly implemented type.</returns>
+        [CanBeNull]
+        private Type GetCreatedExplicitDelegateType([NotNull] Type originalType)
+        {
+            var signature = GetSignatureTypesFromGenericDelegate(originalType);
+            var delegateName = GetDelegateTypeName(signature.ReturnType, signature.ParameterTypes);
+
+            return TargetModule.GetType(delegateName);
         }
 
         /// <summary>
@@ -204,13 +251,17 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="parameterTypes">The parameter types of the delegate.</param>
         /// <returns>The generated name of the delegate.</returns>
         [NotNull]
-        private string GetDelegateTypeName([NotNull] Type returnType, [NotNull] IEnumerable<Type> parameterTypes)
+        private string GetDelegateTypeName([NotNull] Type returnType, [NotNull] IReadOnlyCollection<Type> parameterTypes)
         {
             var sb = new StringBuilder();
 
             sb.Append("generic_delegate_implementation_");
             sb.Append($"r{returnType.Name}_");
-            sb.Append($"p{string.Join("_p", parameterTypes)}");
+
+            if (parameterTypes.Any())
+            {
+                sb.Append($"p{string.Join("_p", parameterTypes)}");
+            }
 
             return sb.ToString();
         }

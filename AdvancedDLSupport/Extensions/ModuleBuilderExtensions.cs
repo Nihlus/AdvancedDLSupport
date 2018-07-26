@@ -127,7 +127,7 @@ namespace AdvancedDLSupport.Extensions
         {
             var delegateBuilder = module.DefineType
             (
-                $"{name}_delegate",
+                name,
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AnsiClass | TypeAttributes.AutoClass,
                 typeof(MulticastDelegate)
             );

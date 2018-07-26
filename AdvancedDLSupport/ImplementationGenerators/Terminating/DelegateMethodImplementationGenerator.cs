@@ -186,7 +186,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             // Declare a delegate type
             var delegateBuilder = TargetModule.DefineDelegate
             (
-                workUnit.GetUniqueBaseMemberName(),
+                $"{workUnit.GetUniqueBaseMemberName()}_delegate",
                 definition,
                 Options.HasFlagFast(SuppressSecurity)
             );
