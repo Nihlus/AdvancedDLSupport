@@ -29,16 +29,24 @@ namespace AdvancedDLSupport.Tests.Data
 
         void ExecuteActionT1(Action<int> action);
 
+        void ExecuteActionT1Nested(Action<Action<int>> action);
+
         int ExecuteFuncT1(Func<int> func);
 
         int ExecuteFuncT1T2(Func<int, int> func);
+
+        int ExecuteFuncT1T2Nested(Func<Func<int, int>, int> func);
 
         Action GetNativeAction();
 
         Action<int> GetNativeActionT1();
 
+        Action<Action<int>> GetNativeActionT1Nested();
+
         Func<int> GetNativeFuncT1();
 
         Func<int, int> GetNativeFuncT1T2();
+
+        Func<Func<int, int>, int> GetNativeFuncT1T2Nested();
     }
 }

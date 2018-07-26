@@ -26,9 +26,15 @@
 
 typedef void (*Action)();
 typedef void (*ActionT1)(int t1);
+typedef void (*ActionT1Nested)(ActionT1 action);
 
 typedef int (*FuncT1)();
 typedef int (*FuncT1T2)(int t2);
+typedef int (*FuncT1T2Nested)(FuncT1T2 func);
+
+void NativeActionT1(int t1);
+
+int NativeFuncT1T2(int t2);
 
 __declspec(dllexport) void ExecuteAction(Action action)
 {
@@ -38,6 +44,12 @@ __declspec(dllexport) void ExecuteAction(Action action)
 __declspec(dllexport) void ExecuteActionT1(ActionT1 action)
 {
 	action(5);
+}
+
+__declspec(dllexport) void ExecuteActionT1Nested(ActionT1Nested action)
+{
+	fprintf(stdout, "In nested, seeing function pointer as %x", (unsigned int)&NativeActionT1);
+	action(&NativeActionT1);
 }
 
 __declspec(dllexport) int ExecuteFuncT1(FuncT1 func)
@@ -50,9 +62,19 @@ __declspec(dllexport) int ExecuteFuncT1T2(FuncT1T2 func)
 	return func(5);
 }
 
-void NativeAction()
+__declspec(dllexport) int ExecuteFuncT1T2Nested(FuncT1T2Nested func)
+{
+	return func(&NativeFuncT1T2);
+}
+
+__declspec(dllexport) void NativeAction()
 {
 	fprintf(stdout, "Living in native land!");
+}
+
+__declspec(dllexport) void NativeActionT1(int t1)
+{
+	fprintf(stdout, "Living in native land, seeing parameter as %d!", t1);
 }
 
 __declspec(dllexport) Action GetNativeAction()
@@ -60,17 +82,17 @@ __declspec(dllexport) Action GetNativeAction()
 	return &NativeAction;
 }
 
-void NativeActionT1(int t1)
-{
-	fprintf(stdout, "Living in native land, with the parameter %d!", t1);
-}
-
 __declspec(dllexport) ActionT1 GetNativeActionT1()
 {
 	return &NativeActionT1;
 }
 
-int NativeFuncT1()
+__declspec(dllexport) ActionT1Nested GetNativeActionT1Nested()
+{
+	return &ExecuteActionT1;
+}
+
+__declspec(dllexport) int NativeFuncT1()
 {
 	return 5;
 }
@@ -80,7 +102,7 @@ __declspec(dllexport) FuncT1 GetNativeFuncT1()
 	return &NativeFuncT1;
 }
 
-int NativeFuncT1T2(int t2)
+__declspec(dllexport) int NativeFuncT1T2(int t2)
 {
 	return t2 * 5;
 }
@@ -88,4 +110,9 @@ int NativeFuncT1T2(int t2)
 __declspec(dllexport) FuncT1T2 GetNativeFuncT1T2()
 {
 	return &NativeFuncT1T2;
+}
+
+__declspec(dllexport) FuncT1T2Nested GetNativeFuncT1T2Nested()
+{
+	return &ExecuteFuncT1T2;
 }

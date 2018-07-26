@@ -94,25 +94,62 @@ namespace AdvancedDLSupport.ImplementationGenerators
                     continue;
                 }
 
-                if (!(GetCreatedExplicitDelegateType(parameterType) is null))
+                EmitExplicitDelegateDefinition(module, parameterType);
+            }
+        }
+
+        /// <summary>
+        /// Generates an explicit delegate definition based on a generic delegate type.
+        /// </summary>
+        /// <param name="module">The module to emit the type in.</param>
+        /// <param name="genericDelegateType">The generic delegate type.</param>
+        private TypeInfo EmitExplicitDelegateDefinition([NotNull] ModuleBuilder module, [NotNull] Type genericDelegateType)
+        {
+            var existingDelegate = GetCreatedExplicitDelegateType(genericDelegateType);
+            if (!(existingDelegate is null))
+            {
+                return existingDelegate.GetTypeInfo();
+            }
+
+            var signature = GetSignatureTypesFromGenericDelegate(genericDelegateType);
+
+            var delegateReturnType = signature.ReturnType;
+            if (delegateReturnType.IsGenericDelegate())
+            {
+                // This is a nested delegate, so we'll need to generate one for this one
+                delegateReturnType = EmitExplicitDelegateDefinition(module, signature.ReturnType);
+            }
+
+            var delegateParameters = new List<TypeInfo>();
+            foreach (var delegateParameter in signature.ParameterTypes)
+            {
+                if (!delegateParameter.IsGenericDelegate())
                 {
+                    delegateParameters.Add(delegateParameter.GetTypeInfo());
                     continue;
                 }
 
-                var signature = GetSignatureTypesFromGenericDelegate(parameterType);
-                var delegateName = GetDelegateTypeName(signature.ReturnType, signature.ParameterTypes);
-
-                var delegateDefinition = module.DefineDelegate
-                (
-                    delegateName,
-                    CallingConvention.Cdecl,
-                    signature.ReturnType,
-                    signature.ParameterTypes.ToArray(),
-                    Options.HasFlagFast(ImplementationOptions.SuppressSecurity)
-                );
-
-                delegateDefinition.CreateTypeInfo();
+                // Also a nested delegate, so we'll need to generate one for this one too
+                var nestedDelegate = EmitExplicitDelegateDefinition(module, delegateParameter);
+                delegateParameters.Add(nestedDelegate);
             }
+
+            if (delegateParameters.Any(p => p.IsGenericDelegate()))
+            {
+                // break
+            }
+
+            var delegateName = GetDelegateTypeName(delegateReturnType, delegateParameters);
+            var delegateDefinition = module.DefineDelegate
+            (
+                delegateName,
+                CallingConvention.Cdecl,
+                delegateReturnType,
+                delegateParameters.Cast<Type>().ToArray(),
+                Options.HasFlagFast(ImplementationOptions.SuppressSecurity)
+            );
+
+            return delegateDefinition.CreateTypeInfo();
         }
 
         /// <inheritdoc/>
@@ -211,7 +248,16 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             if (originalType.IsGenericDelegate())
             {
-                return GetCreatedExplicitDelegateType(originalType);
+                var explicitDelegateType = GetCreatedExplicitDelegateType(originalType);
+                if (explicitDelegateType is null)
+                {
+                    throw new InvalidOperationException
+                    (
+                        "Could not find the generated delegate type."
+                    );
+                }
+
+                return explicitDelegateType;
             }
 
             return originalType;
@@ -275,12 +321,29 @@ namespace AdvancedDLSupport.ImplementationGenerators
             var sb = new StringBuilder();
 
             sb.Append("generic_delegate_implementation_");
-            sb.Append($"r{returnType.Name}_");
-
-            if (parameterTypes.Any())
+            var returnTypeName = returnType.Name;
+            if (returnType.IsGenericDelegate())
             {
-                sb.Append($"p{string.Join("_p", parameterTypes)}");
+                var signature = GetSignatureTypesFromGenericDelegate(returnType);
+                returnTypeName = GetDelegateTypeName(signature.ReturnType, signature.ParameterTypes);
             }
+
+            sb.Append($"r{returnTypeName}_");
+
+            var parameterNames = new List<string>();
+            foreach (var parameterType in parameterTypes)
+            {
+                var parameterName = parameterType.Name;
+                if (parameterType.IsGenericDelegate())
+                {
+                    var signature = GetSignatureTypesFromGenericDelegate(parameterType);
+                    parameterName = GetDelegateTypeName(signature.ReturnType, signature.ParameterTypes);
+                }
+
+                parameterNames.Add(parameterName);
+            }
+
+            sb.Append($"p{string.Join("_p", parameterNames)}");
 
             return sb.ToString();
         }

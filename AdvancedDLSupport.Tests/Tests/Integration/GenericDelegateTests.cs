@@ -17,6 +17,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
 using AdvancedDLSupport.Tests.Data;
 using AdvancedDLSupport.Tests.TestBases;
 using Xunit;
@@ -75,6 +76,33 @@ namespace AdvancedDLSupport.Tests.Integration
 
                 Assert.Equal(25, result);
             }
+
+            [Fact(Skip = "Not working due to CLR limitations.")]
+            public void NativeCanCallNestedAction()
+            {
+                bool ranAction = false;
+                Library.ExecuteActionT1Nested
+                (
+                    action =>
+                    {
+                        ranAction = true;
+                        action(5);
+                    }
+                );
+
+                Assert.True(ranAction);
+            }
+
+            [Fact(Skip = "Not working due to CLR limitations.")]
+            public void NativeCanCallNestedFunc()
+            {
+                var result = Library.ExecuteFuncT1T2Nested
+                (
+                    func => func(5)
+                );
+
+                Assert.Equal(25, result);
+            }
         }
 
         public class FromNativeToManaged : LibraryTestBase<IGenericDelegateLibrary>
@@ -112,6 +140,28 @@ namespace AdvancedDLSupport.Tests.Integration
             {
                 var func = Library.GetNativeFuncT1T2();
                 var result = func(5);
+
+                Assert.Equal(25, result);
+            }
+
+            [Fact(Skip = "Not working due to CLR limitations.")]
+            public void ManagedCanCallNestedAction()
+            {
+                var action = Library.GetNativeActionT1Nested();
+
+                int result = 0;
+                action(i => result = i);
+
+                Assert.Equal(5, result);
+            }
+
+            [Fact(Skip = "Not working due to CLR limitations.")]
+            public void ManagedCanCallNestedFunc()
+            {
+                var func = Library.GetNativeFuncT1T2Nested();
+
+                int result = 0;
+                func(i => result = i * 5);
 
                 Assert.Equal(25, result);
             }
