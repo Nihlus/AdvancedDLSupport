@@ -144,7 +144,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 var delegateConstructor = delegateType.GetConstructors().First();
                 var invokeMethod = parameterType.GetMethod("Invoke");
 
-                il.EmitLoadNull();
                 il.EmitLoadFunctionPointer(invokeMethod);
                 il.EmitNewObject(delegateConstructor);
             }
