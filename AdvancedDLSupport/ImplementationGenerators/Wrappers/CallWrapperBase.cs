@@ -63,8 +63,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="workUnit">The unit to generate the types from.</param>
         public virtual void EmitAdditionalTypes
         (
-            ModuleBuilder module,
-            PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
+            [NotNull] ModuleBuilder module,
+            [NotNull] PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
         )
         {
         }

@@ -39,25 +39,26 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="module">The module to define the delegate in.</param>
         /// <param name="name">The name of the delegate type.</param>
-        /// <param name="callingConvention">The unmanaged calling convention to use.</param>
         /// <param name="baseMember">The base member to take parameter types from.</param>
         /// <param name="suppressSecurity">Whether or not code security should be suppressed on the delegate.</param>
         /// <returns>The delegate type.</returns>
         [NotNull]
         public static TypeBuilder DefineDelegate
         (
-            [NotNull] ModuleBuilder module,
+            [NotNull] this ModuleBuilder module,
             [NotNull] string name,
-            CallingConvention callingConvention,
             [NotNull] IntrospectiveMethodInfo baseMember,
             bool suppressSecurity = false
         )
         {
+            var metadataAttribute = baseMember.GetCustomAttribute<NativeSymbolAttribute>() ??
+                                    new NativeSymbolAttribute(baseMember.Name);
+
             var delegateBuilder = DefineDelegateType
             (
                 module,
                 name,
-                callingConvention,
+                metadataAttribute.CallingConvention,
                 suppressSecurity
             );
 
@@ -87,7 +88,7 @@ namespace AdvancedDLSupport.Extensions
         [NotNull]
         public static TypeBuilder DefineDelegate
         (
-            [NotNull] ModuleBuilder module,
+            [NotNull] this ModuleBuilder module,
             [NotNull] string name,
             CallingConvention callingConvention,
             [NotNull] Type returnType,
