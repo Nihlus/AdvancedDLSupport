@@ -134,18 +134,18 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 }
 
                 // Convert the input generic delegate to an explicit delegate
-                var delegateType = GetCreatedExplicitDelegateType(parameterType);
+                var explicitDelegateType = GetCreatedExplicitDelegateType(parameterType);
 
-                if (delegateType is null)
+                if (explicitDelegateType is null)
                 {
                     throw new InvalidOperationException("No delegate type has been created for the given type.");
                 }
 
-                var delegateConstructor = delegateType.GetConstructors().First();
+                var explicitDelegateConstructor = explicitDelegateType.GetConstructors().First();
                 var invokeMethod = parameterType.GetMethod("Invoke");
 
                 il.EmitLoadFunctionPointer(invokeMethod);
-                il.EmitNewObject(delegateConstructor);
+                il.EmitNewObject(explicitDelegateConstructor);
             }
         }
 
@@ -153,7 +153,27 @@ namespace AdvancedDLSupport.ImplementationGenerators
         public override void EmitEpilogue(ILGenerator il, PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {
             // If the return type is a delegate, convert it back into its generic representation
-            //throw new NotImplementedException();
+            var definition = workUnit.Definition;
+            var returnType = definition.ReturnType;
+
+            if (!returnType.IsGenericDelegate())
+            {
+                return;
+            }
+
+            // Convert the output explicit delegate to a generic delegate
+            var explicitDelegateType = GetCreatedExplicitDelegateType(returnType);
+
+            if (explicitDelegateType is null)
+            {
+                throw new InvalidOperationException("No delegate type has been created for the given type.");
+            }
+
+            var genericDelegateConstructor = returnType.GetConstructors().First();
+            var invokeMethod = explicitDelegateType.GetMethod("Invoke");
+
+            il.EmitLoadFunctionPointer(invokeMethod);
+            il.EmitNewObject(genericDelegateConstructor);
         }
 
         /// <inheritdoc/>
