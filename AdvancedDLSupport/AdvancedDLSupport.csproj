@@ -12,7 +12,7 @@
   <PropertyGroup>
     <Title>AdvancedDLSupport</Title>
     <Authors>TheBlackCentipede;Jax</Authors>
-    <Version>2.1.0</Version>
+    <Version>2.1.2</Version>
     <Description>An alternative approach to your typical P/Invoke.</Description>
     <Copyright>Copyright Firwood Software 2017</Copyright>
   </PropertyGroup>
@@ -20,7 +20,7 @@
     <PackageId>AdvancedDLSupport</PackageId>
     <PackageLicenseUrl>https://www.gnu.org/licenses/lgpl-3.0.txt</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Implement generic delegate marshalling support.</PackageReleaseNotes>
+    <PackageReleaseNotes>Correct external annotation bundling.</PackageReleaseNotes>
     <PackageTags>p/invoke;cross-platform;mono;netcore;netstandard;native;interop</PackageTags>
     <PackageOutputPath>../nuget</PackageOutputPath>
     <IncludeSymbols>True</IncludeSymbols>
@@ -31,10 +31,10 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="AdvancedDLSupport.ExternalAnnotations.xml">
+    <AdditionalFiles Include="AdvancedDLSupport.ExternalAnnotations.xml">
       <InProject>false</InProject>
       <CopyToOutputDirectory>CopyIfNewer</CopyToOutputDirectory>
-    </Content>
+    </AdditionalFiles>
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="$(ProjectDir)\..\stylecop.json">
@@ -51,7 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Humanizer" Version="2.2.0" />
-    <PackageReference Include="StrictEmit" Version="2.4.1" />
+    <PackageReference Include="StrictEmit" Version="2.4.2" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta006" PrivateAssets="all" />
     <PackageReference Include="JetBrains.Annotations" Version="11.1.0" PrivateAssets="all" />
     <PackageReference Include="JetBrainsAnnotations.Fody" Version="2.2.0" PrivateAssets="all" />
