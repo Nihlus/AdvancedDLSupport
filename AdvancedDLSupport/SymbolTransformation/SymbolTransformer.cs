@@ -20,8 +20,8 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using AdvancedDLSupport.Reflection;
-using Humanizer;
 using JetBrains.Annotations;
 using static AdvancedDLSupport.SymbolTransformationMethod;
 
@@ -105,29 +105,64 @@ namespace AdvancedDLSupport
                 }
                 case Pascalize:
                 {
-                    return concatenated.Pascalize();
+                    return PascalizeValue(concatenated);
                 }
                 case Camelize:
                 {
-                    return concatenated.Camelize();
+                    return CamelizeValue(concatenated);
                 }
                 case Underscore:
                 {
-                    return concatenated.Underscore();
+                    return UnderscoreValue(concatenated);
                 }
                 case Dasherize:
                 {
-                    return concatenated.Dasherize();
+                    return DasherizeValue(concatenated);
                 }
                 case Kebaberize:
                 {
-                    return concatenated.Kebaberize();
+                    return KebaberizeValue(concatenated);
                 }
                 default:
                 {
                     throw new ArgumentOutOfRangeException(nameof(method), method, null);
                 }
             }
+        }
+
+        private string CamelizeValue(string input)
+        {
+            var word = PascalizeValue(input);
+            return word.Length > 0 ? word.Substring(0, 1).ToLower() + word.Substring(1) : word;
+        }
+
+        private string PascalizeValue(string input)
+        {
+            return Regex.Replace(input, "(?:^|_)(.)", match => match.Groups[1].Value.ToUpper());
+        }
+
+        private string UnderscoreValue(string input)
+        {
+            return Regex.Replace(
+                Regex.Replace(
+                    Regex.Replace(
+                        input,
+                        @"([\p{Lu}]+)([\p{Lu}][\p{Ll}])",
+                        "$1_$2"),
+                    @"([\p{Ll}\d])([\p{Lu}])",
+                    "$1_$2"), @"[-\s]",
+                "_")
+                .ToLower();
+        }
+
+        private string DasherizeValue(string underscoredWord)
+        {
+            return underscoredWord.Replace('_', '-');
+        }
+
+        private string KebaberizeValue(string input)
+        {
+            return DasherizeValue(UnderscoreValue(input));
         }
     }
 }
