@@ -32,9 +32,9 @@ typedef int (*FuncT1)();
 typedef int (*FuncT1T2)(int t2);
 typedef int (*FuncT1T2Nested)(FuncT1T2 func);
 
-void NativeActionT1(int t1);
+__declspec(dllexport) void NativeActionT1(int t1);
 
-int NativeFuncT1T2(int t2);
+__declspec(dllexport) int NativeFuncT1T2(int t2);
 
 __declspec(dllexport) void ExecuteAction(Action action)
 {
