@@ -112,6 +112,23 @@ namespace AdvancedDLSupport
                 }
             }
 
+            // Check the native probing paths (.NET Core defines this, Mono doesn't. Users can set this at runtime, too)
+            if (AppContext.GetData("NATIVE_DLL_SEARCH_DIRECTORIES") is string directories)
+            {
+                var paths = directories.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var path in paths)
+                {
+                    foreach (var candidate in candidates)
+                    {
+                        var candidatePath = Path.Combine(path, candidate);
+                        if (File.Exists(candidatePath))
+                        {
+                            return ResolvePathResult.FromSuccess(Path.GetFullPath(candidatePath));
+                        }
+                    }
+                }
+            }
+
             if (localFirst)
             {
                 foreach (var candidate in candidates)
