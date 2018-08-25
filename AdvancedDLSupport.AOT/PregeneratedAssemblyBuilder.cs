@@ -48,7 +48,7 @@ namespace AdvancedDLSupport.AOT
         private List<Assembly> SourceAssemblies { get; }
 
         [NotNull]
-        private List<(Type ClassType, Type InterfaceType)> SourceExplicitTypeCombinations { get; }
+        private List<(Type ClassType, IReadOnlyList<Type> InterfaceTypes)> SourceExplicitTypeCombinations { get; }
 
         private ImplementationOptions _options;
 
@@ -62,7 +62,7 @@ namespace AdvancedDLSupport.AOT
             _options = options;
 
             SourceAssemblies = new List<Assembly>();
-            SourceExplicitTypeCombinations = new List<(Type, Type)>();
+            SourceExplicitTypeCombinations = new List<(Type, IReadOnlyList<Type>)>();
         }
 
         /// <summary>
@@ -100,13 +100,13 @@ namespace AdvancedDLSupport.AOT
         /// Adds an explicit type combination that isn't automatically discovered from the assembly set.
         /// </summary>
         /// <param name="classType">The base class of the type.</param>
-        /// <param name="interfaceType">The interface to implement.</param>
+        /// <param name="interfaceTypes">The interfaces to implement.</param>
         /// <returns>The builder, with the combination.</returns>
         [PublicAPI, NotNull]
         public PregeneratedAssemblyBuilder WithSourceExplicitTypeCombination
         (
             [NotNull] Type classType,
-            [NotNull] Type interfaceType
+            [NotNull] params Type[] interfaceTypes
         )
         {
             if (!classType.IsAbstract)
@@ -127,25 +127,34 @@ namespace AdvancedDLSupport.AOT
                 );
             }
 
-            if (!interfaceType.IsInterface)
+            if (!interfaceTypes.Any(i => i.IsInterface))
             {
                 throw new ArgumentException
                 (
                     "The interface to activate on the class must be an interface type.",
-                    nameof(interfaceType)
+                    nameof(interfaceTypes)
                 );
             }
 
-            if (SourceExplicitTypeCombinations.Any(t => t.ClassType == classType && t.InterfaceType == interfaceType))
+            foreach (var combination in SourceExplicitTypeCombinations)
             {
-                throw new ArgumentException
-                (
-                    "The source combination of explicit types must be unique to the builder instance.",
-                    $"{nameof(classType)}+{nameof(interfaceType)}"
-                );
+                var areInterfaceListsEqual = combination.InterfaceTypes
+                    .OrderBy(i => i.Name)
+                    .SequenceEqual(interfaceTypes.OrderBy(i => i.Name));
+
+                var areClassesEqual = combination.ClassType == classType;
+
+                if (areClassesEqual && areInterfaceListsEqual)
+                {
+                    throw new ArgumentException
+                    (
+                        "The source combination of explicit types must be unique to the builder instance.",
+                        $"{nameof(classType)}+{nameof(interfaceTypes)}"
+                    );
+                }
             }
 
-            SourceExplicitTypeCombinations.Add((classType, interfaceType));
+            SourceExplicitTypeCombinations.Add((classType, interfaceTypes));
             return this;
         }
 
@@ -174,14 +183,19 @@ namespace AdvancedDLSupport.AOT
             }
 
             // Build combination list
-            var combinationList = new List<(Type ClassType, Type InterfaceType)>();
-            combinationList.AddRange(automaticInterfaces.Select(t => (typeof(NativeLibraryBase), t)));
+            var combinationList = new List<(Type ClassType, IReadOnlyList<Type> InterfaceTypes)>();
+            combinationList.AddRange
+            (
+                automaticInterfaces.Select(t => (typeof(NativeLibraryBase), (IReadOnlyList<Type>)new List<Type> { t }))
+            );
 
             foreach (var explicitCombination in SourceExplicitTypeCombinations)
             {
                 if (combinationList.Any(t =>
                     t.ClassType == explicitCombination.ClassType &&
-                    t.InterfaceType == explicitCombination.InterfaceType))
+                    t.InterfaceTypes
+                        .OrderBy(i => i.Name)
+                        .SequenceEqual(explicitCombination.InterfaceTypes.OrderBy(i => i.Name))))
                 {
                     continue;
                 }
@@ -196,7 +210,7 @@ namespace AdvancedDLSupport.AOT
             var libraryBuilder = new NativeLibraryBuilder(_options, assemblyProvider: persistentAssemblyProvider);
             foreach (var combination in combinationList)
             {
-                var generatedCombination = libraryBuilder.PregenerateImplementationType(combination.ClassType, combination.InterfaceType);
+                var generatedCombination = libraryBuilder.PregenerateImplementationType(combination.ClassType, combination.InterfaceTypes.ToArray());
 
                 generatedTypeDictionary.Add(generatedCombination.Item1, generatedCombination.Item2);
             }
@@ -315,17 +329,34 @@ namespace AdvancedDLSupport.AOT
         /// <summary>
         /// Emits a set of IL instructions that creates a new instance of the given <paramref name ="entryKey"/>.
         /// </summary>
-        /// <param name="constructorIL">The generator where the Il is to be emitted.</param>
+        /// <param name="constructorIL">The generator where the IL is to be emitted.</param>
         /// <param name="entryKey">The instance to emit.</param>
         private void EmitCreateKeyInstance([NotNull] ILGenerator constructorIL, GeneratedImplementationTypeIdentifier entryKey)
         {
             var constructor = entryKey.GetType().GetConstructor
             (
-                new[] { typeof(Type), typeof(Type), typeof(ImplementationOptions) }
+                new[] { typeof(Type), typeof(IReadOnlyList<Type>), typeof(ImplementationOptions) }
             );
 
+            // Build the interface type array
+            var typeArrayVariable = constructorIL.DeclareLocal(typeof(Type[]));
+
+            constructorIL.EmitConstantInt(entryKey.InterfaceTypes.Count);
+            constructorIL.EmitNewArray<Type>();
+            constructorIL.EmitSetLocalVariable(typeArrayVariable);
+
+            for (var i = 0; i < entryKey.InterfaceTypes.Count; ++i)
+            {
+                constructorIL.EmitLoadLocalVariable(typeArrayVariable);
+
+                constructorIL.EmitConstantInt(i);
+                constructorIL.EmitTypeOf(entryKey.InterfaceTypes[i]);
+                constructorIL.EmitSetArrayElement<Type>();
+            }
+
+            // Create the key
             constructorIL.EmitTypeOf(entryKey.BaseClassType);
-            constructorIL.EmitTypeOf(entryKey.InterfaceType);
+            constructorIL.EmitLoadLocalVariable(typeArrayVariable);
             constructorIL.EmitConstantInt((int)entryKey.Options);
 
             constructorIL.EmitNewObject(constructor);

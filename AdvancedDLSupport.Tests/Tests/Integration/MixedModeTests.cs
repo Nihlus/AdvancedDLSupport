@@ -37,7 +37,7 @@ namespace AdvancedDLSupport.Tests.Integration
         {
             _builder = new NativeLibraryBuilder(ImplementationOptions.GenerateDisposalChecks);
 
-            _mixedModeClass = _builder.ActivateClass<MixedModeClass, IMixedModeLibrary>(LibraryName);
+            _mixedModeClass = _builder.ActivateClass<MixedModeClass>(LibraryName);
         }
 
         [Fact]
@@ -46,8 +46,14 @@ namespace AdvancedDLSupport.Tests.Integration
             Assert.Throws<ArgumentException>
             (
                 () =>
-                    _builder.ActivateClass<MixedModeClassThatIsNotAbstract, IMixedModeLibrary>(LibraryName)
+                    _builder.ActivateClass<MixedModeClassThatIsNotAbstract>(LibraryName)
             );
+        }
+
+        [Fact]
+        public void CanActivateClassWithMultipleNativeInterfaces()
+        {
+            _builder.ActivateClass<MixedModeClassWithMultipleNativeInterfaces>(LibraryName);
         }
 
         [Fact]

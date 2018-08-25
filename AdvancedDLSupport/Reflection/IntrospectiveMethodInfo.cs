@@ -167,7 +167,13 @@ namespace AdvancedDLSupport.Reflection
 
                 if (returnParameterMarshalAsAttribute is null && RuntimeInformation.FrameworkDescription.Contains("Mono"))
                 {
-                    returnParameterMarshalAsAttribute = Attribute.GetCustomAttribute(methodInfo.ReturnParameter, typeof(MarshalAsAttribute)) as MarshalAsAttribute;
+                    // Don't walk the inheritance tree of the return parameter due to a bug
+                    // https://stackoverflow.com/a/38759885
+                    returnParameterMarshalAsAttribute = Attribute.GetCustomAttribute
+                    (
+                        methodInfo.ReturnParameter, typeof(MarshalAsAttribute), false
+                    ) as MarshalAsAttribute;
+
                     if (!(returnParameterMarshalAsAttribute is null))
                     {
                         returnCustomAttributes.Add(returnParameterMarshalAsAttribute.GetAttributeData());
