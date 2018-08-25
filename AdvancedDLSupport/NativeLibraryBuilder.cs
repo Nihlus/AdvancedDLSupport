@@ -182,6 +182,12 @@ namespace AdvancedDLSupport
         [NotNull, PublicAPI]
         public TInterface ActivateInterface<TInterface>([NotNull] string libraryPath) where TInterface : class
         {
+            // Check for remapping
+            if (Options.HasFlagFast(EnableDllMapSupport))
+            {
+                libraryPath = new DllMapResolver().MapLibraryName(typeof(TInterface), libraryPath);
+            }
+
             var anonymousInstance = ActivateClass<NativeLibraryBase, TInterface>(libraryPath);
 
             return anonymousInstance as TInterface
@@ -192,7 +198,36 @@ namespace AdvancedDLSupport
         }
 
         /// <summary>
-        /// Resolves a mixed-mode class that implementing a C function interface, making the native functions available
+        /// Resolves a mixed-mode class that implements a C function interface, making the native functions available
+        /// for use.
+        /// </summary>
+        /// <param name="libraryPath">The name of or path to the library.</param>
+        /// <typeparam name="TClass">The base class for the implementation to generate.</typeparam>
+        /// <returns>An instance of the class.</returns>
+        /// <exception cref="ArgumentException">Thrown if either of the type arguments are incompatible.</exception>
+        /// <exception cref="FileNotFoundException">
+        /// Thrown if the specified library can't be found in any of the loader paths.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the resulting instance can't be cast to the expected class. Should never occur in user code.
+        /// </exception>
+        [NotNull, PublicAPI]
+        public TClass ActivateClass<TClass>([NotNull] string libraryPath)
+            where TClass : NativeLibraryBase
+        {
+            var classType = typeof(TClass);
+
+            // Check for remapping
+            if (Options.HasFlagFast(EnableDllMapSupport))
+            {
+                libraryPath = new DllMapResolver().MapLibraryName(classType, libraryPath);
+            }
+
+            return (TClass)ActivateClass(libraryPath, classType, classType.GetInterfaces());
+        }
+
+        /// <summary>
+        /// Resolves a mixed-mode class that implements a C function interface, making the native functions available
         /// for use.
         /// </summary>
         /// <param name="libraryPath">The name of or path to the library.</param>
@@ -212,25 +247,49 @@ namespace AdvancedDLSupport
             where TInterface : class
         {
             var classType = typeof(TClass);
-            if (!classType.IsAbstract)
-            {
-                throw new ArgumentException("The class to activate must be abstract.", nameof(TClass));
-            }
-
-            var interfaceType = typeof(TInterface);
-            if (!interfaceType.IsInterface)
-            {
-                throw new ArgumentException
-                (
-                    "The interface to activate on the class must be an interface type.",
-                    nameof(TInterface)
-                );
-            }
 
             // Check for remapping
             if (Options.HasFlagFast(EnableDllMapSupport))
             {
-                libraryPath = new DllMapResolver().MapLibraryName(interfaceType, libraryPath);
+                libraryPath = new DllMapResolver().MapLibraryName(classType, libraryPath);
+            }
+
+            return (TClass)ActivateClass(libraryPath, classType, typeof(TInterface));
+        }
+
+        /// <summary>
+        /// Resolves a mixed-mode class that implements a C function interface, making the native functions available
+        /// for use.
+        /// </summary>
+        /// <param name="libraryPath">The name of or path to the library.</param>
+        /// <param name="baseClassType">The base class for the implementation to generate.</param>
+        /// <param name="interfaceTypes">The interfaces to implement.</param>
+        /// <returns>An instance of the class.</returns>
+        /// <exception cref="ArgumentException">Thrown if either of the type arguments are incompatible.</exception>
+        /// <exception cref="FileNotFoundException">
+        /// Thrown if the specified library can't be found in any of the loader paths.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the resulting instance can't be cast to the expected class. Should never occur in user code.
+        /// </exception>
+        [NotNull, PublicAPI]
+        public object ActivateClass
+        (
+            [NotNull] string libraryPath, [NotNull] Type baseClassType, [NotNull] params Type[] interfaceTypes
+        )
+        {
+            if (!baseClassType.IsAbstract)
+            {
+                throw new ArgumentException("The class to activate must be abstract.", nameof(baseClassType));
+            }
+
+            if (!interfaceTypes.Any(i => i.IsInterface))
+            {
+                throw new ArgumentException
+                (
+                    "The interfaces to activate on the class must be an interface type.",
+                    nameof(interfaceTypes)
+                );
             }
 
             // Attempt to resolve a name or path for the given library
@@ -248,29 +307,25 @@ namespace AdvancedDLSupport
             libraryPath = resolveResult.Path;
 
             // Check if we've already generated a type for this configuration
-            var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, Options);
+            var key = new GeneratedImplementationTypeIdentifier(baseClassType, interfaceTypes, Options);
             lock (BuilderLock)
             {
                 if (!TypeCache.TryGetValue(key, out var generatedType))
                 {
-                    generatedType = GenerateInterfaceImplementationType<TClass, TInterface>();
+                    generatedType = GenerateInterfaceImplementationType(baseClassType, interfaceTypes);
                     TypeCache.TryAdd(key, generatedType);
                 }
 
                 try
                 {
-                    var anonymousInstance = CreateAnonymousImplementationInstance<TInterface>
+                    var anonymousInstance = CreateAnonymousImplementationInstance
                     (
                         generatedType,
                         libraryPath,
                         Options
                     );
 
-                    return anonymousInstance as TClass
-                    ?? throw new InvalidOperationException
-                    (
-                        "The resulting instance was not convertible to an instance of the class."
-                    );
+                    return anonymousInstance;
                 }
                 catch (TargetInvocationException tex)
                 {
@@ -288,55 +343,8 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Generates the implementation type for a given class and interface combination, caching it for later use.
         /// </summary>
-        /// <typeparam name="TBaseClass">The base class for the implementation to generate.</typeparam>
-        /// <typeparam name="TInterface">The interface to implement.</typeparam>
-        /// <exception cref="ArgumentException">Thrown if either of the type arguments are incompatible.</exception>
-        /// <exception cref="FileNotFoundException">
-        /// Thrown if the specified library can't be found in any of the loader paths.
-        /// </exception>
-        internal void PregenerateImplementationType<TBaseClass, TInterface>()
-            where TBaseClass : NativeLibraryBase
-            where TInterface : class
-        {
-            var classType = typeof(TBaseClass);
-            if (!classType.IsAbstract)
-            {
-                throw new ArgumentException
-                (
-                    "The class to activate must be abstract.",
-                    nameof(TBaseClass)
-                );
-            }
-
-            var interfaceType = typeof(TInterface);
-            if (!interfaceType.IsInterface)
-            {
-                throw new ArgumentException
-                (
-                    "The interface to activate on the class must be an interface type.",
-                    nameof(TInterface)
-                );
-            }
-
-            // Check if we've already generated a type for this configuration
-            var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, Options);
-            lock (BuilderLock)
-            {
-                if (TypeCache.TryGetValue(key, out var generatedType))
-                {
-                    return;
-                }
-
-                generatedType = GenerateInterfaceImplementationType<TBaseClass, TInterface>();
-                TypeCache.TryAdd(key, generatedType);
-            }
-        }
-
-        /// <summary>
-        /// Generates the implementation type for a given class and interface combination, caching it for later use.
-        /// </summary>
         /// <param name="classType">The base class for the implementation to generate.</param>
-        /// <param name="interfaceType">The interface to implement.</param>
+        /// <param name="interfaceTypes">The interfaces to implement.</param>
         /// <exception cref="ArgumentException">Thrown if either of the type arguments are incompatible.</exception>
         /// <exception cref="FileNotFoundException">
         /// Thrown if the specified library can't be found in any of the loader paths.
@@ -346,7 +354,7 @@ namespace AdvancedDLSupport
         internal Tuple<GeneratedImplementationTypeIdentifier, Type> PregenerateImplementationType
         (
             [NotNull] Type classType,
-            [NotNull] Type interfaceType
+            [NotNull] params Type[] interfaceTypes
         )
         {
             if (!classType.IsAbstract)
@@ -367,17 +375,17 @@ namespace AdvancedDLSupport
                 );
             }
 
-            if (!interfaceType.IsInterface)
+            if (!interfaceTypes.Any(i => i.IsInterface))
             {
                 throw new ArgumentException
                 (
-                    "The interface to activate on the class must be an interface type.",
-                    nameof(interfaceType)
+                    "The interfaces to activate on the class must be an interface type.",
+                    nameof(interfaceTypes)
                 );
             }
 
             // Check if we've already generated a type for this configuration
-            var key = new GeneratedImplementationTypeIdentifier(classType, interfaceType, Options);
+            var key = new GeneratedImplementationTypeIdentifier(classType, interfaceTypes, Options);
             Type generatedType;
             lock (BuilderLock)
             {
@@ -386,7 +394,7 @@ namespace AdvancedDLSupport
                     return new Tuple<GeneratedImplementationTypeIdentifier, Type>(key, generatedType);
                 }
 
-                generatedType = GenerateInterfaceImplementationType(classType, interfaceType);
+                generatedType = GenerateInterfaceImplementationType(classType, interfaceTypes);
                 TypeCache.TryAdd(key, generatedType);
             }
 
@@ -397,29 +405,15 @@ namespace AdvancedDLSupport
         /// Generates a type inheriting from the given class and implementing the given interface, setting it up to bind
         /// the interface functions to native C code.
         /// </summary>
-        /// <typeparam name="TBaseClass">The base class of the type to generate.</typeparam>
-        /// <typeparam name="TInterface">The interface that the type should implement.</typeparam>
-        /// <returns>The type.</returns>
-        [NotNull, Pure]
-        private Type GenerateInterfaceImplementationType<TBaseClass, TInterface>()
-            where TBaseClass : NativeLibraryBase
-            where TInterface : class
-        {
-            var baseClassType = typeof(TBaseClass);
-            var interfaceType = typeof(TInterface);
-
-            return GenerateInterfaceImplementationType(baseClassType, interfaceType);
-        }
-
-        /// <summary>
-        /// Generates a type inheriting from the given class and implementing the given interface, setting it up to bind
-        /// the interface functions to native C code.
-        /// </summary>
         /// <param name="classType">The base class for the implementation to generate.</param>
-        /// <param name="interfaceType">The interface to implement.</param>
+        /// <param name="interfaceTypes">The interfaces to implement.</param>
         /// <returns>The type.</returns>
         [NotNull, Pure]
-        private Type GenerateInterfaceImplementationType([NotNull] Type classType, [NotNull] Type interfaceType)
+        private Type GenerateInterfaceImplementationType
+        (
+            [NotNull] Type classType,
+            [NotNull] params Type[] interfaceTypes
+        )
         {
             if (!classType.IsAbstract)
             {
@@ -439,16 +433,16 @@ namespace AdvancedDLSupport
                 );
             }
 
-            if (!interfaceType.IsInterface)
+            if (!interfaceTypes.Any(i => i.IsInterface))
             {
                 throw new ArgumentException
                 (
                     "The interface to activate on the class must be an interface type.",
-                    nameof(interfaceType)
+                    nameof(interfaceTypes)
                 );
             }
 
-            var typeName = GenerateTypeName(interfaceType);
+            var typeName = GenerateTypeName(classType);
 
             // Create a new type for the anonymous implementation
             var typeBuilder = _moduleBuilder.DefineType
@@ -456,7 +450,7 @@ namespace AdvancedDLSupport
                 typeName,
                 TypeAttributes.AutoClass | TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed,
                 classType,
-                new[] { interfaceType }
+                interfaceTypes
             );
 
             // Now the constructor
@@ -491,8 +485,8 @@ namespace AdvancedDLSupport
                 Options
             );
 
-            ConstructMethods(pipeline, classType, interfaceType);
-            ConstructProperties(pipeline, classType, interfaceType);
+            ConstructMethods(pipeline, classType, interfaceTypes);
+            ConstructProperties(pipeline, classType, interfaceTypes);
 
             constructorIL.Emit(OpCodes.Ret);
             return typeBuilder.CreateTypeInfo();
@@ -536,7 +530,25 @@ namespace AdvancedDLSupport
             ImplementationOptions options
         )
         {
-            return (TInterface)Activator.CreateInstance
+            return (TInterface)CreateAnonymousImplementationInstance(finalType, library, options);
+        }
+
+        /// <summary>
+        /// Creates an instance of the final implementation type.
+        /// </summary>
+        /// <param name="finalType">The constructed anonymous type.</param>
+        /// <param name="library">The path to or name of the library</param>
+        /// <param name="options">The generator options.</param>
+        /// <returns>An instance of the anonymous type.</returns>
+        [NotNull]
+        private object CreateAnonymousImplementationInstance
+        (
+            [NotNull] Type finalType,
+            [NotNull] string library,
+            ImplementationOptions options
+        )
+        {
+            return Activator.CreateInstance
             (
                 finalType,
                 library,
@@ -549,53 +561,56 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="pipeline">The implementation pipeline that consumes the methods.</param>
         /// <param name="classType">The base class of the type to generate methods for.</param>
-        /// <param name="interfaceType">The interface where the methods originate.</param>
+        /// <param name="interfaceTypes">The interfaces where the methods originate.</param>
         private void ConstructMethods
         (
             [NotNull] ImplementationPipeline pipeline,
             [NotNull] Type classType,
-            [NotNull] Type interfaceType
+            [NotNull] params Type[] interfaceTypes
         )
         {
             var symbolTransformer = SymbolTransformer.Default;
             var methods = new List<PipelineWorkUnit<IntrospectiveMethodInfo>>();
-            foreach (var method in interfaceType.GetIntrospectiveMethods(true))
+            foreach (var interfaceType in interfaceTypes)
             {
-                var targetMethod = method;
-
-                // Skip any property accessor methods
-                if (method.IsSpecialName && (method.Name.StartsWith("get_") || method.Name.StartsWith("set_")))
+                foreach (var method in interfaceType.GetIntrospectiveMethods(true))
                 {
-                    continue;
-                }
+                    var targetMethod = method;
 
-                // Skip methods with a managed implementation in the base class
-                var baseClassMethod = classType.GetIntrospectiveMethod
-                (
-                    method.Name,
-                    method.ParameterTypes.ToArray()
-                );
-
-                if (!(baseClassMethod is null))
-                {
-                    if (!baseClassMethod.IsAbstract)
+                    // Skip any property accessor methods
+                    if (method.IsSpecialName && (method.Name.StartsWith("get_") || method.Name.StartsWith("set_")))
                     {
                         continue;
                     }
 
-                    targetMethod = baseClassMethod;
-                }
-
-                var definition = pipeline.GenerateDefinitionFromSignature(targetMethod);
-                methods.Add
-                (
-                    new PipelineWorkUnit<IntrospectiveMethodInfo>
+                    // Skip methods with a managed implementation in the base class
+                    var baseClassMethod = classType.GetIntrospectiveMethod
                     (
-                        definition,
-                        symbolTransformer.GetTransformedSymbol(interfaceType, definition),
-                        Options
-                    )
-                );
+                        method.Name,
+                        method.ParameterTypes.ToArray()
+                    );
+
+                    if (!(baseClassMethod is null))
+                    {
+                        if (!baseClassMethod.IsAbstract)
+                        {
+                            continue;
+                        }
+
+                        targetMethod = baseClassMethod;
+                    }
+
+                    var definition = pipeline.GenerateDefinitionFromSignature(targetMethod);
+                    methods.Add
+                    (
+                        new PipelineWorkUnit<IntrospectiveMethodInfo>
+                        (
+                            definition,
+                            symbolTransformer.GetTransformedSymbol(interfaceType, definition),
+                            Options
+                        )
+                    );
+                }
             }
 
             pipeline.ConsumeMethodDefinitions(methods);
@@ -606,7 +621,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="pipeline">The implementation pipeline that consumes the methods.</param>
         /// <param name="classType">The base class of the type to generator properties for.</param>
-        /// <param name="interfaceType">The interface where the properties originate.</param>
+        /// <param name="interfaceTypes">The interfaces where the properties originate.</param>
         /// <exception cref="InvalidOperationException">
         /// Thrown if any property is declared as partially abstract.
         /// </exception>
@@ -614,51 +629,54 @@ namespace AdvancedDLSupport
         (
             [NotNull] ImplementationPipeline pipeline,
             [NotNull] Type classType,
-            [NotNull] Type interfaceType
+            [NotNull] params Type[] interfaceTypes
         )
         {
             var symbolTransformer = SymbolTransformer.Default;
             var properties = new List<PipelineWorkUnit<IntrospectivePropertyInfo>>();
-            foreach (var property in interfaceType.GetProperties())
+            foreach (var interfaceType in interfaceTypes)
             {
-                var targetProperty = property;
-
-                // Skip properties with a managed implementation
-                var baseClassProperty = classType.GetProperty(property.Name, property.PropertyType);
-                if (!(baseClassProperty is null))
+                foreach (var property in interfaceType.GetProperties())
                 {
-                    var isFullyManaged = !baseClassProperty.GetGetMethod().IsAbstract &&
-                                         !baseClassProperty.GetSetMethod().IsAbstract;
+                    var targetProperty = property;
 
-                    if (isFullyManaged)
+                    // Skip properties with a managed implementation
+                    var baseClassProperty = classType.GetProperty(property.Name, property.PropertyType);
+                    if (!(baseClassProperty is null))
                     {
-                        continue;
+                        var isFullyManaged = !baseClassProperty.GetGetMethod().IsAbstract &&
+                                             !baseClassProperty.GetSetMethod().IsAbstract;
+
+                        if (isFullyManaged)
+                        {
+                            continue;
+                        }
+
+                        var isPartiallyAbstract = baseClassProperty.GetGetMethod().IsAbstract ^
+                                                  baseClassProperty.GetSetMethod().IsAbstract;
+
+                        if (isPartiallyAbstract)
+                        {
+                            throw new InvalidOperationException
+                            (
+                                "Properties with overriding managed implementations may not be partially managed."
+                            );
+                        }
+
+                        targetProperty = baseClassProperty;
                     }
 
-                    var isPartiallyAbstract = baseClassProperty.GetGetMethod().IsAbstract ^
-                                              baseClassProperty.GetSetMethod().IsAbstract;
-
-                    if (isPartiallyAbstract)
-                    {
-                        throw new InvalidOperationException
-                        (
-                            "Properties with overriding managed implementations may not be partially managed."
-                        );
-                    }
-
-                    targetProperty = baseClassProperty;
-                }
-
-                var definition = new IntrospectivePropertyInfo(targetProperty);
-                properties.Add
-                (
-                    new PipelineWorkUnit<IntrospectivePropertyInfo>
+                    var definition = new IntrospectivePropertyInfo(targetProperty);
+                    properties.Add
                     (
-                        definition,
-                        symbolTransformer.GetTransformedSymbol(interfaceType, definition),
-                        Options
-                    )
-                );
+                        new PipelineWorkUnit<IntrospectivePropertyInfo>
+                        (
+                            definition,
+                            symbolTransformer.GetTransformedSymbol(interfaceType, definition),
+                            Options
+                        )
+                    );
+                }
             }
 
             pipeline.ConsumePropertyDefinitions(properties);

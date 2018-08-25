@@ -18,6 +18,8 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
@@ -36,12 +38,12 @@ namespace AdvancedDLSupport
         public GeneratedImplementationTypeIdentifier
         (
             [NotNull] Type baseClassType,
-            [NotNull] Type interfaceType,
+            [NotNull] IReadOnlyList<Type> interfaceType,
             ImplementationOptions options
         )
         {
             BaseClassType = baseClassType;
-            InterfaceType = interfaceType;
+            InterfaceTypes = interfaceType;
             Options = options;
         }
 
@@ -53,7 +55,7 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Gets the interface type for the library.
         /// </summary>
-        internal Type InterfaceType { get; }
+        internal IReadOnlyList<Type> InterfaceTypes { get; }
 
         /// <summary>
         /// Gets the configuration used for the library at construction time.
@@ -65,7 +67,7 @@ namespace AdvancedDLSupport
         {
             return
                 BaseClassType == other.BaseClassType &&
-                InterfaceType == other.InterfaceType &&
+                InterfaceTypes.OrderBy(i => i.Name).SequenceEqual(other.InterfaceTypes.OrderBy(i => i.Name)) &&
                 Options == other.Options;
         }
 
@@ -86,8 +88,8 @@ namespace AdvancedDLSupport
             unchecked
             {
                 return
-                    ((BaseClassType != null ? InterfaceType.GetHashCode() : 0) * 397) ^
-                    ((InterfaceType != null ? InterfaceType.GetHashCode() : 0) * 397) ^
+                    ((BaseClassType != null ? InterfaceTypes.Sum(i => i.GetHashCode()) : 0) * 397) ^
+                    ((InterfaceTypes != null ? InterfaceTypes.Sum(i => i.GetHashCode()) : 0) * 397) ^
                     ((int)Options * 397);
             }
         }

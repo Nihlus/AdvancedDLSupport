@@ -83,5 +83,8 @@ Once you have your class definition, instances of it can be created in much the 
 instances:
 
 ```cs
-NativeLibraryBuilder::ActivateClass<MixedModeClass, IMixedModeLibrary>(LibraryName);
+NativeLibraryBuilder::ActivateClass<MixedModeClass>(LibraryName);
 ```
+
+Mixed-mode classes can implement multiple native interfaces, benefit from inheritance, and use generics just as you'd 
+normally would.
