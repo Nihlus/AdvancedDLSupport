@@ -343,22 +343,6 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Generates the implementation type for a given class and interface combination, caching it for later use.
         /// </summary>
-        /// <typeparam name="TBaseClass">The base class for the implementation to generate.</typeparam>
-        /// <typeparam name="TInterface">The interface to implement.</typeparam>
-        /// <exception cref="ArgumentException">Thrown if either of the type arguments are incompatible.</exception>
-        /// <exception cref="FileNotFoundException">
-        /// Thrown if the specified library can't be found in any of the loader paths.
-        /// </exception>
-        internal void PregenerateImplementationType<TBaseClass, TInterface>()
-            where TBaseClass : NativeLibraryBase
-            where TInterface : class
-        {
-            PregenerateImplementationType(typeof(TBaseClass), typeof(TInterface));
-        }
-
-        /// <summary>
-        /// Generates the implementation type for a given class and interface combination, caching it for later use.
-        /// </summary>
         /// <param name="classType">The base class for the implementation to generate.</param>
         /// <param name="interfaceTypes">The interfaces to implement.</param>
         /// <exception cref="ArgumentException">Thrown if either of the type arguments are incompatible.</exception>
@@ -415,40 +399,6 @@ namespace AdvancedDLSupport
             }
 
             return new Tuple<GeneratedImplementationTypeIdentifier, Type>(key, generatedType);
-        }
-
-        /// <summary>
-        /// Generates a type inheriting from the given class and implementing the given interface, setting it up to bind
-        /// the interface functions to native C code.
-        /// </summary>
-        /// <typeparam name="TBaseClass">The base class of the type to generate.</typeparam>
-        /// <typeparam name="TInterface">The interface that the type should implement.</typeparam>
-        /// <returns>The type.</returns>
-        [NotNull, Pure]
-        private Type GenerateInterfaceImplementationType<TBaseClass, TInterface>()
-            where TBaseClass : NativeLibraryBase
-            where TInterface : class
-        {
-            var baseClassType = typeof(TBaseClass);
-            var interfaceType = typeof(TInterface);
-
-            return GenerateInterfaceImplementationType(baseClassType, interfaceType);
-        }
-
-        /// <summary>
-        /// Generates a type inheriting from the given class and implementing the given interface, setting it up to bind
-        /// the interface functions to native C code.
-        /// </summary>
-        /// <typeparam name="TBaseClass">The base class of the type to generate.</typeparam>
-        /// <param name="interfaceTypes">The interfaces that the type should implement.</param>
-        /// <returns>The type.</returns>
-        [NotNull, Pure]
-        private Type GenerateInterfaceImplementationType<TBaseClass>([NotNull] Type[] interfaceTypes)
-            where TBaseClass : NativeLibraryBase
-        {
-            var baseClassType = typeof(TBaseClass);
-
-            return GenerateInterfaceImplementationType(baseClassType, interfaceTypes);
         }
 
         /// <summary>
