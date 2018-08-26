@@ -12,7 +12,7 @@
   <PropertyGroup>
     <Title>AdvancedDLSupport</Title>
     <Authors>TheBlackCentipede;Jax</Authors>
-    <Version>2.1.2</Version>
+    <Version>2.2.0</Version>
     <Description>An alternative approach to your typical P/Invoke.</Description>
     <Copyright>Copyright Firwood Software 2017</Copyright>
   </PropertyGroup>
@@ -20,7 +20,7 @@
     <PackageId>AdvancedDLSupport</PackageId>
     <PackageLicenseUrl>https://www.gnu.org/licenses/lgpl-3.0.txt</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Correct external annotation bundling.</PackageReleaseNotes>
+    <PackageReleaseNotes>Improve native library probing and class activation API.</PackageReleaseNotes>
     <PackageTags>p/invoke;cross-platform;mono;netcore;netstandard;native;interop</PackageTags>
     <PackageOutputPath>../nuget</PackageOutputPath>
     <IncludeSymbols>True</IncludeSymbols>
