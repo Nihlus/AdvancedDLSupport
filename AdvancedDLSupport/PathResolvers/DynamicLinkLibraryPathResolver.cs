@@ -150,9 +150,9 @@ namespace AdvancedDLSupport
                 }
             }
 
-            if (!(Type.GetType("Mono.Runtime") is null) && library == "__Internal")
+            if (library == "__Internal")
             {
-                // Mono extension: Search the main program
+                // Mono extension: Search the main program. Allowed for all runtimes
                 return ResolvePathResult.FromSuccess(null);
             }
 

@@ -544,7 +544,7 @@ namespace AdvancedDLSupport
         private object CreateAnonymousImplementationInstance
         (
             [NotNull] Type finalType,
-            [NotNull] string library,
+            [CanBeNull] string library,
             ImplementationOptions options
         )
         {
