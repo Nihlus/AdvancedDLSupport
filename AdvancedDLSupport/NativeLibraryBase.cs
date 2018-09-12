@@ -69,7 +69,7 @@ namespace AdvancedDLSupport
         [PublicAPI, AnonymousConstructor]
         protected NativeLibraryBase
         (
-            [NotNull] string path,
+            [CanBeNull] string path,
             ImplementationOptions options
         )
         {
