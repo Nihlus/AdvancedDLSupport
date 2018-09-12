@@ -18,7 +18,6 @@
 //
 
 using System;
-using AdvancedDLSupport.Tests.Data;
 using AdvancedDLSupport.Tests.Data.Classes;
 using Xunit;
 
