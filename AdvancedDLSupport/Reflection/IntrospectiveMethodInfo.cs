@@ -220,6 +220,36 @@ namespace AdvancedDLSupport.Reflection
         }
 
         /// <summary>
+        /// Determines whether or not the current instance has the same signature as another.
+        /// </summary>
+        /// <param name="other">The other method info.</param>
+        /// <returns>true if the signatures are the same; otherwise, false.</returns>
+        public bool HasSameSignatureAs([NotNull] IntrospectiveMethodInfo other)
+        {
+            if (Name != other.Name)
+            {
+                return false;
+            }
+
+            if (ReturnType != other.ReturnType)
+            {
+                return false;
+            }
+
+            if (ParameterTypes.Count != other.ParameterTypes.Count)
+            {
+                return false;
+            }
+
+            if (!ParameterTypes.SequenceEqual(other.ParameterTypes))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Determines whether or not the method's return parameter has an attribute of the given type.
         /// </summary>
         /// <typeparam name="T">The attribute type.</typeparam>
