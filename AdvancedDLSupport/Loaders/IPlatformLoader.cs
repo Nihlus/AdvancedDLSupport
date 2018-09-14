@@ -39,13 +39,14 @@ namespace AdvancedDLSupport.Loaders
         T LoadFunction<T>(IntPtr library, [NotNull] string symbolName);
 
         /// <summary>
-        /// Load the given library.
+        /// Load the given library. A null path signifies intent to load the main executable instead of an external
+        /// library.
         /// </summary>
         /// <param name="path">The path to the library.</param>
         /// <returns>A handle to the library. This value carries no intrinsic meaning.</returns>
         /// <exception cref="LibraryLoadingException">Thrown if the library could not be loaded.</exception>
         [PublicAPI]
-        IntPtr LoadLibrary([NotNull] string path);
+        IntPtr LoadLibrary([CanBeNull] string path);
 
         /// <summary>
         /// Load the given symbol.
