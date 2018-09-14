@@ -66,7 +66,7 @@ namespace AdvancedDLSupport.AOT
         }
 
         /// <summary>
-        /// Adds an assembly as a source assembly to generate
+        /// Adds an assembly as a source assembly to generate.
         /// </summary>
         /// <param name="assembly">The source assembly.</param>
         /// <returns>The builder, with the assembly.</returns>

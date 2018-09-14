@@ -30,7 +30,7 @@ namespace AdvancedDLSupport
     public interface IEntrypointMangler
     {
         /// <summary>
-        /// Determines whether or not the mangler is applicable to the given
+        /// Determines whether or not the mangler is applicable to the given member.
         /// </summary>
         /// <param name="member">The member to check.</param>
         /// <returns>true if the mangler is applicable; otherwise, false.</returns>

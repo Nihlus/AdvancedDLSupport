@@ -26,7 +26,7 @@ using static AdvancedDLSupport.ImplementationOptions;
 namespace AdvancedDLSupport
 {
     /// <summary>
-    /// Internal base class for library implementations
+    /// Internal base class for library implementations.
     /// </summary>
     [PublicAPI]
     public abstract class NativeLibraryBase : IDisposable
@@ -81,7 +81,7 @@ namespace AdvancedDLSupport
         /// Forwards the symbol loading call to the wrapped platform loader.
         /// </summary>
         /// <param name="sym">The symbol name.</param>
-        /// <returns>A handle to the symbol</returns>
+        /// <returns>A handle to the symbol.</returns>
         internal IntPtr LoadSymbol([NotNull] string sym) => PlatformLoader.LoadSymbol(_libraryHandle, sym);
 
         /// <summary>

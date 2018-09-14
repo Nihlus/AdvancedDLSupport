@@ -234,7 +234,7 @@ namespace AdvancedDLSupport.Pipeline
         /// reductive algorithm.
         /// </summary>
         /// <param name="definitions">The definitions to process.</param>
-        /// <param name="pipeline">A sorted list of generators, acting as the process pipeline</param>
+        /// <param name="pipeline">A sorted list of generators, acting as the process pipeline.</param>
         /// <typeparam name="T">The type of definition to process.</typeparam>
         private void ConsumeDefinitions<T>
         (

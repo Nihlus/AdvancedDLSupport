@@ -1,0 +1,14 @@
+<Project>
+  <PropertyGroup>
+    <Authors>Firwood Software</Authors>
+    <PackageLicenseUrl>https://www.gnu.org/licenses/lgpl-3.0.txt</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageTags>p/invoke;cross-platform;mono;netcore;netstandard;native;interop</PackageTags>
+    <RepositoryUrl>https://github.com/Firwood-Software/AdvanceDLSupport</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Firwood-Software/AdvanceDLSupport</PackageProjectUrl>
+    <PackageOutputPath>$(SolutionRoot)\nuget</PackageOutputPath>
+    <IncludeSymbols>true</IncludeSymbols>
+    <IncludeSource>true</IncludeSource>
+  </PropertyGroup>
+  <Import Project="common.props" Condition="!$(HasCommonProperties)"/>
+</Project>

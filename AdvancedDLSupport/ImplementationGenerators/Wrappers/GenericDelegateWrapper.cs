@@ -36,7 +36,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
 {
     /// <summary>
     /// Generates wrapper instructions for marshalling generic delegate types (<see cref="Func{T}"/>,
-    /// <see cref="Action{T}"/> and their variants.)
+    /// <see cref="Action{T}"/> and their variants).
     /// </summary>
     internal sealed class GenericDelegateWrapper : CallWrapperBase
     {

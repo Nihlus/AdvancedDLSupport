@@ -322,7 +322,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// Gets the getter method of the <see cref="Nullable{T}.HasValue"/> property.
         /// </summary>
         /// <param name="nullableType">The type T of the nullable.</param>
-        /// <returns>The method</returns>
+        /// <returns>The method.</returns>
         [NotNull]
         private MethodInfo GetHasValueMethod(Type nullableType)
         {
@@ -336,7 +336,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// Gets the getter method of the <see cref="Nullable{T}.Value"/> property.
         /// </summary>
         /// <param name="nullableType">The type T of the nullable.</param>
-        /// <returns>The method</returns>
+        /// <returns>The method.</returns>
         [NotNull]
         private MethodInfo GetGetValueMethod(Type nullableType)
         {
