@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net471</TargetFrameworks>
+    <TargetFrameworks>net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU;x86;x64</Platforms>
@@ -12,6 +12,7 @@
     <Reference Include="System.Reflection.Emit" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="altcover" Version="4.0.630" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
