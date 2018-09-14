@@ -569,6 +569,8 @@ namespace AdvancedDLSupport
             [NotNull] params Type[] interfaceTypes
         )
         {
+            var constructedMethods = new List<IntrospectiveMethodInfo>();
+
             var symbolTransformer = SymbolTransformer.Default;
             var methods = new List<PipelineWorkUnit<IntrospectiveMethodInfo>>();
             foreach (var interfaceType in interfaceTypes)
@@ -579,6 +581,13 @@ namespace AdvancedDLSupport
 
                     // Skip any property accessor methods
                     if (method.IsSpecialName && (method.Name.StartsWith("get_") || method.Name.StartsWith("set_")))
+                    {
+                        continue;
+                    }
+
+                    // Skip methods that were already constructed - happens with inherited interfaces and multiple
+                    // identical definitions
+                    if (constructedMethods.Any(m => m.HasSameSignatureAs(method)))
                     {
                         continue;
                     }
@@ -610,6 +619,8 @@ namespace AdvancedDLSupport
                             Options
                         )
                     );
+
+                    constructedMethods.Add(targetMethod);
                 }
             }
 
@@ -632,13 +643,22 @@ namespace AdvancedDLSupport
             [NotNull] params Type[] interfaceTypes
         )
         {
+            var constructedProperties = new List<IntrospectivePropertyInfo>();
+
             var symbolTransformer = SymbolTransformer.Default;
             var properties = new List<PipelineWorkUnit<IntrospectivePropertyInfo>>();
             foreach (var interfaceType in interfaceTypes)
             {
-                foreach (var property in interfaceType.GetProperties())
+                foreach (var property in interfaceType.GetProperties().Select(p => new IntrospectivePropertyInfo(p)))
                 {
                     var targetProperty = property;
+
+                    // Skip methods that were already constructed - happens with inherited interfaces and multiple
+                    // identical definitions
+                    if (constructedProperties.Any(p => p.HasSameSignatureAs(property)))
+                    {
+                        continue;
+                    }
 
                     // Skip properties with a managed implementation
                     var baseClassProperty = classType.GetProperty(property.Name, property.PropertyType);
@@ -663,19 +683,20 @@ namespace AdvancedDLSupport
                             );
                         }
 
-                        targetProperty = baseClassProperty;
+                        targetProperty = new IntrospectivePropertyInfo(baseClassProperty);
                     }
 
-                    var definition = new IntrospectivePropertyInfo(targetProperty);
                     properties.Add
                     (
                         new PipelineWorkUnit<IntrospectivePropertyInfo>
                         (
-                            definition,
-                            symbolTransformer.GetTransformedSymbol(interfaceType, definition),
+                            targetProperty,
+                            symbolTransformer.GetTransformedSymbol(interfaceType, targetProperty),
                             Options
                         )
                     );
+
+                    constructedProperties.Add(targetProperty);
                 }
             }
 

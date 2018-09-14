@@ -57,6 +57,12 @@ namespace AdvancedDLSupport.Tests.Integration
         }
 
         [Fact]
+        public void CanActivateClassWithInheritedNativeInterfaces()
+        {
+            _builder.ActivateClass<MixedModeClassWithInheritedInterface>(LibraryName);
+        }
+
+        [Fact]
         public void CanOverrideNativeFunctionWithManagedImplementationOnClass()
         {
             var result = _mixedModeClass.Subtract(10, 5);

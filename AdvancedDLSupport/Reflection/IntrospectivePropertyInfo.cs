@@ -68,5 +68,25 @@ namespace AdvancedDLSupport.Reflection
             CanRead = memberInfo.CanRead;
             CanWrite = memberInfo.CanWrite;
         }
+
+        /// <summary>
+        /// Determines whether or not the current instance has the same signature as another.
+        /// </summary>
+        /// <param name="other">The other property info.</param>
+        /// <returns>true if the signatures are the same; otherwise, false.</returns>
+        public bool HasSameSignatureAs([NotNull] IntrospectivePropertyInfo other)
+        {
+            if (Name != other.Name)
+            {
+                return false;
+            }
+
+            if (PropertyType != other.PropertyType)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

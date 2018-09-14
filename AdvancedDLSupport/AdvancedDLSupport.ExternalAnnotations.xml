@@ -621,6 +621,11 @@
   <member name="P:AdvancedDLSupport.Reflection.IntrospectiveMethodInfo.Attributes">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMethodInfo.HasSameSignatureAs(AdvancedDLSupport.Reflection.IntrospectiveMethodInfo)">
+    <parameter name="other">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
   <member name="P:AdvancedDLSupport.Reflection.IntrospectiveMethodInfo.IsAbstract">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
@@ -662,6 +667,11 @@
   </member>
   <member name="P:AdvancedDLSupport.Reflection.IntrospectivePropertyInfo.CanWrite">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="M:AdvancedDLSupport.Reflection.IntrospectivePropertyInfo.HasSameSignatureAs(AdvancedDLSupport.Reflection.IntrospectivePropertyInfo)">
+    <parameter name="other">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
   </member>
   <member name="P:AdvancedDLSupport.Reflection.IntrospectivePropertyInfo.IndexParameterTypes">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
