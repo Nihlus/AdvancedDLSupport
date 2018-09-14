@@ -64,6 +64,20 @@ namespace AdvancedDLSupport.Tests.Integration
         }
 
         [Fact]
+        public void CanActivateClassWithNativeSymbolInClass()
+        {
+            var library = _builder.ActivateClass<MixedModeClassWithNativeSymbolInClass>(LibraryName);
+            Assert.Equal(5, library.SubtractWithRemappedName(10, 5));
+        }
+
+        [Fact]
+        public void CanActivateClassWithNativeSymbolInBothInterfaceAndClass()
+        {
+            var library = _builder.ActivateClass<MixedModeClassWithNativeSymbolInInterfaceAndClass>(LibraryName);
+            Assert.Equal(5, library.SubtractWithRemappedName(10, 5));
+        }
+
+        [Fact]
         public void CanActivateClassWithInheritedNativeInterfaces()
         {
             _builder.ActivateClass<MixedModeClassWithInheritedInterface>(LibraryName);
