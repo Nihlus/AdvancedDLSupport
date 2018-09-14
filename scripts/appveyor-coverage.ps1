@@ -42,7 +42,7 @@ function Run-Coverage([string]$project, [string]$framework)
 
     Push-Location -Path $project
 
-    & $DOTNET xunit -nobuild -noshadow -framework $FRAMEWORK -fxversion $RUNTIME_VERSION -configuration $env:CONFIGURATION $EXTRA_ARGS
+    & $DOTNET xunit -nobuild -noshadow -framework $FRAMEWORK -configuration $env:CONFIGURATION $EXTRA_ARGS
 
     Pop-Location
 
