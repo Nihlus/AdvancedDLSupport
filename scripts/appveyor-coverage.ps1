@@ -1,4 +1,5 @@
 $DOTNET = "C:\Program Files\dotnet\dotnet.exe"
+$ANY_TESTS_FAILED = 0
 
 if ($env:PLATFORM -eq "x86")
 {
@@ -13,6 +14,11 @@ function Run-Coverage([string]$project)
 
     & $DOTNET test /p:AltCover=true /p:CopyLocalLockFileAssemblies=true /p:AltCoverXmlReport=$XMLREPORT --configuration $env:CONFIGURATION
 
+    if (!($LASTEXITCODE) -eq 0)
+    {
+        $ANY_TESTS_FAILED = 1;
+    }
+
     Move-Item coverage*.xml -Destination ..
 
     Pop-Location
@@ -21,3 +27,8 @@ function Run-Coverage([string]$project)
 Run-Coverage "AdvancedDLSupport.Tests"
 Run-Coverage "AdvancedDLSupport.AOT.Tests"
 Run-Coverage "Mono.DllMap.Tests"
+
+if (!($ANY_TESTS_FAILED -eq 0))
+{
+    exit 1
+}

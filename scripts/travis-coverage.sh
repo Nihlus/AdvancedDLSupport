@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ANY_TESTS_FAILED=0
+
 function runCoverage
 {
 	PROJECT=$1
@@ -9,6 +11,9 @@ function runCoverage
 	cd ${PROJECT}
 
 	dotnet test /p:AltCover=true /p:CopyLocalLockFileAssemblies=true /p:AltCoverXmlReport=${XMLREPORT} --configuration ${Configuration}
+	if [ $? != 0 ]; then
+		${ANY_TESTS_FAILED}=1
+	fi
 
 	mv coverage*.xml ../
 
@@ -19,3 +24,7 @@ function runCoverage
 runCoverage AdvancedDLSupport.Tests
 runCoverage AdvancedDLSupport.AOT.Tests
 runCoverage Mono.DllMap.Tests
+
+if [ ${ANY_TESTS_FAILED} != 0 ]; then
+	exit 1
+fi
