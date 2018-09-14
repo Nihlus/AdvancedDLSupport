@@ -4,7 +4,7 @@ $ASSEMBLY_OUTPUT_DIR = "$env:CONFIGURATION"
 $ALTCOVER_VERSION = "3.0.422"
 $ALTCOVER_PATH = "altcover\altcover.$ALTCOVER_VERSION\tools\netcoreapp2.0\AltCover.dll"
 
-$RUNTIME_VERSION = (dotnet --info | Select-String -Pattern "Microsoft .NET Core Shared Framework Host" -Context 0,10).Context.PostContext[3] | % { [regex]::Match($_, "(\d\.?)+").Value }
+$RUNTIME_VERSION = (dotnet --info | Select-String -Pattern "Host" -Context 0, 1).Context.PostContext[0] | % { [regex]::Match($_, "(\d\.?)+").Value }
 
 $EXTRA_ARGS = ""
 if ($env:PLATFORM -eq "x86" -Or $env:PLATFORM -eq "x64")
