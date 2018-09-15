@@ -12,7 +12,7 @@ function runCoverage
 
 	dotnet test /p:AltCover=true /p:CopyLocalLockFileAssemblies=true /p:AltCoverXmlReport=${XMLREPORT} --configuration ${Configuration}
 	if [ $? != 0 ]; then
-		${ANY_TESTS_FAILED}=1
+		ANY_TESTS_FAILED=1
 	fi
 
 	mv coverage*.xml ../
