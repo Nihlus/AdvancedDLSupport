@@ -10,8 +10,8 @@ env:
   # - Configuration=Release Platform=x86
   - Configuration=Debug Platform=x64
   - Configuration=Release Platform=x64
-  - Configuration=Debug Platform="Any CPU"
-  - Configuration=Release Platform="Any CPU"
+  - Configuration=Debug Platform=
+  - Configuration=Release Platform=
 
 addons:
   apt:
