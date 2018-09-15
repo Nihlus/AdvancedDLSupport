@@ -6,7 +6,7 @@ if ($env:PLATFORM -eq "x86")
     $DOTNET = "C:\Program Files (x86)\dotnet\dotnet.exe"
 }
 
-$EXTRA_ARGS = ""
+$EXTRA_ARGS = "/p:Platform=$env:Platform"
 if ($env:PLATFORM -eq "Any CPU")
 {
     $EXTRA_ARGS = "/p:Platform=AnyCPU"
