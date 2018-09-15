@@ -14,7 +14,7 @@ function Run-Coverage([string]$project)
 
     & $DOTNET test /p:AltCover=true /p:CopyLocalLockFileAssemblies=true /p:AltCoverXmlReport=$XMLREPORT --configuration $env:CONFIGURATION
 
-    if (!($LASTEXITCODE) -eq 0)
+    if (!($LASTEXITCODE -eq 0))
     {
         $ANY_TESTS_FAILED = 1;
     }
