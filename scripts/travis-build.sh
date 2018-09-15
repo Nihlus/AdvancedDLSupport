@@ -1,3 +1,3 @@
 #!/bin/bash
 
-msbuild /p:Configuration="${Configuration}" /p:Platform="${Platform}" AdvanceDLSupport.sln
+dotnet build --configuration "${Configuration}" /p:Platform="${Platform}"
