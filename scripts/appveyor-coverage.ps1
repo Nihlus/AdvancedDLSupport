@@ -6,13 +6,19 @@ if ($env:PLATFORM -eq "x86")
     $DOTNET = "C:\Program Files (x86)\dotnet\dotnet.exe"
 }
 
+$EXTRA_ARGS = ""
+if ($env:PLATFORM -eq "Any CPU")
+{
+    $EXTRA_ARGS = "/p:Platform=AnyCPU"
+}
+
 function Run-Coverage([string]$project)
 {
     $XMLREPORT = "coverage-$project.xml"
 
     Push-Location -Path $project
 
-    & $DOTNET test /p:AltCover=true /p:CopyLocalLockFileAssemblies=true /p:AltCoverXmlReport=$XMLREPORT --configuration $env:CONFIGURATION
+    & $DOTNET test /p:AltCover=true /p:CopyLocalLockFileAssemblies=true /p:AltCoverXmlReport=$XMLREPORT --configuration $env:CONFIGURATION $EXTRA_ARGS
 
     if (!($LASTEXITCODE -eq 0))
     {
