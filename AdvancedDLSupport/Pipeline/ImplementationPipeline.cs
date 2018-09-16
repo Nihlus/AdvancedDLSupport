@@ -188,9 +188,14 @@ namespace AdvancedDLSupport.Pipeline
         /// Generates the definition of the complex method.
         /// </summary>
         /// <param name="interfaceDefinition">The interface definition to base it on.</param>
+        /// <param name="abstractImplementation">The abstract implementation, if any.</param>
         /// <returns>An introspective method info for the definition.</returns>
         [NotNull]
-        internal IntrospectiveMethodInfo GenerateDefinitionFromSignature([NotNull] IntrospectiveMethodInfo interfaceDefinition)
+        internal IntrospectiveMethodInfo GenerateDefinitionFromSignature
+        (
+            [NotNull] IntrospectiveMethodInfo interfaceDefinition,
+            [CanBeNull] IntrospectiveMethodInfo abstractImplementation
+        )
         {
             var methodBuilder = _targetType.DefineMethod
             (
@@ -201,11 +206,42 @@ namespace AdvancedDLSupport.Pipeline
                 interfaceDefinition.ParameterTypes.ToArray()
             );
 
-            methodBuilder.ApplyCustomAttributesFrom(interfaceDefinition);
+            // In the following blocks, which set of attributes to pass through is selected. The logic is as follows:
+            // If either the interface or abstract implementation have attributes, select the one which does
+            // If both have attributes, select the abstract implementation
+            // If neither have attributes, select the interface definition
+            if (!(abstractImplementation is null))
+            {
+                if (abstractImplementation.CustomAttributes.Any())
+                {
+                    methodBuilder.ApplyCustomAttributesFrom(abstractImplementation);
+                }
+                else
+                {
+                    methodBuilder.ApplyCustomAttributesFrom(interfaceDefinition);
+                }
 
-            _targetType.DefineMethodOverride(methodBuilder, interfaceDefinition.GetWrappedMember());
+                _targetType.DefineMethodOverride(methodBuilder, abstractImplementation.GetWrappedMember());
+            }
+            else
+            {
+                methodBuilder.ApplyCustomAttributesFrom(interfaceDefinition);
+                _targetType.DefineMethodOverride(methodBuilder, interfaceDefinition.GetWrappedMember());
+            }
 
-            return new IntrospectiveMethodInfo(methodBuilder, interfaceDefinition.ReturnType, interfaceDefinition.ParameterTypes, interfaceDefinition);
+            var attributePassthroughDefinition = interfaceDefinition;
+            if (!(abstractImplementation is null) && abstractImplementation.CustomAttributes.Any())
+            {
+                attributePassthroughDefinition = abstractImplementation;
+            }
+
+            return new IntrospectiveMethodInfo
+            (
+                methodBuilder,
+                interfaceDefinition.ReturnType,
+                interfaceDefinition.ParameterTypes,
+                attributePassthroughDefinition
+            );
         }
 
         /// <summary>

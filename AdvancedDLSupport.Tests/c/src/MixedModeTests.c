@@ -18,3 +18,8 @@ __declspec(dllexport) int32_t Subtract(int value, int other)
 {
     return value - other;
 }
+
+__declspec(dllexport) int32_t sym_Subtract(int value, int other)
+{
+    return value - other;
+}

@@ -88,9 +88,23 @@ namespace AdvancedDLSupport
             unchecked
             {
                 return
-                    ((BaseClassType != null ? BaseClassType.GetHashCode() : 0) * 397) ^
-                    ((InterfaceTypes != null ? InterfaceTypes.Aggregate(17, (result, interfaceType) => (result * 23) + interfaceType.GetHashCode()) : 0) * 397) ^
-                    ((int)Options * 397);
+                    (
+                        (BaseClassType != null ? BaseClassType.GetHashCode() : 0) * 397
+                    ) ^
+                    (
+                        (
+                            InterfaceTypes != null
+                            ? InterfaceTypes.Aggregate
+                            (
+                                17,
+                                (result, interfaceType) => (result * 23) + interfaceType.GetHashCode()
+                            )
+                            : 0
+                        ) * 397
+                    ) ^
+                    (
+                        (int)Options * 397
+                    );
             }
         }
     }
