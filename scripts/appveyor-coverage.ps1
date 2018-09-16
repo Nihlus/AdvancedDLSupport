@@ -30,6 +30,8 @@ function Run-Coverage([string]$project)
     Pop-Location
 }
 
+echo "Running tests using $DOTNET"
+
 Run-Coverage "AdvancedDLSupport.Tests"
 Run-Coverage "AdvancedDLSupport.AOT.Tests"
 Run-Coverage "Mono.DllMap.Tests"
