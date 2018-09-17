@@ -323,7 +323,7 @@
   <member name="M:AdvancedDLSupport.Loaders.IPlatformLoader.LoadLibrary(System.String)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="path">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="M:AdvancedDLSupport.Loaders.IPlatformLoader.LoadSymbol(System.IntPtr,System.String)">
@@ -369,7 +369,7 @@
   <member name="M:AdvancedDLSupport.NativeLibraryBase.#ctor(System.String,AdvancedDLSupport.ImplementationOptions)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="path">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+      <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     </parameter>
   </member>
   <member name="M:AdvancedDLSupport.NativeLibraryBase.Dispose">

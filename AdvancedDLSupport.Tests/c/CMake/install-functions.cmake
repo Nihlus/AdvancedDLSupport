@@ -17,6 +17,7 @@ function(install_for_frameworks FRAMEWORKS)
                     NameManglingTests
                     SymbolTransformationTests
 					GenericDelegateTests
+                    BooleanMarshallingTests
                 COMPONENT
                     standard
                 DESTINATION

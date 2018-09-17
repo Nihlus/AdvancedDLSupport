@@ -122,7 +122,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             var definition = workUnit.Definition;
 
-            var newReturnType = GetParameterMarshallingType(definition.ReturnParameterCustomAttributes);
+            var newReturnType = definition.ReturnType;
+            if (newReturnType == typeof(bool))
+            {
+                newReturnType = GetParameterMarshallingType(definition.ReturnParameterCustomAttributes);
+            }
+
             var newParameterTypes = definition.ParameterTypes.Select
             (
                 (parameterType, i) =>
