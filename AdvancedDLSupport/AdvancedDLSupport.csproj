@@ -20,7 +20,7 @@
     <PackageId>AdvancedDLSupport</PackageId>
     <PackageLicenseUrl>https://www.gnu.org/licenses/lgpl-3.0.txt</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Improve native library probing and class activation API.</PackageReleaseNotes>
+    <PackageReleaseNotes>Bug fixes and mixed-mode class improvements.</PackageReleaseNotes>
     <PackageTags>p/invoke;cross-platform;mono;netcore;netstandard;native;interop</PackageTags>
     <PackageOutputPath>../nuget</PackageOutputPath>
     <IncludeSymbols>True</IncludeSymbols>
