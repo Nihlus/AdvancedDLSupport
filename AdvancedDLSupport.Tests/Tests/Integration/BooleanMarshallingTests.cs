@@ -17,6 +17,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
 using AdvancedDLSupport.Tests.Data;
 using AdvancedDLSupport.Tests.TestBases;
 using Xunit;
@@ -39,6 +40,16 @@ namespace AdvancedDLSupport.Tests.Integration
         protected override ImplementationOptions GetImplementationOptions()
         {
             return ImplementationOptions.UseIndirectCalls;
+        }
+
+        /// <summary>
+        /// This test was introduced due to an issue that a user had with the JIT throwing a limitation exception for
+        /// void-returning functions with a boolean parameter.
+        /// </summary>
+        [Fact]
+        public void CanMarshalVoidReturnAndBooleanParameter()
+        {
+            Library.DoSomethingWithBoolean(false);
         }
 
         [Fact]

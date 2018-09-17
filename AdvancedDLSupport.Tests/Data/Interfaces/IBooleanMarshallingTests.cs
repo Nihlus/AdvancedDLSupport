@@ -17,6 +17,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
 using System.Runtime.InteropServices;
 using static System.Runtime.InteropServices.UnmanagedType;
 
@@ -26,6 +27,8 @@ namespace AdvancedDLSupport.Tests.Data
 {
     public interface IBooleanMarshallingTests
     {
+        void DoSomethingWithBoolean(bool boolean);
+
         [NativeSymbol(Entrypoint = "IsByteTrue")]
         int IsDefaultTrue(bool boolean);
 

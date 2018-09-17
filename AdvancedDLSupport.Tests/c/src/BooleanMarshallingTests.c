@@ -2,6 +2,16 @@
 #include <stdint.h>
 #include "comp.h"
 
+__declspec(dllexport) void DoSomethingWithBoolean(uint8_t boolean)
+{
+    if (boolean == 0)
+    {
+        int a = 0;
+    }
+
+    int b = 1;
+}
+
 __declspec(dllexport) int32_t IsSByteTrue(int8_t boolean)
 {
     if (boolean > 0)
