@@ -31,6 +31,7 @@ function Run-Coverage([string]$project)
 }
 
 echo "Holding for RDP session.."
+
 $blockRdp = $true
 iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
