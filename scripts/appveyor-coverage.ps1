@@ -30,6 +30,10 @@ function Run-Coverage([string]$project)
     Pop-Location
 }
 
+echo "Holding for RDP session.."
+$blockRdp = $true
+iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
 echo "Running tests using $DOTNET"
 
 Run-Coverage "AdvancedDLSupport.Tests"
