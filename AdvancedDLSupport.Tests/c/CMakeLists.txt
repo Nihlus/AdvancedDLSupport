@@ -40,6 +40,7 @@ list(
         NameManglingTests
         SymbolTransformationTests
         GenericDelegateTests
+        BooleanMarshallingTests
 )
 
 list(
@@ -82,10 +83,12 @@ if (IS_UNIX_COMPILER)
         foreach (target ${StandardTargets})
             set_target_properties(${target} PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
         endforeach(target)
+        set_target_properties(BooleanMarshallingTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
     elseif (BUILD_PLATFORM STREQUAL "x86")
         foreach (target ${StandardTargets})
             set_target_properties(${target} PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
         endforeach(target)
+        set_target_properties(BooleanMarshallingTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
     endif()
 
     foreach (x64Target ${x64Targets})
