@@ -75,7 +75,7 @@ namespace AdvancedDLSupport.Reflection
             MemberType = memberInfo.MemberType;
             ReflectedType = memberInfo.ReflectedType;
 
-            CustomAttributes = memberInfo.CustomAttributes;
+            CustomAttributes = memberInfo.CustomAttributes.ToList();
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace AdvancedDLSupport.Reflection
             MemberType = memberInfo.MemberType;
             ReflectedType = memberInfo.ReflectedType;
 
-            CustomAttributes = customAttributes ?? new List<CustomAttributeData>();
+            CustomAttributes = customAttributes?.ToList() ?? new List<CustomAttributeData>();
         }
 
         /// <summary>

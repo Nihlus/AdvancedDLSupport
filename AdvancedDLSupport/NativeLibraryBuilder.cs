@@ -605,11 +605,9 @@ namespace AdvancedDLSupport
                         {
                             continue;
                         }
-
-                        targetMethod = baseClassMethod;
                     }
 
-                    var definition = pipeline.GenerateDefinitionFromSignature(targetMethod);
+                    var definition = pipeline.GenerateDefinitionFromSignature(targetMethod, baseClassMethod);
                     methods.Add
                     (
                         new PipelineWorkUnit<IntrospectiveMethodInfo>
