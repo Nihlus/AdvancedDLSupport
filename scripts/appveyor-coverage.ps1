@@ -18,7 +18,7 @@ function Run-Coverage([string]$project)
 
     Push-Location -Path $project
 
-    & $DOTNET test /p:AltCover=true /p:CopyLocalLockFileAssemblies=true /p:AltCoverXmlReport=$XMLREPORT --configuration $env:CONFIGURATION $EXTRA_ARGS
+    & $DOTNET test /m:1 /p:AltCover=true /p:CopyLocalLockFileAssemblies=true /p:AltCoverXmlReport=$XMLREPORT --configuration $env:CONFIGURATION $EXTRA_ARGS
 
     echo "Test run exited with $LASTEXITCODE"
     if (!($LASTEXITCODE -eq 0))
