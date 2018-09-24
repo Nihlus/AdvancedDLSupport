@@ -70,11 +70,16 @@ namespace AdvancedDLSupport
         [NotNull]
         private ILibraryPathResolver PathResolver { get; }
 
+        [NotNull]
         private readonly IDynamicAssemblyProvider _assemblyProvider;
+
+        [NotNull]
         private readonly ModuleBuilder _moduleBuilder;
 
+        [NotNull]
         private static readonly object BuilderLock = new object();
 
+        [NotNull]
         private static readonly ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type> TypeCache;
 
         static NativeLibraryBuilder()
@@ -110,6 +115,17 @@ namespace AdvancedDLSupport
 
             Options = options;
             PathResolver = pathResolver ?? new DynamicLinkLibraryPathResolver();
+        }
+
+        /// <summary>
+        /// Gets the dynamic module that the builder is using. This method should be used sparingly, as it potentially
+        /// exposes internals.
+        /// </summary>
+        /// <returns>The module.</returns>
+        [NotNull]
+        internal ModuleBuilder GetDynamicModule()
+        {
+            return _moduleBuilder;
         }
 
         /// <summary>

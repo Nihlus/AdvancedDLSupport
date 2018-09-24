@@ -96,6 +96,24 @@ namespace AdvancedDLSupport.Reflection
         public IReadOnlyList<IReadOnlyList<CustomAttributeData>> ParameterCustomAttributes { get; }
 
         /// <summary>
+        /// Gets a value indicating whether the method contains unassigned generic parameters.
+        /// </summary>
+        [PublicAPI]
+        public bool ContainsGenericParameters { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the method is a generic method.
+        /// </summary>
+        [PublicAPI]
+        public bool IsGenericMethod { get; }
+
+        /// <summary>
+        /// Gets the assigned generic arguments for the closed constructed method, if any.
+        /// </summary>
+        [PublicAPI]
+        public IReadOnlyList<Type> GenericArguments { get; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectiveMethodInfo"/> class.
         /// </summary>
         /// <param name="methodInfo">The <see cref="MethodInfo"/> to wrap.</param>
@@ -107,6 +125,10 @@ namespace AdvancedDLSupport.Reflection
             {
                 throw new ArgumentException(nameof(methodInfo), $"Use the {nameof(MethodBuilder)} overload instead.");
             }
+
+            ContainsGenericParameters = methodInfo.ContainsGenericParameters;
+            IsGenericMethod = methodInfo.IsGenericMethod;
+            GenericArguments = methodInfo.GetGenericArguments();
 
             ReturnType = methodInfo.ReturnType;
             ParameterTypes = methodInfo.GetParameters().Select(p => p.ParameterType).ToList();
