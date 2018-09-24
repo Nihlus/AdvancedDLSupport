@@ -1,3 +1,9 @@
 #!/bin/bash
 
-msbuild /p:Configuration="${Configuration}" /p:Platform="${Platform}" AdvanceDLSupport.sln
+if [ -z "${Platform}" ]; then
+	dotnet build --configuration "${Configuration}"
+else
+	dotnet build --configuration "${Configuration}" /p:Platform="${Platform}"
+fi
+
+

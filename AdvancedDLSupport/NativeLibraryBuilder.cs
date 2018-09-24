@@ -518,7 +518,7 @@ namespace AdvancedDLSupport
         /// Creates an instance of the final implementation type.
         /// </summary>
         /// <param name="finalType">The constructed anonymous type.</param>
-        /// <param name="library">The path to or name of the library</param>
+        /// <param name="library">The path to or name of the library.</param>
         /// <param name="options">The generator options.</param>
         /// <typeparam name="TInterface">The interface type.</typeparam>
         /// <returns>An instance of the anonymous type implementing <typeparamref name="TInterface"/>.</returns>
@@ -537,7 +537,7 @@ namespace AdvancedDLSupport
         /// Creates an instance of the final implementation type.
         /// </summary>
         /// <param name="finalType">The constructed anonymous type.</param>
-        /// <param name="library">The path to or name of the library</param>
+        /// <param name="library">The path to or name of the library.</param>
         /// <param name="options">The generator options.</param>
         /// <returns>An instance of the anonymous type.</returns>
         [NotNull]

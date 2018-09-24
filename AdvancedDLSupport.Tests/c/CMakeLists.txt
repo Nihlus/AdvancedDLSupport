@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.7)
 project(c)
 
 include(CMake/install-functions.cmake)
@@ -19,9 +19,40 @@ if (IS_UNIX_COMPILER)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-long-long -pedantic")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic")
 elseif ( MSVC )
-	set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /W4 /MP")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /MP")
+	set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /W4")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 endif()
+
+list(
+    APPEND StandardTargets
+        BaseTests
+        DisposeTests
+        EventTests
+        FunctionTests
+        LazyLoadingTests
+        PropertyTests
+        RemappingTests
+        StringTests
+        AttributePassthroughTests
+        MixedModeTests
+        NullableTests
+        IndirectCallTests
+        NameManglingTests
+        SymbolTransformationTests
+        GenericDelegateTests
+        BooleanMarshallingTests
+)
+
+list(
+    APPEND x32Targets
+        BaseTests-x32
+)
+
+
+list(
+    APPEND x64Targets
+        BaseTests-x64
+)
 
 include_directories(${CMAKE_SOURCE_DIR})
 
@@ -30,65 +61,43 @@ set(SHARED_HEADERS src/TestStruct.h src/comp.h)
 # Uncomment if testing on a non-unicode platform
 add_definitions(-DUNICODE)
 
-add_library(BaseTests SHARED src/BaseTests.c ${SHARED_HEADERS})
-add_library(BaseTests-x64 SHARED src/BaseTests.c ${SHARED_HEADERS})
-add_library(BaseTests-x32 SHARED src/BaseTests.c ${SHARED_HEADERS})
-add_library(DisposeTests SHARED src/DisposeTests.c ${SHARED_HEADERS})
-add_library(EventTests SHARED src/EventTests.c ${SHARED_HEADERS})
-add_library(FunctionTests SHARED src/FunctionTests.c ${SHARED_HEADERS})
-add_library(LazyLoadingTests SHARED src/LazyLoadingTests.c ${SHARED_HEADERS})
-add_library(PropertyTests SHARED src/PropertyTests.c ${SHARED_HEADERS})
-add_library(RemappingTests SHARED src/RemappingTests.c ${SHARED_HEADERS})
-add_library(StringTests SHARED src/StringTests.c ${SHARED_HEADERS})
-add_library(AttributePassthroughTests SHARED src/AttributePassthroughTests.c ${SHARED_HEADERS})
-add_library(MixedModeTests SHARED src/MixedModeTests.c ${SHARED_HEADERS})
-add_library(NullableTests SHARED src/NullableTests.c ${SHARED_HEADERS})
-add_library(IndirectCallTests SHARED src/IndirectCallTests.c ${SHARED_HEADERS})
-add_library(NameManglingTests SHARED src/NameManglingTests.c ${SHARED_HEADERS})
-add_library(SymbolTransformationTests SHARED src/SymbolTransformationTests.c ${SHARED_HEADERS} )
-add_library(GenericDelegateTests SHARED src/GenericDelegateTests.c ${SHARED_HEADERS})
-add_library(BooleanMarshallingTests SHARED src/BooleanMarshallingTests.c ${SHARED_HEADERS})
+foreach (target ${StandardTargets})
+    add_library(${target} SHARED src/${target}.c ${SHARED_HEADERS})
+endforeach(target)
+
+foreach (x32Target ${x32Targets})
+    string(REGEX MATCH "[^-]+" baseName ${x32Target})
+
+    add_library(${x32Target} SHARED src/${baseName}.c ${SHARED_HEADERS})
+endforeach(x32Target)
+
+foreach (x64Target ${x64Targets})
+    string(REGEX MATCH "[^-]+" baseName ${x64Target})
+
+    add_library(${x64Target} SHARED src/${baseName}.c ${SHARED_HEADERS})
+endforeach(x64Target)
 
 if (IS_UNIX_COMPILER)
     # Any CPU is assumed to be 64-bit
-    if (BUILD_PLATFORM STREQUAL "x64" OR BUILD_PLATFORM STREQUAL "AnyCPU")
-        set_target_properties(BaseTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
-        set_target_properties(DisposeTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
-        set_target_properties(EventTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
-        set_target_properties(FunctionTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
-        set_target_properties(LazyLoadingTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
-        set_target_properties(PropertyTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
-        set_target_properties(RemappingTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
-        set_target_properties(StringTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
-        set_target_properties(AttributePassthroughTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
-        set_target_properties(MixedModeTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
-        set_target_properties(NullableTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
-        set_target_properties(IndirectCallTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
-        set_target_properties(NameManglingTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
-        set_target_properties(SymbolTransformationTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
-		set_target_properties(GenericDelegateTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+    if (NOT BUILD_PLATFORM STREQUAL "x86")
+        foreach (target ${StandardTargets})
+            set_target_properties(${target} PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+        endforeach(target)
         set_target_properties(BooleanMarshallingTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
     elseif (BUILD_PLATFORM STREQUAL "x86")
-        set_target_properties(BaseTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-        set_target_properties(DisposeTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-        set_target_properties(EventTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-        set_target_properties(FunctionTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-        set_target_properties(LazyLoadingTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-        set_target_properties(PropertyTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-        set_target_properties(RemappingTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-        set_target_properties(StringTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-        set_target_properties(AttributePassthroughTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-        set_target_properties(MixedModeTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-        set_target_properties(NullableTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-        set_target_properties(IndirectCallTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-        set_target_properties(NameManglingTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-        set_target_properties(SymbolTransformationTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-        set_target_properties(GenericDelegateTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+        foreach (target ${StandardTargets})
+            set_target_properties(${target} PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+        endforeach(target)
         set_target_properties(BooleanMarshallingTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
     endif()
 
-    set_target_properties(BaseTests-x64 PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
-    set_target_properties(BaseTests-x32 PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+    foreach (x64Target ${x64Targets})
+        set_target_properties(${x64Target} PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+    endforeach(x64Target)
+
+    foreach (x32Target ${x32Targets})
+        set_target_properties(${x32Target} PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+    endforeach(x32Target)
 elseif (MSVC)
     # Handled in MSBuild
 endif()

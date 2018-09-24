@@ -2,36 +2,21 @@ function(install_for_frameworks FRAMEWORKS)
     foreach(framework ${FRAMEWORKS})
         message("Framework: ${framework}")
         install(TARGETS
-                    BaseTests
-                    DisposeTests
-                    EventTests
-                    FunctionTests
-                    LazyLoadingTests
-                    PropertyTests
-                    RemappingTests
-                    StringTests
-                    AttributePassthroughTests
-                    MixedModeTests
-                    NullableTests
-                    IndirectCallTests
-                    NameManglingTests
-                    SymbolTransformationTests
-					GenericDelegateTests
-                    BooleanMarshallingTests
+                    ${StandardTargets}
                 COMPONENT
                     standard
                 DESTINATION
                     ${INSTALL_PATH_ABSOLUTE}/${framework})
 
         install(TARGETS
-                    BaseTests-x64
+                    ${x64Targets}
                 COMPONENT
                     x64-only
                 DESTINATION
                     ${INSTALL_PATH_ABSOLUTE}/${framework}/lib/x64)
 
         install(TARGETS
-                    BaseTests-x32
+                    ${x32Targets}
                 COMPONENT
                     x32-only
                 DESTINATION

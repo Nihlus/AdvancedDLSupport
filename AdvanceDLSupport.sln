@@ -37,6 +37,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", ".\scripts", "{BB
 		scripts\appveyor-coverage.ps1 = scripts\appveyor-coverage.ps1
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "props", ".\props", "{47E747E8-1D9C-447A-BBA8-EFA5E38E948C}"
+	ProjectSection(SolutionItems) = preProject
+		props\common.props = props\common.props
+		props\nuget-common.props = props\nuget-common.props
+		props\netfx-mono.props = props\netfx-mono.props
+		props\stylecop.props = props\stylecop.props
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDLSupport", "AdvancedDLSupport\AdvancedDLSupport.csproj", "{7EDC8F84-DF28-4C3C-AF56-F283B694218A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDLSupport.Tests", "AdvancedDLSupport.Tests\AdvancedDLSupport.Tests.csproj", "{BA044617-6B99-4867-AE00-48076DEA38DC}"

@@ -24,8 +24,9 @@ using JetBrains.Annotations;
 namespace AdvancedDLSupport.Loaders
 {
     /// <summary>
-    /// <see cref="dl.open"/> flags. Taken from the source code of
-    /// GNU libc: <a href="https://github.com/lattera/glibc/blob/master/bits/dlfcn.h"/>
+    /// <see cref="dl.open"/> flags. Taken from the source code of GNU libc.
+    ///
+    /// <a href="https://github.com/lattera/glibc/blob/master/bits/dlfcn.h"/>
     /// </summary>
     [PublicAPI, Flags]
     public enum SymbolFlag
