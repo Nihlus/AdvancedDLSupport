@@ -38,5 +38,6 @@ Run-Coverage "Mono.DllMap.Tests"
 
 if (!($ANY_TESTS_FAILED -eq 0))
 {
+    echo "Tests failed."
     exit 1
 }

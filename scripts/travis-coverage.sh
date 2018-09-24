@@ -26,5 +26,6 @@ runCoverage AdvancedDLSupport.AOT.Tests
 runCoverage Mono.DllMap.Tests
 
 if [ ${ANY_TESTS_FAILED} != 0 ]; then
+	echo "Tests failed."
 	exit 1
 fi
