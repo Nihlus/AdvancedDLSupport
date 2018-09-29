@@ -122,39 +122,23 @@ namespace AdvancedDLSupport.ImplementationGenerators
             il.EmitNewObject(typeof(IntrospectiveMethodInfo).GetConstructor(new[] { typeof(MethodInfo) }));
             il.EmitSetLocalVariable(methodInfoLocal);
 
-            // Check if we have a created implementation
-            var trueCase = il.DefineLabel();
-
-            il.EmitLoadField(_genericJitEmitter);
-            il.EmitLoadLocalVariable(methodInfoLocal);
-            il.EmitCallDirect<JustInTimeGenericEmitter>(nameof(JustInTimeGenericEmitter.HasClosedImplementation));
-
-            il.EmitBranchTrue(trueCase);
-
-            // If not, create one
             il.EmitLoadField(_genericJitEmitter);
             il.EmitLoadLocalVariable(methodInfoLocal);
             il.EmitLoadArgument(0);
             // ReSharper disable once PossibleNullReferenceException
             il.EmitCallDirect(typeof(NativeLibraryBase).GetProperty(nameof(NativeLibraryBase.LibraryPath)).GetMethod);
-
-            il.EmitCallDirect<JustInTimeGenericEmitter>(nameof(JustInTimeGenericEmitter.CreateClosedImplementation));
-
-            // Then grab the closed implementation
-            il.MarkLabel(trueCase);
-
-            // Create invocation parameters
-            il.EmitLoadField(_genericJitEmitter);
-            il.EmitLoadLocalVariable(methodInfoLocal);
-            il.EmitCallDirect<JustInTimeGenericEmitter>(nameof(JustInTimeGenericEmitter.GetClosedImplementationMethodPointer));
-
-            il.EmitLoadField(_genericJitEmitter);
-            il.EmitLoadLocalVariable(methodInfoLocal);
-            il.EmitCallDirect<JustInTimeGenericEmitter>(nameof(JustInTimeGenericEmitter.GetClosedImplementationTypeInstance));
             il.EmitLoadLocalVariable(argumentArray);
 
-            // And finally, invoke it
-            il.EmitCallDirect<MethodInfo>(nameof(MethodInfo.Invoke), typeof(object), typeof(object[]));
+            il.EmitCallDirect<JustInTimeGenericEmitter>(nameof(JustInTimeGenericEmitter.InvokeClosedImplementation));
+
+            if (definition.ReturnType == typeof(void))
+            {
+                il.EmitPop();
+            }
+            else if (definition.ReturnType.IsValueType)
+            {
+                il.EmitUnbox(definition.ReturnType);
+            }
         }
 
         /// <summary>

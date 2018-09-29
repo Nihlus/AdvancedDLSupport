@@ -50,11 +50,36 @@ namespace AdvancedDLSupport.Generics
         }
 
         /// <summary>
+        /// Invokes the closed implementation of the given method info, creating one if one doesn't exist.
+        /// </summary>
+        /// <param name="methodInfo">The method info of the runtime-called method.</param>
+        /// <param name="libraryPath">The path to the library that the outer type instance was created with.</param>
+        /// <param name="arguments">The arguments to the method, if any.</param>
+        /// <returns>The implementations return value, if any.</returns>
+        public object InvokeClosedImplementation
+        (
+            [NotNull] IntrospectiveMethodInfo methodInfo,
+            string libraryPath,
+            object[] arguments
+        )
+        {
+            if (!HasClosedImplementation(methodInfo))
+            {
+                CreateClosedImplementation(methodInfo, libraryPath);
+            }
+
+            var closedImplementationTypeInstance = GetClosedImplementationTypeInstance(methodInfo);
+            var closedImplementationMethod = GetClosedImplementationMethod(methodInfo);
+
+            return closedImplementationMethod.Invoke(closedImplementationTypeInstance, arguments);
+        }
+
+        /// <summary>
         /// Determines whether or not the jitter has created a closed implementation for the given method info.
         /// </summary>
         /// <param name="methodInfo">The method.</param>
         /// <returns>true if a closed implementation exists; otherwise, false.</returns>
-        public bool HasClosedImplementation([NotNull] IntrospectiveMethodInfo methodInfo)
+        private bool HasClosedImplementation([NotNull] IntrospectiveMethodInfo methodInfo)
         {
             var signature = new GenericMethodSignature(methodInfo);
 
@@ -68,7 +93,7 @@ namespace AdvancedDLSupport.Generics
         /// </summary>
         /// <param name="methodInfo">The method.</param>
         /// <param name="libraryPath">The path of the library to bind to.</param>
-        public void CreateClosedImplementation
+        private void CreateClosedImplementation
         (
             [NotNull] IntrospectiveMethodInfo methodInfo,
             [NotNull] string libraryPath
@@ -108,7 +133,8 @@ namespace AdvancedDLSupport.Generics
         /// <param name="methodInfo">The closed signature.</param>
         /// <exception cref="KeyNotFoundException">Thrown if the method doesn't have a closed implementation.</exception>
         /// <returns>The method.</returns>
-        public MethodInfo GetClosedImplementationMethodPointer
+        [NotNull]
+        private MethodInfo GetClosedImplementationMethod
         (
             [NotNull] IntrospectiveMethodInfo methodInfo
         )
@@ -130,7 +156,7 @@ namespace AdvancedDLSupport.Generics
         /// <exception cref="KeyNotFoundException">Thrown if the method doesn't have a closed implementation.</exception>
         /// <returns>The instance.</returns>
         [NotNull]
-        public NativeLibraryBase GetClosedImplementationTypeInstance
+        private NativeLibraryBase GetClosedImplementationTypeInstance
         (
             [NotNull] IntrospectiveMethodInfo methodInfo
         )
@@ -150,6 +176,7 @@ namespace AdvancedDLSupport.Generics
         /// </summary>
         /// <param name="methodInfo">The method.</param>
         /// <returns>The created host type.</returns>
+        [NotNull]
         private TypeBuilder CreateHostInterface([NotNull] IntrospectiveMethodInfo methodInfo)
         {
             var parameterList = $"{string.Join("_", methodInfo.ParameterTypes)}";
