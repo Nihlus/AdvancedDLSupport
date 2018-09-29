@@ -86,22 +86,75 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             var definition = workUnit.Definition;
 
-            // Load the "this" reference
-            il.EmitLoadArgument(0);
+            // Create the argument list as an array
+            var argumentArray = il.DeclareLocal(typeof(object[]));
+            il.EmitConstantInt(definition.ParameterTypes.Count);
+            il.EmitNewArray<object>();
+            il.EmitSetLocalVariable(argumentArray);
 
             for (short i = 1; i <= definition.ParameterTypes.Count; ++i)
             {
+                var parameterType = definition.ParameterTypes[i];
+                il.EmitLoadLocalVariable(argumentArray);
                 il.EmitLoadArgument(i);
+
+                if (parameterType.IsGenericParameter)
+                {
+                    // Check constraints for boxing needs
+                    if (!parameterType.GenericParameterAttributes.HasFlag(GenericParameterAttributes.ReferenceTypeConstraint))
+                    {
+                        il.EmitBox(parameterType);
+                    }
+                }
+                else if (parameterType.IsValueType)
+                {
+                    il.EmitBox(parameterType);
+                }
+
+                il.EmitSetArrayElement<object>();
             }
 
-            // Grab the pointer to the actual implementation
-            il.EmitLoadField(_genericJitEmitter);
-            il.EmitCall();
-        }
+            // Create a local to hold the method's introspective signature
+            var methodInfoLocal = il.DeclareLocal(typeof(IntrospectiveMethodInfo));
 
-        /// <inheritdoc/>
-        public override void EmitEpilogue(ILGenerator il, PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
-        {
+            // Create a new introspective method info for the current method
+            il.EmitCallDirect<MethodBase>(nameof(MethodBase.GetCurrentMethod));
+            il.EmitNewObject(typeof(IntrospectiveMethodInfo).GetConstructor(new[] { typeof(MethodInfo) }));
+            il.EmitSetLocalVariable(methodInfoLocal);
+
+            // Check if we have a created implementation
+            var trueCase = il.DefineLabel();
+
+            il.EmitLoadField(_genericJitEmitter);
+            il.EmitLoadLocalVariable(methodInfoLocal);
+            il.EmitCallDirect<JustInTimeGenericEmitter>(nameof(JustInTimeGenericEmitter.HasClosedImplementation));
+
+            il.EmitBranchTrue(trueCase);
+
+            // If not, create one
+            il.EmitLoadField(_genericJitEmitter);
+            il.EmitLoadLocalVariable(methodInfoLocal);
+            il.EmitLoadArgument(0);
+            // ReSharper disable once PossibleNullReferenceException
+            il.EmitCallDirect(typeof(NativeLibraryBase).GetProperty(nameof(NativeLibraryBase.LibraryPath)).GetMethod);
+
+            il.EmitCallDirect<JustInTimeGenericEmitter>(nameof(JustInTimeGenericEmitter.CreateClosedImplementation));
+
+            // Then grab the closed implementation
+            il.MarkLabel(trueCase);
+
+            // Create invocation parameters
+            il.EmitLoadField(_genericJitEmitter);
+            il.EmitLoadLocalVariable(methodInfoLocal);
+            il.EmitCallDirect<JustInTimeGenericEmitter>(nameof(JustInTimeGenericEmitter.GetClosedImplementationMethodPointer));
+
+            il.EmitLoadField(_genericJitEmitter);
+            il.EmitLoadLocalVariable(methodInfoLocal);
+            il.EmitCallDirect<JustInTimeGenericEmitter>(nameof(JustInTimeGenericEmitter.GetClosedImplementationTypeInstance));
+            il.EmitLoadLocalVariable(argumentArray);
+
+            // And finally, invoke it
+            il.EmitCallDirect<MethodInfo>(nameof(MethodInfo.Invoke), typeof(object), typeof(object[]));
         }
 
         /// <summary>

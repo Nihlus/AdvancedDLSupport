@@ -31,45 +31,35 @@ namespace AdvancedDLSupport.Generics
     /// <summary>
     /// Acts as a micro-JIT for generic methods, allowing call-time emission of a compatible method signature.
     /// </summary>
-    internal class JustInTimeGenericEmitter
+    internal class JustInTimeGenericEmitter : IDisposable
     {
+        private bool _isDisposed;
+
         private NativeLibraryBuilder _builder = NativeLibraryBuilder.Default;
 
-        private Dictionary<GenericMethodSignature, IntPtr> _closedImplementations;
-        private Dictionary<IntPtr, object> _closedImplementationTypeInstances;
+        private Dictionary<GenericMethodSignature, MethodInfo> _closedImplementations;
+        private Dictionary<GenericMethodSignature, NativeLibraryBase> _closedImplementationTypeInstances;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JustInTimeGenericEmitter"/> class.
         /// </summary>
         public JustInTimeGenericEmitter()
         {
-            _closedImplementations = new Dictionary<GenericMethodSignature, IntPtr>();
-            _closedImplementationTypeInstances = new Dictionary<IntPtr, object>();
+            _closedImplementations = new Dictionary<GenericMethodSignature, MethodInfo>();
+            _closedImplementationTypeInstances = new Dictionary<GenericMethodSignature, NativeLibraryBase>();
         }
 
         /// <summary>
-        /// Gets a pointer to a managed implementation of the given closed method, creating one if one doesn't exist.
+        /// Determines whether or not the jitter has created a closed implementation for the given method info.
         /// </summary>
-        /// <param name="methodInfo">The closed signature.</param>
-        /// <param name="libraryPath">The path of the library to bind to.</param>
-        /// <returns>The pointer.</returns>
-        public IntPtr GetClosedImplementation
-        (
-            [NotNull] IntrospectiveMethodInfo methodInfo,
-            [NotNull] string libraryPath
-        )
+        /// <param name="methodInfo">The method.</param>
+        /// <returns>true if a closed implementation exists; otherwise, false.</returns>
+        public bool HasClosedImplementation([NotNull] IntrospectiveMethodInfo methodInfo)
         {
             var signature = new GenericMethodSignature(methodInfo);
 
-            if (_closedImplementations.TryGetValue(signature, out var result))
-            {
-                return result;
-            }
-
-            var implementation = CreateClosedImplementation(methodInfo, libraryPath);
-            _closedImplementations.Add(signature, implementation);
-
-            return implementation;
+            return _closedImplementations.ContainsKey(signature) &&
+                   _closedImplementationTypeInstances.ContainsKey(signature);
         }
 
         /// <summary>
@@ -78,8 +68,7 @@ namespace AdvancedDLSupport.Generics
         /// </summary>
         /// <param name="methodInfo">The method.</param>
         /// <param name="libraryPath">The path of the library to bind to.</param>
-        /// <returns>The pointer to the implementation.</returns>
-        private IntPtr CreateClosedImplementation
+        public void CreateClosedImplementation
         (
             [NotNull] IntrospectiveMethodInfo methodInfo,
             [NotNull] string libraryPath
@@ -101,19 +90,59 @@ namespace AdvancedDLSupport.Generics
             (
                 m =>
                     m.ReturnType == methodInfo.ReturnType && m.GetParameters()
-                    .Select
-                    (
-                        p => p.ParameterType
-                    )
-                    .SequenceEqual(methodInfo.ParameterTypes)
+                        .Select
+                        (
+                            p => p.ParameterType
+                        )
+                        .SequenceEqual(methodInfo.ParameterTypes)
             );
 
-            var methodPointer = implementationMethod.MethodHandle.GetFunctionPointer();
-
             // Store a reference to the implementation so that it doesn't get garbage collected
-            _closedImplementationTypeInstances.Add(methodPointer, implementationTypeInstance);
+            _closedImplementationTypeInstances.Add(new GenericMethodSignature(methodInfo), (NativeLibraryBase)implementationTypeInstance);
+            _closedImplementations.Add(new GenericMethodSignature(methodInfo), implementationMethod);
+        }
 
-            return methodPointer;
+        /// <summary>
+        /// Gets a managed implementation of the given closed method.
+        /// </summary>
+        /// <param name="methodInfo">The closed signature.</param>
+        /// <exception cref="KeyNotFoundException">Thrown if the method doesn't have a closed implementation.</exception>
+        /// <returns>The method.</returns>
+        public MethodInfo GetClosedImplementationMethodPointer
+        (
+            [NotNull] IntrospectiveMethodInfo methodInfo
+        )
+        {
+            var signature = new GenericMethodSignature(methodInfo);
+
+            if (_closedImplementations.TryGetValue(signature, out var result))
+            {
+                return result;
+            }
+
+            throw new KeyNotFoundException("The given method didn't have a closed implementation.");
+        }
+
+        /// <summary>
+        /// Gets the instance that's hosting the managed implementation of the given closed method.
+        /// </summary>
+        /// <param name="methodInfo">The closed signature.</param>
+        /// <exception cref="KeyNotFoundException">Thrown if the method doesn't have a closed implementation.</exception>
+        /// <returns>The instance.</returns>
+        [NotNull]
+        public NativeLibraryBase GetClosedImplementationTypeInstance
+        (
+            [NotNull] IntrospectiveMethodInfo methodInfo
+        )
+        {
+            var signature = new GenericMethodSignature(methodInfo);
+
+            if (_closedImplementationTypeInstances.TryGetValue(signature, out var result))
+            {
+                return result;
+            }
+
+            throw new KeyNotFoundException("The given method didn't have a closed implementation.");
         }
 
         /// <summary>
@@ -151,6 +180,20 @@ namespace AdvancedDLSupport.Generics
             );
 
             hostMethod.ApplyCustomAttributesFrom(methodInfo, methodInfo.ReturnType, methodInfo.ParameterTypes);
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            foreach (var nestedImplementation in _closedImplementationTypeInstances.Values)
+            {
+                nestedImplementation.Dispose();
+            }
         }
     }
 }

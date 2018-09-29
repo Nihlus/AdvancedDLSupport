@@ -18,6 +18,8 @@
 //
 
 using System;
+using System.Collections.Generic;
+using AdvancedDLSupport.Generics;
 using AdvancedDLSupport.Loaders;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
@@ -41,6 +43,18 @@ namespace AdvancedDLSupport
         /// Gets or sets the set of options that were used to construct the type.
         /// </summary>
         internal ImplementationOptions Options { get; set; }
+
+        /// <summary>
+        /// Gets or sets the library path that was used to instantiate this library.
+        /// </summary>
+        [CanBeNull]
+        protected internal string LibraryPath { get; set; }
+
+        /// <summary>
+        /// Gets a dictionary of nested native implementations that have been generated at call time to support generic
+        /// methods, mapped to their respective signatures.
+        /// </summary>
+        private protected Dictionary<GenericMethodSignature, NativeLibraryBase> NestedImplementations { get; }
 
         /// <summary>
         /// Gets an opaque native handle to the library.
@@ -74,7 +88,10 @@ namespace AdvancedDLSupport
         )
         {
             Options = options;
-            _libraryHandle = PlatformLoader.LoadLibrary(path);
+            LibraryPath = path;
+
+            NestedImplementations = new Dictionary<GenericMethodSignature, NativeLibraryBase>();
+            _libraryHandle = PlatformLoader.LoadLibrary(LibraryPath);
         }
 
         /// <summary>
@@ -119,6 +136,11 @@ namespace AdvancedDLSupport
 
             PlatformLoader.CloseLibrary(_libraryHandle);
             _libraryHandle = IntPtr.Zero;
+
+            foreach (var nestedImplementation in NestedImplementations.Values)
+            {
+                nestedImplementation.Dispose();
+            }
         }
     }
 }
