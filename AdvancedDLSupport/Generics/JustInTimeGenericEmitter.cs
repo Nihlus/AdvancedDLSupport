@@ -55,12 +55,14 @@ namespace AdvancedDLSupport.Generics
         /// <param name="methodInfo">The method info of the runtime-called method.</param>
         /// <param name="libraryPath">The path to the library that the outer type instance was created with.</param>
         /// <param name="arguments">The arguments to the method, if any.</param>
-        /// <returns>The implementations return value, if any.</returns>
+        /// <returns>
+        /// The implementation's return value, if any. If the method's return type is void, null is returned.
+        /// </returns>
         public object InvokeClosedImplementation
         (
             [NotNull] IntrospectiveMethodInfo methodInfo,
-            string libraryPath,
-            object[] arguments
+            [NotNull] string libraryPath,
+            [CanBeNull] object[] arguments
         )
         {
             if (!HasClosedImplementation(methodInfo))
@@ -176,7 +178,6 @@ namespace AdvancedDLSupport.Generics
         /// </summary>
         /// <param name="methodInfo">The method.</param>
         /// <returns>The created host type.</returns>
-        [NotNull]
         private TypeBuilder CreateHostInterface([NotNull] IntrospectiveMethodInfo methodInfo)
         {
             var parameterList = $"{string.Join("_", methodInfo.ParameterTypes)}";

@@ -88,8 +88,17 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             // Create the argument list as an array
             var argumentArray = il.DeclareLocal(typeof(object[]));
-            il.EmitConstantInt(definition.ParameterTypes.Count);
-            il.EmitNewArray<object>();
+
+            if (definition.ParameterTypes.Count > 0)
+            {
+                il.EmitConstantInt(definition.ParameterTypes.Count);
+                il.EmitNewArray<object>();
+            }
+            else
+            {
+                il.EmitLoadNull();
+            }
+
             il.EmitSetLocalVariable(argumentArray);
 
             for (short i = 1; i <= definition.ParameterTypes.Count; ++i)
