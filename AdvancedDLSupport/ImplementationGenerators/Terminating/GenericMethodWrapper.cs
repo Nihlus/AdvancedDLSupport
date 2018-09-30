@@ -123,19 +123,18 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 il.EmitSetArrayElement<object>();
             }
 
-            // Create a local to hold the method's introspective signature
-            var methodInfoLocal = il.DeclareLocal(typeof(IntrospectiveMethodInfo));
-
-            // Create a new introspective method info for the current method
-            il.EmitCallDirect<MethodBase>(nameof(MethodBase.GetCurrentMethod));
-            il.EmitNewObject(typeof(IntrospectiveMethodInfo).GetConstructor(new[] { typeof(MethodInfo) }));
-            il.EmitSetLocalVariable(methodInfoLocal);
-
+            // this
             il.EmitLoadField(_genericJitEmitter);
-            il.EmitLoadLocalVariable(methodInfoLocal);
+
+            // methodInfo
+            il.EmitCallDirect<MethodBase>(nameof(MethodBase.GetCurrentMethod));
+            il.EmitNewObject<IntrospectiveMethodInfo>(typeof(MethodInfo));
+
+            // libraryPath
             il.EmitLoadArgument(0);
-            // ReSharper disable once PossibleNullReferenceException
-            il.EmitCallDirect(typeof(NativeLibraryBase).GetProperty(nameof(NativeLibraryBase.LibraryPath)).GetMethod);
+            il.EmitGetProperty<NativeLibraryBase>(nameof(NativeLibraryBase.LibraryPath));
+
+            // arguments
             il.EmitLoadLocalVariable(argumentArray);
 
             il.EmitCallDirect<JustInTimeGenericEmitter>(nameof(JustInTimeGenericEmitter.InvokeClosedImplementation));
