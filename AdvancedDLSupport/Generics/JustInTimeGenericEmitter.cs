@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.InteropServices;
 using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
@@ -53,6 +54,7 @@ namespace AdvancedDLSupport.Generics
         /// Invokes the closed implementation of the given method info, creating one if one doesn't exist.
         /// </summary>
         /// <param name="methodInfo">The method info of the runtime-called method.</param>
+        /// <param name="entrypoint">The method's entry point.</param>
         /// <param name="libraryPath">The path to the library that the outer type instance was created with.</param>
         /// <param name="arguments">The arguments to the method, if any.</param>
         /// <returns>
@@ -61,13 +63,14 @@ namespace AdvancedDLSupport.Generics
         public object InvokeClosedImplementation
         (
             [NotNull] IntrospectiveMethodInfo methodInfo,
+            [NotNull] string entrypoint,
             [NotNull] string libraryPath,
             [CanBeNull] object[] arguments
         )
         {
             if (!HasClosedImplementation(methodInfo))
             {
-                CreateClosedImplementation(methodInfo, libraryPath);
+                CreateClosedImplementation(methodInfo, entrypoint, libraryPath);
             }
 
             var closedImplementationTypeInstance = GetClosedImplementationTypeInstance(methodInfo);
@@ -94,15 +97,26 @@ namespace AdvancedDLSupport.Generics
         /// it.
         /// </summary>
         /// <param name="methodInfo">The method.</param>
+        /// <param name="entryPoint">The method's entry point.</param>
         /// <param name="libraryPath">The path of the library to bind to.</param>
         private void CreateClosedImplementation
         (
             [NotNull] IntrospectiveMethodInfo methodInfo,
+            [NotNull] string entryPoint,
             [NotNull] string libraryPath
         )
         {
             var hostType = CreateHostInterface(methodInfo);
-            CreateHostMethod(hostType, methodInfo);
+
+            // Mangle the name
+            var manglerAttribute = methodInfo.GetCustomAttribute<GenericManglerAttribute>();
+            if (!(manglerAttribute is null))
+            {
+                var mangler = manglerAttribute.CreateManglerInstance();
+                entryPoint = mangler.Mangle(methodInfo);
+            }
+
+            CreateHostMethod(hostType, methodInfo, entryPoint);
 
             var finalInterfaceType = hostType.CreateTypeInfo();
 
@@ -181,11 +195,11 @@ namespace AdvancedDLSupport.Generics
         private TypeBuilder CreateHostInterface([NotNull] IntrospectiveMethodInfo methodInfo)
         {
             var parameterList = $"{string.Join("_", methodInfo.ParameterTypes)}";
-            var hostTypeName = $"{methodInfo.ReturnType}_{methodInfo.Name}_{parameterList}_closed_implementation";
+            var hostTypeName = $"I{methodInfo.ReturnType}_{methodInfo.Name}_{parameterList}_closed_implementation";
             var hostType = _builder.GetDynamicModule().DefineType
             (
                 hostTypeName,
-                TypeAttributes.Interface | TypeAttributes.Public
+                TypeAttributes.Interface | TypeAttributes.Public | TypeAttributes.Abstract | TypeAttributes.Class
             );
 
             return hostType;
@@ -196,18 +210,73 @@ namespace AdvancedDLSupport.Generics
         /// </summary>
         /// <param name="hostType">The type to create the method in.</param>
         /// <param name="methodInfo">The method.</param>
-        private void CreateHostMethod([NotNull] TypeBuilder hostType, [NotNull] IntrospectiveMethodInfo methodInfo)
+        /// <param name="entryPoint">The method's entry point.</param>
+        private void CreateHostMethod
+        (
+            [NotNull] TypeBuilder hostType,
+            [NotNull] IntrospectiveMethodInfo methodInfo,
+            [NotNull] string entryPoint
+        )
         {
+            const MethodAttributes attributes = MethodAttributes.Public |
+                                                MethodAttributes.Virtual |
+                                                MethodAttributes.HideBySig |
+                                                MethodAttributes.Abstract |
+                                                MethodAttributes.NewSlot;
+
             var hostMethod = hostType.DefineMethod
             (
-                $"{methodInfo.Name}_closed_implementation",
-                MethodAttributes.Private | MethodAttributes.Virtual | MethodAttributes.HideBySig | MethodAttributes.Abstract,
+                $"{methodInfo.Name}_closed_implementation_{entryPoint}",
+                attributes,
                 CallingConventions.Standard,
                 methodInfo.ReturnType,
                 methodInfo.ParameterTypes.ToArray()
             );
 
-            hostMethod.ApplyCustomAttributesFrom(methodInfo, methodInfo.ReturnType, methodInfo.ParameterTypes);
+            var existingNativeSymbolAttribute = methodInfo.GetCustomAttribute<NativeSymbolAttribute>();
+
+            Func<CustomAttributeData, int, bool> attributeFilter =
+                (attribute, index) => attribute.AttributeType == typeof(NativeSymbolAttribute);
+
+            if (existingNativeSymbolAttribute is null)
+            {
+                // Create a completely new attribute
+                var symbolAttributeBuilder = new CustomAttributeBuilder
+                (
+                    typeof(NativeSymbolAttribute).GetConstructor(new[] { typeof(string) }),
+                    new object[] { entryPoint }
+                );
+
+                hostMethod.SetCustomAttribute(symbolAttributeBuilder);
+            }
+            else if (existingNativeSymbolAttribute.Entrypoint.IsNullOrWhiteSpace())
+            {
+                // Take the old calling convention, and use the new entry point
+                var customCallingConvention = existingNativeSymbolAttribute.CallingConvention;
+
+                var symbolAttributeBuilder = new CustomAttributeBuilder
+                (
+                    typeof(NativeSymbolAttribute).GetConstructor(new[] { typeof(string) }),
+                    new object[] { entryPoint },
+                    new[] { typeof(NativeSymbolAttribute).GetProperty(nameof(NativeSymbolAttribute.CallingConvention)) },
+                    new object[] { customCallingConvention }
+                );
+
+                hostMethod.SetCustomAttribute(symbolAttributeBuilder);
+            }
+            else
+            {
+                // Skip the filtering and keep the old attribute
+                attributeFilter = (attribute, index) => false;
+            }
+
+            hostMethod.ApplyCustomAttributesFrom
+            (
+                methodInfo,
+                methodInfo.ReturnType,
+                methodInfo.ParameterTypes,
+                parameterAttributeFilter: attributeFilter
+            );
         }
 
         /// <inheritdoc/>

@@ -238,6 +238,11 @@ namespace AdvancedDLSupport.Reflection
 
                 ReturnParameterAttributes = definitionToCopyAttributesFrom.ReturnParameterAttributes;
                 ReturnParameterCustomAttributes = definitionToCopyAttributesFrom.ReturnParameterCustomAttributes;
+
+                // Copy generics
+                ContainsGenericParameters = definitionToCopyAttributesFrom.ContainsGenericParameters;
+                IsGenericMethod = definitionToCopyAttributesFrom.IsGenericMethod;
+                GenericArguments = definitionToCopyAttributesFrom.GenericArguments;
             }
         }
 

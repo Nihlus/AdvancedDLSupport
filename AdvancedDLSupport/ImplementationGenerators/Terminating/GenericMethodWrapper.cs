@@ -39,10 +39,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// <summary>
     /// Generates wrapper instructions for marshalling methods with generic type arguments.
     /// </summary>
-    internal sealed class GenericMethodWrapper : CallWrapperBase
+    internal sealed class GenericMethodWrapper : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
         /// <inheritdoc/>
-        public override GeneratorComplexity Complexity => MemberDependent | Terminating;
+        public override GeneratorComplexity Complexity =>
+            MemberDependent | TransformsParameters | CreatesTypes | DeferredImplementation;
 
         private FieldInfo _genericJitEmitter;
 
@@ -82,9 +83,16 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <inheritdoc/>
-        public override void EmitPrologue(ILGenerator il, PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
+        public override IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> GenerateImplementation(PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {
             var definition = workUnit.Definition;
+
+            if (!(definition.GetWrappedMember() is MethodBuilder builder))
+            {
+                throw new ArgumentNullException(nameof(workUnit), "Could not unwrap introspective method to method builder.");
+            }
+
+            var il = builder.GetILGenerator();
 
             // Create the argument list as an array
             var argumentArray = il.DeclareLocal(typeof(object[]));
@@ -101,10 +109,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             il.EmitSetLocalVariable(argumentArray);
 
+            // Load the parameter values into the array
             for (short i = 1; i <= definition.ParameterTypes.Count; ++i)
             {
-                var parameterType = definition.ParameterTypes[i];
+                var parameterType = definition.ParameterTypes[i - 1];
                 il.EmitLoadLocalVariable(argumentArray);
+                il.EmitConstantInt(i - 1);
                 il.EmitLoadArgument(i);
 
                 if (parameterType.IsGenericParameter)
@@ -123,30 +133,66 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 il.EmitSetArrayElement<object>();
             }
 
+            // Create the type argument list as an array
+            var genericTypeArgumentsArray = il.DeclareLocal(typeof(Type[]));
+            il.EmitConstantInt(definition.GenericArguments.Count);
+            il.EmitNewArray<Type>();
+            il.EmitSetLocalVariable(genericTypeArgumentsArray);
+
+            for (short i = 0; i < definition.GenericArguments.Count; ++i)
+            {
+                il.EmitLoadLocalVariable(genericTypeArgumentsArray);
+                il.EmitConstantInt(i);
+                il.EmitTypeOf(definition.GenericArguments[i]);
+                il.EmitSetArrayElement<Type>();
+            }
+
             // this
+            il.EmitLoadArgument(0);
             il.EmitLoadField(_genericJitEmitter);
 
             // methodInfo
             il.EmitCallDirect<MethodBase>(nameof(MethodBase.GetCurrentMethod));
+
+            // convert the open MethodInfo to a closed MethodInfo
+            il.EmitLoadLocalVariable(genericTypeArgumentsArray);
+            il.EmitCallVirtual<MethodInfo>(nameof(MethodInfo.MakeGenericMethod), typeof(Type[]));
+
+            // and then over to an introspective method info
             il.EmitNewObject<IntrospectiveMethodInfo>(typeof(MethodInfo));
+
+            // entry point
+            il.EmitConstantString(workUnit.SymbolName);
 
             // libraryPath
             il.EmitLoadArgument(0);
-            il.EmitGetProperty<NativeLibraryBase>(nameof(NativeLibraryBase.LibraryPath));
+            il.EmitGetProperty<NativeLibraryBase>(nameof(NativeLibraryBase.LibraryPath), BindingFlags.NonPublic | BindingFlags.Instance);
 
             // arguments
             il.EmitLoadLocalVariable(argumentArray);
 
-            il.EmitCallDirect<JustInTimeGenericEmitter>(nameof(JustInTimeGenericEmitter.InvokeClosedImplementation));
+            var parameterTypes = new[]
+            {
+                typeof(IntrospectiveMethodInfo),
+                typeof(string),
+                typeof(string),
+                typeof(object[])
+            };
+
+            il.EmitCallDirect<JustInTimeGenericEmitter>(nameof(JustInTimeGenericEmitter.InvokeClosedImplementation), parameterTypes);
 
             if (definition.ReturnType == typeof(void))
             {
                 il.EmitPop();
             }
-            else if (definition.ReturnType.IsValueType)
+            else
             {
-                il.EmitUnbox(definition.ReturnType);
+                il.EmitUnboxAny(definition.ReturnType);
             }
+
+            il.EmitReturn();
+
+            yield break;
         }
 
         /// <summary>
@@ -172,6 +218,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="constructorIL">The constructor's IL generator.</param>
         private void AugmentHostingTypeConstructor(ILGenerator constructorIL)
         {
+            constructorIL.EmitLoadArgument(0);
             constructorIL.EmitNewObject<JustInTimeGenericEmitter>();
             constructorIL.EmitSetField(_genericJitEmitter);
         }

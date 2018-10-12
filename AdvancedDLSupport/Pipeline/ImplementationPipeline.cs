@@ -156,6 +156,14 @@ namespace AdvancedDLSupport.Pipeline
                 _constructorIL,
                 _options
             );
+
+            yield return new GenericMethodWrapper
+            (
+                _targetModule,
+                _targetType,
+                _constructorIL,
+                _options
+            );
         }
 
         /// <summary>
@@ -205,6 +213,39 @@ namespace AdvancedDLSupport.Pipeline
                 interfaceDefinition.ReturnType,
                 interfaceDefinition.ParameterTypes.ToArray()
             );
+
+            if (interfaceDefinition.ContainsGenericParameters)
+            {
+                var parameters = methodBuilder.DefineGenericParameters
+                (
+                    interfaceDefinition.GenericArguments.Select(ga => $"T{ga.GenericParameterPosition}").ToArray()
+                );
+
+                for (var i = 0; i < parameters.Length; ++i)
+                {
+                    var genericBuilder = parameters[i];
+                    var existingParameter = interfaceDefinition.GenericArguments[i];
+
+                    var existingConstraints = existingParameter.GetGenericParameterConstraints();
+                    if (existingConstraints.Any())
+                    {
+                        if (existingConstraints.Any(c => c.IsInterface))
+                        {
+                            genericBuilder.SetInterfaceConstraints
+                            (
+                                existingConstraints.Where(c => c.IsInterface).ToArray()
+                            );
+                        }
+
+                        if (existingConstraints.Any(c => !c.IsInterface))
+                        {
+                            genericBuilder.SetBaseTypeConstraint(existingConstraints.First(c => !c.IsInterface));
+                        }
+                    }
+
+                    genericBuilder.SetGenericParameterAttributes(existingParameter.GenericParameterAttributes);
+                }
+            }
 
             // In the following blocks, which set of attributes to pass through is selected. The logic is as follows:
             // If either the interface or abstract implementation have attributes, select the one which does

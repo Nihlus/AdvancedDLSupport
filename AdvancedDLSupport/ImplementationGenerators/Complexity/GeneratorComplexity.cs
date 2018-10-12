@@ -59,6 +59,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <summary>
         /// The generator will create additional types in the assembly.
         /// </summary>
-        CreatesTypes = 1 << 4
+        CreatesTypes = 1 << 4,
+
+        /// <summary>
+        /// The generator defers its real implementation to a later time (usually call-time).
+        /// </summary>
+        DeferredImplementation = 1 << 5
     }
 }
