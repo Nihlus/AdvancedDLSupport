@@ -7,10 +7,12 @@
     <Platforms>AnyCPU;x86;x64</Platforms>
     <Prefer32bit>false</Prefer32bit>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' " />
   <ItemGroup>
     <PackageReference Include="altcover" Version="4.0.630" PrivateAssets="all" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
