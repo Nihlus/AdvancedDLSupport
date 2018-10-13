@@ -210,12 +210,12 @@ namespace AdvancedDLSupport.Generics
         /// </summary>
         /// <param name="hostType">The type to create the method in.</param>
         /// <param name="methodInfo">The method.</param>
-        /// <param name="entryPoint">The method's entry point.</param>
+        /// <param name="newEntrypoint">The method's entry point.</param>
         private void CreateHostMethod
         (
             [NotNull] TypeBuilder hostType,
             [NotNull] IntrospectiveMethodInfo methodInfo,
-            [NotNull] string entryPoint
+            [NotNull] string newEntrypoint
         )
         {
             const MethodAttributes attributes = MethodAttributes.Public |
@@ -226,7 +226,7 @@ namespace AdvancedDLSupport.Generics
 
             var hostMethod = hostType.DefineMethod
             (
-                $"{methodInfo.Name}_closed_implementation_{entryPoint}",
+                $"{methodInfo.Name}_closed_implementation_{newEntrypoint}",
                 attributes,
                 CallingConventions.Standard,
                 methodInfo.ReturnType,
@@ -244,12 +244,12 @@ namespace AdvancedDLSupport.Generics
                 var symbolAttributeBuilder = new CustomAttributeBuilder
                 (
                     typeof(NativeSymbolAttribute).GetConstructor(new[] { typeof(string) }),
-                    new object[] { entryPoint }
+                    new object[] { newEntrypoint }
                 );
 
                 hostMethod.SetCustomAttribute(symbolAttributeBuilder);
             }
-            else if (existingNativeSymbolAttribute.Entrypoint.IsNullOrWhiteSpace())
+            else if (existingNativeSymbolAttribute.Entrypoint != newEntrypoint)
             {
                 // Take the old calling convention, and use the new entry point
                 var customCallingConvention = existingNativeSymbolAttribute.CallingConvention;
@@ -257,7 +257,7 @@ namespace AdvancedDLSupport.Generics
                 var symbolAttributeBuilder = new CustomAttributeBuilder
                 (
                     typeof(NativeSymbolAttribute).GetConstructor(new[] { typeof(string) }),
-                    new object[] { entryPoint },
+                    new object[] { newEntrypoint },
                     new[] { typeof(NativeSymbolAttribute).GetProperty(nameof(NativeSymbolAttribute.CallingConvention)) },
                     new object[] { customCallingConvention }
                 );
