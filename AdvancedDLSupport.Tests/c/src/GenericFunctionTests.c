@@ -69,3 +69,64 @@ TestStruct GetValuest()
 
     return testStruct;
 }
+
+float DereferenceValuef(const float* value)
+{
+    return *value;
+}
+
+double DereferenceValued(const double* value)
+{
+    return *value;
+}
+
+uint8_t DereferenceValueb(const uint8_t* value)
+{
+    return *value;
+}
+
+int16_t DereferenceValues(const int16_t* value)
+{
+    return *value;
+}
+
+int32_t DereferenceValuei(const int32_t* value)
+{
+    return *value;
+}
+
+TestStruct DereferenceValuest(const TestStruct* value)
+{
+    return *value;
+}
+
+void AssignValuef(float* value)
+{
+    (*value) = 1;
+}
+
+void AssignValued(double* value)
+{
+    (*value) = 2;
+}
+
+void AssignValueb(uint8_t* value)
+{
+    (*value) = 4;
+}
+
+void AssignValues(int16_t* value)
+{
+    (*value) = 8;
+}
+
+void AssignValuei(int32_t* value)
+{
+    (*value) = 16;
+}
+
+void AssignValuest(TestStruct* value)
+{
+    value->A = 32;
+    value->B = 64;
+}

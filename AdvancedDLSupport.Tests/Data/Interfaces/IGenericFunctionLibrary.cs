@@ -30,5 +30,20 @@ namespace AdvancedDLSupport.Tests.Data
 
         [GenericMangler(typeof(SimpleGenericMangler))]
         T GetValue<T>() where T : unmanaged;
+
+        [GenericMangler(typeof(SimpleGenericMangler))]
+        [NativeSymbol("DereferenceValue")]
+        T DereferenceValueByRef<T>(ref T value) where T : unmanaged;
+
+        [GenericMangler(typeof(SimpleGenericMangler))]
+        [NativeSymbol("DereferenceValue")]
+        T DereferenceValueByIn<T>(in T value) where T : unmanaged;
+
+        [GenericMangler(typeof(SimpleGenericMangler))]
+        [NativeSymbol("DereferenceValue")]
+        unsafe T DereferenceValueByPointer<T>(T* value) where T : unmanaged;
+
+        [GenericMangler(typeof(SimpleGenericMangler))]
+        void AssignValue<T>(out T value) where T : unmanaged;
     }
 }

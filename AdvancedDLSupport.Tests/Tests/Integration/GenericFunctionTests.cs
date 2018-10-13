@@ -120,5 +120,150 @@ namespace AdvancedDLSupport.Tests.Integration
                 Assert.Equal(64, result.B);
             }
         }
+
+        public class GenericRefLikeParameters : LibraryTestBase<IGenericFunctionLibrary>
+        {
+            public GenericRefLikeParameters()
+                : base(LibraryName)
+            {
+            }
+
+            [Fact]
+            public void CanPassParameterByRefFloatValue()
+            {
+                var value = 1.0f;
+                Assert.Equal(1.0f, Library.DereferenceValueByRef(ref value));
+            }
+
+            [Fact]
+            public void CanPassParameterByRefDoubleValue()
+            {
+                var value = 2.0d;
+                Assert.Equal(2.0d, Library.DereferenceValueByRef(ref value));
+            }
+
+            [Fact]
+            public void CanPassParameterByRefByteValue()
+            {
+                byte value = 4;
+                Assert.Equal(4, Library.DereferenceValueByRef(ref value));
+            }
+
+            [Fact]
+            public void CanPassParameterByRefShortValue()
+            {
+                short value = 8;
+                Assert.Equal(8, Library.DereferenceValueByRef(ref value));
+            }
+
+            [Fact]
+            public void CanPassParameterByRefIntValue()
+            {
+                var value = 16;
+                Assert.Equal(16, Library.DereferenceValueByRef(ref value));
+            }
+
+            [Fact]
+            public void CanPassParameterByRefStructValue()
+            {
+                var value = default(TestStruct);
+                value.A = 32;
+                value.B = 64;
+
+                var result = Library.DereferenceValueByRef(ref value);
+                Assert.Equal(32, result.A);
+                Assert.Equal(64, result.B);
+            }
+
+            [Fact]
+            public void CanPassParameterByInFloatValue()
+            {
+                var value = 1.0f;
+                Assert.Equal(1.0f, Library.DereferenceValueByIn(in value));
+            }
+
+            [Fact]
+            public void CanPassParameterByInDoubleValue()
+            {
+                var value = 2.0d;
+                Assert.Equal(2.0d, Library.DereferenceValueByIn(in value));
+            }
+
+            [Fact]
+            public void CanPassParameterByInByteValue()
+            {
+                byte value = 4;
+                Assert.Equal(4, Library.DereferenceValueByIn(in value));
+            }
+
+            [Fact]
+            public void CanPassParameterByInShortValue()
+            {
+                short value = 8;
+                Assert.Equal(8, Library.DereferenceValueByIn(in value));
+            }
+
+            [Fact]
+            public void CanPassParameterByInIntValue()
+            {
+                var value = 16;
+                Assert.Equal(16, Library.DereferenceValueByIn(in value));
+            }
+
+            [Fact]
+            public void CanPassParameterByInStructValue()
+            {
+                var value = default(TestStruct);
+                value.A = 32;
+                value.B = 64;
+
+                var result = Library.DereferenceValueByIn(in value);
+                Assert.Equal(32, result.A);
+                Assert.Equal(64, result.B);
+            }
+
+            [Fact]
+            public void CanGetOutFloatValue()
+            {
+                Library.AssignValue(out float value);
+                Assert.Equal(1.0f, value);
+            }
+
+            [Fact]
+            public void CanGetOutDoubleValue()
+            {
+                Library.AssignValue(out double value);
+                Assert.Equal(2.0d, value);
+            }
+
+            [Fact]
+            public void CanGetOutByteValue()
+            {
+                Library.AssignValue(out byte value);
+                Assert.Equal(4, value);
+            }
+
+            [Fact]
+            public void CanGetOutShortValue()
+            {
+                Library.AssignValue(out short value);
+                Assert.Equal(8, value);
+            }
+
+            [Fact]
+            public void CanGetOutIntValue()
+            {
+                Library.AssignValue(out int value);
+                Assert.Equal(16, value);
+            }
+
+            [Fact]
+            public void CanGetOutStructValue()
+            {
+                Library.AssignValue(out TestStruct value);
+                Assert.Equal(32, value.A);
+                Assert.Equal(64, value.B);
+            }
+        }
     }
 }
