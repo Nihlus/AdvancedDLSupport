@@ -1,5 +1,5 @@
 //
-//  GenericMethodWrapper.cs
+//  GenericMethodImplementationGenerator.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -39,8 +39,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// <summary>
     /// Generates wrapper instructions for marshalling methods with generic type arguments.
     /// </summary>
-    internal sealed class GenericMethodWrapper : ImplementationGeneratorBase<IntrospectiveMethodInfo>
+    internal sealed class GenericMethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
+        /// <remarks>
+        /// <see cref="GeneratorComplexity.Terminating"/> is intentionally not included here, since it's technically not
+        /// a terminating generator. Instead, <see cref="GeneratorComplexity.DeferredImplementation"/> is used here.
+        /// </remarks>
         /// <inheritdoc/>
         public override GeneratorComplexity Complexity =>
             MemberDependent | TransformsParameters | CreatesTypes | DeferredImplementation;
@@ -50,13 +54,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
         private MethodInfo _getImplementationMethod;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GenericMethodWrapper"/> class.
+        /// Initializes a new instance of the <see cref="GenericMethodImplementationGenerator"/> class.
         /// </summary>
         /// <param name="targetModule">The module where the implementation should be generated.</param>
         /// <param name="targetType">The type in which the implementation should be generated.</param>
         /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
         /// <param name="options">The configuration object to use.</param>
-        public GenericMethodWrapper
+        public GenericMethodImplementationGenerator
         (
             [NotNull] ModuleBuilder targetModule,
             [NotNull] TypeBuilder targetType,

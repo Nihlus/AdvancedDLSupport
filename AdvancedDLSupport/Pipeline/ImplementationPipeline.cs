@@ -17,6 +17,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -157,7 +158,7 @@ namespace AdvancedDLSupport.Pipeline
                 _options
             );
 
-            yield return new GenericMethodWrapper
+            yield return new GenericMethodImplementationGenerator
             (
                 _targetModule,
                 _targetType,
@@ -205,13 +206,22 @@ namespace AdvancedDLSupport.Pipeline
             [CanBeNull] IntrospectiveMethodInfo abstractImplementation
         )
         {
+            if (!(interfaceDefinition.GetWrappedMember() is MethodInfo methodInfo))
+            {
+                throw new InvalidOperationException("Could not unwrap interface definition to a method info.");
+            }
+
             var methodBuilder = _targetType.DefineMethod
             (
                 interfaceDefinition.Name,
                 Public | Final | Virtual | HideBySig | NewSlot,
                 CallingConventions.Standard,
                 interfaceDefinition.ReturnType,
-                interfaceDefinition.ParameterTypes.ToArray()
+                methodInfo.ReturnParameter?.GetRequiredCustomModifiers(),
+                methodInfo.ReturnParameter?.GetOptionalCustomModifiers(),
+                interfaceDefinition.ParameterTypes.ToArray(),
+                methodInfo.GetParameters().Select(p => p.GetRequiredCustomModifiers()).ToArray(),
+                methodInfo.GetParameters().Select(p => p.GetOptionalCustomModifiers()).ToArray()
             );
 
             if (interfaceDefinition.ContainsGenericParameters)
