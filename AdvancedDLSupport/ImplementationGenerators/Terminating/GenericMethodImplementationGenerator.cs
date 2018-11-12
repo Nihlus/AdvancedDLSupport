@@ -41,13 +41,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// </summary>
     internal sealed class GenericMethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
     {
-        /// <remarks>
-        /// <see cref="GeneratorComplexity.Terminating"/> is intentionally not included here, since it's technically not
-        /// a terminating generator. Instead, <see cref="GeneratorComplexity.DeferredImplementation"/> is used here.
-        /// </remarks>
         /// <inheritdoc/>
         public override GeneratorComplexity Complexity =>
-            MemberDependent | TransformsParameters | CreatesTypes | DeferredImplementation;
+            MemberDependent | TransformsParameters | CreatesTypes | DeferredImplementation | Terminating;
 
         private FieldInfo _genericJitEmitter;
 
@@ -121,17 +117,26 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 il.EmitConstantInt(i - 1);
                 il.EmitLoadArgument(i);
 
-                if (parameterType.IsGenericParameter)
+                var boxingType = parameterType;
+                if (parameterType.IsByRef)
+                {
+                    boxingType = parameterType.GetElementType() ?? parameterType;
+
+                    // and load the actual object
+                    il.EmitLoadObject(boxingType);
+                }
+
+                if (boxingType.IsGenericParameter)
                 {
                     // Check constraints for boxing needs
-                    if (!parameterType.GenericParameterAttributes.HasFlag(GenericParameterAttributes.ReferenceTypeConstraint))
+                    if (!boxingType.GenericParameterAttributes.HasFlag(GenericParameterAttributes.ReferenceTypeConstraint))
                     {
-                        il.EmitBox(parameterType);
+                        il.EmitBox(boxingType);
                     }
                 }
-                else if (parameterType.IsValueType)
+                else if (boxingType.IsValueType)
                 {
-                    il.EmitBox(parameterType);
+                    il.EmitBox(boxingType);
                 }
 
                 il.EmitSetArrayElement<object>();
@@ -184,6 +189,48 @@ namespace AdvancedDLSupport.ImplementationGenerators
             };
 
             il.EmitCallDirect<JustInTimeGenericEmitter>(nameof(JustInTimeGenericEmitter.InvokeClosedImplementation), parameterTypes);
+
+            // Pass ref arguments up the chain
+            for (short i = 0; i < definition.ParameterTypes.Count; ++i)
+            {
+                var parameterType = definition.ParameterTypes[i];
+                if (!parameterType.IsByRef)
+                {
+                    continue;
+                }
+
+                var elementType = parameterType.GetElementType() ?? parameterType;
+
+                // load the argument
+                il.EmitLoadArgument((short)(i + 1));
+
+                // pull out the new value and assign it
+                il.EmitLoadLocalVariable(argumentArray);
+                il.EmitConstantInt(i);
+                il.EmitLoadArrayElement<object>();
+
+                if (elementType.IsGenericParameter)
+                {
+                    // Check constraints for boxing needs
+                    if (!elementType.GenericParameterAttributes.HasFlag(GenericParameterAttributes.ReferenceTypeConstraint))
+                    {
+                        il.EmitUnboxAny(elementType);
+                    }
+                }
+                else if (elementType.IsValueType)
+                {
+                    il.EmitUnboxAny(elementType);
+                }
+
+                if (elementType.IsGenericParameter)
+                {
+                    il.EmitSetObject(elementType);
+                }
+                else
+                {
+                    il.EmitSet(elementType);
+                }
+            }
 
             if (definition.ReturnType == typeof(void))
             {
