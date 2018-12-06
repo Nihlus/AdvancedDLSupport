@@ -174,9 +174,10 @@ namespace AdvancedDLSupport
             var metadataInstance = Activator.CreateInstance(metadataType);
 
             // ReSharper disable once PossibleNullReferenceException
-            var typeDictionary =
-                (IReadOnlyDictionary<GeneratedImplementationTypeIdentifier, Type>)typeDictionaryProperty.GetValue(
-                    metadataInstance);
+            var typeDictionary = (IReadOnlyDictionary<GeneratedImplementationTypeIdentifier, Type>)typeDictionaryProperty.GetValue
+            (
+                metadataInstance
+            );
 
             foreach (var generatedType in typeDictionary)
             {
