@@ -132,35 +132,62 @@ namespace AdvancedDLSupport
                     continue;
                 }
 
-                var metadataType = assembly.GetExportedTypes().FirstOrDefault
-                (
-                    t =>
-                        t.HasCustomAttribute<AOTMetadataAttribute>() && t.HasInterface<IAOTMetadata>()
-                );
+                DiscoverCompiledTypes(assembly);
+            }
+        }
 
-                if (metadataType is null)
+        /// <summary>
+        /// Scans the assembly represented by the given stream, attempting to discover pregenerated native binding types.
+        /// </summary>
+        /// <param name="stream">A stream of an assembly to search.</param>
+        [PublicAPI]
+        public static void DiscoverCompiledTypes([NotNull] Stream stream)
+        {
+            // unfortunately, we don't have any methods to load an assembly from Stream
+            using (var byteStream = new MemoryStream())
+            {
+                stream.CopyTo(byteStream);
+                DiscoverCompiledTypes(Assembly.Load(byteStream.ToArray()));
+            }
+        }
+        
+        /// <summary>
+        /// Scans the given assembly, attempting to discover pregenerated native binding types.
+        /// </summary>
+        /// <param name="assembly">The assembly to search.</param>
+        [PublicAPI]
+        public static void DiscoverCompiledTypes([NotNull] Assembly assembly)
+        {
+            var metadataType = assembly.GetExportedTypes().FirstOrDefault
+            (
+                t =>
+                    t.HasCustomAttribute<AOTMetadataAttribute>() && t.HasInterface<IAOTMetadata>()
+            );
+
+            if (metadataType is null)
+            {
+                throw new InvalidOperationException("The assembly did not contain a compatible metadata type.");
+            }
+
+            var typeDictionaryProperty = metadataType.GetProperty(nameof(IAOTMetadata.GeneratedTypes));
+
+            var metadataInstance = Activator.CreateInstance(metadataType);
+
+            // ReSharper disable once PossibleNullReferenceException
+            var typeDictionary =
+                (IReadOnlyDictionary<GeneratedImplementationTypeIdentifier, Type>)typeDictionaryProperty.GetValue(
+                    metadataInstance);
+
+            foreach (var generatedType in typeDictionary)
+            {
+                lock (BuilderLock)
                 {
-                    throw new InvalidOperationException("The assembly did not contain a compatible metadata type.");
-                }
-
-                var typeDictionaryProperty = metadataType.GetProperty(nameof(IAOTMetadata.GeneratedTypes));
-
-                var metadataInstance = Activator.CreateInstance(metadataType);
-
-                // ReSharper disable once PossibleNullReferenceException
-                var typeDictionary = (IReadOnlyDictionary<GeneratedImplementationTypeIdentifier, Type>)typeDictionaryProperty.GetValue(metadataInstance);
-
-                foreach (var generatedType in typeDictionary)
-                {
-                    lock (BuilderLock)
+                    if (TypeCache.ContainsKey(generatedType.Key))
                     {
-                        if (TypeCache.ContainsKey(generatedType.Key))
-                        {
-                            continue;
-                        }
-
-                        TypeCache.TryAdd(generatedType.Key, generatedType.Value);
+                        continue;
                     }
+
+                    TypeCache.TryAdd(generatedType.Key, generatedType.Value);
                 }
             }
         }
