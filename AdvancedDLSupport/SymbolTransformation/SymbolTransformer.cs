@@ -34,6 +34,10 @@ namespace AdvancedDLSupport
     /// </summary>
     public class SymbolTransformer
     {
+        private const string ReplacementPattern = "$1_$2";
+        private const string Underscore = "_";
+        private const string Hyphen = "-";
+
         /// <summary>
         /// Gets the default instance of the <see cref="SymbolTransformer"/> class.
         /// </summary>
@@ -86,7 +90,7 @@ namespace AdvancedDLSupport
         /// <param name="method">The transformer to apply to the symbol after concatenation.</param>
         /// <returns>The transformed symbol name.</returns>
         [Pure]
-        private string Transform
+        public string Transform
         (
             [NotNull] string symbol,
             [CanBeNull] string prefix = null,
@@ -111,7 +115,7 @@ namespace AdvancedDLSupport
                 {
                     return CamelizeValue(concatenated);
                 }
-                case Underscore:
+                case SymbolTransformationMethod.Underscore:
                 {
                     return UnderscoreValue(concatenated);
                 }
@@ -130,37 +134,62 @@ namespace AdvancedDLSupport
             }
         }
 
-        private string CamelizeValue(string input)
+        [NotNull]
+        private string CamelizeValue([NotNull] string input)
         {
             var word = PascalizeValue(input);
             return word.Length > 0 ? word.Substring(0, 1).ToLower() + word.Substring(1) : word;
         }
 
-        private string PascalizeValue(string input)
+        private static readonly Regex PascalizeReplaceOne = new Regex("(?:^|_)(.)", RegexOptions.Compiled);
+        private static readonly MatchEvaluator PascalizeMatchEvaluator = (match) => match.Groups[1].Value.ToUpper();
+
+        [NotNull]
+        private string PascalizeValue([NotNull] string input)
         {
-            return Regex.Replace(input, "(?:^|_)(.)", match => match.Groups[1].Value.ToUpper());
+            return PascalizeReplaceOne.Replace(input, PascalizeMatchEvaluator);
         }
 
-        private string UnderscoreValue(string input)
+        private static readonly Regex UnderscoreReplaceOne = new Regex(@"([\p{Lu}]+)([\p{Lu}][\p{Ll}])", RegexOptions.Compiled);
+        private static readonly Regex UnderscoreReplaceTwo = new Regex(@"([\p{Ll}\d])([\p{Lu}])", RegexOptions.Compiled);
+        private static readonly Regex UnderscoreReplaceThree = new Regex(@"[-\s]", RegexOptions.Compiled);
+
+        [NotNull]
+        private string UnderscoreValue([NotNull] string input)
         {
-            return Regex.Replace(
-                Regex.Replace(
-                    Regex.Replace(
+            return UnderscoreReplaceThree.Replace
+            (
+                UnderscoreReplaceTwo.Replace
+                (
+                    UnderscoreReplaceOne.Replace
+                    (
                         input,
-                        @"([\p{Lu}]+)([\p{Lu}][\p{Ll}])",
-                        "$1_$2"),
-                    @"([\p{Ll}\d])([\p{Lu}])",
-                    "$1_$2"), @"[-\s]",
-                "_")
-                .ToLower();
+                        ReplacementPattern
+                    ),
+                    ReplacementPattern
+                ),
+                Underscore
+            ).ToLower();
         }
 
-        private string DasherizeValue(string underscoredWord)
+        /// <summary>
+        /// Replaces all underscores with dashes.
+        /// </summary>
+        /// <param name="underscoredWord">A string to replace underscores with dashes.</param>
+        /// <returns>A string of which the underscores are replaced with dashes.</returns>
+        [NotNull]
+        private string DasherizeValue([NotNull] string underscoredWord)
         {
-            return underscoredWord.Replace('_', '-');
+            return underscoredWord.Replace(Underscore, Hyphen);
         }
 
-        private string KebaberizeValue(string input)
+        /// <summary>
+        /// Keberizes the value.
+        /// </summary>
+        /// <param name="input">The string to kebaberize.</param>
+        /// <returns>A Kebaberized string.</returns>
+        [NotNull]
+        private string KebaberizeValue([NotNull] string input)
         {
             return DasherizeValue(UnderscoreValue(input));
         }
