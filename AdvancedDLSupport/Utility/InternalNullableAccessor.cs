@@ -20,6 +20,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using AdvancedDLSupport.Reflection.InternalLayout;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
@@ -39,14 +40,8 @@ namespace AdvancedDLSupport
         public static unsafe ref T AccessUnderlyingValue<T>([NotNull] byte* nullablePtr) where T : struct
         {
             // HACK: Working around weird memory layout in .NET Core vs Mono/FX
-            var desc = RuntimeInformation.FrameworkDescription;
-            if (desc.Contains(".NET Core") || desc.Contains(".NET Framework"))
-            {
-                nullablePtr += Unsafe.SizeOf<bool>();
-
-                // 3 bytes of padding
-                nullablePtr += 3;
-            }
+            var offset = NullableTLayoutScanner<T>.PayloadOffset;
+            nullablePtr += offset;
 
             return ref Unsafe.AsRef<T>(nullablePtr);
         }
