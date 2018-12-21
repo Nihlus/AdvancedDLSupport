@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <Authors>Firwood Software</Authors>
-    <PackageLicenseUrl>https://www.gnu.org/licenses/lgpl-3.0.txt</PackageLicenseUrl>
+    <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageTags>p/invoke;cross-platform;mono;netcore;netstandard;native;interop</PackageTags>
     <RepositoryUrl>https://github.com/Firwood-Software/AdvanceDLSupport</RepositoryUrl>
