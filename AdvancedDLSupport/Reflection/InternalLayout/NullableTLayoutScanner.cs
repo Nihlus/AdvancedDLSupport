@@ -120,7 +120,7 @@ namespace AdvancedDLSupport.Reflection.InternalLayout
                         {
                             throw new IndexOutOfRangeException
                             (
-                            "The payload could not be found within the bounds of the nullable structure."
+                                "The payload could not be found within the bounds of the nullable structure."
                             );
                         }
 
