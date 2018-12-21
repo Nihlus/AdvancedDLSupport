@@ -11,11 +11,11 @@
   </PropertyGroup>
   <PropertyGroup>
     <Title>AdvancedDLSupport</Title>
-    <Version>2.3.0</Version>
+    <Version>2.3.1</Version>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>AdvancedDLSupport</PackageId>
-    <PackageReleaseNotes>Bug fixes and mixed-mode class improvements.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fix by-ref nullables not always marshalling properly.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="AdvancedDLSupport.ExternalAnnotations.xml">
