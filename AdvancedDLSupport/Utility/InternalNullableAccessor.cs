@@ -36,13 +36,16 @@ namespace AdvancedDLSupport
         /// <typeparam name="T">The type of underlying value to access.</typeparam>
         /// <returns>The underlying value, passed by reference.</returns>
         [Pure]
-        public static unsafe ref T AccessUnderlyingValue<T>([NotNull] int* nullablePtr) where T : struct
+        public static unsafe ref T AccessUnderlyingValue<T>([NotNull] byte* nullablePtr) where T : struct
         {
             // HACK: Working around weird memory layout in .NET Core vs Mono/FX
             var desc = RuntimeInformation.FrameworkDescription;
             if (desc.Contains(".NET Core") || desc.Contains(".NET Framework"))
             {
                 nullablePtr += Unsafe.SizeOf<bool>();
+
+                // 3 bytes of padding
+                nullablePtr += 3;
             }
 
             return ref Unsafe.AsRef<T>(nullablePtr);
