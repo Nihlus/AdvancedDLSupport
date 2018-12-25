@@ -315,7 +315,14 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 newParameterTypes
             );
 
-            return new IntrospectiveMethodInfo(passthroughMethod, newReturnType, newParameterTypes, definition);
+            return new IntrospectiveMethodInfo
+            (
+                passthroughMethod,
+                newReturnType,
+                newParameterTypes,
+                definition.MetadataType,
+                definition
+            );
         }
 
         /// <summary>

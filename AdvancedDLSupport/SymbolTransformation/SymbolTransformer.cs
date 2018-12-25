@@ -32,11 +32,13 @@ namespace AdvancedDLSupport
     /// <summary>
     /// Transforms native symbol names based on information from a <see cref="NativeSymbolsAttribute"/>.
     /// </summary>
+    [PublicAPI]
     public class SymbolTransformer
     {
         /// <summary>
         /// Gets the default instance of the <see cref="SymbolTransformer"/> class.
         /// </summary>
+        [NotNull, PublicAPI]
         public static readonly SymbolTransformer Default = new SymbolTransformer();
 
         /// <summary>
@@ -46,13 +48,11 @@ namespace AdvancedDLSupport
         /// <param name="memberInfo">The member.</param>
         /// <typeparam name="T">The type of the member.</typeparam>
         /// <returns>The transformed symbol.</returns>
-        /// <exception cref="AmbiguousMatchException">Thrown if the member has more than on applicable name mangler.</exception>
+        /// <exception cref="AmbiguousMatchException">Thrown if the member has more than one applicable name mangler.</exception>
+        [PublicAPI, NotNull, Pure]
         public string GetTransformedSymbol<T>([NotNull] Type containingInterface, [NotNull] T memberInfo) where T : MemberInfo, IIntrospectiveMember
         {
-            var nativeSymbolAttribute = memberInfo.GetCustomAttribute<NativeSymbolAttribute>()
-                                        ?? new NativeSymbolAttribute(memberInfo.Name);
-
-            var symbolName = nativeSymbolAttribute.Entrypoint;
+            var symbolName = memberInfo.GetNativeEntrypoint();
             var applicableManglers = ManglerRepository.Default.GetApplicableManglers(memberInfo).ToList();
             if (applicableManglers.Count > 1)
             {
@@ -85,7 +85,7 @@ namespace AdvancedDLSupport
         /// <param name="prefix">The prefix to be added to the symbol. Defaults to nothing.</param>
         /// <param name="method">The transformer to apply to the symbol after concatenation.</param>
         /// <returns>The transformed symbol name.</returns>
-        [Pure]
+        [PublicAPI, NotNull, Pure]
         private string Transform
         (
             [NotNull] string symbol,

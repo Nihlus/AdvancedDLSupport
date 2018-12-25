@@ -192,17 +192,21 @@ namespace AdvancedDLSupport.Pipeline
         /// </summary>
         /// <param name="interfaceDefinition">The interface definition to base it on.</param>
         /// <param name="abstractImplementation">The abstract implementation, if any.</param>
+        /// <param name="nameOverride">
+        /// The name to use for the method. If null, the interface member name is used.
+        /// </param>
         /// <returns>An introspective method info for the definition.</returns>
         [NotNull]
         internal IntrospectiveMethodInfo GenerateDefinitionFromSignature
         (
             [NotNull] IntrospectiveMethodInfo interfaceDefinition,
-            [CanBeNull] IntrospectiveMethodInfo abstractImplementation
+            [CanBeNull] IntrospectiveMethodInfo abstractImplementation,
+            [CanBeNull] string nameOverride = null
         )
         {
             var methodBuilder = TargetType.DefineMethod
             (
-                interfaceDefinition.Name,
+                nameOverride ?? interfaceDefinition.Name,
                 Public | Final | Virtual | HideBySig | NewSlot,
                 CallingConventions.Standard,
                 interfaceDefinition.ReturnType,
@@ -243,6 +247,7 @@ namespace AdvancedDLSupport.Pipeline
                 methodBuilder,
                 interfaceDefinition.ReturnType,
                 interfaceDefinition.ParameterTypes,
+                interfaceDefinition.MetadataType,
                 attributePassthroughDefinition
             );
         }

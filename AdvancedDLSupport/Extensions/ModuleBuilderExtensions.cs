@@ -51,14 +51,11 @@ namespace AdvancedDLSupport.Extensions
             bool suppressSecurity = false
         )
         {
-            var metadataAttribute = baseMember.GetCustomAttribute<NativeSymbolAttribute>() ??
-                                    new NativeSymbolAttribute(baseMember.Name);
-
             var delegateBuilder = DefineDelegateType
             (
                 module,
                 name,
-                metadataAttribute.CallingConvention,
+                baseMember.GetNativeCallingConvention(),
                 suppressSecurity
             );
 

@@ -99,9 +99,10 @@ namespace AdvancedDLSupport.Reflection
         /// Initializes a new instance of the <see cref="IntrospectiveMethodInfo"/> class.
         /// </summary>
         /// <param name="methodInfo">The <see cref="MethodInfo"/> to wrap.</param>
+        /// <param name="metadataType">The type that the member gets native metadata from.</param>
         [PublicAPI]
-        public IntrospectiveMethodInfo([NotNull] MethodInfo methodInfo)
-            : base(methodInfo, methodInfo.CustomAttributes)
+        public IntrospectiveMethodInfo([NotNull] MethodInfo methodInfo, [NotNull] Type metadataType)
+            : base(methodInfo, metadataType, methodInfo.CustomAttributes)
         {
             if (methodInfo is MethodBuilder)
             {
@@ -188,6 +189,7 @@ namespace AdvancedDLSupport.Reflection
         /// <param name="builder">The method builder to wrap.</param>
         /// <param name="returnType">The return type of the method.</param>
         /// <param name="parameterTypes">The parameter types of the method.</param>
+        /// <param name="metadataType">The type that the member gets native metadata from.</param>
         /// <param name="definitionToCopyAttributesFrom">The definition to copy custom attributes from.</param>
         [PublicAPI]
         public IntrospectiveMethodInfo
@@ -195,8 +197,10 @@ namespace AdvancedDLSupport.Reflection
             [NotNull] MethodBuilder builder,
             [NotNull] Type returnType,
             [NotNull, ItemNotNull] IEnumerable<Type> parameterTypes,
-            [CanBeNull] IntrospectiveMethodInfo definitionToCopyAttributesFrom = null)
-            : base(builder, definitionToCopyAttributesFrom?.CustomAttributes ?? new List<CustomAttributeData>())
+            [NotNull] Type metadataType,
+            [CanBeNull] IntrospectiveMethodInfo definitionToCopyAttributesFrom = null
+        )
+            : base(builder, metadataType, definitionToCopyAttributesFrom?.CustomAttributes ?? new List<CustomAttributeData>())
         {
             ReturnType = returnType;
             ParameterTypes = parameterTypes.ToList();

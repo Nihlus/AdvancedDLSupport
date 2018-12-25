@@ -26,39 +26,79 @@ using Xunit;
 
 namespace AdvancedDLSupport.Tests.Integration
 {
-    public class InheritedInterfaceTests : LibraryTestBase<IInterfaceWithCombinedIdenticalSignatures>
+    public class InheritedInterfaceTests
     {
-        private const string LibraryName = "FunctionTests";
-
-        public InheritedInterfaceTests()
-            : base(LibraryName)
+        public class IdenticalInheritedInterfaceTests : LibraryTestBase<IInterfaceWithCombinedIdenticalSignatures>
         {
+            private const string LibraryName = "FunctionTests";
+
+            public IdenticalInheritedInterfaceTests()
+                : base(LibraryName)
+            {
+            }
+
+            [Fact]
+            public void CanCallIdenticalMethodInFirstInterface()
+            {
+                const int a = 5;
+                const int b = 20;
+
+                const int expected = a * b;
+
+                var result = ((IInterfaceWithFirstIdenticalSignature)Library).Multiply(a, b);
+
+                Assert.Equal(expected, result);
+            }
+
+            [Fact]
+            public void CanCallIdenticalMethodInSecondInterface()
+            {
+                const int a = 5;
+                const int b = 30;
+
+                const int expected = a * b;
+
+                var result = ((IInterfaceWithSecondIdenticalSignature)Library).Multiply(a, b);
+
+                Assert.Equal(expected, result);
+            }
         }
 
-        [Fact]
-        public void CanCallMethodInFirstInterface()
+        public class DifferentEntrypointInheritedInterfaceTests
+            : LibraryTestBase<IInterfaceWithCombinedIdenticalSignaturesWithDifferentEntrypoints>
         {
-            const int a = 5;
-            const int b = 20;
+            private const string LibraryName = "FunctionTests";
 
-            const int expected = a * b;
+            public DifferentEntrypointInheritedInterfaceTests()
+                : base(LibraryName)
+            {
+            }
 
-            var result = ((IInterfaceWithFirstIdenticalSignature)Library).Multiply(a, b);
+            [Fact]
+            public void CanCallMethodWithSameSignatureButDifferentEntrypointInFirstInterface()
+            {
+                const int a = 5;
+                const int b = 20;
 
-            Assert.Equal(expected, result);
-        }
+                const int expected = a * b;
 
-        [Fact]
-        public void CanCallMethodInSecondInterface()
-        {
-            const int a = 5;
-            const int b = 30;
+                var result = ((IInterfaceWithFirstIdenticalSignatureWithDifferentEntrypoint)Library).DoMath(a, b);
 
-            const int expected = a * b;
+                Assert.Equal(expected, result);
+            }
 
-            var result = ((IInterfaceWithSecondIdenticalSignature)Library).Multiply(a, b);
+            [Fact]
+            public void CanCallMethodWithSameSignatureButDifferentEntrypointInSecondInterface()
+            {
+                const int a = 5;
+                const int b = 30;
 
-            Assert.Equal(expected, result);
+                const int expected = a - b;
+
+                var result = ((IInterfaceWithSecondIdenticalSignatureWithDifferentEntrypoint)Library).DoMath(a, b);
+
+                Assert.Equal(expected, result);
+            }
         }
     }
 }

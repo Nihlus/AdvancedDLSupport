@@ -81,9 +81,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             var definition = workUnit.Definition;
 
-            var metadataAttribute = definition.GetCustomAttribute<NativeSymbolAttribute>() ??
-                                    new NativeSymbolAttribute(definition.Name);
-
             var backingFieldType = typeof(IntPtr);
 
             var backingField = Options.HasFlagFast(UseLazyBinding)
@@ -101,7 +98,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             );
 
             AugmentHostingTypeConstructorWithNativeInitialization(workUnit.SymbolName, backingFieldType, backingField);
-            GenerateNativeInvokerBody(definition, metadataAttribute.CallingConvention, backingField);
+            GenerateNativeInvokerBody(definition, definition.GetNativeCallingConvention(), backingField);
 
             yield break;
         }
