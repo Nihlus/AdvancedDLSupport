@@ -150,7 +150,7 @@ namespace AdvancedDLSupport
                 DiscoverCompiledTypes(Assembly.Load(byteStream.ToArray()));
             }
         }
-        
+
         /// <summary>
         /// Scans the given assembly, attempting to discover pregenerated native binding types.
         /// </summary>

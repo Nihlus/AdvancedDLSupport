@@ -17,6 +17,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.IO;
 using System.Reflection;
 using AdvancedDLSupport.AOT.Tests.Data.Interfaces;
 using AdvancedDLSupport.AOT.Tests.TestBases;
@@ -42,6 +43,19 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
             }
 
             [Fact]
+            public void CanDiscoverPrecompiledTypesFromStream()
+            {
+                // Pregenerate the types
+                Builder.WithSourceAssembly(GetType().Assembly);
+                var result = Builder.Build(OutputDirectory);
+
+                foreach (var asm in Directory.GetFiles(OutputDirectory, $"*{result}*.dll"))
+                {
+                    NativeLibraryBuilder.DiscoverCompiledTypes(File.OpenRead(asm));
+                }
+            }
+
+            [Fact]
             public void UsesPrecompiledTypesIfDiscovered()
             {
                 // Pregenerate the types
@@ -50,6 +64,25 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
 
                 var searchPattern = $"*{result}*.dll";
                 NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
+
+                var library = LibraryBuilder.ActivateInterface<IAOTLibrary>("AOTTests");
+
+                var libraryAssembly = library.GetType().Assembly;
+
+                Assert.False(libraryAssembly.GetCustomAttribute<AOTAssemblyAttribute>() is null);
+            }
+
+            [Fact]
+            public void UsesPrecompiledTypesIfDiscoveredFromStream()
+            {
+                // Pregenerate the types
+                Builder.WithSourceAssembly(GetType().Assembly);
+                var result = Builder.Build(OutputDirectory);
+
+                foreach (var asm in Directory.GetFiles(OutputDirectory, $"*{result}*.dll"))
+                {
+                    NativeLibraryBuilder.DiscoverCompiledTypes(File.OpenRead(asm));
+                }
 
                 var library = LibraryBuilder.ActivateInterface<IAOTLibrary>("AOTTests");
 
