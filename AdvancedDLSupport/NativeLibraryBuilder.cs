@@ -587,8 +587,12 @@ namespace AdvancedDLSupport
 
                     // Skip methods that were already constructed - happens with inherited interfaces and multiple
                     // identical definitions
-                    if (constructedMethods.Any(m => m.HasSameSignatureAs(method)))
+                    var existingMethod = constructedMethods.FirstOrDefault(m => m.HasSameSignatureAs(method));
+                    if (!(existingMethod is null))
                     {
+                        var duplicateDefinition = targetMethod.GetWrappedMember();
+                        pipeline.TargetType.DefineMethodOverride(existingMethod.GetWrappedMember(), duplicateDefinition);
+
                         continue;
                     }
 
@@ -618,7 +622,7 @@ namespace AdvancedDLSupport
                         )
                     );
 
-                    constructedMethods.Add(targetMethod);
+                    constructedMethods.Add(definition);
                 }
             }
 
