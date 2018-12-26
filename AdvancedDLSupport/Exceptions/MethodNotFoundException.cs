@@ -1,5 +1,5 @@
 ﻿//
-//  SymbolLoadingException.cs
+//  MethodNotFoundException.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -25,87 +25,90 @@ using JetBrains.Annotations;
 namespace AdvancedDLSupport
 {
     /// <summary>
-    /// Represents a failure to load a native library.
+    /// Represents a failure to find a required method.
     /// </summary>
     [PublicAPI, Serializable]
-    public class SymbolLoadingException : Exception
+    public class MethodNotFoundException : Exception
     {
         /// <summary>
-        /// Gets the name of the symbol that failed to load.
+        /// Gets the name of the method that was not found.
         /// </summary>
-        [PublicAPI]
-        public string SymbolName { get; }
+        [PublicAPI, NotNull]
+        public string MethodName { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+        /// Initializes a new instance of the <see cref="MethodNotFoundException"/> class.
         /// </summary>
         [PublicAPI]
-        public SymbolLoadingException()
+        public MethodNotFoundException()
         {
+            MethodName = string.Empty;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+        /// Initializes a new instance of the <see cref="MethodNotFoundException"/> class.
         /// </summary>
-        /// <param name="message">The message of the exception.</param>
+        /// <param name="methodName">The name of the method that was not found.</param>
         [PublicAPI]
-        public SymbolLoadingException([NotNull] string message)
-            : base(message)
+        public MethodNotFoundException([NotNull] string methodName)
+            : base($"Could not find the field \"{methodName}\".")
         {
+            MethodName = methodName;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+        /// Initializes a new instance of the <see cref="MethodNotFoundException"/> class.
         /// </summary>
-        /// <param name="message">The message of the exception.</param>
+        /// <param name="methodName">The name of the method that was not found.</param>
         /// <param name="inner">The exception which caused this exception.</param>
         [PublicAPI]
-        public SymbolLoadingException([CanBeNull] string message, [NotNull] Exception inner)
-            : base(message, inner)
+        public MethodNotFoundException([NotNull] string methodName, [CanBeNull] Exception inner)
+            : base($"Could not find the field \"{methodName}\".", inner)
         {
+            MethodName = methodName;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+        /// Initializes a new instance of the <see cref="MethodNotFoundException"/> class.
         /// </summary>
         /// <param name="message">The message of the exception.</param>
-        /// <param name="symbolName">The name of the symbol that failed to load.</param>
+        /// <param name="methodName">The name of the method that was not found.</param>
         [PublicAPI]
-        public SymbolLoadingException([NotNull] string message, [NotNull] string symbolName)
+        public MethodNotFoundException([NotNull] string message, [NotNull] string methodName)
             : base(message)
         {
-            SymbolName = symbolName;
+            MethodName = methodName;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+        /// Initializes a new instance of the <see cref="MethodNotFoundException"/> class.
         /// </summary>
         /// <param name="message">The message of the exception.</param>
-        /// <param name="symbolName">The name of the symbol that failed to load.</param>
+        /// <param name="methodName">The name of the method that was not found.</param>
         /// <param name="inner">The exception which caused this exception.</param>
         [PublicAPI]
-        public SymbolLoadingException([NotNull] string message, [NotNull] string symbolName, [NotNull] Exception inner)
+        public MethodNotFoundException([NotNull] string message, [NotNull] string methodName, [NotNull] Exception inner)
             : base(message, inner)
         {
-            SymbolName = symbolName;
+            MethodName = methodName;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+        /// Initializes a new instance of the <see cref="MethodNotFoundException"/> class.
         /// </summary>
         /// <param name="info">The serialized information.</param>
         /// <param name="context">The streaming context.</param>
-        protected SymbolLoadingException([NotNull] SerializationInfo info, StreamingContext context)
+        protected MethodNotFoundException([NotNull] SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            SymbolName = info.GetString(nameof(SymbolName));
+            MethodName = info.GetString(nameof(MethodName)) ?? string.Empty;
         }
 
         /// <inheritdoc />
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue(nameof(SymbolName), SymbolName);
+            info.AddValue(nameof(MethodName), MethodName);
             base.GetObjectData(info, context);
         }
     }

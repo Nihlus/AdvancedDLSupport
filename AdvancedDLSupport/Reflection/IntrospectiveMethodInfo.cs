@@ -38,13 +38,13 @@ namespace AdvancedDLSupport.Reflection
         /// <summary>
         /// Gets the return type of the method.
         /// </summary>
-        [PublicAPI]
+        [PublicAPI, NotNull]
         public Type ReturnType { get; }
 
         /// <summary>
         /// Gets the parameter types of the method.
         /// </summary>
-        [PublicAPI]
+        [PublicAPI, NotNull, ItemNotNull]
         public IReadOnlyList<Type> ParameterTypes { get; }
 
         /// <summary>
@@ -74,25 +74,25 @@ namespace AdvancedDLSupport.Reflection
         /// <summary>
         /// Gets the names of the parameters.
         /// </summary>
-        [PublicAPI]
+        [PublicAPI, NotNull, ItemNotNull]
         public IReadOnlyList<string> ParameterNames { get; }
 
         /// <summary>
         /// Gets the parameter attributes of the parameter definitions.
         /// </summary>
-        [PublicAPI]
+        [PublicAPI, NotNull]
         public IReadOnlyList<ParameterAttributes> ParameterAttributes { get; }
 
         /// <summary>
         /// Gets the custom attributes applied to the return value parameter.
         /// </summary>
-        [PublicAPI]
+        [PublicAPI, NotNull, ItemNotNull]
         public IReadOnlyList<CustomAttributeData> ReturnParameterCustomAttributes { get; }
 
         /// <summary>
         /// Gets the custom attributes applied to the parameters.
         /// </summary>
-        [PublicAPI]
+        [PublicAPI, NotNull, ItemNotNull]
         public IReadOnlyList<IReadOnlyList<CustomAttributeData>> ParameterCustomAttributes { get; }
 
         /// <summary>
@@ -136,7 +136,12 @@ namespace AdvancedDLSupport.Reflection
 
                 if (parameterMarshalAsAttribute is null && RuntimeInformation.FrameworkDescription.Contains("Mono"))
                 {
-                    parameterMarshalAsAttribute = Attribute.GetCustomAttribute(parameter, typeof(MarshalAsAttribute)) as MarshalAsAttribute;
+                    parameterMarshalAsAttribute = Attribute.GetCustomAttribute
+                    (
+                        parameter,
+                        typeof(MarshalAsAttribute)
+                    ) as MarshalAsAttribute;
+
                     if (!(parameterMarshalAsAttribute is null))
                     {
                         customAttributes.Add(parameterMarshalAsAttribute.GetAttributeData());
@@ -151,35 +156,45 @@ namespace AdvancedDLSupport.Reflection
             ParameterAttributes = parameterAttributes;
             ParameterCustomAttributes = parameterCustomAttributes.Select(pl => pl.ToList()).ToList();
 
-            if (!(methodInfo.ReturnParameter is null))
+            if (methodInfo.ReturnParameter is null)
             {
-                ReturnParameterAttributes = methodInfo.ReturnParameter.Attributes;
+                ReturnParameterCustomAttributes = new List<CustomAttributeData>();
 
-                var returnCustomAttributes = new List<CustomAttributeData>(methodInfo.ReturnParameter.GetCustomAttributesData());
-                ReturnParameterCustomAttributes = returnCustomAttributes;
+                return;
+            }
 
-                // HACK: Mono workaround until bug is fixed
-                var returnParameterMarshalAsAttribute = methodInfo.ReturnParameter.GetCustomAttributesData()
-                    .FirstOrDefault
-                    (
-                        a =>
-                            a.AttributeType == typeof(MarshalAsAttribute)
-                    )?.ToInstance<MarshalAsAttribute>();
+            ReturnParameterAttributes = methodInfo.ReturnParameter.Attributes;
 
-                if (returnParameterMarshalAsAttribute is null && RuntimeInformation.FrameworkDescription.Contains("Mono"))
-                {
-                    // Don't walk the inheritance tree of the return parameter due to a bug
-                    // https://stackoverflow.com/a/38759885
-                    returnParameterMarshalAsAttribute = Attribute.GetCustomAttribute
-                    (
-                        methodInfo.ReturnParameter, typeof(MarshalAsAttribute), false
-                    ) as MarshalAsAttribute;
+            var returnCustomAttributes = new List<CustomAttributeData>
+            (
+                methodInfo.ReturnParameter.GetCustomAttributesData()
+            );
 
-                    if (!(returnParameterMarshalAsAttribute is null))
-                    {
-                        returnCustomAttributes.Add(returnParameterMarshalAsAttribute.GetAttributeData());
-                    }
-                }
+            ReturnParameterCustomAttributes = returnCustomAttributes;
+
+            // HACK: Mono workaround until bug is fixed
+            var returnParameterMarshalAsAttribute = methodInfo.ReturnParameter.GetCustomAttributesData()
+                .FirstOrDefault
+                (
+                    a =>
+                        a.AttributeType == typeof(MarshalAsAttribute)
+                )?.ToInstance<MarshalAsAttribute>();
+
+            if (!(returnParameterMarshalAsAttribute is null) || !RuntimeInformation.FrameworkDescription.Contains("Mono"))
+            {
+                return;
+            }
+
+            // Don't walk the inheritance tree of the return parameter due to a bug
+            // https://stackoverflow.com/a/38759885
+            returnParameterMarshalAsAttribute = Attribute.GetCustomAttribute
+            (
+                methodInfo.ReturnParameter, typeof(MarshalAsAttribute), false
+            ) as MarshalAsAttribute;
+
+            if (!(returnParameterMarshalAsAttribute is null))
+            {
+                returnCustomAttributes.Add(returnParameterMarshalAsAttribute.GetAttributeData());
             }
         }
 
@@ -209,18 +224,25 @@ namespace AdvancedDLSupport.Reflection
             IsSpecialName = builder.IsSpecialName;
             IsAbstract = builder.IsAbstract;
 
-            if (!(definitionToCopyAttributesFrom is null))
+            if (definitionToCopyAttributesFrom is null)
             {
-                // Copy attributes
-                Attributes = definitionToCopyAttributesFrom.Attributes;
+                ParameterAttributes = new List<ParameterAttributes>();
+                ParameterCustomAttributes = new List<IReadOnlyList<CustomAttributeData>>();
+                ParameterNames = new List<string>();
+                ReturnParameterCustomAttributes = new List<CustomAttributeData>();
 
-                ParameterNames = definitionToCopyAttributesFrom.ParameterNames;
-                ParameterAttributes = definitionToCopyAttributesFrom.ParameterAttributes;
-                ParameterCustomAttributes = definitionToCopyAttributesFrom.ParameterCustomAttributes;
-
-                ReturnParameterAttributes = definitionToCopyAttributesFrom.ReturnParameterAttributes;
-                ReturnParameterCustomAttributes = definitionToCopyAttributesFrom.ReturnParameterCustomAttributes;
+                return;
             }
+
+            // Copy attributes
+            Attributes = definitionToCopyAttributesFrom.Attributes;
+
+            ParameterNames = definitionToCopyAttributesFrom.ParameterNames;
+            ParameterAttributes = definitionToCopyAttributesFrom.ParameterAttributes;
+            ParameterCustomAttributes = definitionToCopyAttributesFrom.ParameterCustomAttributes;
+
+            ReturnParameterAttributes = definitionToCopyAttributesFrom.ReturnParameterAttributes;
+            ReturnParameterCustomAttributes = definitionToCopyAttributesFrom.ReturnParameterCustomAttributes;
         }
 
         /// <summary>

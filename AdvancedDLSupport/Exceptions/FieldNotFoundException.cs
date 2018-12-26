@@ -1,5 +1,5 @@
 ﻿//
-//  SymbolLoadingException.cs
+//  FieldNotFoundException.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -25,87 +25,90 @@ using JetBrains.Annotations;
 namespace AdvancedDLSupport
 {
     /// <summary>
-    /// Represents a failure to load a native library.
+    /// Represents a failure to find a required field.
     /// </summary>
     [PublicAPI, Serializable]
-    public class SymbolLoadingException : Exception
+    public class FieldNotFoundException : Exception
     {
         /// <summary>
-        /// Gets the name of the symbol that failed to load.
+        /// Gets the name of the field that was not found.
         /// </summary>
-        [PublicAPI]
-        public string SymbolName { get; }
+        [PublicAPI, NotNull]
+        public string FieldName { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+        /// Initializes a new instance of the <see cref="FieldNotFoundException"/> class.
         /// </summary>
         [PublicAPI]
-        public SymbolLoadingException()
+        public FieldNotFoundException()
         {
+            FieldName = string.Empty;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+        /// Initializes a new instance of the <see cref="FieldNotFoundException"/> class.
         /// </summary>
-        /// <param name="message">The message of the exception.</param>
+        /// <param name="fieldName">The message of the exception.</param>
         [PublicAPI]
-        public SymbolLoadingException([NotNull] string message)
-            : base(message)
+        public FieldNotFoundException([NotNull] string fieldName)
+            : base($"Could not find the field \"{fieldName}\".")
         {
+            FieldName = fieldName;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+        /// Initializes a new instance of the <see cref="FieldNotFoundException"/> class.
         /// </summary>
-        /// <param name="message">The message of the exception.</param>
+        /// <param name="fieldName">The name of the field that was not found.</param>
         /// <param name="inner">The exception which caused this exception.</param>
         [PublicAPI]
-        public SymbolLoadingException([CanBeNull] string message, [NotNull] Exception inner)
-            : base(message, inner)
+        public FieldNotFoundException([NotNull] string fieldName, [CanBeNull] Exception inner)
+            : base($"Could not find the field \"{fieldName}\".", inner)
         {
+            FieldName = fieldName;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+        /// Initializes a new instance of the <see cref="FieldNotFoundException"/> class.
         /// </summary>
         /// <param name="message">The message of the exception.</param>
-        /// <param name="symbolName">The name of the symbol that failed to load.</param>
+        /// <param name="fieldName">The name of the field that was not found.</param>
         [PublicAPI]
-        public SymbolLoadingException([NotNull] string message, [NotNull] string symbolName)
+        public FieldNotFoundException([NotNull] string message, [NotNull] string fieldName)
             : base(message)
         {
-            SymbolName = symbolName;
+            FieldName = fieldName;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+        /// Initializes a new instance of the <see cref="FieldNotFoundException"/> class.
         /// </summary>
         /// <param name="message">The message of the exception.</param>
-        /// <param name="symbolName">The name of the symbol that failed to load.</param>
+        /// <param name="fieldName">The name of the field that was not found.</param>
         /// <param name="inner">The exception which caused this exception.</param>
         [PublicAPI]
-        public SymbolLoadingException([NotNull] string message, [NotNull] string symbolName, [NotNull] Exception inner)
+        public FieldNotFoundException([NotNull] string message, [NotNull] string fieldName, [NotNull] Exception inner)
             : base(message, inner)
         {
-            SymbolName = symbolName;
+            FieldName = fieldName;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+        /// Initializes a new instance of the <see cref="FieldNotFoundException"/> class.
         /// </summary>
         /// <param name="info">The serialized information.</param>
         /// <param name="context">The streaming context.</param>
-        protected SymbolLoadingException([NotNull] SerializationInfo info, StreamingContext context)
+        protected FieldNotFoundException([NotNull] SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            SymbolName = info.GetString(nameof(SymbolName));
+            FieldName = info.GetString(nameof(FieldName)) ?? string.Empty;
         }
 
         /// <inheritdoc />
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue(nameof(SymbolName), SymbolName);
+            info.AddValue(nameof(FieldName), FieldName);
             base.GetObjectData(info, context);
         }
     }

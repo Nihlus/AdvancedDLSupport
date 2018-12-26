@@ -33,7 +33,7 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Gets or sets the name of the function's entrypoint.
         /// </summary>
-        [PublicAPI]
+        [PublicAPI, NotNull]
         public string Entrypoint { get; set; }
 
         /// <summary>

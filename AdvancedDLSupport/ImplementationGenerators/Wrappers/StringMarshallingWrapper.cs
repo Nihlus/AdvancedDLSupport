@@ -49,6 +49,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// Holds local variables defined for a given work unit. The nested dictionary contains the 0-based input
         /// parameter index matched with the local variable containing an unmanaged pointer.
         /// </summary>
+        [NotNull]
         private Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>> _workUnitLocals
             = new Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>>();
 
@@ -58,7 +59,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
         [NotNull]
         private static Dictionary<UnmanagedType, MethodInfo> _ptrToStringMethods;
 
+        [NotNull]
         private static MethodInfo _freeBStrMethod;
+
+        [NotNull]
         private static MethodInfo _freeHGlobalMethod;
 
         static StringMarshallingWrapper()
@@ -153,13 +157,15 @@ namespace AdvancedDLSupport.ImplementationGenerators
             (
                 nameof(Marshal.FreeBSTR),
                 new[] { typeof(IntPtr) }
-            );
+            )
+            ?? throw new MethodNotFoundException(nameof(Marshal.FreeBSTR));
 
             _freeHGlobalMethod = typeof(Marshal).GetMethod
             (
                 nameof(Marshal.FreeHGlobal),
                 new[] { typeof(IntPtr) }
-            );
+            )
+            ?? throw new MethodNotFoundException(nameof(Marshal.FreeHGlobal));
         }
 
         /// <summary>

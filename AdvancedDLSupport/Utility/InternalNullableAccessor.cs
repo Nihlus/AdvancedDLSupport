@@ -19,7 +19,6 @@
 
 using System;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using AdvancedDLSupport.Reflection.InternalLayout;
 using JetBrains.Annotations;
 

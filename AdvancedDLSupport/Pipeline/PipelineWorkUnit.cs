@@ -27,26 +27,31 @@ namespace AdvancedDLSupport.Pipeline
     /// Represents a unit of work passing through the pipeline.
     /// </summary>
     /// <typeparam name="T">The type of the unit being worked on.</typeparam>
+    [PublicAPI]
     public class PipelineWorkUnit<T> where T : MemberInfo
     {
         /// <summary>
         /// Gets the name of the native symbol that the unit of work maps to.
         /// </summary>
+        [PublicAPI, NotNull]
         public string SymbolName { get; }
 
         /// <summary>
         /// Gets the name of the original member that the unit of work stems from.
         /// </summary>
+        [PublicAPI, CanBeNull]
         public string BaseMemberName { get; }
 
         /// <summary>
         /// Gets a unique identifier that can be used in generated definition names.
         /// </summary>
+        [PublicAPI, NotNull]
         public string UniqueIdentifier { get; }
 
         /// <summary>
         /// Gets the definition that the work unit wraps.
         /// </summary>
+        [PublicAPI, NotNull]
         public T Definition { get; }
 
         /// <summary>
@@ -55,6 +60,7 @@ namespace AdvancedDLSupport.Pipeline
         /// <param name="definition">The definition to wrap.</param>
         /// <param name="symbolName">The native symbol name.</param>
         /// <param name="options">The options used when this work unit was created.</param>
+        [PublicAPI]
         public PipelineWorkUnit([NotNull] T definition, [NotNull] string symbolName, ImplementationOptions options)
         {
             Definition = definition;
@@ -68,7 +74,8 @@ namespace AdvancedDLSupport.Pipeline
         /// </summary>
         /// <param name="definition">The definition to wrap.</param>
         /// <param name="baseUnit">The unit of work to base this unit off of.</param>
-        public PipelineWorkUnit(T definition, [NotNull] PipelineWorkUnit<T> baseUnit)
+        [PublicAPI]
+        public PipelineWorkUnit([NotNull] T definition, [NotNull] PipelineWorkUnit<T> baseUnit)
         {
             Definition = definition;
             SymbolName = baseUnit.SymbolName;
@@ -80,7 +87,7 @@ namespace AdvancedDLSupport.Pipeline
         /// option combination.
         /// </summary>
         /// <returns>The base member name.</returns>
-        [NotNull]
+        [PublicAPI, NotNull]
         public string GetUniqueBaseMemberName()
         {
             return $"{BaseMemberName}_{SymbolName}_{UniqueIdentifier}_{Guid.NewGuid().ToString().ToLowerInvariant()}";

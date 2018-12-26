@@ -60,7 +60,7 @@ namespace AdvancedDLSupport
         /// <param name="message">The message of the exception.</param>
         /// <param name="inner">The exception which caused this exception.</param>
         [PublicAPI]
-        public LibraryLoadingException([CanBeNull] string message, Exception inner)
+        public LibraryLoadingException([CanBeNull] string message, [NotNull] Exception inner)
             : base(message, inner)
         {
         }

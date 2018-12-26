@@ -70,11 +70,16 @@ namespace AdvancedDLSupport
         [NotNull]
         private ILibraryPathResolver PathResolver { get; }
 
+        [NotNull]
         private readonly IDynamicAssemblyProvider _assemblyProvider;
+
+        [NotNull]
         private readonly ModuleBuilder _moduleBuilder;
 
+        [NotNull]
         private static readonly object BuilderLock = new object();
 
+        [NotNull]
         private static readonly ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type> TypeCache;
 
         static NativeLibraryBuilder()
@@ -174,7 +179,8 @@ namespace AdvancedDLSupport
             var metadataInstance = Activator.CreateInstance(metadataType);
 
             // ReSharper disable once PossibleNullReferenceException
-            var typeDictionary = (IReadOnlyDictionary<GeneratedImplementationTypeIdentifier, Type>)typeDictionaryProperty.GetValue
+            var typeDictionary =
+            (IReadOnlyDictionary<GeneratedImplementationTypeIdentifier, Type>)typeDictionaryProperty.GetValue
             (
                 metadataInstance
             );
@@ -303,7 +309,9 @@ namespace AdvancedDLSupport
         [NotNull, PublicAPI]
         public object ActivateClass
         (
-            [NotNull] string libraryPath, [NotNull] Type baseClassType, [NotNull] params Type[] interfaceTypes
+            [NotNull] string libraryPath,
+            [NotNull] Type baseClassType,
+            [NotNull, ItemNotNull] params Type[] interfaceTypes
         )
         {
             if (!baseClassType.IsAbstract)
@@ -382,7 +390,7 @@ namespace AdvancedDLSupport
         internal Tuple<GeneratedImplementationTypeIdentifier, Type> PregenerateImplementationType
         (
             [NotNull] Type classType,
-            [NotNull] params Type[] interfaceTypes
+            [NotNull, ItemNotNull] params Type[] interfaceTypes
         )
         {
             if (!classType.IsAbstract)
@@ -440,7 +448,7 @@ namespace AdvancedDLSupport
         private Type GenerateInterfaceImplementationType
         (
             [NotNull] Type classType,
-            [NotNull] params Type[] interfaceTypes
+            [NotNull, ItemNotNull] params Type[] interfaceTypes
         )
         {
             if (!classType.IsAbstract)
@@ -594,7 +602,7 @@ namespace AdvancedDLSupport
         (
             [NotNull] ImplementationPipeline pipeline,
             [NotNull] Type classType,
-            [NotNull] params Type[] interfaceTypes
+            [NotNull, ItemNotNull] params Type[] interfaceTypes
         )
         {
             var constructedMethods = new List<IntrospectiveMethodInfo>();
@@ -692,7 +700,7 @@ namespace AdvancedDLSupport
         (
             [NotNull] ImplementationPipeline pipeline,
             [NotNull] Type classType,
-            [NotNull] params Type[] interfaceTypes
+            [NotNull, ItemNotNull] params Type[] interfaceTypes
         )
         {
             var constructedProperties = new List<IntrospectivePropertyInfo>();

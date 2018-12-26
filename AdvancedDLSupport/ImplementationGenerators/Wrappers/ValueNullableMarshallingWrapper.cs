@@ -48,52 +48,67 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// Holds local variables defined for a given work unit. The nested dictionary contains the 0-based input
         /// parameter index matched with the local variable containing an unmanaged pointer.
         /// </summary>
+        [NotNull]
         private Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>> _workUnitLocals
             = new Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>>();
 
+        [NotNull]
         private static FieldInfo _nullPtrField;
 
+        [NotNull]
         private static MethodInfo _ptrInequalityOperator;
 
+        [NotNull]
         private static MethodInfo _structureToPtrMethod;
+
+        [NotNull]
         private static MethodInfo _ptrToStructureMethodBase;
 
+        [NotNull]
         private static MethodInfo _allocHGlobalMethod;
+
+        [NotNull]
         private static MethodInfo _freeHGlobalMethod;
 
         static ValueNullableMarshallingWrapper()
         {
-            _nullPtrField = typeof(IntPtr).GetField(nameof(IntPtr.Zero));
+            _nullPtrField = typeof(IntPtr).GetField(nameof(IntPtr.Zero))
+                            ?? throw new FieldNotFoundException(nameof(IntPtr.Zero));
 
             _ptrInequalityOperator = typeof(IntPtr).GetMethod
             (
                 "op_Inequality",
                 new[] { typeof(IntPtr), typeof(IntPtr) }
-            );
+            )
+            ?? throw new MethodNotFoundException("op_Inequality");
 
             _structureToPtrMethod = typeof(Marshal).GetMethod
             (
                 nameof(Marshal.StructureToPtr),
                 new[] { typeof(object), typeof(IntPtr), typeof(bool) }
-            );
+            )
+            ?? throw new MethodNotFoundException(nameof(Marshal.StructureToPtr));
 
             _ptrToStructureMethodBase = typeof(Marshal).GetMethod
             (
                 nameof(Marshal.PtrToStructure),
                 new[] { typeof(IntPtr) }
-            );
+            )
+            ?? throw new MethodNotFoundException(nameof(Marshal.PtrToStructure));
 
             _freeHGlobalMethod = typeof(Marshal).GetMethod
             (
                 nameof(Marshal.FreeHGlobal),
                 new[] { typeof(IntPtr) }
-            );
+            )
+            ?? throw new MethodNotFoundException(nameof(Marshal.FreeHGlobal));
 
             _allocHGlobalMethod = typeof(Marshal).GetMethod
             (
                 nameof(Marshal.AllocHGlobal),
                 new[] { typeof(int) }
-            );
+            )
+            ?? throw new MethodNotFoundException(nameof(Marshal.AllocHGlobal));
         }
 
         /// <summary>
@@ -162,14 +177,14 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 il.EmitCallDirect(hasValueMethod);
 
                 il.EmitBranchTrue(hasValueLabel);
-                // false case - no value, pass null
                 {
+                    // false case - no value, pass null
                     il.EmitLoadStaticField(_nullPtrField);
                     il.EmitBranch(branchEnd);
                 }
-                // true case - marshal the structure to a pointer, pass it
                 il.MarkLabel(hasValueLabel);
                 {
+                    // true case - marshal the structure to a pointer, pass it
                     il.EmitSizeOf(nullableType);
                     il.EmitCallDirect(_allocHGlobalMethod);
                     il.EmitSetLocalVariable(ptrLocal);
@@ -218,13 +233,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
                     il.EmitCallDirect(_ptrInequalityOperator);
 
                     il.EmitBranchTrue(hasPointerLabel);
-                    // false case, null pointer
                     {
+                        // false case, null pointer
                         il.EmitBranch(branchEnd);
                     }
-                    // true case, has pointer
                     il.MarkLabel(hasPointerLabel);
                     {
+                        // true case, has pointer
                         il.EmitLoadLocalVariable(local);
                         il.EmitCallDirect(_freeHGlobalMethod);
                     }
@@ -258,17 +273,16 @@ namespace AdvancedDLSupport.ImplementationGenerators
             il.EmitLoadStaticField(_nullPtrField);
             il.EmitCallDirect(_ptrInequalityOperator);
             il.EmitBranchTrue(returnIsNotNullLabel);
-            // false case, return null
             {
+                // false case, return null
                 il.EmitLoadLocalVariableAddress(returnLocal);
                 il.EmitInitObject(closedNullableType);
                 il.EmitLoadLocalVariable(returnLocal);
                 il.EmitBranch(returnBranchEndLabel);
             }
-            // true case, return marshalled structure
             il.MarkLabel(returnIsNotNullLabel);
             {
-                // Marshal the structure from the pointer
+                // true case, return marshalled structure
                 il.EmitLoadLocalVariable(ptrLocal);
                 il.EmitCallDirect(ptrToStructureMethod);
                 if (definition.ReturnParameterHasCustomAttribute<CallerFreeAttribute>())
@@ -331,7 +345,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="nullableType">The type T of the nullable.</param>
         /// <returns>The method.</returns>
         [NotNull]
-        private MethodInfo GetHasValueMethod(Type nullableType)
+        private MethodInfo GetHasValueMethod([NotNull] Type nullableType)
         {
             return typeof(Nullable<>)
                        .MakeGenericType(nullableType)
@@ -345,7 +359,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="nullableType">The type T of the nullable.</param>
         /// <returns>The method.</returns>
         [NotNull]
-        private MethodInfo GetGetValueMethod(Type nullableType)
+        private MethodInfo GetGetValueMethod([NotNull] Type nullableType)
         {
             return typeof(Nullable<>)
                        .MakeGenericType(nullableType)
@@ -359,7 +373,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="nullableType">The type T of the nullable.</param>
         /// <returns>The constructor.</returns>
         [NotNull]
-        private ConstructorInfo GetNullableConstructor(Type nullableType)
+        private ConstructorInfo GetNullableConstructor([NotNull] Type nullableType)
         {
             return typeof(Nullable<>).MakeGenericType(nullableType).GetConstructor
             (

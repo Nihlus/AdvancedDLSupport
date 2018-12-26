@@ -42,9 +42,14 @@ namespace AdvancedDLSupport.Pipeline
         private readonly ILGenerator _constructorIL;
 
         private readonly ImplementationOptions _options;
+
+        [NotNull]
         private readonly ImplementationGeneratorSorter _generatorSorter;
 
+        [NotNull, ItemNotNull]
         private IReadOnlyList<IImplementationGenerator<IntrospectiveMethodInfo>> _methodGeneratorPipeline;
+
+        [NotNull, ItemNotNull]
         private IReadOnlyList<IImplementationGenerator<IntrospectivePropertyInfo>> _propertyGeneratorPipeline;
 
         /// <summary>

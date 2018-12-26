@@ -41,7 +41,7 @@ namespace AdvancedDLSupport.Reflection
         /// <summary>
         /// Gets the custom attributes applies to this member.
         /// </summary>
-        [PublicAPI]
+        [PublicAPI, NotNull, ItemNotNull]
         public override IEnumerable<CustomAttributeData> CustomAttributes { get; }
 
         /// <inheritdoc />
@@ -59,13 +59,13 @@ namespace AdvancedDLSupport.Reflection
         /// <summary>
         /// Gets the wrapped member.
         /// </summary>
-        [PublicAPI]
+        [PublicAPI, NotNull]
         protected TMemberInfo Member { get; }
 
         /// <summary>
         /// Gets the type that the member gets native metadata from (typically an interface or a mixed-mode class).
         /// </summary>
-        [NotNull]
+        [PublicAPI, NotNull]
         public Type MetadataType { get; }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace AdvancedDLSupport.Reflection
         (
             [NotNull] TMemberInfo memberInfo,
             [NotNull] Type metadataType,
-            [NotNull, ItemNotNull] IEnumerable<CustomAttributeData> customAttributes = default
+            [CanBeNull, ItemNotNull] IEnumerable<CustomAttributeData> customAttributes = default
         )
         {
             Member = memberInfo;
@@ -144,7 +144,7 @@ namespace AdvancedDLSupport.Reflection
         /// Gets the wrapped member information. No guarantees can be made about its introspective capabilities.
         /// </summary>
         /// <returns>The wrapped method.</returns>
-        [PublicAPI]
+        [PublicAPI, NotNull]
         public TMemberInfo GetWrappedMember() => Member;
 
         /// <inheritdoc />
@@ -206,7 +206,7 @@ namespace AdvancedDLSupport.Reflection
         /// </summary>
         /// <param name="introspectiveInfo">The introspective info.</param>
         /// <returns>The wrapped member.</returns>
-        [PublicAPI]
+        [PublicAPI, CanBeNull]
         public static explicit operator TMemberInfo([CanBeNull] IntrospectiveMemberBase<TMemberInfo> introspectiveInfo)
         {
             return introspectiveInfo?.Member;

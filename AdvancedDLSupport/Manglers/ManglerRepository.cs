@@ -89,7 +89,7 @@ namespace AdvancedDLSupport
         /// <typeparam name="T">A member implementing the <see cref="IIntrospectiveMember"/> interface.</typeparam>
         /// <returns>A set of applicable manglers, if any.</returns>
         [PublicAPI, NotNull, ItemNotNull]
-        public IEnumerable<IEntrypointMangler> GetApplicableManglers<T>(T member) where T : MemberInfo
+        public IEnumerable<IEntrypointMangler> GetApplicableManglers<T>([NotNull] T member) where T : MemberInfo
         {
             return Manglers.Where(m => m.IsManglerApplicable(member));
         }
