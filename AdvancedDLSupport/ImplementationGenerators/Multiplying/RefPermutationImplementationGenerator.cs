@@ -91,7 +91,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                     permutation.ToArray()
                 );
 
-                var methodInfo = new IntrospectiveMethodInfo(method, definition.ReturnType, permutation, definition);
+                var methodInfo = new IntrospectiveMethodInfo(method, definition.ReturnType, permutation, definition.MetadataType, definition);
                 permutations.Add(methodInfo);
             }
 
@@ -210,7 +210,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             [NotNull] Type wrappedType
         )
         {
-            var local = il.DeclareLocal(typeof(int*), true);
+            var local = il.DeclareLocal(typeof(byte*), true);
 
             // Now, we load the nullable as a pointer
             EmitGetPinnedAddressOfNullable(il, typeof(Nullable<>).MakeGenericType(wrappedType), argumentIndex);
@@ -247,7 +247,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                     m.Name == nameof(Unsafe.As) &&
                     m.GetParameters().First().ParameterType.IsByRef
             )
-            .MakeGenericMethod(nullableType, typeof(int));
+            .MakeGenericMethod(nullableType, typeof(byte));
 
             il.EmitCallDirect(unsafeAsMethod);
         }

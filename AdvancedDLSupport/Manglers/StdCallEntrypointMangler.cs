@@ -33,16 +33,13 @@ namespace AdvancedDLSupport
         /// <inheritdoc />
         public string Mangle<T>(T member) where T : IIntrospectiveMember
         {
-            if (member is IntrospectiveMethodInfo method)
+            if (!(member is IntrospectiveMethodInfo method))
             {
-                var metadataAttribute = method.GetCustomAttribute<NativeSymbolAttribute>()
-                                        ?? new NativeSymbolAttribute(method.Name);
-
-                var argumentListSize = method.ParameterTypes.Sum(a => a.IsByRef ? IntPtr.Size : Marshal.SizeOf(a));
-                return $"_{metadataAttribute.Entrypoint}@{argumentListSize}";
+                throw new NotSupportedException("The given member cannot be mangled by this mangler.");
             }
 
-            throw new NotSupportedException("The given member cannot be mangled by this mangler.");
+            var argumentListSize = method.ParameterTypes.Sum(a => a.IsByRef ? IntPtr.Size : Marshal.SizeOf(a));
+            return $"_{method.GetFullNativeEntrypoint()}@{argumentListSize}";
         }
 
         /// <inheritdoc />
@@ -59,11 +56,8 @@ namespace AdvancedDLSupport
                 return false;
             }
 
-            var metadataAttribute = method.GetCustomAttribute<NativeSymbolAttribute>()
-                                    ?? new NativeSymbolAttribute(method.Name);
-
             var isApplicable =
-                metadataAttribute.CallingConvention == CallingConvention.StdCall &&
+                method.GetNativeCallingConvention() == CallingConvention.StdCall &&
                 IntPtr.Size == 4 && // 32-bit system
                 RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 

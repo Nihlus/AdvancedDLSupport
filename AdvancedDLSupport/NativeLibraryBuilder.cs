@@ -615,9 +615,19 @@ namespace AdvancedDLSupport
 
                     // Skip methods that were already constructed - happens with inherited interfaces and multiple
                     // identical definitions
-                    if (constructedMethods.Any(m => m.HasSameSignatureAs(method)))
+                    var existingMethod = constructedMethods.FirstOrDefault(m => m.HasSameSignatureAs(method));
+                    if (!(existingMethod is null))
                     {
-                        continue;
+                        if (existingMethod.HasSameNativeEntrypointAs(targetMethod))
+                        {
+                            pipeline.TargetType.DefineMethodOverride
+                            (
+                                existingMethod.GetWrappedMember(),
+                                targetMethod.GetWrappedMember()
+                            );
+
+                            continue;
+                        }
                     }
 
                     // Skip methods with a managed implementation in the base class
@@ -635,7 +645,23 @@ namespace AdvancedDLSupport
                         }
                     }
 
-                    var definition = pipeline.GenerateDefinitionFromSignature(targetMethod, baseClassMethod);
+                    // If we have an existing method at this point, this new method must be created as an explicit
+                    // interface implementation. Therefore, we override the method name.
+                    IntrospectiveMethodInfo definition;
+                    if (!(existingMethod is null))
+                    {
+                        definition = pipeline.GenerateDefinitionFromSignature
+                        (
+                            targetMethod,
+                            baseClassMethod,
+                            $"{interfaceType.Name}.{targetMethod.Name}"
+                        );
+                    }
+                    else
+                    {
+                        definition = pipeline.GenerateDefinitionFromSignature(targetMethod, baseClassMethod);
+                    }
+
                     methods.Add
                     (
                         new PipelineWorkUnit<IntrospectiveMethodInfo>
@@ -646,7 +672,7 @@ namespace AdvancedDLSupport
                         )
                     );
 
-                    constructedMethods.Add(targetMethod);
+                    constructedMethods.Add(definition);
                 }
             }
 
@@ -675,7 +701,7 @@ namespace AdvancedDLSupport
             var properties = new List<PipelineWorkUnit<IntrospectivePropertyInfo>>();
             foreach (var interfaceType in interfaceTypes)
             {
-                foreach (var property in interfaceType.GetProperties().Select(p => new IntrospectivePropertyInfo(p)))
+                foreach (var property in interfaceType.GetProperties().Select(p => new IntrospectivePropertyInfo(p, interfaceType)))
                 {
                     var targetProperty = property;
 
@@ -709,7 +735,7 @@ namespace AdvancedDLSupport
                             );
                         }
 
-                        targetProperty = new IntrospectivePropertyInfo(baseClassProperty);
+                        targetProperty = new IntrospectivePropertyInfo(baseClassProperty, interfaceType);
                     }
 
                     properties.Add

@@ -59,9 +59,10 @@ namespace AdvancedDLSupport.Reflection
         /// Initializes a new instance of the <see cref="IntrospectivePropertyInfo"/> class.
         /// </summary>
         /// <param name="memberInfo">The property info to wrap.</param>
+        /// <param name="metadataType">The type that the member gets native metadata from.</param>
         [PublicAPI]
-        public IntrospectivePropertyInfo([NotNull] PropertyInfo memberInfo)
-            : base(memberInfo)
+        public IntrospectivePropertyInfo([NotNull] PropertyInfo memberInfo, [NotNull] Type metadataType)
+            : base(memberInfo, metadataType)
         {
             PropertyType = memberInfo.PropertyType;
             IndexParameterTypes = memberInfo.GetIndexParameters().Select(p => p.ParameterType).ToList();

@@ -119,7 +119,7 @@ namespace AdvancedDLSupport.Extensions
             var methods = @this.GetMethods(bindingFlags);
             foreach (var method in methods)
             {
-                yield return new IntrospectiveMethodInfo(method);
+                yield return new IntrospectiveMethodInfo(method, @this);
             }
 
             if (!@this.IsInterface || !flattenHierarchy)
@@ -132,7 +132,7 @@ namespace AdvancedDLSupport.Extensions
                 var interfaceMethods = inf.GetMethods(bindingFlags);
                 foreach (var method in interfaceMethods)
                 {
-                    yield return new IntrospectiveMethodInfo(method);
+                    yield return new IntrospectiveMethodInfo(method, @this);
                 }
             }
         }
@@ -153,7 +153,7 @@ namespace AdvancedDLSupport.Extensions
         )
         {
             var method = @this.GetMethod(name, parameterTypes);
-            return method is null ? null : new IntrospectiveMethodInfo(method);
+            return method is null ? null : new IntrospectiveMethodInfo(method, @this);
         }
 
         /// <summary>

@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.Reflection
@@ -44,7 +45,7 @@ namespace AdvancedDLSupport.Reflection
         public override IEnumerable<CustomAttributeData> CustomAttributes { get; }
 
         /// <inheritdoc />
-        [PublicAPI]
+        [PublicAPI, NotNull]
         public override Type DeclaringType { get; }
 
         /// <inheritdoc />
@@ -62,31 +63,33 @@ namespace AdvancedDLSupport.Reflection
         protected TMemberInfo Member { get; }
 
         /// <summary>
+        /// Gets the type that the member gets native metadata from (typically an interface or a mixed-mode class).
+        /// </summary>
+        [NotNull]
+        public Type MetadataType { get; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectiveMemberBase{TMemberInfo}"/> class.
         /// </summary>
         /// <param name="memberInfo">The member info object to wrap.</param>
+        /// <param name="metadataType">The type that the member gets native metadata from.</param>
         [PublicAPI]
-        protected IntrospectiveMemberBase([NotNull] TMemberInfo memberInfo)
+        protected IntrospectiveMemberBase([NotNull] TMemberInfo memberInfo, [NotNull] Type metadataType)
+            : this(memberInfo, metadataType, memberInfo.CustomAttributes)
         {
-            Member = memberInfo;
-
-            Name = memberInfo.Name;
-            DeclaringType = memberInfo.DeclaringType;
-            MemberType = memberInfo.MemberType;
-            ReflectedType = memberInfo.ReflectedType;
-
-            CustomAttributes = memberInfo.CustomAttributes.ToList();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectiveMemberBase{TMemberInfo}"/> class.
         /// </summary>
         /// <param name="memberInfo">The member info to wrap.</param>
+        /// <param name="metadataType">The type that the member gets native metadata from.</param>
         /// <param name="customAttributes">The custom attributes associated with the member.</param>
         [PublicAPI]
         protected IntrospectiveMemberBase
         (
             [NotNull] TMemberInfo memberInfo,
+            [NotNull] Type metadataType,
             [NotNull, ItemNotNull] IEnumerable<CustomAttributeData> customAttributes = default
         )
         {
@@ -96,7 +99,45 @@ namespace AdvancedDLSupport.Reflection
             MemberType = memberInfo.MemberType;
             ReflectedType = memberInfo.ReflectedType;
 
+            MetadataType = metadataType;
+
             CustomAttributes = customAttributes?.ToList() ?? new List<CustomAttributeData>();
+        }
+
+        /// <summary>
+        /// Determines if the member has the same native entrypoint as another given member.
+        /// </summary>
+        /// <param name="other">The other member.</param>
+        /// <returns>true if the members have the same native entrypoint; otherwise, false.</returns>
+        [PublicAPI, Pure]
+        public bool HasSameNativeEntrypointAs([NotNull] IntrospectiveMethodInfo other)
+        {
+            return GetFullNativeEntrypoint() == other.GetFullNativeEntrypoint();
+        }
+
+        /// <inheritdoc />
+        public string GetFullNativeEntrypoint()
+        {
+            var transformer = SymbolTransformer.Default;
+            return transformer.GetTransformedSymbol(MetadataType, this);
+        }
+
+        /// <inheritdoc />
+        public string GetNativeEntrypoint()
+        {
+            var metadataAttribute = GetCustomAttribute<NativeSymbolAttribute>()
+                                    ?? new NativeSymbolAttribute(Name);
+
+            return metadataAttribute.Entrypoint;
+        }
+
+        /// <inheritdoc />
+        public CallingConvention GetNativeCallingConvention()
+        {
+            var metadataAttribute = GetCustomAttribute<NativeSymbolAttribute>() ??
+                                    new NativeSymbolAttribute(Name);
+
+            return metadataAttribute.CallingConvention;
         }
 
         /// <summary>

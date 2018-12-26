@@ -36,9 +36,10 @@ namespace AdvancedDLSupport
         /// Gets the default instance of the <see cref="ManglerRepository"/> class. This instance contains all discovered
         /// mangler types.
         /// </summary>
-        [PublicAPI]
+        [PublicAPI, NotNull]
         public static ManglerRepository Default { get; }
 
+        [NotNull, ItemNotNull]
         private List<IEntrypointMangler> Manglers { get; }
 
         /// <summary>

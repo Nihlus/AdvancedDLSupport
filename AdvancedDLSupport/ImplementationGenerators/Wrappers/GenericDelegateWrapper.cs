@@ -235,7 +235,14 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             passthroughMethod.ApplyCustomAttributesFrom(definition, newReturnType, newParameterTypes);
 
-            return new IntrospectiveMethodInfo(passthroughMethod, newReturnType, newParameterTypes, definition);
+            return new IntrospectiveMethodInfo
+            (
+                passthroughMethod,
+                newReturnType,
+                newParameterTypes,
+                definition.MetadataType,
+                definition
+            );
         }
 
         /// <summary>

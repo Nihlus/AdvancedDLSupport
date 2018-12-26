@@ -357,6 +357,7 @@
   </member>
   <member name="P:AdvancedDLSupport.ManglerRepository.Default">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
   </member>
   <member name="M:AdvancedDLSupport.ManglerRepository.GetApplicableManglers``1(``0)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
@@ -547,18 +548,41 @@
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
   </member>
+  <member name="M:AdvancedDLSupport.Reflection.IIntrospectiveMember.GetFullNativeEntrypoint">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  <member name="M:AdvancedDLSupport.Reflection.IIntrospectiveMember.GetNativeCallingConvention">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:AdvancedDLSupport.Reflection.IIntrospectiveMember.GetNativeEntrypoint">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  <member name="P:AdvancedDLSupport.Reflection.IIntrospectiveMember.Name">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
   <member name="T:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.#ctor(`0)">
+  <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.#ctor(`0,System.Type)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="memberInfo">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
+    <parameter name="metadataType">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.#ctor(`0,System.Collections.Generic.IEnumerable{System.Reflection.CustomAttributeData})">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.#ctor(`0,System.Type,System.Collections.Generic.IEnumerable{System.Reflection.CustomAttributeData})">    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="memberInfo">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="metadataType">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
     <parameter name="customAttributes">
@@ -571,6 +595,7 @@
   </member>
   <member name="P:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.DeclaringType">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
   </member>
   <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.GetCustomAttribute``1">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
@@ -584,6 +609,13 @@
   <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.GetWrappedMember">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.HasSameNativeEntrypointAs(AdvancedDLSupport.Reflection.IntrospectiveMethodInfo)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+    <parameter name="other">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
   <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.IsDefined(System.Type,System.Boolean)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
@@ -592,6 +624,9 @@
   </member>
   <member name="P:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.MemberType">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="P:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.MetadataType">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
   </member>
   <member name="P:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.Name">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
@@ -608,7 +643,7 @@
   <member name="T:AdvancedDLSupport.Reflection.IntrospectiveMethodInfo">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMethodInfo.#ctor(System.Reflection.Emit.MethodBuilder,System.Type,System.Collections.Generic.IEnumerable{System.Type},AdvancedDLSupport.Reflection.IntrospectiveMethodInfo)">
+  <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMethodInfo.#ctor(System.Reflection.Emit.MethodBuilder,System.Type,System.Collections.Generic.IEnumerable{System.Type},System.Type,AdvancedDLSupport.Reflection.IntrospectiveMethodInfo)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="builder">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
@@ -620,13 +655,19 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
       <attribute ctor="M:JetBrains.Annotations.ItemNotNullAttribute.#ctor" />
     </parameter>
+    <parameter name="metadataType">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
     <parameter name="definitionToCopyAttributesFrom">
       <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMethodInfo.#ctor(System.Reflection.MethodInfo)">
+  <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMethodInfo.#ctor(System.Reflection.MethodInfo,System.Type)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="methodInfo">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="metadataType">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
@@ -668,9 +709,12 @@
   <member name="T:AdvancedDLSupport.Reflection.IntrospectivePropertyInfo">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
-  <member name="M:AdvancedDLSupport.Reflection.IntrospectivePropertyInfo.#ctor(System.Reflection.PropertyInfo)">
+  <member name="M:AdvancedDLSupport.Reflection.IntrospectivePropertyInfo.#ctor(System.Reflection.PropertyInfo,System.Type)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="memberInfo">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="metadataType">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
@@ -771,7 +815,17 @@
   <member name="P:AdvancedDLSupport.SymbolLoadingException.SymbolName">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
   </member>
+  <member name="T:AdvancedDLSupport.SymbolTransformer">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
+  <member name="F:AdvancedDLSupport.SymbolTransformer.Default">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  </member>
   <member name="M:AdvancedDLSupport.SymbolTransformer.GetTransformedSymbol``1(System.Type,``0)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <parameter name="containingInterface">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
