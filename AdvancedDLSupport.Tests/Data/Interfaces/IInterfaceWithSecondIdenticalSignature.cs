@@ -17,8 +17,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Runtime.InteropServices;
-
 #pragma warning disable SA1600, CS1591
 
 namespace AdvancedDLSupport.Tests.Data

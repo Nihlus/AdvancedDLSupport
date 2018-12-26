@@ -17,14 +17,13 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Runtime.InteropServices;
-
 #pragma warning disable SA1600, CS1591
 
 namespace AdvancedDLSupport.Tests.Data
 {
     public interface IInterfaceWithSecondIdenticalSignatureWithDifferentEntrypoint
     {
+        // ReSharper disable once ExplicitCallerInfoArgument
         [NativeSymbol("Subtract")]
         int DoMath(int a, int b);
     }

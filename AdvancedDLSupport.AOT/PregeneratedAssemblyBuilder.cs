@@ -40,8 +40,10 @@ namespace AdvancedDLSupport.AOT
     [PublicAPI]
     public class PregeneratedAssemblyBuilder
     {
+        [NotNull]
         private static ILogger _log = LogManager.GetCurrentClassLogger();
 
+        [NotNull]
         private static object _fileCopyLock = new object();
 
         [NotNull, ItemNotNull]
@@ -106,7 +108,7 @@ namespace AdvancedDLSupport.AOT
         public PregeneratedAssemblyBuilder WithSourceExplicitTypeCombination
         (
             [NotNull] Type classType,
-            [NotNull] params Type[] interfaceTypes
+            [NotNull, ItemNotNull] params Type[] interfaceTypes
         )
         {
             if (!classType.IsAbstract)
@@ -204,6 +206,7 @@ namespace AdvancedDLSupport.AOT
             }
 
             var persistentAssemblyProvider = new PersistentDynamicAssemblyProvider(outputPath, !_options.HasFlagFast(EnableOptimizations));
+
             // And build the types
             var generatedTypeDictionary = new Dictionary<GeneratedImplementationTypeIdentifier, Type>();
 

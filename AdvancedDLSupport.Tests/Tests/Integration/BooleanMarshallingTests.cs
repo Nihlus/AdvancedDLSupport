@@ -17,13 +17,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System;
 using AdvancedDLSupport.Tests.Data;
 using AdvancedDLSupport.Tests.TestBases;
 using Xunit;
 
 // ReSharper disable InconsistentNaming
-
 #pragma warning disable SA1600, CS1591
 
 namespace AdvancedDLSupport.Tests.Integration

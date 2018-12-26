@@ -33,7 +33,7 @@ namespace AdvancedDLSupport.Tests.TestBases
         protected T Library { get; }
 
         [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor", Justification = "Used to set implementation options in derived classes")]
-        public LibraryTestBase([NotNull] string libraryLocation)
+        protected LibraryTestBase([NotNull] string libraryLocation)
         {
             Config = GetImplementationOptions();
             Library = GetImplementationBuilder().ActivateInterface<T>(libraryLocation);
