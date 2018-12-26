@@ -334,7 +334,11 @@ namespace AdvancedDLSupport.AOT
         /// </summary>
         /// <param name="constructorIL">The generator where the IL is to be emitted.</param>
         /// <param name="entryKey">The instance to emit.</param>
-        private void EmitCreateKeyInstance([NotNull] ILGenerator constructorIL, GeneratedImplementationTypeIdentifier entryKey)
+        private void EmitCreateKeyInstance
+        (
+            [NotNull] ILGenerator constructorIL,
+            GeneratedImplementationTypeIdentifier entryKey
+        )
         {
             var constructor = entryKey.GetType().GetConstructor
             (
