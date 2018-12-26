@@ -432,6 +432,18 @@
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
   </member>
+  <member name="M:AdvancedDLSupport.NativeLibraryBuilder.DiscoverCompiledTypes(System.IO.Stream)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <parameter name="stream">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:AdvancedDLSupport.NativeLibraryBuilder.DiscoverCompiledTypes(System.Reflection.Assembly)">
+    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+    <parameter name="assembly">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
   <member name="M:AdvancedDLSupport.NativeLibraryBuilder.DiscoverCompiledTypes(System.String,System.String)">
     <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="searchDirectory">
@@ -566,8 +578,7 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.#ctor(`0,System.Type,System.Collections.Generic.IEnumerable{System.Reflection.CustomAttributeData})">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
+  <member name="M:AdvancedDLSupport.Reflection.IntrospectiveMemberBase`1.#ctor(`0,System.Type,System.Collections.Generic.IEnumerable{System.Reflection.CustomAttributeData})">    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
     <parameter name="memberInfo">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
