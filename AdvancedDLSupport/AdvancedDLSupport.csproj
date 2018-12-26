@@ -11,7 +11,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <Title>AdvancedDLSupport</Title>
-    <Version>2.3.2-rc1</Version>
+    <Version>2.3.2-rc3</Version>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>AdvancedDLSupport</PackageId>

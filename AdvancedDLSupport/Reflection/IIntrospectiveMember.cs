@@ -18,6 +18,7 @@
 //
 
 using System;
+using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.Reflection
@@ -31,6 +32,7 @@ namespace AdvancedDLSupport.Reflection
         /// <summary>
         /// Gets the name of the member.
         /// </summary>
+        [PublicAPI, NotNull]
         string Name { get; }
 
         /// <summary>
@@ -40,5 +42,28 @@ namespace AdvancedDLSupport.Reflection
         /// <returns>The attribute, or null.</returns>
         [PublicAPI, CanBeNull]
         TAttribute GetCustomAttribute<TAttribute>() where TAttribute : Attribute;
+
+        /// <summary>
+        /// Gets the full native entrypoint of the member. This is the configured native entrypoint, with any
+        /// transformations applied.
+        /// </summary>
+        /// <returns>The native entrypoint.</returns>
+        [PublicAPI, Pure, NotNull]
+        string GetFullNativeEntrypoint();
+
+        /// <summary>
+        /// Gets the native entrypoint of the member. This is just the configured native entrypoint, without any
+        /// transformations applied.
+        /// </summary>
+        /// <returns>The native entrypoint.</returns>
+        [PublicAPI, Pure, NotNull]
+        string GetNativeEntrypoint();
+
+        /// <summary>
+        /// Gets the native calling convention of the member.
+        /// </summary>
+        /// <returns>The calling convention.</returns>
+        [PublicAPI, Pure]
+        CallingConvention GetNativeCallingConvention();
     }
 }

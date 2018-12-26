@@ -39,9 +39,6 @@ namespace AdvancedDLSupport.Pipeline
         private readonly ModuleBuilder _targetModule;
 
         [NotNull]
-        private readonly TypeBuilder _targetType;
-
-        [NotNull]
         private readonly ILGenerator _constructorIL;
 
         private readonly ImplementationOptions _options;
@@ -49,6 +46,12 @@ namespace AdvancedDLSupport.Pipeline
 
         private IReadOnlyList<IImplementationGenerator<IntrospectiveMethodInfo>> _methodGeneratorPipeline;
         private IReadOnlyList<IImplementationGenerator<IntrospectivePropertyInfo>> _propertyGeneratorPipeline;
+
+        /// <summary>
+        /// Gets the target type of the pipeline.
+        /// </summary>
+        [NotNull]
+        internal TypeBuilder TargetType { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImplementationPipeline"/> class.
@@ -66,7 +69,7 @@ namespace AdvancedDLSupport.Pipeline
         )
         {
             _targetModule = targetModule;
-            _targetType = targetType;
+            TargetType = targetType;
             _constructorIL = constructorIL;
             _options = options;
 
@@ -96,7 +99,7 @@ namespace AdvancedDLSupport.Pipeline
             yield return new RefPermutationImplementationGenerator
             (
                 _targetModule,
-                _targetType,
+                TargetType,
                 _constructorIL,
                 _options
             );
@@ -104,7 +107,7 @@ namespace AdvancedDLSupport.Pipeline
             yield return new DelegateMethodImplementationGenerator
             (
                 _targetModule,
-                _targetType,
+                TargetType,
                 _constructorIL,
                 _options
             );
@@ -112,7 +115,7 @@ namespace AdvancedDLSupport.Pipeline
             yield return new IndirectCallMethodImplementationGenerator
             (
                 _targetModule,
-                _targetType,
+                TargetType,
                 _constructorIL,
                 _options
             );
@@ -120,7 +123,7 @@ namespace AdvancedDLSupport.Pipeline
             yield return new BooleanMarshallingWrapper
             (
                 _targetModule,
-                _targetType,
+                TargetType,
                 _constructorIL,
                 _options
             );
@@ -128,7 +131,7 @@ namespace AdvancedDLSupport.Pipeline
             yield return new DisposalCallWrapper
             (
                 _targetModule,
-                _targetType,
+                TargetType,
                 _constructorIL,
                 _options
             );
@@ -136,7 +139,7 @@ namespace AdvancedDLSupport.Pipeline
             yield return new StringMarshallingWrapper
             (
                 _targetModule,
-                _targetType,
+                TargetType,
                 _constructorIL,
                 _options
             );
@@ -144,7 +147,7 @@ namespace AdvancedDLSupport.Pipeline
             yield return new ValueNullableMarshallingWrapper
             (
                 _targetModule,
-                _targetType,
+                TargetType,
                 _constructorIL,
                 _options
             );
@@ -152,7 +155,7 @@ namespace AdvancedDLSupport.Pipeline
             yield return new GenericDelegateWrapper
             (
                 _targetModule,
-                _targetType,
+                TargetType,
                 _constructorIL,
                 _options
             );
@@ -178,7 +181,7 @@ namespace AdvancedDLSupport.Pipeline
             yield return new PropertyImplementationGenerator
             (
                 _targetModule,
-                _targetType,
+                TargetType,
                 _constructorIL,
                 _options
             );
@@ -189,17 +192,21 @@ namespace AdvancedDLSupport.Pipeline
         /// </summary>
         /// <param name="interfaceDefinition">The interface definition to base it on.</param>
         /// <param name="abstractImplementation">The abstract implementation, if any.</param>
+        /// <param name="nameOverride">
+        /// The name to use for the method. If null, the interface member name is used.
+        /// </param>
         /// <returns>An introspective method info for the definition.</returns>
         [NotNull]
         internal IntrospectiveMethodInfo GenerateDefinitionFromSignature
         (
             [NotNull] IntrospectiveMethodInfo interfaceDefinition,
-            [CanBeNull] IntrospectiveMethodInfo abstractImplementation
+            [CanBeNull] IntrospectiveMethodInfo abstractImplementation,
+            [CanBeNull] string nameOverride = null
         )
         {
-            var methodBuilder = _targetType.DefineMethod
+            var methodBuilder = TargetType.DefineMethod
             (
-                interfaceDefinition.Name,
+                nameOverride ?? interfaceDefinition.Name,
                 Public | Final | Virtual | HideBySig | NewSlot,
                 CallingConventions.Standard,
                 interfaceDefinition.ReturnType,
@@ -221,12 +228,12 @@ namespace AdvancedDLSupport.Pipeline
                     methodBuilder.ApplyCustomAttributesFrom(interfaceDefinition);
                 }
 
-                _targetType.DefineMethodOverride(methodBuilder, abstractImplementation.GetWrappedMember());
+                TargetType.DefineMethodOverride(methodBuilder, abstractImplementation.GetWrappedMember());
             }
             else
             {
                 methodBuilder.ApplyCustomAttributesFrom(interfaceDefinition);
-                _targetType.DefineMethodOverride(methodBuilder, interfaceDefinition.GetWrappedMember());
+                TargetType.DefineMethodOverride(methodBuilder, interfaceDefinition.GetWrappedMember());
             }
 
             var attributePassthroughDefinition = interfaceDefinition;
@@ -240,6 +247,7 @@ namespace AdvancedDLSupport.Pipeline
                 methodBuilder,
                 interfaceDefinition.ReturnType,
                 interfaceDefinition.ParameterTypes,
+                interfaceDefinition.MetadataType,
                 attributePassthroughDefinition
             );
         }

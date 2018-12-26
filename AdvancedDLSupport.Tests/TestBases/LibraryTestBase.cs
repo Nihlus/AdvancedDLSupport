@@ -19,6 +19,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using JetBrains.Annotations;
 
 #pragma warning disable SA1600, CS1591
 
@@ -28,10 +29,11 @@ namespace AdvancedDLSupport.Tests.TestBases
     {
         protected ImplementationOptions Config { get; }
 
+        [NotNull]
         protected T Library { get; }
 
         [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor", Justification = "Used to set implementation options in derived classes")]
-        public LibraryTestBase(string libraryLocation)
+        public LibraryTestBase([NotNull] string libraryLocation)
         {
             Config = GetImplementationOptions();
             Library = GetImplementationBuilder().ActivateInterface<T>(libraryLocation);
@@ -42,6 +44,7 @@ namespace AdvancedDLSupport.Tests.TestBases
             return ImplementationOptions.GenerateDisposalChecks;
         }
 
+        [NotNull]
         protected virtual NativeLibraryBuilder GetImplementationBuilder()
         {
             return new NativeLibraryBuilder(Config);
