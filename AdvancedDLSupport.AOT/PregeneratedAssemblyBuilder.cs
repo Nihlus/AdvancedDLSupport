@@ -233,7 +233,7 @@ namespace AdvancedDLSupport.AOT
                 Directory.CreateDirectory(outputPath);
             }
 
-            var outputFileName = $"{PersistentDynamicAssemblyProvider.DynamicAssemblyName}_{persistentAssemblyProvider.UniqueIdentifier}.dll";
+            var outputFileName = persistentAssemblyProvider.OutputFilename;
 
             assembly.Save(outputFileName);
 

@@ -38,20 +38,22 @@ namespace AdvancedDLSupport.AOT
         public bool IsDebuggable { get; }
 
         /// <summary>
-        /// Gets the unique identifier for the assembly.
-        /// </summary>
-        [PublicAPI]
-        public string UniqueIdentifier { get; }
-
-        /// <summary>
         /// Gets the name of the dynamic assembly.
         /// </summary>
         public const string DynamicAssemblyName = "DLSupportDynamicAssembly";
 
+        /// <summary>
+        /// Gets the output filename of the assembly.
+        /// </summary>
+        [NotNull]
+        public string OutputFilename { get; }
+
         private bool _isDisposed;
 
+        [NotNull]
         private AssemblyBuilder _dynamicAssembly;
 
+        [CanBeNull]
         private ModuleBuilder _dynamicModule;
 
         /// <summary>
@@ -62,10 +64,11 @@ namespace AdvancedDLSupport.AOT
         /// </param>
         /// <param name="outputDirectory">The directory where the dynamic assembly should be saved.</param>
         [PublicAPI]
-        public PersistentDynamicAssemblyProvider(string outputDirectory, bool debuggable)
+        public PersistentDynamicAssemblyProvider([NotNull] string outputDirectory, bool debuggable)
         {
             IsDebuggable = debuggable;
-            UniqueIdentifier = Guid.NewGuid().ToString().ToLowerInvariant();
+
+            OutputFilename = $"{DynamicAssemblyName}_{Guid.NewGuid().ToString().ToLowerInvariant()}.dll";
 
             _dynamicAssembly = AppDomain.CurrentDomain.DefineDynamicAssembly
             (
@@ -110,7 +113,7 @@ namespace AdvancedDLSupport.AOT
                 _dynamicModule = _dynamicAssembly.DefineDynamicModule
                 (
                     "DLSupportDynamicModule",
-                    $"DLSupportDynamicModule_{UniqueIdentifier}.module",
+                    OutputFilename,
                     IsDebuggable
                 )
             );
