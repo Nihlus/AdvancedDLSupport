@@ -11,11 +11,11 @@
   </PropertyGroup>
   <PropertyGroup>
     <Title>AdvancedDLSupport</Title>
-    <Version>2.3.2-rc3</Version>
+    <Version>2.3.2</Version>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>AdvancedDLSupport</PackageId>
-    <PackageReleaseNotes>Fix by-ref nullables not always marshalling properly.</PackageReleaseNotes>
+    <PackageReleaseNotes>Reduce dependency clutter, and allow multiple implementations in combo interfaces.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="AdvancedDLSupport.ExternalAnnotations.xml">
