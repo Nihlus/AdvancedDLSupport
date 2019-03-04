@@ -164,6 +164,14 @@ namespace AdvancedDLSupport.Pipeline
                 _constructorIL,
                 _options
             );
+
+            yield return new SpanMarshallingWrapper
+            (
+                _targetModule,
+                TargetType,
+                _constructorIL,
+                _options
+            );
         }
 
         /// <summary>
