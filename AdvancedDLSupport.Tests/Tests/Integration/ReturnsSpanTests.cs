@@ -18,6 +18,8 @@
 //
 
 using System;
+using System.Data;
+using System.Runtime.InteropServices;
 using AdvancedDLSupport.Tests.Data;
 using AdvancedDLSupport.Tests.TestBases;
 using JetBrains.Annotations;
@@ -29,13 +31,15 @@ namespace AdvancedDLSupport.Tests.Integration
 {
     public class ReturnsSpanTests : LibraryTestBase<IReturnsSpanTests>
     {
+        private const string LibraryName = "ReturnsSpanTests";
+
         public ReturnsSpanTests()
-        : base("ReturnsSpanTests")
+        : base(LibraryName)
         {
         }
 
         [Fact]
-        public void ReturnsCorrect()
+        public void ReturnsCorrectConstAttr()
         {
             Span<int> span = Library.ReturnsInt32ArrayZeroToNine();
 
@@ -45,6 +49,22 @@ namespace AdvancedDLSupport.Tests.Integration
             {
                 Assert.True(span[i] == i);
             }
+        }
+
+        [Fact]
+        public void ThrowsNotSupportedTypeIsByref()
+        {
+            var activator = new NativeLibraryBuilder();
+
+            Assert.Throws<MarshalDirectiveException>(() => activator.ActivateInterface<IFailsReturnsSpanInvalidRet>(LibraryName));
+        }
+
+        [Fact]
+        public void ThrowsNotSupportedTypeHasNoRetAttr()
+        {
+            var activator = new NativeLibraryBuilder();
+
+            Assert.Throws<InvalidOperationException>(() => activator.ActivateInterface<IFailsReturnsSpanNoAttr>(LibraryName));
         }
     }
 }

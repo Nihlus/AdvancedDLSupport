@@ -21,7 +21,7 @@ using System;
 using System.Runtime.InteropServices;
 using AdvancedDLSupport.Tests.TestBases;
 
-#pragma warning disable SA1600, CS1591
+#pragma warning disable SA1600, CS1591, SA1402
 
 namespace AdvancedDLSupport.Tests.Data
 {
@@ -30,5 +30,18 @@ namespace AdvancedDLSupport.Tests.Data
         [NativeSymbol(CallingConvention = CallingConvention.StdCall)]
         [return: ReturnsSizedSpan(10)]
         Span<int> ReturnsInt32ArrayZeroToNine();
+    }
+
+    public interface IFailsReturnsSpanInvalidRet
+    {
+        [NativeSymbol(CallingConvention = CallingConvention.StdCall, Entrypoint = "Dummy")]
+        [return: ReturnsSizedSpan(10)]
+        Span<object> InvalidSpan();
+    }
+
+    public interface IFailsReturnsSpanNoAttr
+    {
+        [NativeSymbol(CallingConvention = CallingConvention.StdCall, Entrypoint = "Dummy")]
+        Span<int> InvalidSpan();
     }
 }

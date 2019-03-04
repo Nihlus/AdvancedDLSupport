@@ -30,17 +30,8 @@ namespace AdvancedDLSupport
     {
         /// <summary>
         /// Gets the number of elements in the span.
-        /// Null if <see cref="MethodName"/> should be used instead.
         /// </summary>
-        [CanBeNull]
-        internal int? SpanLength { get; }
-
-        /// <summary>
-        /// Gets the string name of the method used to return the number of elements in the span.
-        /// Null if <see cref="SpanLength"/> should be used instead.
-        /// </summary>
-        [CanBeNull]
-        internal string MethodName { get; }
+        internal int SpanLength { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReturnsSizedSpanAttribute"/> class.
@@ -48,15 +39,5 @@ namespace AdvancedDLSupport
         /// <param name="spanLength">The number of elements in the Span returned. </param>
         public ReturnsSizedSpanAttribute(int spanLength)
             => SpanLength = spanLength;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReturnsSizedSpanAttribute"/> class.
-        /// </summary>
-        /// <param name="methodName">The name of the method to call to get the number of elements in the Span returned. </param>
-        public ReturnsSizedSpanAttribute(string methodName)
-        {
-            throw new NotImplementedException();
-            MethodName = methodName;
-        }
     }
 }

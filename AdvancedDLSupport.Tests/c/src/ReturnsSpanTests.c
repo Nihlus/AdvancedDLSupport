@@ -1,6 +1,5 @@
 ﻿#include "comp.h"
 #include "TestStruct.h"
-#include "../../../../../../../../Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/include/stdint.h"
 
 __declspec(dllexport) int32_t*__stdcall ReturnsInt32ArrayZeroToNine()
 {
@@ -11,3 +10,5 @@ __declspec(dllexport) int32_t*__stdcall ReturnsInt32ArrayZeroToNine()
 
 	return arr;
 }
+
+__declspec(dllexport) void* __stdcall Dummy() { return NULL; }

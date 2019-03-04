@@ -62,12 +62,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <inheritdoc />
         public override IntrospectiveMethodInfo GeneratePassthroughDefinition(PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {
-            IntrospectiveMethodInfo definition = workUnit.Definition;
+            if (!workUnit.Definition.ReturnType.IsValueType)
+            {
+                throw new NotSupportedException($"Method is not a {nameof(ValueType)} and cannot be marshaled as a {typeof(Span<>).Name}");
+            }
 
-            Debug.Assert(
-                definition.ReturnType.IsGenericType &&
-                definition.ReturnType.GetGenericTypeDefinition() == typeof(Span<>),
-                $"{nameof(workUnit)} signature is invalid, must be of type Span<> ");
+            IntrospectiveMethodInfo definition = workUnit.Definition;
 
             Type newReturnType = definition.ReturnType.GenericTypeArguments[0].MakePointerType();
 
@@ -102,43 +102,28 @@ namespace AdvancedDLSupport.ImplementationGenerators
             ConstructorInfo ctor = typeof(Span<>).MakeGenericType(workUnit.Definition.ReturnType.GenericTypeArguments[0])
                 .GetConstructor(new[] { typeof(void*), typeof(int) });
 
-            il.Emit(OpCodes.Ldc_I4, ExtractInt32FromReturnsSpanAttribute(workUnit.Definition));
+            int res = ExtractInt32FromReturnsSpanAttribute(workUnit.Definition);
+
+            il.Emit(OpCodes.Ldc_I4, res);
             il.Emit(OpCodes.Newobj, ctor);
         }
 
         private int ExtractInt32FromReturnsSpanAttribute(IntrospectiveMethodInfo info)
+            => GetRetSpanAttr(info).SpanLength;
+
+        private ReturnsSizedSpanAttribute GetRetSpanAttr(IntrospectiveMethodInfo info)
         {
             IReadOnlyList<CustomAttributeData> attributes = info.ReturnParameterCustomAttributes;
-            ReturnsSizedSpanAttribute attr = null;
 
             foreach (CustomAttributeData customAttributeData in attributes)
             {
                 if (customAttributeData.AttributeType == typeof(ReturnsSizedSpanAttribute))
                 {
-                    attr = customAttributeData.ToInstance<ReturnsSizedSpanAttribute>();
+                    return customAttributeData.ToInstance<ReturnsSizedSpanAttribute>();
                 }
             }
 
-            Debug.Assert(attr != null, "Attribute was null");
-
-            if (attr.SpanLength is null)
-            {
-                throw new NotImplementedException();
-
-                Debug.Assert(attr.MethodName != null, $"Both {nameof(attr.SpanLength)} and {attr.MethodName} were null");
-
-                MethodInfo method = info.DeclaringType.GetMethod(attr.MethodName);
-
-                Debug.Assert(method.ReturnType == typeof(int), "Passed method doesn't return int"); // TODO proper handling
-                Debug.Assert(method.GetParameters().Length == 0, "Passed method takes parameters"); // TODO proper handling
-
-                var del = (Func<int>)method.CreateDelegate(typeof(Func<int>));
-                return del();
-            }
-            else
-            {
-                return attr.SpanLength.Value;
-            }
+            throw new InvalidOperationException($"Method does not have required {nameof(ReturnsSizedSpanAttribute)}");
         }
 
         /// <inheritdoc />
@@ -146,8 +131,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
         /// <inheritdoc />
         public override bool IsApplicable(IntrospectiveMethodInfo member)
-            => member.ReturnParameterHasCustomAttribute<ReturnsSizedSpanAttribute>()
-               && member.ReturnType.IsGenericType // prevents exception on the line below
+            => member.ReturnType.IsGenericType // prevents exception on the line below
                && member.ReturnType.GetGenericTypeDefinition() == typeof(Span<>);
     }
 }
