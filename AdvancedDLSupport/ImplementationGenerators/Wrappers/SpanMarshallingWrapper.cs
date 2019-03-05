@@ -31,7 +31,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
 {
     /// <summary>
     /// Generates wrapper instructions for returning <see cref="Span{T}"/> from unmanaged code
-    /// through a pointer and provided length
+    /// through a pointer and provided length.
     /// </summary>
     internal class SpanMarshallingWrapper : CallWrapperBase
     {

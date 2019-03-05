@@ -1,5 +1,5 @@
 ﻿//
-//  IFailsReturnsSpanNoAttr.cs
+//  IFailsReturnsSpanInvalid.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -24,9 +24,10 @@ using System.Runtime.InteropServices;
 
 namespace AdvancedDLSupport.Tests.Data
 {
-    public interface IFailsReturnsSpanNoAttr
+    public interface IFailsReturnsSpanInvalid
     {
         [NativeSymbol(Entrypoint = nameof(IReturnsSpanTests.GetInt32ArrayZeroToNine))]
-        Span<int> NoAttr();
+        [return: NativeCollectionLength(10)]
+        Span<object> InvalidSpan();
     }
 }
