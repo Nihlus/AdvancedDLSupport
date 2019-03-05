@@ -19,7 +19,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -31,7 +30,8 @@ using JetBrains.Annotations;
 namespace AdvancedDLSupport.ImplementationGenerators
 {
     /// <summary>
-    /// TODO.
+    /// Generates wrapper instructions for returning <see cref="Span{T}"/> from unmanaged code
+    /// through a pointer and provided length
     /// </summary>
     internal class SpanMarshallingWrapper : CallWrapperBase
     {
@@ -49,25 +49,27 @@ namespace AdvancedDLSupport.ImplementationGenerators
             [NotNull] ILGenerator targetTypeConstructorIL,
             ImplementationOptions options
         )
-        : base
-        (
-            targetModule,
-            targetType,
-            targetTypeConstructorIL,
-            options
-        )
+            : base
+            (
+                targetModule,
+                targetType,
+                targetTypeConstructorIL,
+                options
+            )
         {
         }
 
         /// <inheritdoc />
         public override IntrospectiveMethodInfo GeneratePassthroughDefinition(PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {
-            if (!workUnit.Definition.ReturnType.IsValueType)
+            if (!workUnit.Definition.ReturnType.GenericTypeArguments[0].IsValueType)
             {
-                throw new NotSupportedException($"Method is not a {nameof(ValueType)} and cannot be marshaled as a {typeof(Span<>).Name}");
+                // Span<byte> is used because unbound generics are not allowed inside a nameof, and it still results as just 'Span'
+                throw new NotSupportedException($"Method is not a {nameof(ValueType)} and cannot be marshaled as a {nameof(Span<byte>)}. Marshalling {nameof(Span<byte>)}" +
+                                                $"requires the marshaled type T in {nameof(Span<byte>)}<T> to be a {nameof(ValueType)}");
             }
 
-            IntrospectiveMethodInfo definition = workUnit.Definition;
+            var definition = workUnit.Definition;
 
             Type newReturnType = definition.ReturnType.GenericTypeArguments[0].MakePointerType();
 
@@ -99,39 +101,35 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <inheritdoc />
         public override void EmitEpilogue(ILGenerator il, PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {
-            ConstructorInfo ctor = typeof(Span<>).MakeGenericType(workUnit.Definition.ReturnType.GenericTypeArguments[0])
-                .GetConstructor(new[] { typeof(void*), typeof(int) });
+            ConstructorInfo ctor = workUnit.Definition.ReturnType.GetConstructor(new[] { typeof(void*), typeof(int) });
 
-            int res = ExtractInt32FromReturnsSpanAttribute(workUnit.Definition);
-
-            il.Emit(OpCodes.Ldc_I4, res);
+            il.Emit(OpCodes.Ldc_I4, GetNativeCollectionLengthMetadata(workUnit.Definition).Length);
             il.Emit(OpCodes.Newobj, ctor);
         }
 
-        private int ExtractInt32FromReturnsSpanAttribute(IntrospectiveMethodInfo info)
-            => GetRetSpanAttr(info).SpanLength;
-
-        private ReturnsSizedSpanAttribute GetRetSpanAttr(IntrospectiveMethodInfo info)
+        private NativeCollectionLengthAttribute GetNativeCollectionLengthMetadata(IntrospectiveMethodInfo info)
         {
             IReadOnlyList<CustomAttributeData> attributes = info.ReturnParameterCustomAttributes;
 
             foreach (CustomAttributeData customAttributeData in attributes)
             {
-                if (customAttributeData.AttributeType == typeof(ReturnsSizedSpanAttribute))
+                if (customAttributeData.AttributeType == typeof(NativeCollectionLengthAttribute))
                 {
-                    return customAttributeData.ToInstance<ReturnsSizedSpanAttribute>();
+                    return customAttributeData.ToInstance<NativeCollectionLengthAttribute>();
                 }
             }
 
-            throw new InvalidOperationException($"Method does not have required {nameof(ReturnsSizedSpanAttribute)}");
+            throw new InvalidOperationException($"Method return type does not have required {nameof(NativeCollectionLengthAttribute)}");
         }
 
         /// <inheritdoc />
-        public override GeneratorComplexity Complexity => GeneratorComplexity.MemberDependent; // TODO correct val
+        public override GeneratorComplexity Complexity => GeneratorComplexity.TransformsParameters | GeneratorComplexity.MemberDependent;
 
         /// <inheritdoc />
         public override bool IsApplicable(IntrospectiveMethodInfo member)
-            => member.ReturnType.IsGenericType // prevents exception on the line below
-               && member.ReturnType.GetGenericTypeDefinition() == typeof(Span<>);
+        {
+            return member.ReturnType.IsGenericType // prevents exception on the line below
+                   && member.ReturnType.GetGenericTypeDefinition() == typeof(Span<>);
+        }
     }
 }

@@ -34,14 +34,14 @@ namespace AdvancedDLSupport.Tests.Integration
         private const string LibraryName = "ReturnsSpanTests";
 
         public ReturnsSpanTests()
-        : base(LibraryName)
+            : base(LibraryName)
         {
         }
 
         [Fact]
         public void ReturnsCorrectConstAttr()
         {
-            Span<int> span = Library.ReturnsInt32ArrayZeroToNine();
+            var span = Library.GetInt32ArrayZeroToNine();
 
             Assert.True(span.Length == 10);
 
@@ -54,7 +54,7 @@ namespace AdvancedDLSupport.Tests.Integration
         [Fact]
         public void ThrowsNotSupportedTypeIsByref()
         {
-            var activator = new NativeLibraryBuilder();
+            var activator = GetImplementationBuilder();
 
             Assert.Throws<MarshalDirectiveException>(() => activator.ActivateInterface<IFailsReturnsSpanInvalidRet>(LibraryName));
         }
@@ -62,7 +62,7 @@ namespace AdvancedDLSupport.Tests.Integration
         [Fact]
         public void ThrowsNotSupportedTypeHasNoRetAttr()
         {
-            var activator = new NativeLibraryBuilder();
+            var activator = GetImplementationBuilder();
 
             Assert.Throws<InvalidOperationException>(() => activator.ActivateInterface<IFailsReturnsSpanNoAttr>(LibraryName));
         }

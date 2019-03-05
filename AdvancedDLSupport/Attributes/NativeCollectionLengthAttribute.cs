@@ -1,5 +1,5 @@
 ﻿//
-//  ReturnsSizedSpanAttribute.cs
+//  NativeCollectionLengthAttribute.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -23,21 +23,21 @@ using JetBrains.Annotations;
 namespace AdvancedDLSupport
 {
     /// <summary>
-    /// TODO.
+    /// Provides metadata about the size of a collection returned from a native function.
     /// </summary>
     [PublicAPI, AttributeUsage(AttributeTargets.ReturnValue, AllowMultiple = false, Inherited = false)]
-    public class ReturnsSizedSpanAttribute : Attribute
+    public class NativeCollectionLengthAttribute : Attribute
     {
         /// <summary>
         /// Gets the number of elements in the span.
         /// </summary>
-        internal int SpanLength { get; }
+        public int SpanLength { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReturnsSizedSpanAttribute"/> class.
+        /// Initializes a new instance of the <see cref="NativeCollectionLengthAttribute"/> class.
         /// </summary>
         /// <param name="spanLength">The number of elements in the Span returned. </param>
-        public ReturnsSizedSpanAttribute(int spanLength)
+        public NativeCollectionLengthAttribute(int spanLength)
             => SpanLength = spanLength;
     }
 }

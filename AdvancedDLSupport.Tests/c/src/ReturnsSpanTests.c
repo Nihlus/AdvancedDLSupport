@@ -1,7 +1,7 @@
 ﻿#include "comp.h"
 #include "TestStruct.h"
 
-__declspec(dllexport) int32_t*__stdcall ReturnsInt32ArrayZeroToNine()
+__declspec(dllexport) int32_t* ReturnsInt32ArrayZeroToNine()
 {
 	int32_t* arr = malloc(sizeof(int32_t) * 10);
 
@@ -10,5 +10,3 @@ __declspec(dllexport) int32_t*__stdcall ReturnsInt32ArrayZeroToNine()
 
 	return arr;
 }
-
-__declspec(dllexport) void* __stdcall Dummy() { return NULL; }
