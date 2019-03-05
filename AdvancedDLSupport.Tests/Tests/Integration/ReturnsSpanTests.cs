@@ -56,7 +56,7 @@ namespace AdvancedDLSupport.Tests.Integration
         {
             var activator = GetImplementationBuilder();
 
-            Assert.Throws<MarshalDirectiveException>(() => activator.ActivateInterface<IFailsReturnsSpanInvalid>(LibraryName));
+            Assert.Throws<NotSupportedException>(() => activator.ActivateInterface<IFailsReturnsSpanInvalid>(LibraryName));
         }
 
         [Fact]
