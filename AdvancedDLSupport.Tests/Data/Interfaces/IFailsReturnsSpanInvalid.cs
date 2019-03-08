@@ -26,7 +26,7 @@ namespace AdvancedDLSupport.Tests.Data
 {
     public interface IFailsReturnsSpanInvalid
     {
-        [NativeSymbol(Entrypoint = nameof(IReturnsSpanTests.GetInt32ArrayZeroToNine))]
+        [NativeSymbol(Entrypoint = nameof(ISpanMarshallingTests.GetInt32ArrayZeroToNine))]
         [return: NativeCollectionLength(10)]
         Span<object> InvalidSpan();
     }

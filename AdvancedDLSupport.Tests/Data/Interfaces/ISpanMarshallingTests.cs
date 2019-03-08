@@ -1,5 +1,5 @@
 ﻿//
-//  IReturnsSpanTests.cs
+//  ISpanMarshallingTests.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -25,7 +25,7 @@ using AdvancedDLSupport.Tests.TestBases;
 
 namespace AdvancedDLSupport.Tests.Data
 {
-    public interface IReturnsSpanTests
+    public interface ISpanMarshallingTests
     {
         [return: NativeCollectionLength(10)]
         Span<int> GetInt32ArrayZeroToNine();

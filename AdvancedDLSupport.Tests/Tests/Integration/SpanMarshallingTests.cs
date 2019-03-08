@@ -39,7 +39,7 @@ namespace AdvancedDLSupport.Tests.Integration
         }
 
         [Fact]
-        public void ReturnsCorrectConstAttr()
+        public void CanMarshalCollectionWithConstLength()
         {
             var span = Library.GetInt32ArrayZeroToNine();
 
@@ -52,7 +52,7 @@ namespace AdvancedDLSupport.Tests.Integration
         }
 
         [Fact]
-        public void ThrowsNotSupportedTypeIsByref()
+        public void ThrowsWhenSpanTypeIsReferenceType()
         {
             var activator = GetImplementationBuilder();
 
@@ -60,7 +60,7 @@ namespace AdvancedDLSupport.Tests.Integration
         }
 
         [Fact]
-        public void ThrowsNotSupportedTypeHasNoRetAttr()
+        public void ThrowsWhenReturnParameterHasNoLengthAttribute()
         {
             var activator = GetImplementationBuilder();
 
