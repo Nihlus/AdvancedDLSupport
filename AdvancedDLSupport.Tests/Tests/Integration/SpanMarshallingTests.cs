@@ -1,5 +1,5 @@
 ﻿//
-//  ReturnsSpanTests.cs
+//  SpanMarshallingTests.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -29,11 +29,11 @@ using Xunit;
 
 namespace AdvancedDLSupport.Tests.Integration
 {
-    public class ReturnsSpanTests : LibraryTestBase<IReturnsSpanTests>
+    public class SpanMarshallingTests : LibraryTestBase<ISpanMarshallingTests>
     {
-        private const string LibraryName = "ReturnsSpanTests";
+        private const string LibraryName = "SpanMarshallingTests";
 
-        public ReturnsSpanTests()
+        public SpanMarshallingTests()
             : base(LibraryName)
         {
         }

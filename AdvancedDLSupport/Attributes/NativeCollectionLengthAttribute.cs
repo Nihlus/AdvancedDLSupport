@@ -29,14 +29,14 @@ namespace AdvancedDLSupport
     public class NativeCollectionLengthAttribute : Attribute
     {
         /// <summary>
-        /// Gets the number of elements in the span.
+        /// Gets the number of elements in the collection.
         /// </summary>
         public int Length { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NativeCollectionLengthAttribute"/> class.
         /// </summary>
-        /// <param name="length">The number of elements in the Span returned. </param>
+        /// <param name="length">The number of elements in the collection returned. </param>
         public NativeCollectionLengthAttribute(int length)
             => Length = length;
     }
