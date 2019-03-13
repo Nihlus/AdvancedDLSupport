@@ -11,11 +11,11 @@
   </PropertyGroup>
   <PropertyGroup>
     <Title>AdvancedDLSupport</Title>
-    <Version>2.3.3-dev2</Version>
+    <Version>2.3.3</Version>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>AdvancedDLSupport</PackageId>
-    <PackageReleaseNotes>Reduce dependency clutter, and allow multiple implementations in combo interfaces.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fix endless recursion in StdCallEntrypointMangler.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="AdvancedDLSupport.ExternalAnnotations.xml">
