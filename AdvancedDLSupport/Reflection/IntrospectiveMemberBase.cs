@@ -119,6 +119,13 @@ namespace AdvancedDLSupport.Reflection
         public string GetFullNativeEntrypoint()
         {
             var transformer = SymbolTransformer.Default;
+            return transformer.GetMangledSymbol(MetadataType, this);
+        }
+
+        /// <inheritdoc />
+        public string GetTransformedNativeEntrypoint()
+        {
+            var transformer = SymbolTransformer.Default;
             return transformer.GetTransformedSymbol(MetadataType, this);
         }
 

@@ -22,6 +22,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using AdvancedDLSupport.Reflection;
+using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
 {
@@ -38,8 +39,33 @@ namespace AdvancedDLSupport
                 throw new NotSupportedException("The given member cannot be mangled by this mangler.");
             }
 
-            var argumentListSize = method.ParameterTypes.Sum(a => a.IsByRef ? IntPtr.Size : Marshal.SizeOf(a));
-            return $"_{method.GetFullNativeEntrypoint()}@{argumentListSize}";
+            var argumentListSize = method.ParameterTypes.Sum(CalculateArgumentSize);
+            return $"_{method.GetTransformedNativeEntrypoint()}@{argumentListSize}";
+        }
+
+        /// <summary>
+        /// Calculates the native size of the given argument.
+        /// </summary>
+        /// <param name="argumentType">The argument type.</param>
+        /// <returns>The native size of the argument.</returns>
+        private int CalculateArgumentSize([NotNull] Type argumentType)
+        {
+            if (argumentType == typeof(Delegate) || argumentType == typeof(MulticastDelegate))
+            {
+                return IntPtr.Size;
+            }
+
+            if (argumentType.IsEnum)
+            {
+                return Marshal.SizeOf(argumentType.GetEnumUnderlyingType());
+            }
+
+            if (argumentType.IsByRef)
+            {
+                return IntPtr.Size;
+            }
+
+            return Marshal.SizeOf(argumentType);
         }
 
         /// <inheritdoc />

@@ -48,11 +48,34 @@ namespace AdvancedDLSupport
         /// <param name="memberInfo">The member.</param>
         /// <typeparam name="T">The type of the member.</typeparam>
         /// <returns>The transformed symbol.</returns>
-        /// <exception cref="AmbiguousMatchException">Thrown if the member has more than one applicable name mangler.</exception>
         [PublicAPI, NotNull, Pure]
-        public string GetTransformedSymbol<T>([NotNull] Type containingInterface, [NotNull] T memberInfo) where T : MemberInfo, IIntrospectiveMember
+        public string GetTransformedSymbol<T>([NotNull] Type containingInterface, [NotNull] T memberInfo)
+            where T : MemberInfo, IIntrospectiveMember
         {
             var symbolName = memberInfo.GetNativeEntrypoint();
+            var nativeSymbolsAttribute = containingInterface.GetCustomAttribute<NativeSymbolsAttribute>();
+
+            if (nativeSymbolsAttribute is null)
+            {
+                return symbolName;
+            }
+
+            return Transform(symbolName, nativeSymbolsAttribute.Prefix, nativeSymbolsAttribute.SymbolTransformationMethod);
+        }
+
+        /// <summary>
+        /// Gets the transformed symbol name of the given member.
+        /// </summary>
+        /// <param name="containingInterface">The interface that the member belongs to.</param>
+        /// <param name="memberInfo">The member.</param>
+        /// <typeparam name="T">The type of the member.</typeparam>
+        /// <returns>The transformed symbol.</returns>
+        [PublicAPI, NotNull, Pure]
+        public string GetMangledSymbol<T>([NotNull] Type containingInterface, [NotNull] T memberInfo)
+            where T : MemberInfo, IIntrospectiveMember
+        {
+            var symbolName = GetTransformedSymbol(containingInterface, memberInfo);
+
             var applicableManglers = ManglerRepository.Default.GetApplicableManglers(memberInfo).ToList();
             if (applicableManglers.Count > 1)
             {
@@ -68,14 +91,7 @@ namespace AdvancedDLSupport
                 symbolName = applicableMangler.Mangle(memberInfo);
             }
 
-            var nativeSymbolsAttribute = containingInterface.GetCustomAttribute<NativeSymbolsAttribute>();
-
-            if (nativeSymbolsAttribute is null)
-            {
-                return symbolName;
-            }
-
-            return Transform(symbolName, nativeSymbolsAttribute.Prefix, nativeSymbolsAttribute.SymbolTransformationMethod);
+            return symbolName;
         }
 
         /// <summary>
