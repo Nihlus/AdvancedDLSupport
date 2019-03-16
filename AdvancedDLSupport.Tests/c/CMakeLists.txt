@@ -41,7 +41,7 @@ list(
         SymbolTransformationTests
         GenericDelegateTests
         BooleanMarshallingTests
-        ReturnsSpanTests
+        SpanMarshallingTests
 )
 
 list(
