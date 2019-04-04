@@ -1,17 +1,26 @@
 ﻿<Project>
     <Import Project="CMake.targets"/>
 
-    <PropertyGroup Condition="'$(Platform)' == 'x86'">
-        <CMakeGenerator>"Visual Studio 15 2017"</CMakeGenerator>
-    </PropertyGroup>
+    <Choose>
+        <When Condition="'$(VisualStudioVersion)' == '15.0'">
+            <PropertyGroup Condition="'$(Platform)' == 'x86'">
+                <CMakeGenerator>"Visual Studio 15 2017"</CMakeGenerator>
+            </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Platform)' == 'x64' Or '$(Platform)' == 'AnyCPU'">
-        <CMakeGenerator>"Visual Studio 15 2017 Win64"</CMakeGenerator>
-    </PropertyGroup>
+            <PropertyGroup Condition="'$(Platform)' == 'x64' Or '$(Platform)' == 'AnyCPU'">
+                <CMakeGenerator>"Visual Studio 15 2017 Win64"</CMakeGenerator>
+            </PropertyGroup>
+        </When>
+        <When Condition="'$(VisualStudioVersion)' == '16.0'">
+            <PropertyGroup Condition="'$(Platform)' == 'x64' Or '$(Platform)' == 'AnyCPU'">
+                <CMakeGenerator>"Visual Studio 16 2019"</CMakeGenerator>
+            </PropertyGroup>
+        </When>
+    </Choose>
 
 
     <Target Name="CompileWinTestLibraries" AfterTargets="AfterBuild">
-        <Exec Command="cmake --build . --config Release" WorkingDirectory="$(CMakeBuildDir)" />
+        <Exec Command="cmake --build . --config $(Configuration)" WorkingDirectory="$(CMakeBuildDir)" />
         <Exec Command="cmake -DCOMPONENT=standard -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDir)" />
     </Target>
 </Project>
