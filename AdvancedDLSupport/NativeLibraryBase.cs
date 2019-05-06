@@ -18,6 +18,8 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using AdvancedDLSupport.Loaders;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
@@ -31,6 +33,8 @@ namespace AdvancedDLSupport
     [PublicAPI]
     public abstract class NativeLibraryBase : IDisposable
     {
+        private List<Delegate> _delegateStorage = new List<Delegate>();
+
         /// <summary>
         /// Gets a value indicating whether or not the library has been disposed.
         /// </summary>
@@ -106,6 +110,22 @@ namespace AdvancedDLSupport
             }
         }
 
+        /// <summary>
+        /// Adds a delegate to keep it's lifetime till this library gets disposed.
+        /// </summary>
+        /// <param name="del">The delegate to keep alive.</param>
+        /// <returns>Returns the marshaled pointer.</returns>
+        protected IntPtr AddLifetimeDelegate(Delegate del)
+        {
+            if (del == null)
+            {
+                return IntPtr.Zero;
+            }
+
+            _delegateStorage.Add(del);
+            return Marshal.GetFunctionPointerForDelegate(del);
+        }
+
         /// <inheritdoc />
         [PublicAPI]
         public void Dispose()
@@ -116,6 +136,8 @@ namespace AdvancedDLSupport
             }
 
             IsDisposed = true;
+
+            _delegateStorage.Clear();
 
             PlatformLoader.CloseLibrary(_libraryHandle);
             _libraryHandle = IntPtr.Zero;
