@@ -1,5 +1,5 @@
 //
-//  DelegateLifetimeAttribute.cs
+//  DelegateLifetime.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -17,29 +17,26 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System;
-using JetBrains.Annotations;
-
 namespace AdvancedDLSupport
 {
     /// <summary>
-    /// The delegate lifetime attribute.
+    /// Depicts the delegate lifetime.
     /// </summary>
-    [PublicAPI, AttributeUsage(AttributeTargets.Parameter | AttributeTargets.ReturnValue)]
-    public class DelegateLifetimeAttribute : Attribute
+    public enum DelegateLifetime
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DelegateLifetimeAttribute"/> class.
+        /// Delegate lifetime needs to be managed by user.
         /// </summary>
-        /// <param name="lifetime">The delegate lifetime.</param>
-        public DelegateLifetimeAttribute(DelegateLifetime lifetime = DelegateLifetime.Persistent)
-        {
-            Lifetime = lifetime;
-        }
+        None,
 
         /// <summary>
-        /// Gets the delegate lifetime.
+        /// Delegate is kept alive till unloading.
         /// </summary>
-        public DelegateLifetime Lifetime { get; }
+        Persistent,
+
+        /// <summary>
+        /// Delegate is alive only for this call.
+        /// </summary>
+        CallOnly,
     }
 }

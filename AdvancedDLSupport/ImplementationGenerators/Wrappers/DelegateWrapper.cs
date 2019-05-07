@@ -91,12 +91,16 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
                 var lifetime = GetParameterDelegateLifetime(definition.ParameterCustomAttributes[i - 1]);
 
-                if (lifetime != DelegateLifetimeAttribute.DelegateLifetime.CallOnly)
+                if (lifetime == DelegateLifetime.Persistent)
                 {
                     // Load this
                     il.EmitLoadArgument(0);
                     il.EmitLoadArgument(i);
                     il.Emit(OpCodes.Call, allocMethod);
+                }
+                else
+                {
+                    il.EmitLoadArgument(i);
                 }
             }
         }
@@ -153,7 +157,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="customAttributes">The custom attributes applied to the parameter.</param>
         /// <returns>The delegate lifetime.</returns>
         [Pure]
-        private DelegateLifetimeAttribute.DelegateLifetime GetParameterDelegateLifetime([NotNull, ItemNotNull] IEnumerable<CustomAttributeData> customAttributes)
+        private DelegateLifetime GetParameterDelegateLifetime([NotNull, ItemNotNull] IEnumerable<CustomAttributeData> customAttributes)
         {
             var lifetimeAttribute = customAttributes.FirstOrDefault
             (
@@ -163,8 +167,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             if (lifetimeAttribute is null)
             {
-                // Default to marshalling booleans as 1-byte integers
-                return DelegateLifetimeAttribute.DelegateLifetime.Persistent;
+                // Default to keeping delegates alive
+                return DelegateLifetime.Persistent;
             }
 
             return lifetimeAttribute.ToInstance<DelegateLifetimeAttribute>().Lifetime;
