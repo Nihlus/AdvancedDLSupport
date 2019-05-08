@@ -55,14 +55,15 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <inheritdoc />
         public override bool IsApplicable(IntrospectiveMethodInfo member)
         {
-            if (member.ReturnType.IsDelegate())
+            if (member.ReturnType.IsDelegate() && GetParameterDelegateLifetime(member.ReturnParameterCustomAttributes) == DelegateLifetime.Persistent)
             {
                 return true;
             }
 
-            foreach (var p in member.ParameterTypes)
+            for (int i = 0; i < member.ParameterTypes.Count; i++)
             {
-                if (p.IsDelegate())
+                var p = member.ParameterTypes[i];
+                if (p.IsDelegate() && GetParameterDelegateLifetime(member.ParameterCustomAttributes[i]) == DelegateLifetime.Persistent)
                 {
                     return true;
                 }
@@ -182,8 +183,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             var definition = workUnit.Definition;
 
-            var newReturnType = GetParameterPassthroughType(definition.ReturnType);
-            var newParameterTypes = definition.ParameterTypes.Select(GetParameterPassthroughType).ToArray();
+            var newReturnType = GetParameterPassthroughType(definition.ReturnType, GetParameterDelegateLifetime(definition.ReturnParameterCustomAttributes));
+            var newParameterTypes = definition.ParameterTypes.Select
+            (
+                (t, i) => GetParameterPassthroughType(t, GetParameterDelegateLifetime(definition.ParameterCustomAttributes[i]))
+            ).ToArray();
 
             var passthroughMethod = TargetType.DefineMethod
             (
@@ -212,9 +216,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="originalType">The original type.</param>
         /// <returns>The passed-through type.</returns>
         [NotNull]
-        private Type GetParameterPassthroughType([NotNull] Type originalType)
+        private Type GetParameterPassthroughType([NotNull] Type originalType, DelegateLifetime lifetime)
         {
-            if (originalType.IsDelegate())
+            if (originalType.IsDelegate() && lifetime == DelegateLifetime.Persistent)
             {
                 return typeof(IntPtr);
             }
