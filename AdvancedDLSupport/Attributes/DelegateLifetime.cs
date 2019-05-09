@@ -27,10 +27,11 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Delegate lifetime needs to be managed by user.
         /// </summary>
-        None,
+        UserManaged,
 
         /// <summary>
-        /// Delegate is kept alive till unloading.
+        /// Delegate is kept alive till unloading of the instance that the call is made on is disposed.
+        /// This is the default lifetime management.
         /// </summary>
         Persistent,
 

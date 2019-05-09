@@ -37,6 +37,37 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// </summary>
     public class DelegateWrapper : CallWrapperBase
     {
+        [NotNull]
+        private static MethodInfo _marshalPointerToDel;
+
+        [NotNull]
+        private static MethodInfo _intPtrEquality;
+
+        [NotNull]
+        private static FieldInfo _intPtrZero;
+
+        [NotNull]
+        private static MethodInfo _allocMethod;
+
+        static DelegateWrapper()
+        {
+            _marshalPointerToDel = typeof(Marshal).GetMethods(BindingFlags.Public | BindingFlags.Static).
+                FirstOrDefault(x
+                        => x.IsGenericMethodDefinition &&
+                         x.Name == "GetDelegateForFunctionPointer" &&
+                         x.GetParameters().Length == 1 &&
+                         x.GetParameters()[0].ParameterType == typeof(IntPtr)) ?? throw new MethodNotFoundException("Marshal.GetDelegateForFunctionPointer");
+
+            _intPtrEquality = typeof(IntPtr).GetMethod("op_Equality")
+                              ?? throw new MethodNotFoundException("IntPtr.op_Equality");
+            _intPtrZero = typeof(IntPtr).GetField("Zero")
+                          ?? throw new FieldNotFoundException("IntPtr.Zero");
+
+            _allocMethod =
+                typeof(NativeLibraryBase).GetMethod("AddLifetimeDelegate", BindingFlags.Instance | BindingFlags.NonPublic)
+                ?? throw new MethodNotFoundException("NativeLibraryBase.AddLifetimeDelegate");
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegateWrapper"/> class.
         /// </summary>
@@ -77,8 +108,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             var definition = workUnit.Definition;
 
-            var allocMethod =
-                typeof(NativeLibraryBase).GetMethod("AddLifetimeDelegate", BindingFlags.Instance | BindingFlags.NonPublic);
             il.EmitLoadArgument(0);
             for (short i = 1; i <= definition.ParameterTypes.Count; ++i)
             {
@@ -97,7 +126,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                     // Load this
                     il.EmitLoadArgument(0);
                     il.EmitLoadArgument(i);
-                    il.Emit(OpCodes.Call, allocMethod);
+                    il.Emit(OpCodes.Call, _allocMethod);
                 }
                 else
                 {
@@ -118,33 +147,22 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 return;
             }
 
-            var marshalPointerToDel = typeof(Marshal).GetMethods(BindingFlags.Public | BindingFlags.Static).FirstOrDefault(x =>
-                x.IsGenericMethodDefinition && x.Name == "GetDelegateForFunctionPointer" && x.GetParameters().Length == 1 && x.GetParameters()[0].ParameterType == typeof(IntPtr));
-
-            if (marshalPointerToDel == null)
-            {
-                throw new InvalidOperationException("Marshal.GetDelegateForFunctionPointer<T>(IntPtr) not found");
-            }
-
-            var intPtrEquality = typeof(IntPtr).GetMethod("op_Equality");
-            var intPtrZero = typeof(IntPtr).GetField("Zero");
-
             var retNullLabel = il.DefineLabel();
             var intPtrRetVal = il.DeclareLocal(typeof(IntPtr));
 
             il.Emit(OpCodes.Stloc_0);
             il.Emit(OpCodes.Ldloc_0);
 
-            il.Emit(OpCodes.Ldsfld, intPtrZero);
-            il.Emit(OpCodes.Call, intPtrEquality);
+            il.Emit(OpCodes.Ldsfld, _intPtrZero);
+            il.Emit(OpCodes.Call, _intPtrEquality);
 
             il.Emit(OpCodes.Brtrue_S, retNullLabel);
 
             il.Emit(OpCodes.Ldloc_0);
 
-            marshalPointerToDel = marshalPointerToDel.MakeGenericMethod(workUnit.Definition.ReturnType);
+            _marshalPointerToDel = _marshalPointerToDel.MakeGenericMethod(workUnit.Definition.ReturnType);
 
-            il.Emit(OpCodes.Call, marshalPointerToDel);
+            il.Emit(OpCodes.Call, _marshalPointerToDel);
             il.Emit(OpCodes.Ret);
 
             il.MarkLabel(retNullLabel);

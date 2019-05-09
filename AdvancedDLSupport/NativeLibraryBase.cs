@@ -33,7 +33,10 @@ namespace AdvancedDLSupport
     [PublicAPI]
     public abstract class NativeLibraryBase : IDisposable
     {
-        private List<Delegate> _delegateStorage = new List<Delegate>();
+        /// <summary>
+        /// Delegate cache storage to keep delegates alive.
+        /// </summary>
+        private HashSet<Delegate> _delegateStorage = new HashSet<Delegate>();
 
         /// <summary>
         /// Gets a value indicating whether or not the library has been disposed.
@@ -111,12 +114,14 @@ namespace AdvancedDLSupport
         }
 
         /// <summary>
-        /// Adds a delegate to keep it's lifetime till this library gets disposed.
+        /// Adds a delegate to keep its lifetime until this library gets disposed.
         /// </summary>
         /// <param name="del">The delegate to keep alive.</param>
         /// <returns>Returns the marshaled pointer.</returns>
         protected IntPtr AddLifetimeDelegate(Delegate del)
         {
+            // null delegate does not need to be cached. But IntPtr.Zero is still used in DelegateWrapper.EmitPrologue
+            // and prevents the need of specific IL implementation on each call using DelegateWrapper.
             if (del == null)
             {
                 return IntPtr.Zero;

@@ -168,13 +168,6 @@ namespace AdvancedDLSupport.Tests.Integration
             }
         }
 
-        /*        void ExecuteAction(DelegateLibraryDelegates.Action action);
-
-        void ExecuteActionT1([DelegateLifetime(DelegateLifetime.None)] DelegateLibraryDelegates.ActionInt action);
-
-        void ExecuteActionT1Nested([DelegateLifetime(DelegateLifetime.CallOnly)] DelegateLibraryDelegates.ActinIntInAction action);
-
-        int ExecuteFuncT1([DelegateLifetime] DelegateLibraryDelegates.IntFunc func);*/
         public class DelegateLifetime : LibraryTestBase<IDelegateLibrary>
         {
             private static DelegateLibraryDelegates.Action _keepAliveReference;
@@ -211,7 +204,7 @@ namespace AdvancedDLSupport.Tests.Integration
 
                 GC.Collect();
 
-                Assert.True(weakRef.TryGetTarget(out var action));
+                Assert.True(weakRef.TryGetTarget(out var _));
             }
 
             [Fact]
@@ -221,7 +214,7 @@ namespace AdvancedDLSupport.Tests.Integration
 
                 GC.Collect();
 
-                Assert.True(weakRef.TryGetTarget(out var action));
+                Assert.True(weakRef.TryGetTarget(out var _));
             }
 
             [Fact]
@@ -231,7 +224,7 @@ namespace AdvancedDLSupport.Tests.Integration
 
                 GC.Collect();
 
-                Assert.True(weakRef.TryGetTarget(out var action));
+                Assert.True(weakRef.TryGetTarget(out var _));
             }
 
             [Fact]
@@ -241,7 +234,7 @@ namespace AdvancedDLSupport.Tests.Integration
 
                 GC.Collect();
 
-                Assert.False(weakRef.TryGetTarget(out var action));
+                Assert.False(weakRef.TryGetTarget(out var _));
             }
 
             [Fact]
@@ -250,7 +243,7 @@ namespace AdvancedDLSupport.Tests.Integration
                 var weakRef = CreateAction(false, x => Library.ExecuteActionLifetimeCallOnly(x));
                 GC.Collect();
 
-                Assert.False(weakRef.TryGetTarget(out var action));
+                Assert.False(weakRef.TryGetTarget(out var _));
             }
         }
     }
