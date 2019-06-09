@@ -170,14 +170,17 @@ namespace AdvancedDLSupport.ImplementationGenerators
             // HACK: Workaround for missing overload of EmitCalli
             if (_calliOverload is null)
             {
+                throw new NotImplementedException
+                (
+                    "The runtime version you're using doesn't implement a usable version of EmitCalli. See #82."
+                );
+
                 // Use the existing overload - things may break
-                methodIL.EmitCalli(OpCodes.Calli, Standard, method.ReturnType, method.ParameterTypes.ToArray(), null);
+                // methodIL.EmitCalli(OpCodes.Calli, Standard, method.ReturnType, method.ParameterTypes.ToArray(), null);
             }
-            else
-            {
-                // Use the correct overload via reflection
-                _calliOverload.Invoke(methodIL, new object[] { OpCodes.Calli, callingConvention, method.ReturnType, method.ParameterTypes.ToArray() });
-            }
+
+            // Use the correct overload via reflection
+            _calliOverload.Invoke(methodIL, new object[] { OpCodes.Calli, callingConvention, method.ReturnType, method.ParameterTypes.ToArray() });
 
             methodIL.EmitReturn();
         }
