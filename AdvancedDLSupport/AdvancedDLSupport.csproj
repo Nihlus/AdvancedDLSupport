@@ -11,11 +11,11 @@
   </PropertyGroup>
   <PropertyGroup>
     <Title>AdvancedDLSupport</Title>
-    <Version>2.3.3</Version>
+    <Version>3.0.0</Version>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>AdvancedDLSupport</PackageId>
-    <PackageReleaseNotes>Fix endless recursion in StdCallEntrypointMangler.</PackageReleaseNotes>
+    <PackageReleaseNotes>Throw instead of using a bad overload in calli emission.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="AdvancedDLSupport.ExternalAnnotations.xml">
