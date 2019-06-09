@@ -116,10 +116,13 @@ anything that ADL implements explicit support for will work fine under `calli`.
 In particular, ADL with `calli` supports nullable structs by value or by ref, string and boolean marshalling with 
 `[MarshalAs]`, and normal structs by value and by ref.
 
-Furthermore, when running under 32-bit .NET Core on Windows, `calli` is restricted to the `__fastcall` calling 
-convention, and will ignore any hints to the contrary. This calling convention limitation is present on all .NET Core
-platforms, but is only relevant on x86. Calling conventions are, by design, ignored on other platforms in native code.
-The limitation in question is scheduled to be fixed in .NET Core 2.1.
+Furthermore, when running under .NET Core 2.0, `calli` is restricted to the `__fastcall` calling convention, and will
+ignore any hints to the contrary. This calling convention limitation is present on all .NET Core platforms, but is only
+relevant on x86. Calling conventions are, by design, ignored on other platforms in native code. The limitation in 
+question is fixed in .NET Core 2.1 and above. Using `__fastcall` may cause GC issues and runtime crashes unless the 
+unmanaged code is unable to handle a managed calling convention, where it takes no locks and doesn't run for very long.
+
+Mono and the .NET Framework are unaffected by this issue.
 
 
 [calli-unverifiable]: https://blogs.msdn.microsoft.com/shawnfa/2004/06/14/calli-is-not-verifiable/
