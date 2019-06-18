@@ -51,15 +51,14 @@ namespace AdvancedDLSupport
         /// Gets the library and symbol loader for the current platform.
         /// </summary>
         [NotNull]
-        private static readonly IPlatformLoader PlatformLoader;
+        private static IPlatformLoader PlatformLoader => PlatformLoaderBase.PlatformLoader;
 
-        /// <summary>
-        /// Initializes static members of the <see cref="NativeLibraryBase"/> class.
-        /// </summary>
-        static NativeLibraryBase()
-        {
-            PlatformLoader = PlatformLoaderBase.SelectPlatformLoader();
-        }
+        private readonly ILibraryLoader _libLoader;
+        private readonly ISymbolLoader _symbolLoader;
+
+        private ILibraryLoader LibraryLoader => _libLoader ?? PlatformLoader;
+
+        private ISymbolLoader SymbolLoader => _symbolLoader ?? PlatformLoader;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NativeLibraryBase"/> class.
@@ -78,11 +77,33 @@ namespace AdvancedDLSupport
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="NativeLibraryBase"/> class.
+        /// </summary>
+        /// <param name="path">The path to the library.</param>
+        /// <param name="options">Whether or not this library can be disposed.</param>
+        /// <param name="libLoader">Overriding library loader.</param>
+        /// <param name="symLoader">Overriding symbol loader.</param>
+        [PublicAPI]
+        protected NativeLibraryBase
+        (
+            [CanBeNull] string path,
+            ImplementationOptions options,
+            [CanBeNull] ILibraryLoader libLoader,
+            [CanBeNull] ISymbolLoader symLoader
+        )
+        {
+            _libLoader = libLoader;
+            _symbolLoader = symLoader;
+            Options = options;
+            _libraryHandle = LibraryLoader.LoadLibrary(path);
+        }
+
+        /// <summary>
         /// Forwards the symbol loading call to the wrapped platform loader.
         /// </summary>
         /// <param name="sym">The symbol name.</param>
         /// <returns>A handle to the symbol.</returns>
-        internal IntPtr LoadSymbol([NotNull] string sym) => PlatformLoader.LoadSymbol(_libraryHandle, sym);
+        internal IntPtr LoadSymbol([NotNull] string sym) => SymbolLoader.LoadSymbol(_libraryHandle, sym);
 
         /// <summary>
         /// Forwards the function loading call to the wrapped platform loader.
@@ -91,7 +112,7 @@ namespace AdvancedDLSupport
         /// <typeparam name="T">The delegate to load the symbol as.</typeparam>
         /// <returns>A function delegate.</returns>
         [NotNull]
-        internal T LoadFunction<T>([NotNull] string sym) => PlatformLoader.LoadFunction<T>(_libraryHandle, sym);
+        internal T LoadFunction<T>([NotNull] string sym) => SymbolLoader.LoadFunction<T>(_libraryHandle, sym);
 
         /// <summary>
         /// Throws if the library has been disposed.
@@ -117,7 +138,7 @@ namespace AdvancedDLSupport
 
             IsDisposed = true;
 
-            PlatformLoader.CloseLibrary(_libraryHandle);
+            LibraryLoader.CloseLibrary(_libraryHandle);
             _libraryHandle = IntPtr.Zero;
         }
     }
