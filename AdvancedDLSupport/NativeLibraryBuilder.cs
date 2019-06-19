@@ -383,7 +383,9 @@ namespace AdvancedDLSupport
                     (
                         generatedType,
                         libraryPath,
-                        Options
+                        Options,
+                        _customLibraryLoader,
+                        _customSymbolLoader
                     );
 
                     return anonymousInstance;
