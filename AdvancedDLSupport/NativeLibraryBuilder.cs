@@ -82,6 +82,9 @@ namespace AdvancedDLSupport
         [NotNull]
         private static readonly ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type> TypeCache;
 
+        private Loaders.ILibraryLoader _customLibLoader;
+        private Loaders.ISymbolLoader _customSymLoader;
+
         static NativeLibraryBuilder()
         {
             TypeCache = new ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type>
@@ -115,6 +118,28 @@ namespace AdvancedDLSupport
 
             Options = options;
             PathResolver = pathResolver ?? new DynamicLinkLibraryPathResolver();
+        }
+
+        /// <summary>
+        /// Overrides the default symbol loader for this instance of <see cref="NativeLibraryBuilder"/>.
+        /// </summary>
+        /// <param name="factory">Factory to create the overriding symbol loader.</param>
+        /// <returns>This instance of <see cref="NativeLibraryBuilder"/>.</returns>
+        public NativeLibraryBuilder WithSymbolLoader(Func<Loaders.ISymbolLoader, Loaders.ISymbolLoader> factory)
+        {
+            _customSymLoader = factory(Loaders.PlatformLoaderBase.PlatformLoader);
+            return this;
+        }
+
+        /// <summary>
+        /// Overrides the default library loader for this instance of <see cref="NativeLibraryBuilder"/>.
+        /// </summary>
+        /// <param name="factory">Factory to create the overriding library loader.</param>
+        /// <returns>This instance of <see cref="NativeLibraryBuilder"/>.</returns>
+        public NativeLibraryBuilder WithLibraryLoader(Func<Loaders.ILibraryLoader, Loaders.ILibraryLoader> factory)
+        {
+            _customLibLoader = factory(Loaders.PlatformLoaderBase.PlatformLoader);
+            return this;
         }
 
         /// <summary>
@@ -583,14 +608,18 @@ namespace AdvancedDLSupport
         (
             [NotNull] Type finalType,
             [CanBeNull] string library,
-            ImplementationOptions options
+            ImplementationOptions options,
+            Loaders.ILibraryLoader libLoader = null,
+            Loaders.ISymbolLoader symLoader = null
         )
         {
             return Activator.CreateInstance
             (
                 finalType,
                 library,
-                options
+                options,
+                libLoader,
+                symLoader
             );
         }
 

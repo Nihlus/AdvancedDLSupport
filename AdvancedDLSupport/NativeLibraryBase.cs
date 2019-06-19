@@ -65,25 +65,9 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="path">The path to the library.</param>
         /// <param name="options">Whether or not this library can be disposed.</param>
-        [PublicAPI, AnonymousConstructor]
-        protected NativeLibraryBase
-        (
-            [CanBeNull] string path,
-            ImplementationOptions options
-        )
-        {
-            Options = options;
-            _libraryHandle = PlatformLoader.LoadLibrary(path);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NativeLibraryBase"/> class.
-        /// </summary>
-        /// <param name="path">The path to the library.</param>
-        /// <param name="options">Whether or not this library can be disposed.</param>
         /// <param name="libLoader">Overriding library loader.</param>
         /// <param name="symLoader">Overriding symbol loader.</param>
-        [PublicAPI]
+        [PublicAPI, AnonymousConstructor]
         protected NativeLibraryBase
         (
             [CanBeNull] string path,
