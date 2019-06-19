@@ -73,8 +73,8 @@ namespace AdvancedDLSupport
         (
             [CanBeNull] string path,
             ImplementationOptions options,
-            [CanBeNull] ILibraryLoader libLoader,
-            [CanBeNull] ISymbolLoader symLoader
+            [CanBeNull] ILibraryLoader libLoader = null,
+            [CanBeNull] ISymbolLoader symLoader = null
         )
         {
             _libLoader = libLoader;
