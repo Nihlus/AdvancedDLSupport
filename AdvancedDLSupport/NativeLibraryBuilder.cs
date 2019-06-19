@@ -497,16 +497,18 @@ namespace AdvancedDLSupport
                 c => c.HasCustomAttribute<AnonymousConstructorAttribute>()
             );
 
+            var anonConstructorParams = anonymousConstructor.GetParameters();
+
             var constructorBuilder = typeBuilder.DefineConstructor
             (
                 Public | SpecialName | RTSpecialName | HideBySig,
                 Standard,
-                anonymousConstructor.GetParameters().Select(p => p.ParameterType).ToArray()
+                anonConstructorParams.Select(p => p.ParameterType).ToArray()
             );
 
             constructorBuilder.DefineParameter(1, ParameterAttributes.In, "libraryPath");
             var constructorIL = constructorBuilder.GetILGenerator();
-            for (var i = 0; i <= anonymousConstructor.GetParameters().Length; ++i)
+            for (var i = 0; i <= anonConstructorParams.Length; ++i)
             {
                 constructorIL.Emit(OpCodes.Ldarg, i);
             }
