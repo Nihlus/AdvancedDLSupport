@@ -82,8 +82,8 @@ namespace AdvancedDLSupport
         [NotNull]
         private static readonly ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type> TypeCache;
 
-        private Loaders.ILibraryLoader _customLibLoader;
-        private Loaders.ISymbolLoader _customSymLoader;
+        private Loaders.ILibraryLoader _customLibraryLoader;
+        private Loaders.ISymbolLoader _customSymbolLoader;
 
         static NativeLibraryBuilder()
         {
@@ -127,7 +127,7 @@ namespace AdvancedDLSupport
         /// <returns>This instance of <see cref="NativeLibraryBuilder"/>.</returns>
         public NativeLibraryBuilder WithSymbolLoader(Func<Loaders.ISymbolLoader, Loaders.ISymbolLoader> factory)
         {
-            _customSymLoader = factory(Loaders.PlatformLoaderBase.PlatformLoader);
+            _customSymbolLoader = factory(Loaders.PlatformLoaderBase.PlatformLoader);
             return this;
         }
 
@@ -138,7 +138,7 @@ namespace AdvancedDLSupport
         /// <returns>This instance of <see cref="NativeLibraryBuilder"/>.</returns>
         public NativeLibraryBuilder WithLibraryLoader(Func<Loaders.ILibraryLoader, Loaders.ILibraryLoader> factory)
         {
-            _customLibLoader = factory(Loaders.PlatformLoaderBase.PlatformLoader);
+            _customLibraryLoader = factory(Loaders.PlatformLoaderBase.PlatformLoader);
             return this;
         }
 

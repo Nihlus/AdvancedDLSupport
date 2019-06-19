@@ -57,10 +57,6 @@ namespace AdvancedDLSupport
         private readonly ILibraryLoader _libLoader;
         private readonly ISymbolLoader _symbolLoader;
 
-        private ILibraryLoader LibraryLoader => _libLoader ?? PlatformLoader;
-
-        private ISymbolLoader SymbolLoader => _symbolLoader ?? PlatformLoader;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="NativeLibraryBase"/> class.
         /// </summary>
@@ -80,7 +76,7 @@ namespace AdvancedDLSupport
             _libLoader = libLoader;
             _symbolLoader = symLoader;
             Options = options;
-            _libraryHandle = LibraryLoader.LoadLibrary(path);
+            _libraryHandle = (libLoader ?? PlatformLoader).LoadLibrary(path);
         }
 
         /// <summary>
@@ -88,7 +84,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="sym">The symbol name.</param>
         /// <returns>A handle to the symbol.</returns>
-        internal IntPtr LoadSymbol([NotNull] string sym) => SymbolLoader.LoadSymbol(_libraryHandle, sym);
+        internal IntPtr LoadSymbol([NotNull] string sym) => (_symbolLoader ?? PlatformLoader).LoadSymbol(_libraryHandle, sym);
 
         /// <summary>
         /// Forwards the function loading call to the wrapped platform loader.
@@ -123,7 +119,7 @@ namespace AdvancedDLSupport
 
             IsDisposed = true;
 
-            LibraryLoader.CloseLibrary(_libraryHandle);
+            (_libLoader ?? PlatformLoader).CloseLibrary(_libraryHandle);
             _libraryHandle = IntPtr.Zero;
         }
     }

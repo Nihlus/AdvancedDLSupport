@@ -30,7 +30,7 @@ namespace AdvancedDLSupport.Loaders
     public abstract class PlatformLoaderBase : IPlatformLoader
     {
         /// <summary>
-        /// Gets cached instance of the default Plaform Loader.
+        /// Gets a cached instance of the current platform's default loader.
         /// </summary>
         public static IPlatformLoader PlatformLoader { get; } = SelectPlatformLoader();
 
