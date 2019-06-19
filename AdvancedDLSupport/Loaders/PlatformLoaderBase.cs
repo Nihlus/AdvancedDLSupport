@@ -35,10 +35,6 @@ namespace AdvancedDLSupport.Loaders
         public static IPlatformLoader PlatformLoader { get; } = SelectPlatformLoader();
 
         /// <inheritdoc />
-        public T LoadFunction<T>(IntPtr library, string symbolName) =>
-            Marshal.GetDelegateForFunctionPointer<T>(LoadSymbol(library, symbolName));
-
-        /// <inheritdoc />
         public IntPtr LoadLibrary(string path) => LoadLibraryInternal(path);
 
         /// <summary>

@@ -18,6 +18,7 @@
 //
 
 using System;
+using System.Runtime.InteropServices;
 using AdvancedDLSupport.Loaders;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
@@ -96,7 +97,7 @@ namespace AdvancedDLSupport
         /// <typeparam name="T">The delegate to load the symbol as.</typeparam>
         /// <returns>A function delegate.</returns>
         [NotNull]
-        internal T LoadFunction<T>([NotNull] string sym) => SymbolLoader.LoadFunction<T>(_libraryHandle, sym);
+        internal T LoadFunction<T>([NotNull] string sym) => Marshal.GetDelegateForFunctionPointer<T>(LoadSymbol(sym));
 
         /// <summary>
         /// Throws if the library has been disposed.
