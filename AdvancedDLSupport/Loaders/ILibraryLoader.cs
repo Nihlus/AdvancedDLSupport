@@ -23,7 +23,7 @@ using JetBrains.Annotations;
 namespace AdvancedDLSupport.Loaders
 {
     /// <summary>
-    /// Represents a class which can load Libraries on a specific platform.
+    /// Represents a class which can load libraries on a specific platform.
     /// </summary>
     public interface ILibraryLoader
     {

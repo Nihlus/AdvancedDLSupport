@@ -23,7 +23,7 @@ using JetBrains.Annotations;
 namespace AdvancedDLSupport.Loaders
 {
     /// <summary>
-    /// Represents a class which can load Symbols on a specific platform.
+    /// Represents a class which can load symbols on a specific platform.
     /// </summary>
     public interface ISymbolLoader
     {

@@ -43,19 +43,13 @@ namespace AdvancedDLSupport
         /// </summary>
         internal ImplementationOptions Options { get; set; }
 
+        private readonly ILibraryLoader _libraryLoader;
+        private readonly ISymbolLoader _symbolLoader;
+
         /// <summary>
         /// Gets an opaque native handle to the library.
         /// </summary>
         private IntPtr _libraryHandle;
-
-        /// <summary>
-        /// Gets the library and symbol loader for the current platform.
-        /// </summary>
-        [NotNull]
-        private static IPlatformLoader PlatformLoader => PlatformLoaderBase.PlatformLoader;
-
-        private readonly ILibraryLoader _libLoader;
-        private readonly ISymbolLoader _symbolLoader;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NativeLibraryBase"/> class.
@@ -73,10 +67,10 @@ namespace AdvancedDLSupport
             [CanBeNull] ISymbolLoader symLoader = null
         )
         {
-            _libLoader = libLoader ?? PlatformLoader;
-            _symbolLoader = symLoader ?? PlatformLoader;
+            _libraryLoader = libLoader ?? PlatformLoaderBase.PlatformLoader;
+            _symbolLoader = symLoader ?? PlatformLoaderBase.PlatformLoader;
             Options = options;
-            _libraryHandle = _libLoader.LoadLibrary(path);
+            _libraryHandle = _libraryLoader.LoadLibrary(path);
         }
 
         /// <summary>
@@ -119,7 +113,7 @@ namespace AdvancedDLSupport
 
             IsDisposed = true;
 
-            _libLoader.CloseLibrary(_libraryHandle);
+            _libraryLoader.CloseLibrary(_libraryHandle);
             _libraryHandle = IntPtr.Zero;
         }
     }

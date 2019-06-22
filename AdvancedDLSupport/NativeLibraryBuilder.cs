@@ -27,6 +27,7 @@ using System.Reflection.Emit;
 using AdvancedDLSupport.AOT;
 using AdvancedDLSupport.DynamicAssemblyProviders;
 using AdvancedDLSupport.Extensions;
+using AdvancedDLSupport.Loaders;
 using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
@@ -82,8 +83,8 @@ namespace AdvancedDLSupport
         [NotNull]
         private static readonly ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type> TypeCache;
 
-        private Loaders.ILibraryLoader _customLibraryLoader;
-        private Loaders.ISymbolLoader _customSymbolLoader;
+        private ILibraryLoader _customLibraryLoader;
+        private ISymbolLoader _customSymbolLoader;
 
         static NativeLibraryBuilder()
         {
@@ -124,10 +125,10 @@ namespace AdvancedDLSupport
         /// Overrides the default symbol loader for this instance of <see cref="NativeLibraryBuilder"/>.
         /// </summary>
         /// <param name="factory">Factory to create the overriding symbol loader.</param>
-        /// <returns>This instance of <see cref="NativeLibraryBuilder"/>.</returns>
-        public NativeLibraryBuilder WithSymbolLoader(Func<Loaders.ISymbolLoader, Loaders.ISymbolLoader> factory)
+        /// <returns>This instance, with the symbol loader overridden.</returns>
+        public NativeLibraryBuilder WithSymbolLoader(Func<ISymbolLoader, ISymbolLoader> factory)
         {
-            _customSymbolLoader = factory(Loaders.PlatformLoaderBase.PlatformLoader);
+            _customSymbolLoader = factory(PlatformLoaderBase.PlatformLoader);
             return this;
         }
 
@@ -136,9 +137,9 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="factory">Factory to create the overriding library loader.</param>
         /// <returns>This instance of <see cref="NativeLibraryBuilder"/>.</returns>
-        public NativeLibraryBuilder WithLibraryLoader(Func<Loaders.ILibraryLoader, Loaders.ILibraryLoader> factory)
+        public NativeLibraryBuilder WithLibraryLoader(Func<ILibraryLoader, ILibraryLoader> factory)
         {
-            _customLibraryLoader = factory(Loaders.PlatformLoaderBase.PlatformLoader);
+            _customLibraryLoader = factory(PlatformLoaderBase.PlatformLoader);
             return this;
         }
 
@@ -524,18 +525,18 @@ namespace AdvancedDLSupport
                 c => c.HasCustomAttribute<AnonymousConstructorAttribute>()
             );
 
-            var anonConstructorParams = anonymousConstructor.GetParameters();
+            var constructorParams = anonymousConstructor.GetParameters();
 
             var constructorBuilder = typeBuilder.DefineConstructor
             (
                 Public | SpecialName | RTSpecialName | HideBySig,
                 Standard,
-                anonConstructorParams.Select(p => p.ParameterType).ToArray()
+                constructorParams.Select(p => p.ParameterType).ToArray()
             );
 
             constructorBuilder.DefineParameter(1, ParameterAttributes.In, "libraryPath");
             var constructorIL = constructorBuilder.GetILGenerator();
-            for (var i = 0; i <= anonConstructorParams.Length; ++i)
+            for (var i = 0; i <= constructorParams.Length; ++i)
             {
                 constructorIL.Emit(OpCodes.Ldarg, i);
             }
@@ -611,8 +612,8 @@ namespace AdvancedDLSupport
             [NotNull] Type finalType,
             [CanBeNull] string library,
             ImplementationOptions options,
-            Loaders.ILibraryLoader libLoader = null,
-            Loaders.ISymbolLoader symLoader = null
+            ILibraryLoader libLoader = null,
+            ISymbolLoader symLoader = null
         )
         {
             return Activator.CreateInstance
