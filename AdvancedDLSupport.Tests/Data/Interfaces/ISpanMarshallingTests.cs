@@ -27,7 +27,6 @@ namespace AdvancedDLSupport.Tests.Data
 {
     public interface ISpanMarshallingTests
     {
-        [NativeSymbol(CallingConvention = CallingConvention.StdCall)]
         [return: NativeCollectionLength(10)]
         Span<int> GetInt32ArrayZeroToNine();
     }
