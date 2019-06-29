@@ -62,34 +62,29 @@ set(SHARED_HEADERS src/TestStruct.h src/comp.h)
 # Uncomment if testing on a non-unicode platform
 add_definitions(-DUNICODE)
 
-foreach (target ${StandardTargets})
-    add_library(${target} SHARED src/${target}.c ${SHARED_HEADERS})
-endforeach(target)
-
-foreach (x32Target ${x32Targets})
-    string(REGEX MATCH "[^-]+" baseName ${x32Target})
-
-    add_library(${x32Target} SHARED src/${baseName}.c ${SHARED_HEADERS})
-endforeach(x32Target)
-
-foreach (x64Target ${x64Targets})
-    string(REGEX MATCH "[^-]+" baseName ${x64Target})
-
-    add_library(${x64Target} SHARED src/${baseName}.c ${SHARED_HEADERS})
-endforeach(x64Target)
-
 if (IS_UNIX_COMPILER)
+	foreach (target ${StandardTargets})
+		add_library(${target} SHARED src/${target}.c ${SHARED_HEADERS})
+	endforeach(target)
+
+	foreach (x32Target ${x32Targets})
+		string(REGEX MATCH "[^-]+" baseName ${x32Target})
+		add_library(${x32Target} SHARED src/${baseName}.c ${SHARED_HEADERS})
+	endforeach(x32Target)
+
+	foreach (x64Target ${x64Targets})
+		string(REGEX MATCH "[^-]+" baseName ${x64Target})
+		add_library(${x64Target} SHARED src/${baseName}.c ${SHARED_HEADERS})
+	endforeach(x64Target)
     # Any CPU is assumed to be 64-bit
     if (NOT BUILD_PLATFORM STREQUAL "x86")
         foreach (target ${StandardTargets})
             set_target_properties(${target} PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
         endforeach(target)
-        set_target_properties(BooleanMarshallingTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
     elseif (BUILD_PLATFORM STREQUAL "x86")
         foreach (target ${StandardTargets})
             set_target_properties(${target} PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
         endforeach(target)
-        set_target_properties(BooleanMarshallingTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
     endif()
 
     foreach (x64Target ${x64Targets})
@@ -101,6 +96,34 @@ if (IS_UNIX_COMPILER)
     endforeach(x32Target)
 elseif (MSVC)
     # Handled in MSBuild
+	if (TARGET_PLATFORM STREQUAL "x86")
+
+		unset(StandardTargets)
+		unset(x64Targets)
+
+		foreach (x32Target ${x32Targets})
+			string(REGEX MATCH "[^-]+" baseName ${x32Target})
+
+			add_library(${x32Target} SHARED src/${baseName}.c ${SHARED_HEADERS})
+		endforeach(x32Target)
+	elseif(TARGET_PLATFORM STREQUAL "x64")
+
+		unset(StandardTargets)
+		unset(x32Targets)
+
+		foreach (x64Target ${x64Targets})
+			string(REGEX MATCH "[^-]+" baseName ${x64Target})
+
+			add_library(${x64Target} SHARED src/${baseName}.c ${SHARED_HEADERS})
+		endforeach(x64Target)
+	else()
+		unset(x32Targets)
+		unset(x64Targets)
+
+		foreach (target ${StandardTargets})
+			add_library(${target} SHARED src/${target}.c ${SHARED_HEADERS})
+		endforeach(target)
+	endif()
 endif()
 
 get_filename_component(INSTALL_PATH_ABSOLUTE "${PROJECT_PATH}/${BASE_INSTALL_PATH}" ABSOLUTE)
