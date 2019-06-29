@@ -1,28 +1,29 @@
-﻿<Project>
+<Project>
     <Import Project="CMake.targets"/>
 
     <!-- Windows-specific properties -->
-    <PropertyGroup>
-        <CMakeGeneratorx86>"Visual Studio 15 2017"</CMakeGeneratorx86>
-        <CMakeGeneratorx64>"Visual Studio 15 2017 Win64"</CMakeGeneratorx64>
+      <PropertyGroup>
+        <CMakeGeneratorx86>"Visual Studio 16 2019" -A Win32</CMakeGeneratorx86>
+        <CMakeGeneratorx64>"Visual Studio 16 2019" -A x64</CMakeGeneratorx64>
         <CMakeBuildDirx86>$(CMakeBuildDir)-x86</CMakeBuildDirx86>
         <CMakeBuildDirx64>$(CMakeBuildDir)-x64</CMakeBuildDirx64>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Platform)' == 'x86'">
-        <CMakeGenerator>"Visual Studio 15 2017"</CMakeGenerator>
+    <PropertyGroup Condition="'$(BuildArchitecture)' == 'x86'">
+        <CMakeGenerator>"Visual Studio 16 2019" -A Win32</CMakeGenerator>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Platform)' != 'x86'">
-        <CMakeGenerator>"Visual Studio 15 2017 Win64"</CMakeGenerator>
+    <PropertyGroup Condition="'$(BuildArchitecture)' == 'x64'">
+        <CMakeGenerator>"Visual Studio 16 2019" -A x64</CMakeGenerator>
     </PropertyGroup>
 
     <!-- Windows-specific targets -->
     <Target Name="InitWinCMake" AfterTargets="InitCMake" Condition="!Exists('$(CMakeBuildDirx86)') And !Exists('$(CMakeBuildDirx64)')">
-        <Exec Command="mkdir $(CMakeBuildDirx86)" />
-        <Exec Command="mkdir $(CMakeBuildDirx64)" />
-        <Exec Command="cmake -G $(CMakeGeneratorx86) '-DTARGET_FRAMEWORKS=$(TargetFrameworks)' -DBASE_INSTALL_PATH=$([System.IO.Path]::GetDirectoryName($(OutputPath.TrimEnd('\\')))) -DPROJECT_PATH=$(MSBuildProjectDirectory) -DBUILD_PLATFORM=x86 .." WorkingDirectory="$(CMakeBuildDirx86)" />
-        <Exec Command="cmake -G $(CMakeGeneratorx64) '-DTARGET_FRAMEWORKS=$(TargetFrameworks)' -DBASE_INSTALL_PATH=$([System.IO.Path]::GetDirectoryName($(OutputPath.TrimEnd('\\')))) -DPROJECT_PATH=$(MSBuildProjectDirectory) -DBUILD_PLATFORM=x64 .." WorkingDirectory="$(CMakeBuildDirx64)" />
+        <Message Importance="high" Text="Target build test platform: '$(Platform)'" />
+        <MakeDir Directories="$(CMakeBuildDirx86)" />
+        <MakeDir Directories="$(CMakeBuildDirx64)" />
+        <Exec Command="cmake -G $(CMakeGeneratorx86) '-DTARGET_FRAMEWORKS=$(TargetFrameworks)' -DTARGET_PLATFORM=x86 -DBASE_INSTALL_PATH=$([System.IO.Path]::GetDirectoryName($(OutputPath.TrimEnd('\\')))) -DPROJECT_PATH=$(MSBuildProjectDirectory) -DBUILD_PLATFORM=x86 .." WorkingDirectory="$(CMakeBuildDirx86)" />
+        <Exec Command="cmake -G $(CMakeGeneratorx64) '-DTARGET_FRAMEWORKS=$(TargetFrameworks)' -DTARGET_PLATFORM=x64 -DBASE_INSTALL_PATH=$([System.IO.Path]::GetDirectoryName($(OutputPath.TrimEnd('\\')))) -DPROJECT_PATH=$(MSBuildProjectDirectory) -DBUILD_PLATFORM=x64 .." WorkingDirectory="$(CMakeBuildDirx64)" />
     </Target>
 
     <Target Name="CompileWinTestLibraries" AfterTargets="AfterBuild">
@@ -34,8 +35,7 @@
         <Exec Command="cmake -DCOMPONENT=x64-only -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDirx64)" />
     </Target>
 
-    <Target Name="CleanWinCMake" AfterTargets="AfterClean" Condition="Exists('$(CMakeBuildDirx86)') And Exists('$(CMakeBuildDirx64)')" >
-        <RemoveDir Directories="$(CMakeBuildDirx86)"/>
-        <RemoveDir Directories="$(CMakeBuildDirx64)"/>
+    <Target Name="CleanWinCMake" AfterTargets="AfterClean"> 
+        <RemoveDir Directories="$(CMakeBuildDirx86);$(CMakeBuildDirx64)" ContinueOnError="True"/>
     </Target>
 </Project>

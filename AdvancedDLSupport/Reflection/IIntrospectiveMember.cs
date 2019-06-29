@@ -52,6 +52,14 @@ namespace AdvancedDLSupport.Reflection
         string GetFullNativeEntrypoint();
 
         /// <summary>
+        /// Gets the full unmangled native entrypoint of the member. This is the configured native entrypoint, with any
+        /// transformations except name mangling applied.
+        /// </summary>
+        /// <returns>The native entrypoint.</returns>
+        [PublicAPI, Pure, NotNull]
+        string GetFullUnmangledNativeEntrypoint();
+
+        /// <summary>
         /// Gets the native entrypoint of the member. This is just the configured native entrypoint, without any
         /// transformations applied.
         /// </summary>

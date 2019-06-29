@@ -39,7 +39,7 @@ namespace AdvancedDLSupport
             }
 
             var argumentListSize = method.ParameterTypes.Sum(a => a.IsByRef ? IntPtr.Size : Marshal.SizeOf(a));
-            return $"_{method.GetFullNativeEntrypoint()}@{argumentListSize}";
+            return $"_{method.GetFullUnmangledNativeEntrypoint()}@{argumentListSize}";
         }
 
         /// <inheritdoc />
