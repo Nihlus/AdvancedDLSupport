@@ -53,11 +53,14 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
                 ClearCache = Expression.Lambda<Action>(Expression.Call(Expression.Field(null, typeCacheField), clearMethod)).Compile();
             }
 
+            public DiscoverCompiledTypes()
+            {
+                ClearCache();
+            }
+
             [Fact]
             public void CanDiscoverPrecompiledTypes()
             {
-                ClearCache();
-
                 // Pregenerate the types
                 Builder.WithSourceAssembly(GetType().Assembly);
                 var result = Builder.Build(OutputDirectory);
@@ -72,8 +75,6 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
             [Fact]
             public void CanDiscoverPrecompiledTypesFromStream()
             {
-                ClearCache();
-
                 // Pregenerate the types
                 Builder.WithSourceAssembly(GetType().Assembly);
                 var result = Builder.Build(OutputDirectory);
@@ -89,8 +90,6 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
             [Fact]
             public void UsesPrecompiledTypesIfDiscovered()
             {
-                ClearCache();
-
                 // Pregenerate the types
                 Builder.WithSourceAssembly(GetType().Assembly);
                 var result = Builder.Build(OutputDirectory);
@@ -108,8 +107,6 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
             [Fact]
             public void UsesPrecompiledTypesIfDiscoveredFromStream()
             {
-                ClearCache();
-
                 // Pregenerate the types
                 Builder.WithSourceAssembly(GetType().Assembly);
                 var result = Builder.Build(OutputDirectory);
