@@ -20,6 +20,8 @@
 #pragma warning disable SA1600, CS1591
 
 using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using AdvancedDLSupport.Tests.Data;
 using AdvancedDLSupport.Tests.TestBases;
 using JetBrains.Annotations;
@@ -230,6 +232,11 @@ namespace AdvancedDLSupport.Tests.Integration
             [Fact]
             public void NoneLifetimeDelegateGetsCollected()
             {
+                if (RuntimeInformation.FrameworkDescription.Contains("Mono"))
+                {
+                    return; // Do not test on mono, as it does not collect these (at least not immediately)
+                }
+
                 var weakRef = CreateAction(false, x => Library.ExecuteActionLifetimeNone(x));
 
                 GC.Collect();
@@ -240,6 +247,11 @@ namespace AdvancedDLSupport.Tests.Integration
             [Fact]
             public void CallOnlyLifetimeDelegateGetsCollected()
             {
+                if (RuntimeInformation.FrameworkDescription.Contains("Mono"))
+                {
+                    return; // Do not test on mono, as it does not collect these (at least not immediately)
+                }
+
                 var weakRef = CreateAction(false, x => Library.ExecuteActionLifetimeCallOnly(x));
                 GC.Collect();
 

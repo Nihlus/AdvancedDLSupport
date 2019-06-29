@@ -19,20 +19,28 @@
 
 #pragma warning disable SA1600, CS1591
 
+using System.Runtime.InteropServices;
+
 namespace AdvancedDLSupport.Tests.Data
 {
     public class DelegateLibraryDelegates
     {
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void Action();
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void ActionInt(int param);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int IntFunc();
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int IntFuncInt(int param);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void ActinIntInAction(ActionInt param);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int IntFuncIntInFuncInt(IntFuncInt param1);
     }
 }

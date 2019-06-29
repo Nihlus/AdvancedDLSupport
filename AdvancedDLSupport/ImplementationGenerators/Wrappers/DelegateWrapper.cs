@@ -160,9 +160,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             il.Emit(OpCodes.Ldloc_0);
 
-            _marshalPointerToDel = _marshalPointerToDel.MakeGenericMethod(workUnit.Definition.ReturnType);
+            var marshalPointerToDel = _marshalPointerToDel.MakeGenericMethod(workUnit.Definition.ReturnType);
 
-            il.Emit(OpCodes.Call, _marshalPointerToDel);
+            il.Emit(OpCodes.Call, marshalPointerToDel);
             il.Emit(OpCodes.Ret);
 
             il.MarkLabel(retNullLabel);
