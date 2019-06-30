@@ -17,11 +17,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System;
-using AdvancedDLSupport.Loaders;
 using AdvancedDLSupport.Tests.Data;
+using AdvancedDLSupport.Tests.Data.Classes;
 using AdvancedDLSupport.Tests.TestBases;
-using JetBrains.Annotations;
 using Xunit;
 
 #pragma warning disable SA1600, CS1591
@@ -31,49 +29,6 @@ namespace AdvancedDLSupport.Tests.Integration
     public class CustomLoadingLogicTests : LibraryTestBase<IStringLibrary>
     {
         private const string LibraryName = "StringTests";
-
-        private class LibraryLoadingOverride : ILibraryLoader
-        {
-            private readonly ILibraryLoader _defaultLoader;
-
-            public bool LoadLibraryCalled { get; private set; }
-
-            public LibraryLoadingOverride(ILibraryLoader @default)
-            {
-                _defaultLoader = @default;
-            }
-
-            public IntPtr LoadLibrary([CanBeNull] string path)
-            {
-                LoadLibraryCalled = true;
-
-                return _defaultLoader.LoadLibrary(path);
-            }
-
-            public bool CloseLibrary(IntPtr library)
-            {
-                return _defaultLoader.CloseLibrary(library);
-            }
-        }
-
-        private class SymbolLoadingOverride : ISymbolLoader
-        {
-            private readonly ISymbolLoader _defaultLoader;
-
-            public bool LoadSymbolCalled { get; private set; }
-
-            public SymbolLoadingOverride(ISymbolLoader @default)
-            {
-                _defaultLoader = @default;
-            }
-
-            public IntPtr LoadSymbol(IntPtr library, [NotNull] string symbolName)
-            {
-                LoadSymbolCalled = true;
-
-                return _defaultLoader.LoadSymbol(library, symbolName == "GetString" ? "GetNullString" : symbolName);
-            }
-        }
 
         private LibraryLoadingOverride _libraryLogicOverride;
         private SymbolLoadingOverride _symbolLogicOverride;
