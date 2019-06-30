@@ -29,9 +29,10 @@ namespace AdvancedDLSupport.Loaders
     [PublicAPI]
     public abstract class PlatformLoaderBase : IPlatformLoader
     {
-        /// <inheritdoc />
-        public T LoadFunction<T>(IntPtr library, string symbolName) =>
-            Marshal.GetDelegateForFunctionPointer<T>(LoadSymbol(library, symbolName));
+        /// <summary>
+        /// Gets a cached instance of the current platform's default loader.
+        /// </summary>
+        public static IPlatformLoader PlatformLoader { get; } = SelectPlatformLoader();
 
         /// <inheritdoc />
         public IntPtr LoadLibrary(string path) => LoadLibraryInternal(path);
@@ -57,7 +58,7 @@ namespace AdvancedDLSupport.Loaders
         /// <returns>A platform loader for the current platform..</returns>
         /// <exception cref="PlatformNotSupportedException">Thrown if the current platform is not supported.</exception>
         [PublicAPI, NotNull, Pure]
-        public static IPlatformLoader SelectPlatformLoader()
+        private static IPlatformLoader SelectPlatformLoader()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {

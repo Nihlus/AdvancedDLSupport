@@ -1,5 +1,5 @@
 ﻿//
-//  IPlatformLoader.cs
+//  ICustomLoadingLogicTests.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -17,15 +17,14 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using JetBrains.Annotations;
+#pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Loaders
+namespace AdvancedDLSupport.Tests.Data
 {
-    /// <summary>
-    /// Represents a class which can load libraries and symbols on a specific platform.
-    /// </summary>
-    [PublicAPI]
-    public interface IPlatformLoader : ISymbolLoader, ILibraryLoader
+    public interface ICustomLoadingLogicTests
     {
+        int ReturnsOne();
+
+        int ReturnsTwo();
     }
 }
