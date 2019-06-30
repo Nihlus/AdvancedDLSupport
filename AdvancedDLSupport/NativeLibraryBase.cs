@@ -117,18 +117,9 @@ namespace AdvancedDLSupport
         /// Adds a delegate to keep its lifetime until this library gets disposed.
         /// </summary>
         /// <param name="del">The delegate to keep alive.</param>
-        /// <returns>Returns the marshaled pointer.</returns>
-        protected IntPtr AddLifetimeDelegate(Delegate del)
+        protected void AddLifetimeDelegate(Delegate del)
         {
-            // null delegate does not need to be cached. But IntPtr.Zero is still used in DelegateWrapper.EmitPrologue
-            // and prevents the need of specific IL implementation on each call using DelegateWrapper.
-            if (del == null)
-            {
-                return IntPtr.Zero;
-            }
-
             _delegateStorage.Add(del);
-            return Marshal.GetFunctionPointerForDelegate(del);
         }
 
         /// <inheritdoc />

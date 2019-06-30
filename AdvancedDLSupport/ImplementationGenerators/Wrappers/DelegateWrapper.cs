@@ -38,25 +38,36 @@ namespace AdvancedDLSupport.ImplementationGenerators
     public class DelegateWrapper : CallWrapperBase
     {
         [NotNull]
-        private static MethodInfo _marshalPointerToDel;
+        private static readonly MethodInfo _marshalPointerToDel;
 
         [NotNull]
-        private static MethodInfo _intPtrEquality;
+        private static readonly MethodInfo _marshalDelToPointer;
 
         [NotNull]
-        private static FieldInfo _intPtrZero;
+        private static readonly MethodInfo _intPtrEquality;
 
         [NotNull]
-        private static MethodInfo _allocMethod;
+        private static readonly FieldInfo _intPtrZero;
+
+        [NotNull]
+        private static readonly MethodInfo _allocMethod;
 
         static DelegateWrapper()
         {
             _marshalPointerToDel = typeof(Marshal).GetMethods(BindingFlags.Public | BindingFlags.Static).
                 FirstOrDefault(x
                         => x.IsGenericMethodDefinition &&
-                         x.Name == "GetDelegateForFunctionPointer" &&
+                         x.Name == nameof(Marshal.GetDelegateForFunctionPointer) &&
                          x.GetParameters().Length == 1 &&
                          x.GetParameters()[0].ParameterType == typeof(IntPtr)) ?? throw new MethodNotFoundException("Marshal.GetDelegateForFunctionPointer");
+
+            _marshalDelToPointer = typeof(Marshal).GetMethod(
+                                nameof(Marshal.GetFunctionPointerForDelegate),
+                                BindingFlags.Public | BindingFlags.Static,
+                                null,
+                                new[] { typeof(Delegate) },
+                                null)
+                                   ?? throw new MethodNotFoundException("Marshal.GetFunctionPointerForDelegate");
 
             _intPtrEquality = typeof(IntPtr).GetMethod("op_Equality")
                               ?? throw new MethodNotFoundException("IntPtr.op_Equality");
@@ -123,15 +134,31 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
                 if (lifetime == DelegateLifetime.Persistent)
                 {
+                    // Keep delegate alive.
+
                     // Load this
                     il.EmitLoadArgument(0);
                     il.EmitLoadArgument(i);
                     il.Emit(OpCodes.Call, _allocMethod);
                 }
-                else
-                {
-                    il.EmitLoadArgument(i);
-                }
+
+                // Convert delegate to IntPtr. (IntPtr.Zero for null)
+                var marshalToPtrLabel = il.DefineLabel();
+                var endLabel = il.DefineLabel();
+
+                il.EmitLoadArgument(i);
+                il.Emit(OpCodes.Brtrue_S, marshalToPtrLabel);
+
+                // Delegate is null -> load IntPtr.Zero and branch to end...
+                il.Emit(OpCodes.Ldsfld, _intPtrZero);
+                il.Emit(OpCodes.Br_S, endLabel);
+
+                // Delegate is non null -> call Marshal.GetFunctionPointerForDelegate and load it's resulting IntPtr...
+                il.MarkLabel(marshalToPtrLabel);
+                il.EmitLoadArgument(i);
+                il.Emit(OpCodes.Call, _marshalDelToPointer);
+
+                il.MarkLabel(endLabel);
             }
         }
 
@@ -147,27 +174,27 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 return;
             }
 
-            var retNullLabel = il.DefineLabel();
-            var intPtrRetVal = il.DeclareLocal(typeof(IntPtr));
+            // Convert IntPtr to delegate. (null for IntPtr.Zero)
+            var retMarshalLabel = il.DefineLabel();
+            il.DeclareLocal(typeof(IntPtr)); // loc_0
 
             il.Emit(OpCodes.Stloc_0);
             il.Emit(OpCodes.Ldloc_0);
 
-            il.Emit(OpCodes.Ldsfld, _intPtrZero);
-            il.Emit(OpCodes.Call, _intPtrEquality);
+            il.Emit(OpCodes.Brtrue_S, retMarshalLabel);
 
-            il.Emit(OpCodes.Brtrue_S, retNullLabel);
+            // IntPtr.Zero -> return null
+            il.Emit(OpCodes.Ldnull);
 
+            il.Emit(OpCodes.Ret);
+
+            // IntPtr != Zero -> marshal delegate
+            il.MarkLabel(retMarshalLabel);
             il.Emit(OpCodes.Ldloc_0);
 
             var marshalPointerToDel = _marshalPointerToDel.MakeGenericMethod(workUnit.Definition.ReturnType);
 
             il.Emit(OpCodes.Call, marshalPointerToDel);
-            il.Emit(OpCodes.Ret);
-
-            il.MarkLabel(retNullLabel);
-
-            il.Emit(OpCodes.Ldnull);
         }
 
         /// <summary>
@@ -201,10 +228,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
         {
             var definition = workUnit.Definition;
 
-            var newReturnType = GetParameterPassthroughType(definition.ReturnType, GetParameterDelegateLifetime(definition.ReturnParameterCustomAttributes));
+            var newReturnType = GetParameterPassthroughType(definition.ReturnType);
             var newParameterTypes = definition.ParameterTypes.Select
             (
-                (t, i) => GetParameterPassthroughType(t, GetParameterDelegateLifetime(definition.ParameterCustomAttributes[i]))
+                (t, i) => GetParameterPassthroughType(t)
             ).ToArray();
 
             var passthroughMethod = TargetType.DefineMethod
@@ -234,14 +261,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="originalType">The original type.</param>
         /// <returns>The passed-through type.</returns>
         [NotNull]
-        private Type GetParameterPassthroughType([NotNull] Type originalType, DelegateLifetime lifetime)
+        private Type GetParameterPassthroughType([NotNull] Type originalType)
         {
-            if (originalType.IsDelegate() && lifetime == DelegateLifetime.Persistent)
-            {
-                return typeof(IntPtr);
-            }
-
-            return originalType;
+            return originalType.IsDelegate() ? typeof(IntPtr) : originalType;
         }
     }
 }
