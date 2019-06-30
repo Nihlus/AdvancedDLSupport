@@ -41,6 +41,12 @@ namespace AdvancedDLSupport.Tests.Integration
             }
 
             [Fact]
+            public void NativeCanPassNullDelegate()
+            {
+                Assert.Equal(1, Library.IsNullDelegate(null));
+            }
+
+            [Fact]
             public void NativeCanCallAction()
             {
                 bool ranAction = false;
@@ -113,6 +119,12 @@ namespace AdvancedDLSupport.Tests.Integration
             public FromNativeToManaged()
                 : base(LibraryName)
             {
+            }
+
+            [Fact]
+            public void ManagedCanGetNullDelegate()
+            {
+                Assert.Null(Library.GetNullDelegate());
             }
 
             [Fact]

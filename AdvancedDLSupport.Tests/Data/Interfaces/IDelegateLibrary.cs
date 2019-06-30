@@ -61,5 +61,9 @@ namespace AdvancedDLSupport.Tests.Data
 
         [NativeSymbol(entrypoint: "ExecuteAction")]
         void ExecuteActionLifetimeCallOnly([DelegateLifetime(DelegateLifetime.CallOnly)] DelegateLibraryDelegates.Action action);
+
+        DelegateLibraryDelegates.Action GetNullDelegate();
+
+        int IsNullDelegate(DelegateLibraryDelegates.Action action);
     }
 }

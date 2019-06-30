@@ -116,3 +116,17 @@ __declspec(dllexport) FuncT1T2Nested GetNativeFuncT1T2Nested()
 {
 	return &ExecuteFuncT1T2;
 }
+
+__declspec(dllexport) Action GetNullDelegate()
+{
+	return NULL;
+}
+
+__declspec(dllexport) int32_t IsNullDelegate(Action action)
+{
+	if (action == NULL)
+	{
+	    return 1;
+	}
+	return 0;
+}
