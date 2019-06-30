@@ -222,16 +222,6 @@ namespace AdvancedDLSupport.Tests.Integration
             }
 
             [Fact]
-            public void DefaultLifetimeDelegateGetsNotCollected()
-            {
-                var weakRef = CreateAction(false, x => Library.ExecuteActionLifetimeDefault(x));
-
-                GC.Collect();
-
-                Assert.True(weakRef.TryGetTarget(out var _));
-            }
-
-            [Fact]
             public void PersistentLifetimeDelegateGetsNotCollected()
             {
                 var weakRef = CreateAction(false, x => Library.ExecuteActionLifetimePersistent(x));

@@ -51,9 +51,6 @@ namespace AdvancedDLSupport.Tests.Data
         void ExecuteActionDefault(DelegateLibraryDelegates.Action action);
 
         [NativeSymbol(entrypoint: "ExecuteAction")]
-        void ExecuteActionLifetimeDefault([DelegateLifetime] DelegateLibraryDelegates.Action action);
-
-        [NativeSymbol(entrypoint: "ExecuteAction")]
         void ExecuteActionLifetimeNone([DelegateLifetime(DelegateLifetime.UserManaged)] DelegateLibraryDelegates.Action action);
 
         [NativeSymbol(entrypoint: "ExecuteAction")]
