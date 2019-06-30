@@ -18,6 +18,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using AdvancedDLSupport.Loaders;
 using JetBrains.Annotations;
@@ -32,6 +33,11 @@ namespace AdvancedDLSupport
     [PublicAPI]
     public abstract class NativeLibraryBase : IDisposable
     {
+        /// <summary>
+        /// Delegate cache storage to keep delegates alive.
+        /// </summary>
+        private HashSet<Delegate> _delegateStorage = new HashSet<Delegate>();
+
         /// <summary>
         /// Gets a value indicating whether or not the library has been disposed.
         /// </summary>
@@ -102,6 +108,15 @@ namespace AdvancedDLSupport
             }
         }
 
+        /// <summary>
+        /// Adds a delegate to keep its lifetime until this library gets disposed.
+        /// </summary>
+        /// <param name="del">The delegate to keep alive.</param>
+        protected void AddLifetimeDelegate(Delegate del)
+        {
+            _delegateStorage.Add(del);
+        }
+
         /// <inheritdoc />
         [PublicAPI]
         public void Dispose()
@@ -112,6 +127,8 @@ namespace AdvancedDLSupport
             }
 
             IsDisposed = true;
+
+            _delegateStorage.Clear();
 
             _libraryLoader.CloseLibrary(_libraryHandle);
             _libraryHandle = IntPtr.Zero;

@@ -165,6 +165,14 @@ namespace AdvancedDLSupport.Pipeline
                 _options
             );
 
+            yield return new DelegateWrapper
+            (
+                _targetModule,
+                TargetType,
+                _constructorIL,
+                _options
+            );
+
             yield return new SpanMarshallingWrapper
             (
                 _targetModule,

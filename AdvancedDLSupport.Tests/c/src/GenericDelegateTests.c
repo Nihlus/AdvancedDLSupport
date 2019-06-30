@@ -46,23 +46,33 @@ __declspec(dllexport) void ExecuteActionT1(ActionT1 action)
 	action(5);
 }
 
+__declspec(dllexport) void ExecuteActionT1WithParameter(ActionT1 action, int32_t value)
+{
+    action(value);
+}
+
 __declspec(dllexport) void ExecuteActionT1Nested(ActionT1Nested action)
 {
 	fprintf(stdout, "In nested, seeing function pointer as %x", (unsigned int)&NativeActionT1);
 	action(&NativeActionT1);
 }
 
-__declspec(dllexport) int ExecuteFuncT1(FuncT1 func)
+__declspec(dllexport) int32_t ExecuteFuncT1(FuncT1 func)
 {
 	return func();
 }
 
-__declspec(dllexport) int ExecuteFuncT1T2(FuncT1T2 func)
+__declspec(dllexport) int32_t ExecuteFuncT1T2(FuncT1T2 func)
 {
 	return func(5);
 }
 
-__declspec(dllexport) int ExecuteFuncT1T2Nested(FuncT1T2Nested func)
+__declspec(dllexport) int32_t ExecuteFuncT1T2WithParameter(FuncT1T2 func, int32_t value)
+{
+	return func(value);
+}
+
+__declspec(dllexport) int32_t ExecuteFuncT1T2Nested(FuncT1T2Nested func)
 {
 	return func(&NativeFuncT1T2);
 }
@@ -72,7 +82,7 @@ __declspec(dllexport) void NativeAction()
 	fprintf(stdout, "Living in native land!");
 }
 
-__declspec(dllexport) void NativeActionT1(int t1)
+__declspec(dllexport) void NativeActionT1(int32_t t1)
 {
 	fprintf(stdout, "Living in native land, seeing parameter as %d!", t1);
 }
@@ -92,7 +102,7 @@ __declspec(dllexport) ActionT1Nested GetNativeActionT1Nested()
 	return &ExecuteActionT1;
 }
 
-__declspec(dllexport) int NativeFuncT1()
+__declspec(dllexport) int32_t NativeFuncT1()
 {
 	return 5;
 }
@@ -102,7 +112,7 @@ __declspec(dllexport) FuncT1 GetNativeFuncT1()
 	return &NativeFuncT1;
 }
 
-__declspec(dllexport) int NativeFuncT1T2(int t2)
+__declspec(dllexport) int32_t NativeFuncT1T2(int32_t t2)
 {
 	return t2 * 5;
 }
@@ -115,4 +125,18 @@ __declspec(dllexport) FuncT1T2 GetNativeFuncT1T2()
 __declspec(dllexport) FuncT1T2Nested GetNativeFuncT1T2Nested()
 {
 	return &ExecuteFuncT1T2;
+}
+
+__declspec(dllexport) Action GetNullDelegate()
+{
+	return NULL;
+}
+
+__declspec(dllexport) int32_t IsNullDelegate(Action action)
+{
+	if (action == NULL)
+	{
+	    return 1;
+	}
+	return 0;
 }
