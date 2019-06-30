@@ -184,8 +184,6 @@ namespace AdvancedDLSupport.Tests.Integration
 
         public class DelegateLifetime : LibraryTestBase<IDelegateLibrary>
         {
-            private static DelegateLibraryDelegates.Action _keepAliveReference;
-
             private static WeakReference<DelegateLibraryDelegates.Action> CreateAction
             (
                 bool keepAlive,
@@ -194,11 +192,6 @@ namespace AdvancedDLSupport.Tests.Integration
             {
                 bool ranAction = false;
                 DelegateLibraryDelegates.Action action = () => ranAction = true;
-
-                if (keepAlive)
-                {
-                    _keepAliveReference = action;
-                }
 
                 executeAction(action);
 

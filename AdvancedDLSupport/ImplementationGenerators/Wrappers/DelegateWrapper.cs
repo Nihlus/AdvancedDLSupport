@@ -97,7 +97,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <inheritdoc />
         public override bool IsApplicable(IntrospectiveMethodInfo member)
         {
-            if (member.ReturnType.IsDelegate() && GetParameterDelegateLifetime(member.ReturnParameterCustomAttributes) == DelegateLifetime.Persistent)
+            if (member.ReturnType.IsDelegate())
             {
                 return true;
             }
@@ -105,7 +105,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             for (int i = 0; i < member.ParameterTypes.Count; i++)
             {
                 var p = member.ParameterTypes[i];
-                if (p.IsDelegate() && GetParameterDelegateLifetime(member.ParameterCustomAttributes[i]) == DelegateLifetime.Persistent)
+                if (p.IsDelegate())
                 {
                     return true;
                 }
