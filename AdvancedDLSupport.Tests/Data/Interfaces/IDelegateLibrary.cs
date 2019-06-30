@@ -27,11 +27,15 @@ namespace AdvancedDLSupport.Tests.Data
 
         void ExecuteActionT1(DelegateLibraryDelegates.ActionInt action);
 
+        void ExecuteActionT1WithParameter(DelegateLibraryDelegates.ActionInt action, int value);
+
         void ExecuteActionT1Nested(DelegateLibraryDelegates.ActinIntInAction action);
 
         int ExecuteFuncT1(DelegateLibraryDelegates.IntFunc func);
 
         int ExecuteFuncT1T2(DelegateLibraryDelegates.IntFuncInt func);
+
+        int ExecuteFuncT1T2WithParameter(DelegateLibraryDelegates.IntFuncInt func, int value);
 
         int ExecuteFuncT1T2Nested(DelegateLibraryDelegates.IntFuncIntInFuncInt func);
 

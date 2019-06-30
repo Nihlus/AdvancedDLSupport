@@ -71,6 +71,24 @@ namespace AdvancedDLSupport.Tests.Integration
             }
 
             [Fact]
+            public void NativeCanCallActionWithParameterFromManaged()
+            {
+                bool ranAction = false;
+                int result = 0;
+                int input = 13;
+                Library.ExecuteActionT1WithParameter(
+                    x =>
+                        {
+                            ranAction = true;
+                            result = x;
+                        },
+                    input);
+
+                Assert.True(ranAction);
+                Assert.Equal(input, result);
+            }
+
+            [Fact]
             public void NativeCanCallFunc()
             {
                 var result = Library.ExecuteFuncT1(() => 5);
@@ -84,6 +102,17 @@ namespace AdvancedDLSupport.Tests.Integration
                 var result = Library.ExecuteFuncT1T2(x => 5 * x);
 
                 Assert.Equal(25, result);
+            }
+
+            [Fact]
+            public void NativeCanCallFuncWithParameterFromManaged()
+            {
+                int input = 13;
+                var result = Library.ExecuteFuncT1T2WithParameter(
+                    x => 5 * x,
+                    input);
+
+                Assert.Equal(5 * input, result);
             }
 
             [Fact(Skip = "Not working due to CLR limitations.")]
