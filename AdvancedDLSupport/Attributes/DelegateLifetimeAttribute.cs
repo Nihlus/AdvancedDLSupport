@@ -32,7 +32,7 @@ namespace AdvancedDLSupport
         /// Initializes a new instance of the <see cref="DelegateLifetimeAttribute"/> class.
         /// </summary>
         /// <param name="lifetime">The delegate lifetime.</param>
-        public DelegateLifetimeAttribute(DelegateLifetime lifetime = DelegateLifetime.Persistent)
+        public DelegateLifetimeAttribute(DelegateLifetime lifetime)
         {
             Lifetime = lifetime;
         }
