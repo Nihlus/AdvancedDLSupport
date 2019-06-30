@@ -27,6 +27,7 @@ before_install:
   - echo $Platform
 
 install:
+  - curl https://codecov.io/bash --output outcov.sh --retry 10 --retry-delay 3
   - dotnet restore
 
 script:
@@ -34,4 +35,4 @@ script:
   - ./scripts/travis-coverage.sh
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - bash "codecov.sh"

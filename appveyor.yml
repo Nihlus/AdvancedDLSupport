@@ -1,6 +1,7 @@
 image: Visual Studio 2019
 init:
   - git config --global url."https://github.com/".insteadOf "git@github.com:"
+  - ps: Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh -MaximumRetryCount 10 -RetryIntervalSec 3
 
 configuration:
   - Debug
@@ -26,5 +27,4 @@ test_script:
 after_test:
   - ps: |
       $env:PATH = '/bin;/usr/bin;/usr/local/bin;C:\msys64\usr\bin;' + $env:PATH
-      Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
       bash "codecov.sh"
