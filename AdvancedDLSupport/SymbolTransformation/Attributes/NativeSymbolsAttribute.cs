@@ -18,6 +18,7 @@
 //
 
 using System;
+using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
 namespace AdvancedDLSupport
@@ -39,6 +40,12 @@ namespace AdvancedDLSupport
         /// </summary>
         [PublicAPI]
         public SymbolTransformationMethod SymbolTransformationMethod { get; set; }
+
+        /// <summary>
+        /// Gets or sets the default calling convention for symbols of the interface.
+        /// </summary>
+        [PublicAPI]
+        public CallingConvention DefaultCallingConvention { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NativeSymbolsAttribute"/> class.
