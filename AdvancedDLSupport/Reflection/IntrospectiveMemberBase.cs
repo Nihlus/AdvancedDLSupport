@@ -145,7 +145,7 @@ namespace AdvancedDLSupport.Reflection
 
             if (metadataAttribute == null || metadataAttribute.CallingConvention == default)
             {
-                NativeSymbolsAttribute attribute;
+                NativeSymbolsAttribute attribute = null;
 
                 if (MetadataType.IsInterface)
                 {
@@ -153,7 +153,16 @@ namespace AdvancedDLSupport.Reflection
                 }
                 else
                 {
-                    attribute = MetadataType.GetInterfaces().FirstOrDefault(iface => iface.GetCustomAttribute<NativeSymbolsAttribute>() != null)?.GetCustomAttribute<NativeSymbolsAttribute>();
+                    // Possibility for improvement in behavior
+                    foreach (var iface in MetadataType.GetInterfaces())
+                    {
+                        attribute = iface.GetCustomAttribute<NativeSymbolsAttribute>();
+
+                        if (attribute != null)
+                        {
+                            break;
+                        }
+                    }
                 }
 
                 return attribute == null ? default : attribute.DefaultCallingConvention;
