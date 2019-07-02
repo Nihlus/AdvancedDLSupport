@@ -7,7 +7,7 @@
     <Platforms>AnyCPU;x86;x64</Platforms>
     <Prefer32bit>false</Prefer32bit>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <IsPackable>false</IsPackable>

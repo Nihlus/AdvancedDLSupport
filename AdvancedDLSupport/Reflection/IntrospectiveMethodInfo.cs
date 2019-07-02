@@ -45,13 +45,13 @@ namespace AdvancedDLSupport.Reflection
         /// Gets the return parameter required modifiers of the method.
         /// </summary>
         [PublicAPI, NotNull]
-        public Type[] ReturnParameterReqMod { get; }
+        public Type[] ReturnParameterRequiredModifiers { get; }
 
         /// <summary>
         /// Gets the return parameter optional modifiers of the method.
         /// </summary>
         [PublicAPI, NotNull]
-        public Type[] ReturnParameterOptMod { get; }
+        public Type[] ReturnParameterOptionalModifiers { get; }
 
         /// <summary>
         /// Gets the parameter types of the method.
@@ -93,13 +93,13 @@ namespace AdvancedDLSupport.Reflection
         /// Gets the required modifiers of the parameters.
         /// </summary>
         [PublicAPI, NotNull, ItemNotNull]
-        public IReadOnlyList<Type[]> ParameterReqMod { get; }
+        public IReadOnlyList<Type[]> ParameterRequiredModifiers { get; }
 
         /// <summary>
         /// Gets the required modifiers of the parameters.
         /// </summary>
         [PublicAPI, NotNull, ItemNotNull]
-        public IReadOnlyList<Type[]> ParameterOptMod { get; }
+        public IReadOnlyList<Type[]> ParameterOptionalModifiers { get; }
 
         /// <summary>
         /// Gets the parameter attributes of the parameter definitions.
@@ -134,8 +134,8 @@ namespace AdvancedDLSupport.Reflection
             }
 
             ReturnType = methodInfo.ReturnType;
-            ReturnParameterReqMod = methodInfo.ReturnParameter.GetRequiredCustomModifiers();
-            ReturnParameterOptMod = methodInfo.ReturnParameter.GetOptionalCustomModifiers();
+            ReturnParameterRequiredModifiers = methodInfo.ReturnParameter.GetRequiredCustomModifiers();
+            ReturnParameterOptionalModifiers = methodInfo.ReturnParameter.GetOptionalCustomModifiers();
 
             IsSpecialName = methodInfo.IsSpecialName;
             IsAbstract = methodInfo.IsAbstract;
@@ -144,16 +144,16 @@ namespace AdvancedDLSupport.Reflection
 
             var parameterNames = new List<string>();
             var parameterTypes = new List<Type>();
-            var parameterReqMod = new List<Type[]>();
-            var parameterOptMod = new List<Type[]>();
+            var parameterRequiredModifiers = new List<Type[]>();
+            var parameterOptionalModifiers = new List<Type[]>();
             var parameterAttributes = new List<ParameterAttributes>();
             var parameterCustomAttributes = new List<IEnumerable<CustomAttributeData>>();
             foreach (var parameter in methodInfo.GetParameters())
             {
                 parameterNames.Add(parameter.Name);
                 parameterTypes.Add(parameter.ParameterType);
-                parameterReqMod.Add(parameter.GetRequiredCustomModifiers());
-                parameterOptMod.Add(parameter.GetOptionalCustomModifiers());
+                parameterRequiredModifiers.Add(parameter.GetRequiredCustomModifiers());
+                parameterOptionalModifiers.Add(parameter.GetOptionalCustomModifiers());
 
                 var customAttributes = new List<CustomAttributeData>(parameter.GetCustomAttributesData());
 
@@ -185,8 +185,8 @@ namespace AdvancedDLSupport.Reflection
 
             ParameterTypes = parameterTypes;
             ParameterNames = parameterNames;
-            ParameterReqMod = parameterReqMod;
-            ParameterOptMod = parameterOptMod;
+            ParameterRequiredModifiers = parameterRequiredModifiers;
+            ParameterOptionalModifiers = parameterOptionalModifiers;
             ParameterAttributes = parameterAttributes;
             ParameterCustomAttributes = parameterCustomAttributes.Select(pl => pl.ToList()).ToList();
 
