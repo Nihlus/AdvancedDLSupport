@@ -231,7 +231,11 @@ namespace AdvancedDLSupport.Pipeline
                 Public | Final | Virtual | HideBySig | NewSlot,
                 CallingConventions.Standard,
                 interfaceDefinition.ReturnType,
-                interfaceDefinition.ParameterTypes.ToArray()
+                interfaceDefinition.ReturnParameterReqMod,
+                interfaceDefinition.ReturnParameterOptMod,
+                interfaceDefinition.ParameterTypes.ToArray(),
+                interfaceDefinition.ParameterReqMod.ToArray(),
+                interfaceDefinition.ParameterOptMod.ToArray()
             );
 
             // In the following blocks, which set of attributes to pass through is selected. The logic is as follows:
