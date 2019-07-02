@@ -14,8 +14,15 @@ platform:
 
 install:
   - ps: |
-      For ($i=0; $i -le 10; $i++) {
-        Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
+      while ($true) {
+        Try
+        {
+            Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
+            break
+        }
+        Catch
+        {
+        }
         Start-Sleep -s 3
       }
   - ps: .\scripts\appveyor-install-dotnet-32.ps1
