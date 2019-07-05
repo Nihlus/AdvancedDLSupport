@@ -1,5 +1,5 @@
-﻿//
-//  IIndirectCallLibrary.cs
+//
+//  DelegateLibraryDelegates.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -17,30 +17,30 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Runtime.InteropServices;
-
 #pragma warning disable SA1600, CS1591
+
+using System.Runtime.InteropServices;
 
 namespace AdvancedDLSupport.Tests.Data
 {
-    public interface IIndirectCallLibrary
+    public class DelegateLibraryDelegates
     {
-        int Multiply(int a, int b);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void Action();
 
-        int GetStructAValueByRef(ref TestStruct strct);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void ActionInt(int param);
 
-        [NativeSymbol(nameof(GetStructAValueByRef))]
-        int GetStructAValueByIn(in TestStruct strct);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int IntFunc();
 
-        int GetStructAValueByValue(TestStruct strct);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int IntFuncInt(int param);
 
-        ref TestStruct GetInitializedStructByRef(int a, int b);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void ActinIntInAction(ActionInt param);
 
-        TestStruct GetInitializedStructByValue(int a, int b);
-
-        TestStruct? GetNullTestStruct();
-
-        [return: MarshalAs(UnmanagedType.U1)]
-        bool IsTestStructNull(TestStruct? strct);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int IntFuncIntInFuncInt(IntFuncInt param1);
     }
 }

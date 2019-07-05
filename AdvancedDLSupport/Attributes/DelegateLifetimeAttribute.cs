@@ -1,5 +1,5 @@
-﻿//
-//  IPlatformLoader.cs
+//
+//  DelegateLifetimeAttribute.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -17,15 +17,29 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Loaders
+namespace AdvancedDLSupport
 {
     /// <summary>
-    /// Represents a class which can load libraries and symbols on a specific platform.
+    /// The delegate lifetime attribute.
     /// </summary>
-    [PublicAPI]
-    public interface IPlatformLoader : ISymbolLoader, ILibraryLoader
+    [PublicAPI, AttributeUsage(AttributeTargets.Parameter | AttributeTargets.ReturnValue)]
+    public class DelegateLifetimeAttribute : Attribute
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DelegateLifetimeAttribute"/> class.
+        /// </summary>
+        /// <param name="lifetime">The delegate lifetime.</param>
+        public DelegateLifetimeAttribute(DelegateLifetime lifetime)
+        {
+            Lifetime = lifetime;
+        }
+
+        /// <summary>
+        /// Gets the delegate lifetime.
+        /// </summary>
+        public DelegateLifetime Lifetime { get; }
     }
 }

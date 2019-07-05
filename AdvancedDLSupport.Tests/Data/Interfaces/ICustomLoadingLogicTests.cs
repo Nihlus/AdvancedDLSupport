@@ -1,5 +1,5 @@
 ﻿//
-//  IIndirectCallLibrary.cs
+//  ICustomLoadingLogicTests.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -17,30 +17,14 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Runtime.InteropServices;
-
 #pragma warning disable SA1600, CS1591
 
 namespace AdvancedDLSupport.Tests.Data
 {
-    public interface IIndirectCallLibrary
+    public interface ICustomLoadingLogicTests
     {
-        int Multiply(int a, int b);
+        int ReturnsOne();
 
-        int GetStructAValueByRef(ref TestStruct strct);
-
-        [NativeSymbol(nameof(GetStructAValueByRef))]
-        int GetStructAValueByIn(in TestStruct strct);
-
-        int GetStructAValueByValue(TestStruct strct);
-
-        ref TestStruct GetInitializedStructByRef(int a, int b);
-
-        TestStruct GetInitializedStructByValue(int a, int b);
-
-        TestStruct? GetNullTestStruct();
-
-        [return: MarshalAs(UnmanagedType.U1)]
-        bool IsTestStructNull(TestStruct? strct);
+        int ReturnsTwo();
     }
 }

@@ -130,6 +130,13 @@ namespace AdvancedDLSupport.Reflection
         }
 
         /// <inheritdoc />
+        public string GetFullUnmangledNativeEntrypoint()
+        {
+            var transformer = SymbolTransformer.Default;
+            return transformer.GetTransformedUnmangledSymbol(MetadataType, this);
+        }
+
+        /// <inheritdoc />
         public string GetNativeEntrypoint()
         {
             var metadataAttribute = GetCustomAttribute<NativeSymbolAttribute>()

@@ -1,5 +1,5 @@
 ﻿//
-//  IPlatformLoader.cs
+//  NativeCollectionLengthAttribute.cs
 //
 //  Copyright (c) 2018 Firwood Software
 //
@@ -17,15 +17,27 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Loaders
+namespace AdvancedDLSupport
 {
     /// <summary>
-    /// Represents a class which can load libraries and symbols on a specific platform.
+    /// Provides metadata about the size of a collection returned from a native function.
     /// </summary>
-    [PublicAPI]
-    public interface IPlatformLoader : ISymbolLoader, ILibraryLoader
+    [PublicAPI, AttributeUsage(AttributeTargets.ReturnValue, AllowMultiple = false, Inherited = false)]
+    public class NativeCollectionLengthAttribute : Attribute
     {
+        /// <summary>
+        /// Gets the number of elements in the collection.
+        /// </summary>
+        public int Length { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NativeCollectionLengthAttribute"/> class.
+        /// </summary>
+        /// <param name="length">The number of elements in the collection returned. </param>
+        public NativeCollectionLengthAttribute(int length)
+            => Length = length;
     }
 }
