@@ -2,12 +2,19 @@
     <Import Project="CMake.targets"/>
 
     <!-- Windows-specific properties -->
-    <PropertyGroup Condition="'$(BuildArchitecture)' == 'x86'">
-        <CMakeGenerator>"Visual Studio 16 2019" -A Win32</CMakeGenerator>
+    <PropertyGroup>
+        <CMakeGeneratorx86>"Visual Studio 15 2017"</CMakeGeneratorx86>
+        <CMakeGeneratorx64>"Visual Studio 15 2017 Win64"</CMakeGeneratorx64>
+        <CMakeBuildDirx86>$(CMakeBuildDir)-x86</CMakeBuildDirx86>
+        <CMakeBuildDirx64>$(CMakeBuildDir)-x64</CMakeBuildDirx64>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(BuildArchitecture)' == 'x64'">
-        <CMakeGenerator>"Visual Studio 16 2019" -A x64</CMakeGenerator>
+    <PropertyGroup Condition="'$(Platform)' == 'x86'">
+        <CMakeGenerator>"Visual Studio 15 2017"</CMakeGenerator>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Platform)' == 'x64' Or '$(Platform)' == 'AnyCPU'">
+        <CMakeGenerator>"Visual Studio 15 2017 Win64"</CMakeGenerator>
     </PropertyGroup>
 
     <Target Name="CompileWinTestLibraries" AfterTargets="AfterBuild">

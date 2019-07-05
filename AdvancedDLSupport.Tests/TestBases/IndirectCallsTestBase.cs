@@ -56,15 +56,6 @@ namespace AdvancedDLSupport.Tests.TestBases
         }
 
         [Fact]
-        public void CanCallFunctionWithByInParameter()
-        {
-            var data = new TestStruct { A = 5, B = 15 };
-            var result = Library.GetStructAValueByIn(data);
-
-            Assert.Equal(data.A, result);
-        }
-
-        [Fact]
         public void CanCallFunctionWithByValueParameter()
         {
             var data = new TestStruct { A = 5, B = 15 };

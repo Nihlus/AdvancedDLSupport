@@ -43,11 +43,5 @@ JIT code optimizations. This is enabled by default, but may produce unexpected r
 You can override the algorithms used to resolve the path to the library that DLSupport will load by passing an 
 `ILibraryPathResolver` to the implementation builder.
 
-### Non-public Interfaces
-In some cases, it may be desirable to not expose the native interface you use to the end user. While naively just making the interface internal or private will cause problems, you can use internal interfaces with ADL. Simply attach the `InternalsVisibleTo` attribute to your assembly and name ADL's dynamic assembly.
-```c#
-[assembly: InternalsVisibleTo("DLSupportDynamicAssembly")]
-```
-
 [1]: http://www.mono-project.com/docs/advanced/pinvoke/dllmap
 [2]: indirect-calling.md

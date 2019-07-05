@@ -1,4 +1,4 @@
-# AdvancedDLSupport
+# AdvanceDLSupport
 Alternative approach to your usual P/Invoke!
 
 [![Join the chat at https://discord.gg/fDy5Vhb](https://img.shields.io/badge/chat-on%20discord-7289DA.svg)](https://discord.gg/fDy5Vhb)
@@ -113,16 +113,16 @@ AdvancedDLSupport's public release is licensed under the [GNU Lesser General Pub
 See the [LICENSE][13] for details. Without the support of the open-source movement, it would never have existed.
 
 
-[linux-x64-debug]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvancedDLSupport/branches/master/1
-[linux-x64-release]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvancedDLSupport/branches/master/2
-[linux-anycpu-debug]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvancedDLSupport/branches/master/3
-[linux-anycpu-release]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvancedDLSupport/branches/master/4
-[mac-x64-debug]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvancedDLSupport/branches/master/5
-[mac-x64-release]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvancedDLSupport/branches/master/6
-[mac-anycpu-debug]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvancedDLSupport/branches/master/7
-[mac-anycpu-release]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvancedDLSupport/branches/master/8
+[linux-x64-debug]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvanceDLSupport/branches/master/1
+[linux-x64-release]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvanceDLSupport/branches/master/2
+[linux-anycpu-debug]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvanceDLSupport/branches/master/3
+[linux-anycpu-release]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvanceDLSupport/branches/master/4
+[mac-x64-debug]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvanceDLSupport/branches/master/5
+[mac-x64-release]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvanceDLSupport/branches/master/6
+[mac-anycpu-debug]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvanceDLSupport/branches/master/7
+[mac-anycpu-release]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvanceDLSupport/branches/master/8
  
-[2]: https://travis-ci.org/Firwood-Software/AdvancedDLSupport
+[2]: https://travis-ci.org/Firwood-Software/AdvanceDLSupport
 
 [win-x86-debug]: https://appveyor-matrix-badges.herokuapp.com/repos/Nihlus/advancedlsupport-dnwes/branch/master/1
 [win-x64-debug]: https://appveyor-matrix-badges.herokuapp.com/repos/Nihlus/advancedlsupport-dnwes/branch/master/2
@@ -135,13 +135,13 @@ See the [LICENSE][13] for details. Without the support of the open-source moveme
 
 [build-not-found]: https://img.shields.io/badge/build-not%20found-lightgrey.svg
 
-[codecov-coverage]: https://codecov.io/gh/Firwood-Software/AdvancedDLSupport/branch/master/graph/badge.svg
-[codecov]: https://codecov.io/gh/Firwood-Software/AdvancedDLSupport
+[codecov-coverage]: https://codecov.io/gh/Firwood-Software/AdvanceDLSupport/branch/master/graph/badge.svg
+[codecov]: https://codecov.io/gh/Firwood-Software/AdvanceDLSupport
 
 [7]: https://www.myget.org/BuildSource/Badge/advancedlsupport?identifier=81802e0b-f4f6-4939-93a9-9edb54b134e6
 [8]: https://www.myget.org
 
-[9]: https://firwood-software.github.io/AdvancedDLSupport
+[9]: https://firwood-software.github.io/AdvanceDLSupport
 [10]: https://www.myget.org/gallery/advancedlsupport
 
 [quickstart]: docs/quickstart.md

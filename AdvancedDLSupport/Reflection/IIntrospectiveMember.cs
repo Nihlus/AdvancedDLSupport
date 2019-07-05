@@ -56,7 +56,6 @@ namespace AdvancedDLSupport.Reflection
         /// transformations from <see cref="NativeSymbolsAttribute"/> applied.
         /// </summary>
         /// <returns>The native entrypoint.</returns>
-        [PublicAPI, Pure, NotNull]
         string GetTransformedNativeEntrypoint();
 
         /// <summary>

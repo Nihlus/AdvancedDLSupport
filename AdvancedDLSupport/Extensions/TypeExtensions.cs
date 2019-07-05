@@ -32,16 +32,6 @@ namespace AdvancedDLSupport.Extensions
     internal static class TypeExtensions
     {
         /// <summary>
-        /// Determines whether the given type is a delegate type.
-        /// </summary>
-        /// <param name="this">The type.</param>
-        /// <returns>true if the type is a delegate type; Otherwise, false.</returns>
-        public static bool IsDelegate([NotNull] this Type @this)
-        {
-            return typeof(Delegate).IsAssignableFrom(@this);
-        }
-
-        /// <summary>
         /// Determines whether the given type is a generic delegate type - that is, a <see cref="Func{TResult}"/> or
         /// <see cref="Action"/>.
         /// </summary>

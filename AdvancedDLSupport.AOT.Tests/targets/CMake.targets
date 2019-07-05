@@ -1,5 +1,4 @@
 ﻿<Project>
-    <Import Project="$(MSBuildProjectDirectory)\..\props\msbuild-arch.props" />
     <!-- Common properties -->
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
         <CMakeBuildDir>$(MSBuildProjectDirectory)\c\cmake-build-debug</CMakeBuildDir>
@@ -10,11 +9,11 @@
 
     <!-- Common targets -->
     <Target Name="InitCMake" AfterTargets="BeforeBuild" Condition="!Exists('$(CMakeBuildDir)')">
-        <MakeDir Directories="$(CMakeBuildDir)" />
-        <Exec Command="cmake -G $(CMakeGenerator) '-DTARGET_FRAMEWORKS=$(TargetFrameworks)' -DBASE_INSTALL_PATH=$([System.IO.Path]::GetDirectoryName($(OutputPath.TrimEnd('/').TrimEnd('\\')))) -DPROJECT_PATH=$(MSBuildProjectDirectory) -DBUILD_PLATFORM=$(BuildArchitecture) .." WorkingDirectory="$(CMakeBuildDir)" />
+        <Exec Command="mkdir $(CMakeBuildDir)" />
+        <Exec Command="cmake -G $(CMakeGenerator) '-DTARGET_FRAMEWORKS=$(TargetFrameworks)' -DBASE_INSTALL_PATH=$([System.IO.Path]::GetDirectoryName($(OutputPath.TrimEnd('/').TrimEnd('\\')))) -DPROJECT_PATH=$(MSBuildProjectDirectory) -DBUILD_PLATFORM=$(Platform) .." WorkingDirectory="$(CMakeBuildDir)" />
     </Target>
 
-    <Target Name="CleanCMake" AfterTargets="AfterClean">
-        <RemoveDir Directories="$(CMakeBuildDir)" ContinueOnError="True" />
+    <Target Name="CleanCMake" AfterTargets="AfterClean" Condition="Exists('$(CMakeBuildDir)')" >
+        <RemoveDir Directories="$(CMakeBuildDir)"/>
     </Target>
 </Project>

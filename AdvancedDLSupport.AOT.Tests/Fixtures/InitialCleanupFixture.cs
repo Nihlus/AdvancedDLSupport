@@ -17,7 +17,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System;
 using System.IO;
 
 #pragma warning disable SA1600, CS1591
@@ -31,14 +30,7 @@ namespace AdvancedDLSupport.AOT.Tests.Fixtures
             var targetDirectory = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "aot-test"));
             if (targetDirectory.Exists)
             {
-                try
-                {
-                    targetDirectory.Delete(true);
-                }
-                catch
-                {
-                    // TODO: currently workaround, as files created by other tests in the same run, aren't closed yet.
-                }
+                targetDirectory.Delete(true);
             }
         }
     }

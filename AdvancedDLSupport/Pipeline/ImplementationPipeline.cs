@@ -164,22 +164,6 @@ namespace AdvancedDLSupport.Pipeline
                 _constructorIL,
                 _options
             );
-
-            yield return new DelegateWrapper
-            (
-                _targetModule,
-                TargetType,
-                _constructorIL,
-                _options
-            );
-
-            yield return new SpanMarshallingWrapper
-            (
-                _targetModule,
-                TargetType,
-                _constructorIL,
-                _options
-            );
         }
 
         /// <summary>
@@ -231,11 +215,7 @@ namespace AdvancedDLSupport.Pipeline
                 Public | Final | Virtual | HideBySig | NewSlot,
                 CallingConventions.Standard,
                 interfaceDefinition.ReturnType,
-                interfaceDefinition.ReturnParameterRequiredModifiers,
-                interfaceDefinition.ReturnParameterOptionalModifiers,
-                interfaceDefinition.ParameterTypes.ToArray(),
-                interfaceDefinition.ParameterRequiredModifiers.ToArray(),
-                interfaceDefinition.ParameterOptionalModifiers.ToArray()
+                interfaceDefinition.ParameterTypes.ToArray()
             );
 
             // In the following blocks, which set of attributes to pass through is selected. The logic is as follows:

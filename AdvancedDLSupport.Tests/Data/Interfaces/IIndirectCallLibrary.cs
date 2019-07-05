@@ -29,9 +29,6 @@ namespace AdvancedDLSupport.Tests.Data
 
         int GetStructAValueByRef(ref TestStruct strct);
 
-        [NativeSymbol(nameof(GetStructAValueByRef))]
-        int GetStructAValueByIn(in TestStruct strct);
-
         int GetStructAValueByValue(TestStruct strct);
 
         ref TestStruct GetInitializedStructByRef(int a, int b);

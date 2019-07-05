@@ -17,10 +17,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System;
-using System.Collections;
 using System.IO;
-using System.Linq.Expressions;
 using System.Reflection;
 using AdvancedDLSupport.AOT.Tests.Data.Interfaces;
 using AdvancedDLSupport.AOT.Tests.TestBases;
@@ -34,30 +31,6 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
     {
         public class DiscoverCompiledTypes : NativeLibraryBuilderTestBase
         {
-            private static readonly Action ClearCache;
-
-            static DiscoverCompiledTypes()
-            {
-                var clearMethod = typeof(IDictionary).GetMethod(
-                    nameof(IDictionary.Clear),
-                    BindingFlags.Public | BindingFlags.Instance);
-                var typeCacheField = typeof(NativeLibraryBuilder).GetField(
-                    "TypeCache", BindingFlags.NonPublic | BindingFlags.Static);
-
-                if (typeCacheField == null || clearMethod == null)
-                {
-                    Assert.True(false, "ClearCache discovery needs to be fixed!");
-                    return;
-                }
-
-                ClearCache = Expression.Lambda<Action>(Expression.Call(Expression.Field(null, typeCacheField), clearMethod)).Compile();
-            }
-
-            public DiscoverCompiledTypes()
-            {
-                ClearCache();
-            }
-
             [Fact]
             public void CanDiscoverPrecompiledTypes()
             {
@@ -65,10 +38,7 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
                 Builder.WithSourceAssembly(GetType().Assembly);
                 var result = Builder.Build(OutputDirectory);
 
-                var searchPattern = $"*{Path.GetFileNameWithoutExtension(result)}*.dll";
-
-                searchPattern = Path.Combine(Path.GetDirectoryName(result), searchPattern);
-
+                var searchPattern = $"*{result}*.dll";
                 NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
             }
 
@@ -78,10 +48,8 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
                 // Pregenerate the types
                 Builder.WithSourceAssembly(GetType().Assembly);
                 var result = Builder.Build(OutputDirectory);
-                var searchPattern = $"*{Path.GetFileNameWithoutExtension(result)}*.dll";
-                searchPattern = Path.Combine(Path.GetDirectoryName(result), searchPattern);
 
-                foreach (var asm in Directory.GetFiles(OutputDirectory, searchPattern))
+                foreach (var asm in Directory.GetFiles(OutputDirectory, $"*{result}*.dll"))
                 {
                     NativeLibraryBuilder.DiscoverCompiledTypes(File.OpenRead(asm));
                 }
@@ -93,8 +61,8 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
                 // Pregenerate the types
                 Builder.WithSourceAssembly(GetType().Assembly);
                 var result = Builder.Build(OutputDirectory);
-                var searchPattern = $"*{Path.GetFileNameWithoutExtension(result)}*.dll";
-                searchPattern = Path.Combine(Path.GetDirectoryName(result), searchPattern);
+
+                var searchPattern = $"*{result}*.dll";
                 NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
 
                 var library = LibraryBuilder.ActivateInterface<IAOTLibrary>("AOTTests");
@@ -110,9 +78,8 @@ namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
                 // Pregenerate the types
                 Builder.WithSourceAssembly(GetType().Assembly);
                 var result = Builder.Build(OutputDirectory);
-                var searchPattern = $"*{Path.GetFileNameWithoutExtension(result)}*.dll";
-                searchPattern = Path.Combine(Path.GetDirectoryName(result), searchPattern);
-                foreach (var asm in Directory.GetFiles(OutputDirectory, searchPattern))
+
+                foreach (var asm in Directory.GetFiles(OutputDirectory, $"*{result}*.dll"))
                 {
                     NativeLibraryBuilder.DiscoverCompiledTypes(File.OpenRead(asm));
                 }

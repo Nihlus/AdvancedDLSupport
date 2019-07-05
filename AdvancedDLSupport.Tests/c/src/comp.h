@@ -5,7 +5,6 @@
 #ifndef C_WINCOMP_H
 #define C_WINCOMP_H
 
-#include <stdint.h>
 #if __APPLE__ && __MACH__
     #include <stddef.h>
     #include <stdint.h>
@@ -18,6 +17,7 @@
 
 #if _MSC_VER
     #include <Windows.h>
+    #include <stdint.h>
     #include <Tchar.h>
 
     typedef const wchar_t* BCSTR;
