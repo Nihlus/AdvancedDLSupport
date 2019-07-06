@@ -5,6 +5,8 @@ os:
   - linux
   - osx
 
+dist: bionic
+
 env:
   # - Configuration=Debug Platform=x86
   # - Configuration=Release Platform=x86
