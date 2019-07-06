@@ -19,6 +19,7 @@ addons:
   apt:
     packages:
       - gcc-multilib
+      - g++-multilib
 
 mono: latest
 dotnet: 2.2.300
