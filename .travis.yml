@@ -19,7 +19,7 @@ addons:
       - gcc-multilib
 
 mono: latest
-dotnet: latest
+dotnet: 2.2.300
 
 before_install:
   - git config --global url."https://github.com/".insteadOf "git@github.com:"
