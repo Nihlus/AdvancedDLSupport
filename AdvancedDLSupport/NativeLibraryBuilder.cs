@@ -118,6 +118,28 @@ namespace AdvancedDLSupport
         }
 
         /// <summary>
+        /// Overrides the default symbol loader for this instance of <see cref="NativeLibraryBuilder"/>.
+        /// </summary>
+        /// <param name="factory">Factory to create the overriding symbol loader.</param>
+        /// <returns>This instance, with the symbol loader overridden.</returns>
+        public NativeLibraryBuilder WithSymbolLoader(Func<ISymbolLoader, ISymbolLoader> factory)
+        {
+            _customSymbolLoader = factory(PlatformLoaderBase.PlatformLoader);
+            return this;
+        }
+
+        /// <summary>
+        /// Overrides the default library loader for this instance of <see cref="NativeLibraryBuilder"/>.
+        /// </summary>
+        /// <param name="factory">Factory to create the overriding library loader.</param>
+        /// <returns>This instance of <see cref="NativeLibraryBuilder"/>.</returns>
+        public NativeLibraryBuilder WithLibraryLoader(Func<ILibraryLoader, ILibraryLoader> factory)
+        {
+            _customLibraryLoader = factory(PlatformLoaderBase.PlatformLoader);
+            return this;
+        }
+
+        /// <summary>
         /// Scans the given directory for assemblies, attempting to discover pregenerated native binding types.
         /// </summary>
         /// <param name="searchDirectory">The directory to search.</param>
@@ -575,20 +597,26 @@ namespace AdvancedDLSupport
         /// <param name="finalType">The constructed anonymous type.</param>
         /// <param name="library">The path to or name of the library.</param>
         /// <param name="options">The generator options.</param>
+        /// <param name="libraryLoader">The library loader to use.</param>
+        /// <param name="symbolLoader">The symbol loader to use.</param>
         /// <returns>An instance of the anonymous type.</returns>
         [NotNull]
         private object CreateAnonymousImplementationInstance
         (
             [NotNull] Type finalType,
             [CanBeNull] string library,
-            ImplementationOptions options
+            ImplementationOptions options,
+            ILibraryLoader libraryLoader = null,
+            ISymbolLoader symbolLoader = null
         )
         {
             return Activator.CreateInstance
             (
                 finalType,
                 library,
-                options
+                options,
+                libraryLoader,
+                symbolLoader
             );
         }
 
