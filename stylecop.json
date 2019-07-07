@@ -25,7 +25,8 @@
         "namingRules" : {
             "allowCommonHungarianPrefixes" : true,
             "allowedHungarianPrefixes" : [
-                "gl"
+                "gl",
+                "il"
             ]
         },
         "maintainabilityRules" : {
