@@ -32,7 +32,6 @@ using StrictEmit;
 
 using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 using static AdvancedDLSupport.ImplementationOptions;
-using static System.Reflection.CallingConventions;
 
 // ReSharper disable BitwiseOperatorOnEnumWithoutFlags
 namespace AdvancedDLSupport.ImplementationGenerators
@@ -44,9 +43,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
     {
         /// <inheritdoc/>
         public override GeneratorComplexity Complexity => OptionDependent | Terminating;
-
-        [CanBeNull]
-        private readonly MethodInfo _calliOverload;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IndirectCallMethodImplementationGenerator"/> class.
@@ -64,11 +60,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
         )
             : base(targetModule, targetType, targetTypeConstructorIL, options)
         {
-            _calliOverload = typeof(ILGenerator).GetMethod
-            (
-                nameof(ILGenerator.EmitCalli),
-                new[] { typeof(OpCode), typeof(CallingConvention), typeof(Type), typeof(Type[]) }
-            );
         }
 
         /// <inheritdoc/>

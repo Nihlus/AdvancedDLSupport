@@ -28,7 +28,7 @@ namespace AdvancedDLSupport.Extensions
     /// <summary>
     /// Extension methods for the <see cref="ILGenerator"/> class.
     /// </summary>
-    public static class ILGeneratorExtensions
+    internal static class ILGeneratorExtensions
     {
         /// <summary>
         /// Holds the real EmitCalli overload, if it exists on this runtime.
@@ -172,6 +172,7 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="callingConvention">The unmanaged calling convention to use.</param>
         /// <param name="returnType">The method's signature.</param>
         /// <param name="parameterTypes">The method's parameter types.</param>
+        /// <remarks>This method is based on the .NET Core 2.1 implementation of EmitCalli.</remarks>
         public static void EmitCalli
         (
             this ILGenerator @this,
@@ -191,7 +192,6 @@ namespace AdvancedDLSupport.Extensions
                 throw new PlatformNotSupportedException("Calli is not supported on this runtime.");
             }
 
-            var parameterCount = parameterTypes?.Length ?? 0;
             var sig = GetMethodSignatureHelper(callingConvention, returnType);
 
             if (!(parameterTypes is null))
@@ -202,22 +202,7 @@ namespace AdvancedDLSupport.Extensions
                 }
             }
 
-            // Push one if we have a return type
-            var stackChange = 0;
-            if (returnType != typeof(void))
-            {
-                ++stackChange;
-            }
-
-            // Pop off the arguments
-            stackChange -= parameterCount;
-            UpdateStackSize(@this, OpCodes.Calli, stackChange);
-
-            EnsureCapacity(@this, 7);
-            @this.Emit(OpCodes.Calli);
-
-            var token = GetTokenForSig(@this, sig.GetSignature());
-            PutInteger4(@this, token);
+            @this.Emit(OpCodes.Calli, sig);
         }
     }
 }
