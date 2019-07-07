@@ -89,7 +89,6 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="callingConvention">The unmanaged calling convention to use.</param>
         /// <param name="returnType">The method's signature.</param>
         /// <param name="parameterTypes">The method's parameter types.</param>
-        /// <remarks>This method is based on the .NET Core 2.1 implementation of EmitCalli.</remarks>
         public static void EmitCalli
         (
             this ILGenerator @this,
