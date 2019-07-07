@@ -37,29 +37,6 @@ namespace AdvancedDLSupport.Extensions
         private static readonly Action<ILGenerator, OpCode, CallingConvention, Type, Type[]> RealEmitCalli;
 
         /// <summary>
-        /// Holds a delegate wrapping the internal UpdateStackSize method.
-        /// </summary>
-        [CanBeNull]
-        private static readonly Action<ILGenerator, OpCode, int> UpdateStackSize;
-
-        /// <summary>
-        /// Holds a delegate wrapping the internal EnsureCapacity method.
-        /// </summary>
-        [CanBeNull]
-        private static readonly Action<ILGenerator, int> EnsureCapacity;
-
-        /// <summary>
-        /// Holds a delegate wrapping the internal PutInteger4 method.
-        /// </summary>
-        [CanBeNull]
-        private static readonly Action<ILGenerator, int> PutInteger4;
-
-        /// <summary>
-        /// Holds a delegate wrapping the internal GetTokenForSig method.
-        /// </summary>
-        private static readonly Func<ILGenerator, byte[], int> GetTokenForSig;
-
-        /// <summary>
         /// Holds a delegate wrapping an action to retrieve an unmanaged signature helper.
         /// </summary>
         private static readonly Func<CallingConvention, Type, SignatureHelper> GetMethodSignatureHelper;
@@ -86,82 +63,22 @@ namespace AdvancedDLSupport.Extensions
                 return;
             }
 
-            var updateStackSize = ilGeneratorType.GetMethod
-            (
-                "UpdateStackSize",
-                BindingFlags.Instance | BindingFlags.NonPublic,
-                null,
-                new[] { typeof(OpCode), typeof(int) },
-                null
-            );
-
-            var ensureCapacity = ilGeneratorType.GetMethod
-            (
-                "EnsureCapacity",
-                BindingFlags.Instance | BindingFlags.NonPublic,
-                null,
-                new[] { typeof(int) },
-                null
-            );
-
-            var putInteger4 = ilGeneratorType.GetMethod
-            (
-                "PutInteger4",
-                BindingFlags.Instance | BindingFlags.NonPublic,
-                null,
-                new[] { typeof(int) },
-                null
-            );
-
             var getMethodSignatureHelper = typeof(SignatureHelper).GetMethod
             (
                 nameof(SignatureHelper.GetMethodSigHelper),
                 new[] { typeof(CallingConvention), typeof(Type) }
             );
 
-            var getTokenForSig = ilGeneratorType.GetMethod
-            (
-                "GetTokenForSig",
-                BindingFlags.Instance | BindingFlags.NonPublic,
-                null,
-                new[] { typeof(byte[]) },
-                null
-            );
-
-            var lacksAnyRequiredMethod = updateStackSize is null ||
-                                         ensureCapacity is null ||
-                                         putInteger4 is null ||
-                                         getMethodSignatureHelper is null ||
-                                         getTokenForSig is null;
-
-            if (lacksAnyRequiredMethod)
+            if (getMethodSignatureHelper is null)
             {
                 return;
             }
-
-            var updateStackSizeDelegateType = typeof(Action<ILGenerator, OpCode, int>);
-            UpdateStackSize = (Action<ILGenerator, OpCode, int>)Delegate.CreateDelegate
-            (
-                updateStackSizeDelegateType,
-                updateStackSize
-            );
-
-            var simpleIntDelegateType = typeof(Action<ILGenerator, int>);
-            EnsureCapacity = (Action<ILGenerator, int>)Delegate.CreateDelegate(simpleIntDelegateType, ensureCapacity);
-            PutInteger4 = (Action<ILGenerator, int>)Delegate.CreateDelegate(simpleIntDelegateType, putInteger4);
 
             var getHelperDelegateType = typeof(Func<CallingConvention, Type, SignatureHelper>);
             GetMethodSignatureHelper = (Func<CallingConvention, Type, SignatureHelper>)Delegate.CreateDelegate
             (
                 getHelperDelegateType,
                 getMethodSignatureHelper
-            );
-
-            var getTokenForSigDelegateType = typeof(Func<ILGenerator, byte[], int>);
-            GetTokenForSig = (Func<ILGenerator, byte[], int>)Delegate.CreateDelegate
-            (
-                getTokenForSigDelegateType,
-                getTokenForSig
             );
         }
 
@@ -187,7 +104,7 @@ namespace AdvancedDLSupport.Extensions
                 return;
             }
 
-            if (EnsureCapacity is null || PutInteger4 is null || UpdateStackSize is null || GetMethodSignatureHelper is null)
+            if (GetMethodSignatureHelper is null)
             {
                 throw new PlatformNotSupportedException("Calli is not supported on this runtime.");
             }
