@@ -23,6 +23,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
+using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
@@ -31,7 +32,6 @@ using StrictEmit;
 
 using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 using static AdvancedDLSupport.ImplementationOptions;
-using static System.Reflection.CallingConventions;
 
 // ReSharper disable BitwiseOperatorOnEnumWithoutFlags
 namespace AdvancedDLSupport.ImplementationGenerators
@@ -43,9 +43,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
     {
         /// <inheritdoc/>
         public override GeneratorComplexity Complexity => OptionDependent | Terminating;
-
-        [CanBeNull]
-        private readonly MethodInfo _calliOverload;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IndirectCallMethodImplementationGenerator"/> class.
@@ -63,11 +60,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
         )
             : base(targetModule, targetType, targetTypeConstructorIL, options)
         {
-            _calliOverload = typeof(ILGenerator).GetMethod
-            (
-                nameof(ILGenerator.EmitCalli),
-                new[] { typeof(OpCode), typeof(CallingConvention), typeof(Type), typeof(Type[]) }
-            );
         }
 
         /// <inheritdoc/>
@@ -167,18 +159,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             GenerateSymbolPush(methodIL, backingField);
 
-            // HACK: Workaround for missing overload of EmitCalli
-            if (_calliOverload is null)
-            {
-                // Use the existing overload - things may break
-                methodIL.EmitCalli(OpCodes.Calli, Standard, method.ReturnType, method.ParameterTypes.ToArray(), null);
-            }
-            else
-            {
-                // Use the correct overload via reflection
-                _calliOverload.Invoke(methodIL, new object[] { OpCodes.Calli, callingConvention, method.ReturnType, method.ParameterTypes.ToArray() });
-            }
-
+            methodIL.EmitCalli(callingConvention, method.ReturnType, method.ParameterTypes.ToArray());
             methodIL.EmitReturn();
         }
     }
