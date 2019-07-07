@@ -15,7 +15,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>AdvancedDLSupport</PackageId>
-    <PackageReleaseNotes>Reduce dependency clutter, and allow multiple implementations in combo interfaces.</PackageReleaseNotes>
+    <PackageReleaseNotes>Throw if no proper calli overload could be found.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="AdvancedDLSupport.ExternalAnnotations.xml">
