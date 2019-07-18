@@ -70,11 +70,10 @@ namespace AdvancedDLSupport.AOT
 
             OutputFilename = $"{DynamicAssemblyName}_{Guid.NewGuid().ToString().ToLowerInvariant()}.dll";
 
-            _dynamicAssembly = AppDomain.CurrentDomain.DefineDynamicAssembly
+            _dynamicAssembly = AssemblyBuilder.DefineDynamicAssembly
             (
                 new AssemblyName(DynamicAssemblyName),
-                AssemblyBuilderAccess.RunAndSave,
-                outputDirectory
+                AssemblyBuilderAccess.RunAndSave
             );
 
             if (!debuggable)

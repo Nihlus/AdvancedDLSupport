@@ -62,6 +62,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedDLSupport.AOT.Tests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedDLSupport.Benchmark", "AdvancedDLSupport.Benchmark\AdvancedDLSupport.Benchmark.csproj", "{D9633011-4D7B-4285-B70C-D99EE6DA52DF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDLSupport.AOT.Tasks", "AdvancedDLSupport.AOT.Tasks\AdvancedDLSupport.AOT.Tasks.csproj", "{203702A9-104F-4E76-A807-A53F97211334}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -156,6 +158,18 @@ Global
 		{D9633011-4D7B-4285-B70C-D99EE6DA52DF}.Release|x64.Build.0 = Release|Any CPU
 		{D9633011-4D7B-4285-B70C-D99EE6DA52DF}.Release|x86.ActiveCfg = Release|Any CPU
 		{D9633011-4D7B-4285-B70C-D99EE6DA52DF}.Release|x86.Build.0 = Release|Any CPU
+		{203702A9-104F-4E76-A807-A53F97211334}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{203702A9-104F-4E76-A807-A53F97211334}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{203702A9-104F-4E76-A807-A53F97211334}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{203702A9-104F-4E76-A807-A53F97211334}.Debug|x64.Build.0 = Debug|Any CPU
+		{203702A9-104F-4E76-A807-A53F97211334}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{203702A9-104F-4E76-A807-A53F97211334}.Debug|x86.Build.0 = Debug|Any CPU
+		{203702A9-104F-4E76-A807-A53F97211334}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{203702A9-104F-4E76-A807-A53F97211334}.Release|Any CPU.Build.0 = Release|Any CPU
+		{203702A9-104F-4E76-A807-A53F97211334}.Release|x64.ActiveCfg = Release|Any CPU
+		{203702A9-104F-4E76-A807-A53F97211334}.Release|x64.Build.0 = Release|Any CPU
+		{203702A9-104F-4E76-A807-A53F97211334}.Release|x86.ActiveCfg = Release|Any CPU
+		{203702A9-104F-4E76-A807-A53F97211334}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

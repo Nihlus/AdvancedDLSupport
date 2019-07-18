@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>net461</TargetFrameworks>
     <DefineConstants>$(DefineConstants);JETBRAINS_ANNOTATIONS</DefineConstants>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -9,10 +8,10 @@
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU;x86;x64</Platforms>
     <Prefer32bit>false</Prefer32bit>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
   <PropertyGroup>
-    <Title>AdvancedDLSupport.AOT</Title>
-    <Version>2.0.0</Version>
+    <Version>3.0.0</Version>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>AdvancedDLSupport.AOT</PackageId>
@@ -28,9 +27,9 @@
     <Reference Include="System.Reflection.Emit" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.2.1" />
-    <PackageReference Include="NLog" Version="4.5.3" />
-    <PackageReference Include="StrictEmit" Version="2.4.2" PrivateAssets="Compile;Build;Analyzers;ContentFiles"/>
+    <PackageReference Include="CommandLineParser" Version="2.5.0" />
+    <PackageReference Include="NLog" Version="4.6.5" />
+    <PackageReference Include="StrictEmit" Version="2.4.2" PrivateAssets="Compile;Build;Analyzers;ContentFiles" />
     <PackageReference Include="JetBrains.Annotations" Version="11.1.0" PrivateAssets="all" />
     <PackageReference Include="JetBrainsAnnotations.Fody" Version="2.2.0" PrivateAssets="all" />
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />

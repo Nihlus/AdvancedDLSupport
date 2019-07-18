@@ -43,9 +43,6 @@ namespace AdvancedDLSupport.AOT
         [NotNull]
         private static ILogger _log = LogManager.GetCurrentClassLogger();
 
-        [NotNull]
-        private static object _fileCopyLock = new object();
-
         [NotNull, ItemNotNull]
         private List<Assembly> SourceAssemblies { get; }
 

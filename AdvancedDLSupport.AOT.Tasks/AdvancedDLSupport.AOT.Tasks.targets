@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup Condition="'$(AOTOutputDirectory)' == ''">
+    <AOTOutputDirectory>adl-aot</AOTOutputDirectory>
+  </PropertyGroup>
+  <Target Name="IncludeAOTAssemblies" BeforeTargets="BeforeBuild">
+    <ItemGroup>
+      <AdditionalFiles Include="$(TargetDir)/$(AOTOutputDirectory)/*.dll" InProject="false" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+  </Target>
+  <Target Name="BuildAOTAssemblies" DependsOnTargets="Build">
+    <GenerateDLDynamicAssemblies Input="$(TargetPath)" Output="$(TargetDir)/$(AOTOutputDirectory)" />
+  </Target>
+</Project>

@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+    <DefineConstants>$(DefineConstants);JETBRAINS_ANNOTATIONS</DefineConstants>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AdvancedDLSupport.AOT\AdvancedDLSupport.AOT.csproj" />
+    <PackageReference Include="JetBrains.Annotations" Version="11.1.0" PrivateAssets="all" />
+    <PackageReference Include="JetBrainsAnnotations.Fody" Version="2.2.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="16.0.461" />
+  </ItemGroup>
+  <Import Project="..\props\common.props" />
+  <Import Project="$(SolutionRoot)\props\nuget-common.props" />
+  <Import Project="$(SolutionRoot)\props\netfx-mono.props" />
+  <Import Project="$(SolutionRoot)\props\stylecop.props" />
+</Project>
