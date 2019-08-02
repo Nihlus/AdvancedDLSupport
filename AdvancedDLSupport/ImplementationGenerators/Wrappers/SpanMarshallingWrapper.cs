@@ -1,4 +1,4 @@
-﻿//
+//
 //  SpanMarshallingWrapper.cs
 //
 //  Copyright (c) 2018 Firwood Software
@@ -69,14 +69,16 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             if (IsSpanType(returnType))
             {
-                if (IsOrContainsReferences(returnType.GenericTypeArguments[0]))
+                var genericType = returnType.GenericTypeArguments[0];
+
+                if (IsOrContainsReferences(genericType))
                 {
                     // Span<byte> is used because unbound generics are not allowed inside a nameof, and it still results as just 'Span'
                     throw new NotSupportedException($"Method Return Type is a class or contains references to classes and cannot be marshaled as a {nameof(Span<byte>)}. Marshalling {nameof(Span<byte>)}" +
                                                     $"requires the marshaled type T in {nameof(Span<byte>)}<T> to be a {nameof(ValueType)} without class references.");
                 }
 
-                newReturnType = definition.ReturnType.GenericTypeArguments[0].MakePointerType();
+                newReturnType = genericType.MakePointerType();
             }
             else
             {
@@ -87,17 +89,24 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             Type[] parametersTypes = definition.ParameterTypes.ToArray();
 
-            for (int i = 1; i < parametersTypes.Length; ++i)
+            for (int i = 0; i < parametersTypes.Length; ++i)
             {
                 var paramType = parametersTypes[i];
                 if (IsSpanType(paramType))
                 {
-                    if (IsOrContainsReferences(paramType.GenericTypeArguments[0]))
+                    var genericParam = paramType.GenericTypeArguments[0];
+
+                    if (genericParam.IsGenericType)
                     {
-                        throw new NotSupportedException("Reference or value type containing references found in Span<T> or ReadOnlySpan<T> parameter.");
+                        throw new NotSupportedException("Generic Type found as Span Generic Argument");
                     }
 
-                    parametersTypes[i] = paramType.GenericTypeArguments[0].MakePointerType();
+                    if (IsOrContainsReferences(genericParam))
+                    {
+                        throw new NotSupportedException("Reference or value type containing references found in Span<T> or ReadOnlySpan<T> generic parameter.");
+                    }
+
+                    parametersTypes[i] = genericParam.MakePointerType(); // genercParam.MakePointerType();
                 }
             }
 
@@ -163,8 +172,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             if (IsSpanType(returnType))
             {
-                il.Emit(OpCodes.Ldc_I4, GetNativeCollectionLengthMetadata(workUnit.Definition).Length);
-                il.Emit(OpCodes.Newobj, returnType.GetConstructor(new[] { typeof(void*), typeof(int) }));
+                il.EmitConstantInt(GetNativeCollectionLengthMetadata(workUnit.Definition).Length);
+                il.EmitNewObject(returnType.GetConstructor(new[] { typeof(void*), typeof(int) }));
             }
         }
 
