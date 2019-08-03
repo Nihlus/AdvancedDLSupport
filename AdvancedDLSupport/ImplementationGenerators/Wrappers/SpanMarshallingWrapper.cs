@@ -140,13 +140,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
             il.EmitLoadArgument(0);
 
-            for (short i = 1; i < parameterTypes.Count; ++i)
+            for (short i = 1; i <= parameterTypes.Count; ++i)
             {
-                var paramType = parameterTypes[i];
+                var paramType = parameterTypes[i - 1];
 
                 if (IsSpanType(paramType))
                 {
-                    Debug.Assert(paramType.GenericTypeArguments.Length == 1, "Span Type does not have any generic parameters, CLR bug?");
+                    Debug.Assert(paramType.GenericTypeArguments.Length == 1, "Span Type does not the correct number of generic parameters (1), CLR/BCL bug?");
 
                     var pinnedLocal = il.DeclareLocal(paramType.GenericTypeArguments[0].MakeByRefType(), true);
 
