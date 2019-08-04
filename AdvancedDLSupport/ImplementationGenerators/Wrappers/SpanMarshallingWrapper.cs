@@ -1,4 +1,4 @@
-﻿//
+//
 //  SpanMarshallingWrapper.cs
 //
 //  Copyright (c) 2018 Firwood Software
@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -26,6 +27,7 @@ using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
+using StrictEmit;
 
 namespace AdvancedDLSupport.ImplementationGenerators
 {
@@ -62,20 +64,51 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <inheritdoc />
         public override IntrospectiveMethodInfo GeneratePassthroughDefinition(PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {
-            if (!workUnit.Definition.ReturnType.GenericTypeArguments[0].IsValueType)
-            {
-                // Span<byte> is used because unbound generics are not allowed inside a nameof, and it still results as just 'Span'
-                throw new NotSupportedException($"Method is not a {nameof(ValueType)} and cannot be marshaled as a {nameof(Span<byte>)}. Marshalling {nameof(Span<byte>)}" +
-                                                $"requires the marshaled type T in {nameof(Span<byte>)}<T> to be a {nameof(ValueType)}");
-            }
-
+            Type returnType = workUnit.Definition.ReturnType, newReturnType;
             var definition = workUnit.Definition;
 
-            Type newReturnType = definition.ReturnType.GenericTypeArguments[0].MakePointerType();
+            if (IsSpanType(returnType))
+            {
+                var genericType = returnType.GenericTypeArguments[0];
+
+                if (IsOrContainsReferences(genericType))
+                {
+                    // Span<byte> is used because unbound generics are not allowed inside a nameof, and it still results as just 'Span'
+                    throw new NotSupportedException($"Method Return Type is a class or contains references to classes and cannot be marshaled as a {nameof(Span<byte>)}. Marshalling {nameof(Span<byte>)}" +
+                                                    $"requires the marshaled type T in {nameof(Span<byte>)}<T> to be a {nameof(ValueType)} without class references.");
+                }
+
+                newReturnType = genericType.MakePointerType();
+            }
+            else
+            {
+                newReturnType = returnType;
+            }
 
             /* TODO? Add marshaling for Span<> params */
 
             Type[] parametersTypes = definition.ParameterTypes.ToArray();
+
+            for (int i = 0; i < parametersTypes.Length; ++i)
+            {
+                var paramType = parametersTypes[i];
+                if (IsSpanType(paramType))
+                {
+                    var genericParam = paramType.GenericTypeArguments[0];
+
+                    if (genericParam.IsGenericType)
+                    {
+                        throw new NotSupportedException("Generic Type found as Span Generic Argument");
+                    }
+
+                    if (IsOrContainsReferences(genericParam))
+                    {
+                        throw new NotSupportedException("Reference or value type containing references found in Span<T> or ReadOnlySpan<T> generic parameter.");
+                    }
+
+                    parametersTypes[i] = genericParam.MakePointerType(); // genercParam.MakePointerType();
+                }
+            }
 
             MethodBuilder passthroughMethod = TargetType.DefineMethod
             (
@@ -98,13 +131,50 @@ namespace AdvancedDLSupport.ImplementationGenerators
             );
         }
 
+        /// <inheritdoc/>
+        public override void EmitPrologue(ILGenerator il, PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
+        {
+            var definition = workUnit.Definition;
+
+            var parameterTypes = definition.ParameterTypes;
+
+            il.EmitLoadArgument(0);
+
+            for (short i = 1; i <= parameterTypes.Count; ++i)
+            {
+                var paramType = parameterTypes[i - 1];
+
+                if (IsSpanType(paramType))
+                {
+                    Debug.Assert(paramType.GenericTypeArguments.Length == 1, "Span Type does not the correct number of generic parameters (1), CLR/BCL bug?");
+
+                    var pinnedLocal = il.DeclareLocal(paramType.GenericTypeArguments[0].MakeByRefType(), true);
+
+                    var getPinnableReferenceMethod = paramType.GetMethod(nameof(Span<byte>.GetPinnableReference), BindingFlags.Public | BindingFlags.Instance);
+
+                    il.EmitLoadArgumentAddress(i);
+                    il.EmitCallDirect(getPinnableReferenceMethod);
+                    il.EmitDuplicate();
+                    il.EmitSetLocalVariable(pinnedLocal);
+                    il.EmitConvertToNativeInt();
+                }
+                else
+                {
+                    il.EmitLoadArgument(i);
+                }
+            }
+        }
+
         /// <inheritdoc />
         public override void EmitEpilogue(ILGenerator il, PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {
-            ConstructorInfo ctor = workUnit.Definition.ReturnType.GetConstructor(new[] { typeof(void*), typeof(int) });
+            Type returnType = workUnit.Definition.ReturnType;
 
-            il.Emit(OpCodes.Ldc_I4, GetNativeCollectionLengthMetadata(workUnit.Definition).Length);
-            il.Emit(OpCodes.Newobj, ctor);
+            if (IsSpanType(returnType))
+            {
+                il.EmitConstantInt(GetNativeCollectionLengthMetadata(workUnit.Definition).Length);
+                il.EmitNewObject(returnType.GetConstructor(new[] { typeof(void*), typeof(int) }));
+            }
         }
 
         private NativeCollectionLengthAttribute GetNativeCollectionLengthMetadata(IntrospectiveMethodInfo info)
@@ -128,8 +198,41 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <inheritdoc />
         public override bool IsApplicable(IntrospectiveMethodInfo member)
         {
-            return member.ReturnType.IsGenericType // prevents exception on the line below
-                   && member.ReturnType.GetGenericTypeDefinition() == typeof(Span<>);
+            return IsSpanType(member.ReturnType) || member.ParameterTypes.Any(IsSpanType);
+        }
+
+        private static bool IsSpanType(Type type)
+        {
+            if (type.IsGenericType)
+            {
+                var generic = type.GetGenericTypeDefinition();
+                return generic == typeof(Span<>) || generic == typeof(ReadOnlySpan<>);
+            }
+
+            return false;
+        }
+
+        private static bool IsOrContainsReferences(Type type)
+        {
+            if (type.IsPrimitive)
+            {
+                return false;
+            }
+
+            if (type.IsClass)
+            {
+                return true;
+            }
+
+            foreach (var field in type.GetFields())
+            {
+                if (IsOrContainsReferences(field.FieldType))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

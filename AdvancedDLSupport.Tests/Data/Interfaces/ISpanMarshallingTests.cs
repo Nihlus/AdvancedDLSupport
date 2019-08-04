@@ -18,8 +18,6 @@
 //
 
 using System;
-using System.Runtime.InteropServices;
-using AdvancedDLSupport.Tests.TestBases;
 
 #pragma warning disable SA1600, CS1591
 
@@ -29,5 +27,7 @@ namespace AdvancedDLSupport.Tests.Data
     {
         [return: NativeCollectionLength(10)]
         Span<int> GetInt32ArrayZeroToNine();
+
+        void WriteToInt32Array(Span<int> span, int arrLen);
     }
 }
