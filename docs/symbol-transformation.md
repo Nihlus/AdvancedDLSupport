@@ -25,7 +25,7 @@ Firstly, you can explicitly specify the name of the symbol you want to bind to.
 ```c#
 public interface ISymbolTransformationTests
 {
-	[NativeSymbol("sym_trans_do_thing")
+	[NativeSymbol("sym_trans_do_thing")]
     int DoThing(int a, int b);
 }
 ```
