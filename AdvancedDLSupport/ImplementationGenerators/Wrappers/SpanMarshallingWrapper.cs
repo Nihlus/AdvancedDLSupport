@@ -64,7 +64,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <inheritdoc />
         public override IntrospectiveMethodInfo GeneratePassthroughDefinition(PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {
-            var returnType = workUnit.Definition.ReturnType
+            var returnType = workUnit.Definition.ReturnType;
             Type newReturnType;
             var definition = workUnit.Definition;
 
