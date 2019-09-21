@@ -142,8 +142,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
                 if (IsSpanType(paramType))
                 {
-                    Debug.Assert(paramType.GenericTypeArguments.Length == 1, "Span Type does not the correct number of generic parameters (1), CLR/BCL bug?");
-
                     var pinnedLocal = il.DeclareLocal(paramType.GenericTypeArguments[0].MakeByRefType(), true);
 
                     var getPinnableReferenceMethod = paramType.GetMethod(nameof(Span<byte>.GetPinnableReference), BindingFlags.Public | BindingFlags.Instance);
