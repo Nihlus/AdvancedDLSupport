@@ -199,7 +199,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// Determines whether the <see cref="Type" /> provided is a Span<T>.
         /// </summary>
         /// <param name="type">The type to check.</param>
-        private static bool IsSpanType(Type type)
+        private static bool IsSpanType([NotNull] Type type)
         {
             if (type.IsGenericType)
             {
@@ -214,7 +214,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// Determines whether the <see cref="Type" /> provided contains references.
         /// </summary>
         /// <param name="type">The type to check.</param>
-        private static bool IsOrContainsReferences(Type type)
+        private static bool IsOrContainsReferences([NotNull] Type type)
         {
             if (type.IsPrimitive)
             {
