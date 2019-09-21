@@ -64,7 +64,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <inheritdoc />
         public override IntrospectiveMethodInfo GeneratePassthroughDefinition(PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {
-            Type returnType = workUnit.Definition.ReturnType, newReturnType;
+            var returnType = workUnit.Definition.ReturnType
+            Type newReturnType;
             var definition = workUnit.Definition;
 
             if (IsSpanType(returnType))
@@ -94,7 +95,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
                     if (genericParam.IsGenericType)
                     {
-                        throw new NotSupportedException("Generic Type found as Span Generic Argument");
+                        throw new NotSupportedException("Generic type found as Span generic argument");
                     }
 
                     if (IsOrContainsReferences(genericParam))
