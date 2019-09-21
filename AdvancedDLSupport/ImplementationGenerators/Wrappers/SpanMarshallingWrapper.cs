@@ -72,7 +72,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             {
                 var genericType = returnType.GenericTypeArguments[0];
 
-                if (!genericType.IsBlittable())
+                if (!genericType.IsUnmanaged())
                 {
                     throw new NotSupportedException($"Method return type must be blittable.");
                 }
@@ -98,7 +98,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                         throw new NotSupportedException("Generic type found as Span generic argument");
                     }
 
-                    if (!genericParam.IsBlittable())
+                    if (!genericParam.IsUnmanaged())
                     {
                         throw new NotSupportedException("Reference or value type containing references found in Span<T> or ReadOnlySpan<T> generic parameter.");
                     }
