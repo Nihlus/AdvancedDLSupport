@@ -212,30 +212,28 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <summary>
+        /// A class used for testing whether a generic argument is blittable/unmanaged.
+        /// </summary>
+        private class UnmanagedTest<T>
+            where T:unmanaged
+        {
+        }
+
+        /// <summary>
         /// Determines whether the <see cref="Type" /> provided contains references.
         /// </summary>
         /// <param name="type">The type to check.</param>
         private static bool IsOrContainsReferences([NotNull] Type type)
         {
-            if (type.IsPrimitive)
+            try
             {
+                typeof(UnmanagedTest<>).MakeGenericType(t);
                 return false;
             }
-
-            if (type.IsClass)
+            catch
             {
                 return true;
             }
-
-            foreach (var field in type.GetFields())
-            {
-                if (IsOrContainsReferences(field.FieldType))
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
     }
 }
