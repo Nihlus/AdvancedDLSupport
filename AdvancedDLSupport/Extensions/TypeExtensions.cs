@@ -44,7 +44,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="type">The type to check.</param>
         /// <returns>True if the type is blittable.</returns>
-        public static bool IsBlittable([NotNull] this Type type)
+        public static bool IsUnmanaged([NotNull] this Type type)
         {
             try
             {
