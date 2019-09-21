@@ -196,7 +196,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <summary>
-        /// Determines whether the <see cref="Type" /> provided is a Span<T>.
+        /// Determines whether the <see cref="Type" /> provided is a generic span.
         /// </summary>
         /// <param name="type">The type to check.</param>
         private static bool IsSpanType([NotNull] Type type)
