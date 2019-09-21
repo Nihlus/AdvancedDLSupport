@@ -64,7 +64,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <inheritdoc />
         public override IntrospectiveMethodInfo GeneratePassthroughDefinition(PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {
-            Type returnType = workUnit.Definition.ReturnType, newReturnType;
+            var returnType = workUnit.Definition.ReturnType, newReturnType;
             var definition = workUnit.Definition;
 
             if (IsSpanType(returnType))
@@ -73,9 +73,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
                 if (IsOrContainsReferences(genericType))
                 {
-                    // Span<byte> is used because unbound generics are not allowed inside a nameof, and it still results as just 'Span'
-                    throw new NotSupportedException($"Method Return Type is a class or contains references to classes and cannot be marshaled as a {nameof(Span<byte>)}. Marshalling {nameof(Span<byte>)}" +
-                                                    $"requires the marshaled type T in {nameof(Span<byte>)}<T> to be a {nameof(ValueType)} without class references.");
+                    throw new NotSupportedException($"Method return type must be blittable.");
                 }
 
                 newReturnType = genericType.MakePointerType();
@@ -85,9 +83,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 newReturnType = returnType;
             }
 
-            /* TODO? Add marshaling for Span<> params */
-
-            Type[] parametersTypes = definition.ParameterTypes.ToArray();
+            var parametersTypes = definition.ParameterTypes.ToArray();
 
             for (int i = 0; i < parametersTypes.Length; ++i)
             {
@@ -168,7 +164,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <inheritdoc />
         public override void EmitEpilogue(ILGenerator il, PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {
-            Type returnType = workUnit.Definition.ReturnType;
+            var returnType = workUnit.Definition.ReturnType;
 
             if (IsSpanType(returnType))
             {
