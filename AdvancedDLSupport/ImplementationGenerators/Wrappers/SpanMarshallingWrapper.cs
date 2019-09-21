@@ -72,7 +72,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
             {
                 var genericType = returnType.GenericTypeArguments[0];
 
-                if (IsOrContainsReferences(genericType))
+                if (!genericType.IsBlittable())
                 {
                     throw new NotSupportedException($"Method return type must be blittable.");
                 }
@@ -98,7 +98,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
                         throw new NotSupportedException("Generic type found as Span generic argument");
                     }
 
-                    if (IsOrContainsReferences(genericParam))
+                    if (!genericParam.IsBlittable())
                     {
                         throw new NotSupportedException("Reference or value type containing references found in Span<T> or ReadOnlySpan<T> generic parameter.");
                     }
@@ -209,31 +209,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// A class used for testing whether a generic argument is blittable/unmanaged.
-        /// </summary>
-        private class UnmanagedTest<T>
-            where T:unmanaged
-        {
-        }
-
-        /// <summary>
-        /// Determines whether the <see cref="Type" /> provided contains references.
-        /// </summary>
-        /// <param name="type">The type to check.</param>
-        private static bool IsOrContainsReferences([NotNull] Type type)
-        {
-            try
-            {
-                typeof(UnmanagedTest<>).MakeGenericType(t);
-                return false;
-            }
-            catch
-            {
-                return true;
-            }
         }
     }
 }
