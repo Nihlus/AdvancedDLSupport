@@ -197,6 +197,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
             return IsSpanType(member.ReturnType) || member.ParameterTypes.Any(IsSpanType);
         }
 
+        /// <summary>
+        /// Determines whether the <see cref="Type" /> provided is a Span<T>.
+        /// </summary>
+        /// <param name="type">The type to check.</param>
         private static bool IsSpanType(Type type)
         {
             if (type.IsGenericType)
@@ -208,6 +212,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
             return false;
         }
 
+        /// <summary>
+        /// Determines whether the <see cref="Type" /> provided contains references.
+        /// </summary>
+        /// <param name="type">The type to check.</param>
         private static bool IsOrContainsReferences(Type type)
         {
             if (type.IsPrimitive)
