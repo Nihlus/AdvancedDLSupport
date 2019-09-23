@@ -32,6 +32,32 @@ namespace AdvancedDLSupport.Extensions
     internal static class TypeExtensions
     {
         /// <summary>
+        /// A class used for testing whether a generic argument is blittable/unmanaged.
+        /// </summary>
+        private class UnmanagedTest<T>
+            where T : unmanaged
+        {
+        }
+
+        /// <summary>
+        /// Determines whether the given type is blittable.
+        /// </summary>
+        /// <param name="type">The type to check.</param>
+        /// <returns>True if the type is blittable.</returns>
+        public static bool IsUnmanaged([NotNull] this Type type)
+        {
+            try
+            {
+                typeof(UnmanagedTest<>).MakeGenericType(type);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Determines whether the given type is a delegate type.
         /// </summary>
         /// <param name="this">The type.</param>

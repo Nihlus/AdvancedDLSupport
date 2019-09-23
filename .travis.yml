@@ -18,7 +18,7 @@ addons:
     packages:
       - gcc-multilib
 
-mono: latest
+mono: 6.0.0
 dotnet: 2.2.402
 
 before_install:
