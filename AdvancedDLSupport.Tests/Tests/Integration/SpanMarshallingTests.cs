@@ -52,6 +52,19 @@ namespace AdvancedDLSupport.Tests.Integration
         }
 
         [Fact]
+        public void CanMarshalSpanAsPointer()
+        {
+            Span<int> span = stackalloc int[10];
+
+            Library.WriteToInt32Array(span, 10);
+
+            for (var i = 0; i < 10; i++)
+            {
+                Assert.True(span[i] == i);
+            }
+        }
+
+        [Fact]
         public void ThrowsWhenSpanTypeIsReferenceType()
         {
             var activator = GetImplementationBuilder();
