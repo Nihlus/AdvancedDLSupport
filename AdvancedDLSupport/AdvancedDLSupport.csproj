@@ -11,11 +11,11 @@
   </PropertyGroup>
   <PropertyGroup>
     <Title>AdvancedDLSupport</Title>
-    <Version>3.0.0</Version>
+    <Version>3.1.0</Version>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>AdvancedDLSupport</PackageId>
-    <PackageReleaseNotes>Throw if no proper calli overload could be found.</PackageReleaseNotes>
+    <PackageReleaseNotes>Span parameters and calli on netcoreapp2.0.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="AdvancedDLSupport.ExternalAnnotations.xml">
