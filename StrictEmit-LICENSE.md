@@ -3,9 +3,9 @@ AdvancedDLSupport uses a sister project called StrictEmit, also created and dist
 AdvancedDLSupport's public release, however, is released under the LGPLv3. Firwood has an internal license to use StrictEmit under the terms of the LGPLv3 with AdvancedDLSupport instead of GPLv3. In full, the license is as such:
 
 ## License Grant
-Firwood Software (the "Licensor") hereby grants itself (the "Licensee") a royalty-free, non-transferrable, non-sublicensable, worldwide, non-exclusive, perpetual license (the "License") to use, modify, and redistribute StrictEmit (the "Library") in the AdvancedDLSupport library ("AdvancedDLSupport") under the provisions of the Lesser General Public License, version 3.
+Firwood Software (the "Licensor") hereby grants itself (the "Licensee") a royalty-free, non-transferrable, non-sublicensable, worldwide, non-exclusive, perpetual license (the "License") to use, modify, and redistribute StrictEmit (the "Library") in the AdvancedDLSupport library ("AdvancedDLSupport") under the provisions of the Lesser General Public License, version 
 
-This License grant is granted to the Licensee only, and not its users, sublicensees, or consumers (the "Users"). Should AdvancedDLSupport Users wish to use the Library independently of AdvancedDLSupport, they are subject to full Lesser General Public License, version 3 (or another custom licensing agreement, if applicable). Independent use includes, but is not limited to, any usage of the programming interfaces, binary code, source code, or functionality (the "API") of the Library that is not exposed as a direct result or requirement of using AdvancedDLSupport.
+This License grant is granted to the Licensee only, and not its users, sublicensees, or consumers (the "Users"). Should AdvancedDLSupport Users wish to use the Library independently of AdvancedDLSupport, they are subject to full General Public License, version 3 (or another custom licensing agreement, if applicable). Independent use includes, but is not limited to, any usage of the programming interfaces, binary code, source code, or functionality (the "API") of the Library that is not exposed as a direct result or requirement of using AdvancedDLSupport.
 
 This copyright notice must be distributed with AdvancedDLSupport whereever appropriate, such as license disclosures or existing license terms.
 
