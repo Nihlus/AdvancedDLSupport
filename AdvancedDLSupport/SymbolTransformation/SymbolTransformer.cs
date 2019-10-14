@@ -131,7 +131,15 @@ namespace AdvancedDLSupport
                 }
                 case Underscore:
                 {
-                    return concatenated.ToLower().Replace(" ", "_");
+                    var underscore = new StringBuilder(concatenated);
+                    for (var i = 1; i < underscore.Length; ++i)
+                    {
+                        if (char.IsUpper(underscore[i]) && char.IsLower(underscore[i - 1]))
+                        {
+                            underscore.Insert(i, '_');
+                        }
+                    }
+                    return underscore.Replace(" ", "_").ToString().ToLower();
                 }
                 case Dasherize:
                 {
