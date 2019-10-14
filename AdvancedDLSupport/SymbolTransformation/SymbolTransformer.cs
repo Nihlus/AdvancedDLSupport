@@ -21,7 +21,6 @@ using System;
 using System.Linq;
 using System.Reflection;
 using AdvancedDLSupport.Reflection;
-using Humanizer;
 using JetBrains.Annotations;
 using static AdvancedDLSupport.SymbolTransformationMethod;
 
@@ -121,23 +120,26 @@ namespace AdvancedDLSupport
                 }
                 case Pascalize:
                 {
-                    return concatenated.Pascalize();
+                    return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(concatenated).Replace("_", string.Empty);
                 }
                 case Camelize:
                 {
-                    return concatenated.Camelize();
+                    var camelized = new StringBuilder(CultureInfo.CurrentCulture.TextInfo.ToTitleCase(concatenated));
+                    camelized[0] = char.ToLower(camelized[0]);
+                    camelized.Replace("_", string.Empty);
+                    return camelized.ToString();
                 }
                 case Underscore:
                 {
-                    return concatenated.Underscore();
+                    return concatenated.ToLower().Replace(" ", "_");
                 }
                 case Dasherize:
                 {
-                    return concatenated.Dasherize();
+                    return concatenated.Replace("_", "-");
                 }
                 case Kebaberize:
                 {
-                    return concatenated.Kebaberize();
+                    return concatenated.Replace(" ", "‐");
                 }
                 default:
                 {
