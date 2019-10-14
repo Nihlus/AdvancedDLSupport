@@ -39,6 +39,9 @@ list(
         IndirectCallTests
         NameManglingTests
         SymbolTransformationTests
+        SymbolTransformationTests2
+        SymbolTransformationTests3
+        SymbolTransformationTests4
         GenericDelegateTests
         BooleanMarshallingTests
         SpanMarshallingTests
