@@ -120,34 +120,79 @@ namespace AdvancedDLSupport
                 }
                 case Pascalize:
                 {
-                    return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(concatenated).Replace("_", string.Empty);
+                    var pascalized = new StringBuilder(concatenated);
+                    if (pascalized.Length > 1)
+                    {
+                        for (var i = 1; i < pascalized.Length; ++i)
+                        {
+                            var previousCharacter = pascalized[i - 1];
+                            if (previousCharacter == '_' ||
+                                previousCharacter == ' ' )
+                            {
+                                pascalized[i] = char.ToUpper(pascalized[i]);
+                            }
+                        }
+                    }
+
+                    pascalized[0] = char.ToUpper(pascalized[0]);
+                    return pascalized.ToString();
                 }
                 case Camelize:
                 {
-                    var camelized = new StringBuilder(CultureInfo.CurrentCulture.TextInfo.ToTitleCase(concatenated));
+                    var camelized = new StringBuilder(concatenated);
+                    if (camelized.Length > 1)
+                    {
+                        for (var i = 1; i < camelized.Length; ++i)
+                        {
+                            var previousCharacter = camelized[i - 1];
+                            if (previousCharacter == '_' ||
+                                 previousCharacter == ' ' )
+                            {
+                                camelized[i] = char.ToUpper(camelized[i]);
+                            }
+                        }
+                    }
+
                     camelized[0] = char.ToLower(camelized[0]);
-                    camelized.Replace("_", string.Empty);
                     return camelized.ToString();
                 }
                 case Underscore:
                 {
                     var underscore = new StringBuilder(concatenated);
-                    for (var i = 1; i < underscore.Length; ++i)
+                    if (underscore.Length > 1)
                     {
-                        if (char.IsUpper(underscore[i]) && char.IsLower(underscore[i - 1]))
+                        for (var i = 1; i < underscore.Length; ++i)
                         {
-                            underscore.Insert(i, '_');
+                            var previousCharacter = underscore[i - 1];
+                            char? nextCharacter = null;
+                            if (underscore.Length > i + 1)
+                            {
+                                nextCharacter = underscore[i + 1];
+                            }
+
+                            // ReSharper disable once SA1028
+                            if (nextCharacter.HasValue &&
+                                char.IsUpper(previousCharacter) &&
+                                char.IsUpper(underscore[i]) &&
+                                char.IsLower(nextCharacter.Value))
+                            {
+                                underscore.Insert(i, "_");
+                            }
+                            else if (char.IsLower(previousCharacter) && char.IsUpper(underscore[i]))
+                            {
+                                underscore.Insert(i, "_");
+                            }
                         }
                     }
-                    return underscore.Replace(" ", "_").ToString().ToLower();
+
+                    underscore.Replace("-", "_");
+
+                    return underscore.ToString().ToLower();
                 }
+                case Kebaberize:
                 case Dasherize:
                 {
                     return concatenated.Replace("_", "-");
-                }
-                case Kebaberize:
-                {
-                    return concatenated.Replace(" ", "‐");
                 }
                 default:
                 {
