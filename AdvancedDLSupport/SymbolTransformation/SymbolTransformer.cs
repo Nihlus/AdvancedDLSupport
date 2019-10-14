@@ -1,4 +1,4 @@
-﻿//
+//
 //  SymbolTransformer.cs
 //
 //  Copyright (c) 2018 Firwood Software
@@ -20,6 +20,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using static AdvancedDLSupport.SymbolTransformationMethod;
