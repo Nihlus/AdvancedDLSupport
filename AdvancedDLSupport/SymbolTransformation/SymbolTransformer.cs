@@ -122,16 +122,13 @@ namespace AdvancedDLSupport
                 case Pascalize:
                 {
                     var pascalized = new StringBuilder(concatenated);
-                    if (pascalized.Length > 1)
+                    for (var i = 1; i < pascalized.Length; ++i)
                     {
-                        for (var i = 1; i < pascalized.Length; ++i)
+                        var previousCharacter = pascalized[i - 1];
+                        if (previousCharacter == '_' ||
+                            previousCharacter == ' ')
                         {
-                            var previousCharacter = pascalized[i - 1];
-                            if (previousCharacter == '_' ||
-                                previousCharacter == ' ' )
-                            {
-                                pascalized[i] = char.ToUpper(pascalized[i]);
-                            }
+                            pascalized[i] = char.ToUpper(pascalized[i]);
                         }
                     }
 
@@ -141,16 +138,13 @@ namespace AdvancedDLSupport
                 case Camelize:
                 {
                     var camelized = new StringBuilder(concatenated);
-                    if (camelized.Length > 1)
+                    for (var i = 1; i < camelized.Length; ++i)
                     {
-                        for (var i = 1; i < camelized.Length; ++i)
+                        var previousCharacter = camelized[i - 1];
+                        if (previousCharacter == '_' ||
+                            previousCharacter == ' ')
                         {
-                            var previousCharacter = camelized[i - 1];
-                            if (previousCharacter == '_' ||
-                                 previousCharacter == ' ' )
-                            {
-                                camelized[i] = char.ToUpper(camelized[i]);
-                            }
+                            camelized[i] = char.ToUpper(camelized[i]);
                         }
                     }
 
@@ -160,29 +154,26 @@ namespace AdvancedDLSupport
                 case Underscore:
                 {
                     var underscore = new StringBuilder(concatenated);
-                    if (underscore.Length > 1)
+                    for (var i = 1; i < underscore.Length; ++i)
                     {
-                        for (var i = 1; i < underscore.Length; ++i)
+                        var previousCharacter = underscore[i - 1];
+                        char? nextCharacter = null;
+                        if (underscore.Length > i + 1)
                         {
-                            var previousCharacter = underscore[i - 1];
-                            char? nextCharacter = null;
-                            if (underscore.Length > i + 1)
-                            {
-                                nextCharacter = underscore[i + 1];
-                            }
+                            nextCharacter = underscore[i + 1];
+                        }
 
-                            // ReSharper disable once SA1028
-                            if (nextCharacter.HasValue &&
-                                char.IsUpper(previousCharacter) &&
-                                char.IsUpper(underscore[i]) &&
-                                char.IsLower(nextCharacter.Value))
-                            {
-                                underscore.Insert(i, "_");
-                            }
-                            else if (char.IsLower(previousCharacter) && char.IsUpper(underscore[i]))
-                            {
-                                underscore.Insert(i, "_");
-                            }
+                        // ReSharper disable once SA1028
+                        if (nextCharacter.HasValue &&
+                            char.IsUpper(previousCharacter) &&
+                            char.IsUpper(underscore[i]) &&
+                            char.IsLower(nextCharacter.Value))
+                        {
+                            underscore.Insert(i, "_");
+                        }
+                        else if (char.IsLower(previousCharacter) && char.IsUpper(underscore[i]))
+                        {
+                            underscore.Insert(i, "_");
                         }
                     }
 
