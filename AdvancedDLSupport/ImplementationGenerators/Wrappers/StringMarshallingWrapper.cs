@@ -238,13 +238,18 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <inheritdoc />
         public override bool IsApplicable(IntrospectiveMethodInfo method)
         {
-            var hasAnyStringParameters = method.ReturnType == typeof(string) || method.ParameterTypes.Any(t => t == typeof(string));
+            var hasAnyStringParameters = method.ReturnType == typeof(string) ||
+                                         method.ParameterTypes.Any(t => t == typeof(string));
 
             return hasAnyStringParameters;
         }
 
         /// <inheritdoc />
-        public override void EmitPrologue(ILGenerator il, PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
+        public override void EmitPrologue
+        (
+            ILGenerator il,
+            PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
+        )
         {
             var definition = workUnit.Definition;
 
@@ -279,7 +284,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <inheritdoc />
-        public override void EmitEpilogue(ILGenerator il, PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
+        public override void EmitEpilogue
+        (
+            ILGenerator il,
+            PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
+        )
         {
             var definition = workUnit.Definition;
 
@@ -292,7 +301,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
                     var parameterIndex = localCombo.Key;
                     var local = localCombo.Value;
 
-                    var unmanagedStringType = GetParameterUnmanagedType(definition.ParameterCustomAttributes[parameterIndex]);
+                    var unmanagedStringType = GetParameterUnmanagedType
+                    (
+                        definition.ParameterCustomAttributes[parameterIndex]
+                    );
+
                     il.EmitLoadLocalVariable(local);
                     il.EmitCallDirect(SelectUnmanagedFreeMethod(unmanagedStringType));
                 }
@@ -333,11 +346,20 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <inheritdoc />
-        public override IntrospectiveMethodInfo GeneratePassthroughDefinition(PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
+        public override IntrospectiveMethodInfo GeneratePassthroughDefinition
+        (
+            PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
+        )
         {
             var definition = workUnit.Definition;
 
-            var newParameterTypes = definition.ParameterTypes.Select(t => t == typeof(string) ? typeof(IntPtr) : t).ToArray();
+            var newParameterTypes = definition.ParameterTypes.Select
+            (
+                t => t == typeof(string)
+                    ? typeof(IntPtr)
+                    : t
+            ).ToArray();
+
             var newReturnType = definition.ReturnType == typeof(string) ? typeof(IntPtr) : definition.ReturnType;
 
             var passthroughMethod = TargetType.DefineMethod
@@ -461,7 +483,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
         }
 
         /// <summary>
-        /// Selects the appropriate method to free an <see cref="IntPtr"/> to an ummanaged string on the evaluation stack.
+        /// Selects the appropriate method to free an <see cref="IntPtr"/> to an unmanaged string on the evaluation
+        /// stack.
         /// </summary>
         /// <param name="unmanagedType">The unmanaged string type.</param>
         /// <returns>The method.</returns>
@@ -505,7 +528,10 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="customAttributes">The custom attributes applied to the parameter.</param>
         /// <returns>The parameter type.</returns>
-        private UnmanagedType GetParameterUnmanagedType([NotNull, ItemNotNull] IEnumerable<CustomAttributeData> customAttributes)
+        private UnmanagedType GetParameterUnmanagedType
+        (
+            [NotNull, ItemNotNull] IEnumerable<CustomAttributeData> customAttributes
+        )
         {
             var marshalAsAttribute = customAttributes.FirstOrDefault
             (
