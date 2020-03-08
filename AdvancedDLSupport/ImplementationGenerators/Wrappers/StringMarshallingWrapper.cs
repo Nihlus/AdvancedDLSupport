@@ -65,6 +65,12 @@ namespace AdvancedDLSupport.ImplementationGenerators
         [NotNull]
         private static MethodInfo _freeHGlobalMethod;
 
+        [NotNull]
+        private static MethodInfo _freeCoTaskMemMethod;
+
+        [CanBeNull]
+        private static UnmanagedType? _utf8UnmanagedType;
+
         static StringMarshallingWrapper()
         {
             _stringToPtrMethods = new Dictionary<UnmanagedType, MethodInfo>();
@@ -152,6 +158,36 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 )
             );
 
+            // Add UTF8 string support, if available.
+            var utf8UnmanagedTypeField = typeof(UnmanagedType).GetField("LPUTF8Str");
+            if (!(utf8UnmanagedTypeField is null))
+            {
+                _utf8UnmanagedType = (UnmanagedType)utf8UnmanagedTypeField.GetValue(null);
+                var utf8PtrToStringMethod = typeof(Marshal).GetMethod
+                (
+                    "PtrToStringUTF8",
+                    new[] { typeof(IntPtr) }
+                );
+
+                _ptrToStringMethods.Add
+                (
+                    _utf8UnmanagedType.Value,
+                    utf8PtrToStringMethod
+                );
+
+                var utf8StringToPtrMethod = typeof(Marshal).GetMethod
+                (
+                    "StringToCoTaskMemUTF8",
+                    new[] { typeof(string) }
+                );
+
+                _stringToPtrMethods.Add
+                (
+                    _utf8UnmanagedType.Value,
+                    utf8StringToPtrMethod
+                );
+            }
+
             // Memory freeing methods
             _freeBStrMethod = typeof(Marshal).GetMethod
             (
@@ -166,6 +202,13 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 new[] { typeof(IntPtr) }
             )
             ?? throw new MethodNotFoundException(nameof(Marshal.FreeHGlobal));
+
+            _freeCoTaskMemMethod = typeof(Marshal).GetMethod
+            (
+                nameof(Marshal.FreeCoTaskMem),
+                new[] { typeof(IntPtr) }
+            )
+            ?? throw new MethodNotFoundException(nameof(Marshal.FreeCoTaskMem));
         }
 
         /// <summary>
@@ -356,6 +399,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 }
                 default:
                 {
+                    if (!(_utf8UnmanagedType is null) && unmanagedType == _utf8UnmanagedType)
+                    {
+                        return _stringToPtrMethods[_utf8UnmanagedType.Value];
+                    }
+
                     throw new ArgumentOutOfRangeException
                     (
                         nameof(unmanagedType),
@@ -398,6 +446,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 }
                 default:
                 {
+                    if (!(_utf8UnmanagedType is null) && unmanagedType == _utf8UnmanagedType)
+                    {
+                        return _ptrToStringMethods[_utf8UnmanagedType.Value];
+                    }
+
                     throw new ArgumentOutOfRangeException
                     (
                         nameof(unmanagedType),
@@ -432,6 +485,11 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 }
                 default:
                 {
+                    if (!(_utf8UnmanagedType is null) && unmanagedType == _utf8UnmanagedType)
+                    {
+                        return _freeCoTaskMemMethod;
+                    }
+
                     throw new ArgumentOutOfRangeException
                     (
                         nameof(unmanagedType),

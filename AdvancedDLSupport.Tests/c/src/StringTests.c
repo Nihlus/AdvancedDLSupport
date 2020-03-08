@@ -46,8 +46,6 @@ __declspec(dllexport) size_t BStringLength(BCSTR value)
     size_t length = 0;
     memcpy(&length, (char*)value, 2);
 
-
-
     return (length / sizeof(char16_t)) - 1;
 }
 
@@ -74,4 +72,29 @@ __declspec(dllexport) size_t LPTStringLength(LPTCSTR value)
 __declspec(dllexport) bool CheckIfStringIsNull(const char* value)
 {
     return value == NULL;
+}
+
+
+__declspec(dllexport) LPUTF8STR GetLPUTF8String()
+{
+    return u8"Hello, 🦈!";
+}
+
+__declspec(dllexport) size_t LPUTF8StringLength(LPUTF8CSTR value)
+{
+    // taken from https://hashnode.com/post/utf-8-string-length-ciibz8f4a011tj3xtj9qvku8i
+
+    size_t i = 0;
+    size_t length = 0;
+    while (value[i])
+    {
+        if (((unsigned char)value[i] & 0xc0u) != 0x80)
+        {
+            length++;
+        }
+
+        i++;
+    }
+
+    return length;
 }

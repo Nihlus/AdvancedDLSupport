@@ -46,6 +46,9 @@
     typedef char16_t* LPWSTR;
     typedef const char16_t* LPWCSTR;
 
+    typedef char* LPUTF8STR;
+    typedef const char* LPUTF8CSTR;
+
     #if UNICODE
         #define LPTSTR(value) (LPTSTR)u ##value;
         typedef LPWSTR LPTSTR;

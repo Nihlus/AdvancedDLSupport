@@ -110,6 +110,34 @@ namespace AdvancedDLSupport.Tests.Integration
             Assert.Equal(expected, (long)Library.LPWStringLength(testString).ToUInt64());
         }
 
+#if NETCOREAPP || NETSTANDARD2_1
+        [Fact]
+        public void CanCallFunctionWithLPUTF8StrReturnValue()
+        {
+            var actual = Library.GetLPUTF8String();
+            Assert.Equal("Hello, 🦈!", actual);
+        }
+
+        [Fact]
+        public void CanCallFunctionWithLPUTF8StrParameter()
+        {
+            const string testString = "Växeln, hallå, hallå, hallå";
+            var expected = testString.Length;
+
+            Assert.Equal(expected, (long)Library.LPUTF8StringLength(testString).ToUInt64());
+        }
+#else
+        [Fact(Skip = "Unsupported on this runtime.")]
+        public void CanCallFunctionWithLPUTF8StrReturnValue()
+        {
+        }
+
+        [Fact(Skip = "Unsupported on this runtime.")]
+        public void CanCallFunctionWithLPUTF8StrParameter()
+        {
+        }
+#endif
+
         [Fact]
         public void CanCallFunctionWithCallerFreeReturnParameter()
         {

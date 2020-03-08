@@ -57,5 +57,13 @@ namespace AdvancedDLSupport.Tests.Data
         UIntPtr LPTStringLength([MarshalAs(UnmanagedType.LPTStr)] string value);
 
         UIntPtr LPWStringLength([MarshalAs(UnmanagedType.LPWStr)] string value);
+
+#if NETCOREAPP || NETSTANDARD2_1
+        [return: MarshalAs(UnmanagedType.LPUTF8Str)]
+        string GetLPUTF8String();
+
+        UIntPtr LPUTF8StringLength([MarshalAs(UnmanagedType.LPUTF8Str)] string value);
+#endif
+
     }
 }
