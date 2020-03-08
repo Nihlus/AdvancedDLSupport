@@ -15,7 +15,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>AdvancedDLSupport</PackageId>
-    <PackageReleaseNotes>Span parameters and calli on netcoreapp2.0.</PackageReleaseNotes>
+    <PackageReleaseNotes>LPUTF8 support for runtimes that support it.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="AdvancedDLSupport.ExternalAnnotations.xml">
