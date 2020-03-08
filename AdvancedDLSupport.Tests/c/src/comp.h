@@ -23,6 +23,7 @@
     typedef const wchar_t* BCSTR;
     typedef const char* LPCSTR;
     typedef const wchar_t* LPWCSTR;
+    typedef const char* LPUTF8CSTR;
 
     #if UNICODE
         #define LPTSTR(value) L ##value;
