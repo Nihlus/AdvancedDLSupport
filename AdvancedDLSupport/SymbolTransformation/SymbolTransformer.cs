@@ -1,4 +1,4 @@
-﻿//
+//
 //  SymbolTransformer.cs
 //
 //  Copyright (c) 2018 Firwood Software
@@ -20,8 +20,8 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using AdvancedDLSupport.Reflection;
-using Humanizer;
 using JetBrains.Annotations;
 using static AdvancedDLSupport.SymbolTransformationMethod;
 
@@ -121,23 +121,70 @@ namespace AdvancedDLSupport
                 }
                 case Pascalize:
                 {
-                    return concatenated.Pascalize();
+                    var pascalized = new StringBuilder(concatenated);
+                    for (var i = 1; i < pascalized.Length; ++i)
+                    {
+                        var previousCharacter = pascalized[i - 1];
+                        if (previousCharacter == '_' ||
+                            previousCharacter == ' ')
+                        {
+                            pascalized[i] = char.ToUpper(pascalized[i]);
+                        }
+                    }
+
+                    pascalized[0] = char.ToUpper(pascalized[0]);
+                    return pascalized.ToString();
                 }
                 case Camelize:
                 {
-                    return concatenated.Camelize();
+                    var camelized = new StringBuilder(concatenated);
+                    for (var i = 1; i < camelized.Length; ++i)
+                    {
+                        var previousCharacter = camelized[i - 1];
+                        if (previousCharacter == '_' ||
+                            previousCharacter == ' ')
+                        {
+                            camelized[i] = char.ToUpper(camelized[i]);
+                        }
+                    }
+
+                    camelized[0] = char.ToLower(camelized[0]);
+                    return camelized.ToString();
                 }
                 case Underscore:
                 {
-                    return concatenated.Underscore();
-                }
-                case Dasherize:
-                {
-                    return concatenated.Dasherize();
+                    var underscore = new StringBuilder(concatenated);
+                    for (var i = 1; i < underscore.Length; ++i)
+                    {
+                        var previousCharacter = underscore[i - 1];
+                        char? nextCharacter = null;
+                        if (underscore.Length > i + 1)
+                        {
+                            nextCharacter = underscore[i + 1];
+                        }
+
+                        // ReSharper disable once SA1028
+                        if (nextCharacter.HasValue &&
+                            char.IsUpper(previousCharacter) &&
+                            char.IsUpper(underscore[i]) &&
+                            char.IsLower(nextCharacter.Value))
+                        {
+                            underscore.Insert(i, "_");
+                        }
+                        else if (char.IsLower(previousCharacter) && char.IsUpper(underscore[i]))
+                        {
+                            underscore.Insert(i, "_");
+                        }
+                    }
+
+                    underscore.Replace("-", "_");
+
+                    return underscore.ToString().ToLower();
                 }
                 case Kebaberize:
+                case Dasherize:
                 {
-                    return concatenated.Kebaberize();
+                    return concatenated.Replace("_", "-");
                 }
                 default:
                 {
