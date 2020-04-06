@@ -42,6 +42,7 @@ list(
         GenericDelegateTests
         BooleanMarshallingTests
         SpanMarshallingTests
+		CallingConventionTests
 )
 
 list(

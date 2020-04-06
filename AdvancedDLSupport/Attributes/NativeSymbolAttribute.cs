@@ -49,7 +49,6 @@ namespace AdvancedDLSupport
         [PublicAPI]
         public NativeSymbolAttribute([NotNull, CallerMemberName] string entrypoint = "")
         {
-            CallingConvention = CallingConvention.Cdecl;
             Entrypoint = entrypoint;
         }
     }

@@ -141,8 +141,14 @@ namespace AdvancedDLSupport.Reflection
         /// <inheritdoc />
         public CallingConvention GetNativeCallingConvention()
         {
-            var metadataAttribute = GetCustomAttribute<NativeSymbolAttribute>() ??
-                                    new NativeSymbolAttribute(Name);
+            var metadataAttribute = GetCustomAttribute<NativeSymbolAttribute>();
+
+            if (metadataAttribute == null || metadataAttribute.CallingConvention == default)
+            {
+                NativeSymbolsAttribute attribute = MetadataType.GetCustomAttribute<NativeSymbolsAttribute>();
+
+                return attribute == null || attribute.DefaultCallingConvention == default ? CallingConvention.Cdecl : attribute.DefaultCallingConvention;
+            }
 
             return metadataAttribute.CallingConvention;
         }
