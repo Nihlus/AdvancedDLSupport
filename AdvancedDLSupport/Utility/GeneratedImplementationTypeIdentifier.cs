@@ -75,7 +75,7 @@ internal struct GeneratedImplementationTypeIdentifier : IEquatable<GeneratedImpl
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj))
         {

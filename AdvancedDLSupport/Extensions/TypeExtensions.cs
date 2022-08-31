@@ -110,9 +110,12 @@ internal static class TypeExtensions
     /// <returns>true if the type is an action delegate; otherwise, false.</returns>
     public static bool IsGenericActionDelegate(this Type @this)
     {
-        // ReSharper disable once PossibleNullReferenceException
-        var genericBaseName = @this.FullName.Split('`').First();
+        if (string.IsNullOrEmpty(@this.FullName))
+        {
+            return false;
+        }
 
+        var genericBaseName = @this.FullName.Split('`').First();
         if (genericBaseName == typeof(Action).FullName)
         {
             return true;
@@ -128,11 +131,14 @@ internal static class TypeExtensions
     /// <returns>true if the type is a func delegate; otherwise, false.</returns>
     public static bool IsGenericFuncDelegate(this Type @this)
     {
-        // ReSharper disable once PossibleNullReferenceException
+        if (string.IsNullOrEmpty(@this.FullName))
+        {
+            return false;
+        }
+
         var genericBaseName = @this.FullName.Split('`').First();
 
-        // ReSharper disable once PossibleNullReferenceException
-        var funcBaseName = typeof(Func<>).FullName.Split('`').First();
+        var funcBaseName = typeof(Func<>).FullName!.Split('`').First();
         if (genericBaseName == funcBaseName)
         {
             return true;

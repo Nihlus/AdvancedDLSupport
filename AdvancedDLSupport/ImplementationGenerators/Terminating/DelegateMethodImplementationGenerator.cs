@@ -77,7 +77,7 @@ internal sealed class DelegateMethodImplementationGenerator : ImplementationGene
         var delegateBuilder = GenerateDelegateType(workUnit);
 
         // Create a delegate field
-        var backingFieldType = delegateBuilder.CreateTypeInfo();
+        var backingFieldType = delegateBuilder.CreateTypeInfo() ?? throw new InvalidOperationException();
 
         var backingField = Options.HasFlagFast(UseLazyBinding)
             ? TargetType.DefineField
@@ -116,7 +116,7 @@ internal sealed class DelegateMethodImplementationGenerator : ImplementationGene
         (
             nameof(NativeLibraryBase.LoadFunction),
             BindingFlags.NonPublic | BindingFlags.Instance
-        ).MakeGenericMethod(backingFieldType);
+        )!.MakeGenericMethod(backingFieldType);
 
         TargetTypeConstructorIL.EmitLoadArgument(0);
         TargetTypeConstructorIL.EmitLoadArgument(0);

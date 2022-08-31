@@ -79,7 +79,7 @@ public class ManglerRepository
 
         foreach (var manglerType in manglerTypes)
         {
-            var mangler = (IEntrypointMangler)Activator.CreateInstance(manglerType);
+            var mangler = (IEntrypointMangler)Activator.CreateInstance(manglerType)!;
             Manglers.Add(mangler);
         }
     }

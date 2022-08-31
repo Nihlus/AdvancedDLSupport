@@ -73,7 +73,7 @@ internal sealed class DisposalCallWrapper : CallWrapperBase
     /// <inheritdoc />
     public override void EmitPrologue(ILGenerator il, PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
     {
-        var throwMethod = typeof(NativeLibraryBase).GetMethod("ThrowIfDisposed", NonPublic | Instance);
+        var throwMethod = typeof(NativeLibraryBase).GetMethod("ThrowIfDisposed", NonPublic | Instance)!;
 
         il.Emit(OpCodes.Ldarg_0);
         il.Emit(OpCodes.Call, throwMethod);

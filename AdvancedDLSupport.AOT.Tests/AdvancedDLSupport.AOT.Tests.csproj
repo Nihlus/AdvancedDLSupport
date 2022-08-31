@@ -1,4 +1,8 @@
 ﻿<Project Sdk="Remora.Tests.Sdk/1.0.0">
+  <PropertyGroup>
+    <LibraryFrameworks>net461</LibraryFrameworks>
+  </PropertyGroup>
+
   <ItemGroup>
     <Content Include="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

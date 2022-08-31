@@ -37,7 +37,7 @@ public class SymbolLoadingException : Exception
     /// Gets the name of the symbol that failed to load.
     /// </summary>
     [PublicAPI]
-    public string SymbolName { get; }
+    public string? SymbolName { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
@@ -91,24 +91,5 @@ public class SymbolLoadingException : Exception
         : base(message, inner)
     {
         SymbolName = symbolName;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
-    /// </summary>
-    /// <param name="info">The serialized information.</param>
-    /// <param name="context">The streaming context.</param>
-    protected SymbolLoadingException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
-    {
-        SymbolName = info.GetString(nameof(SymbolName));
-    }
-
-    /// <inheritdoc />
-    [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-    public override void GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        info.AddValue(nameof(SymbolName), SymbolName);
-        base.GetObjectData(info, context);
     }
 }

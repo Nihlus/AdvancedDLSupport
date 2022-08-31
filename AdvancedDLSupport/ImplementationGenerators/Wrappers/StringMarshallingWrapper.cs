@@ -80,7 +80,7 @@ internal sealed class StringMarshallingWrapper : CallWrapperBase
             (
                 nameof(Marshal.StringToBSTR),
                 new[] { typeof(string) }
-            )
+            )!
         );
 
         _stringToPtrMethods.Add
@@ -90,7 +90,7 @@ internal sealed class StringMarshallingWrapper : CallWrapperBase
             (
                 nameof(Marshal.StringToHGlobalUni),
                 new[] { typeof(string) }
-            )
+            )!
         );
 
         _stringToPtrMethods.Add
@@ -100,7 +100,7 @@ internal sealed class StringMarshallingWrapper : CallWrapperBase
             (
                 nameof(Marshal.StringToHGlobalAnsi),
                 new[] { typeof(string) }
-            )
+            )!
         );
 
         _stringToPtrMethods.Add
@@ -110,7 +110,7 @@ internal sealed class StringMarshallingWrapper : CallWrapperBase
             (
                 nameof(Marshal.StringToHGlobalAuto),
                 new[] { typeof(string) }
-            )
+            )!
         );
 
         // Unmanaged-to-managed methods
@@ -121,7 +121,7 @@ internal sealed class StringMarshallingWrapper : CallWrapperBase
             (
                 nameof(Marshal.PtrToStringBSTR),
                 new[] { typeof(IntPtr) }
-            )
+            )!
         );
 
         _ptrToStringMethods.Add
@@ -131,7 +131,7 @@ internal sealed class StringMarshallingWrapper : CallWrapperBase
             (
                 nameof(Marshal.PtrToStringUni),
                 new[] { typeof(IntPtr) }
-            )
+            )!
         );
 
         _ptrToStringMethods.Add
@@ -141,7 +141,7 @@ internal sealed class StringMarshallingWrapper : CallWrapperBase
             (
                 nameof(Marshal.PtrToStringAnsi),
                 new[] { typeof(IntPtr) }
-            )
+            )!
         );
 
         _ptrToStringMethods.Add
@@ -151,7 +151,7 @@ internal sealed class StringMarshallingWrapper : CallWrapperBase
             (
                 nameof(Marshal.PtrToStringAuto),
                 new[] { typeof(IntPtr) }
-            )
+            )!
         );
 
         // Add UTF8 string support, if available.
@@ -163,7 +163,7 @@ internal sealed class StringMarshallingWrapper : CallWrapperBase
             (
                 "PtrToStringUTF8",
                 new[] { typeof(IntPtr) }
-            );
+            )!;
 
             _ptrToStringMethods.Add
             (
@@ -175,7 +175,7 @@ internal sealed class StringMarshallingWrapper : CallWrapperBase
             (
                 "StringToCoTaskMemUTF8",
                 new[] { typeof(string) }
-            );
+            )!;
 
             _stringToPtrMethods.Add
             (

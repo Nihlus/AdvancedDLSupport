@@ -65,6 +65,7 @@ public class TransientDynamicAssemblyProvider : IDynamicAssemblyProvider
 
         if (!debuggable)
         {
+            _dynamicModule = _dynamicAssembly.DefineDynamicModule("DLSupportDynamicModules");
             return;
         }
 
@@ -83,6 +84,7 @@ public class TransientDynamicAssemblyProvider : IDynamicAssemblyProvider
         var dbgBuilder = new CustomAttributeBuilder(dbgConstructor, dbgModes);
 
         _dynamicAssembly.SetCustomAttribute(dbgBuilder);
+        _dynamicModule = _dynamicAssembly.DefineDynamicModule("DLSupportDynamicModules");
     }
 
     /// <inheritdoc/>
@@ -94,6 +96,6 @@ public class TransientDynamicAssemblyProvider : IDynamicAssemblyProvider
     /// <inheritdoc/>
     public ModuleBuilder GetDynamicModule()
     {
-        return _dynamicModule ?? (_dynamicModule = _dynamicAssembly.DefineDynamicModule("DLSupportDynamicModules"));
+        return _dynamicModule;
     }
 }

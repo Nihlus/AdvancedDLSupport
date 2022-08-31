@@ -44,14 +44,14 @@ internal static class MarshalAsAttributeExtensions
     {
         var unmanagedType = @this.Value;
 
-        var instance = (CustomAttributeData)Activator.CreateInstance(typeof(CustomAttributeData), true);
+        var instance = (CustomAttributeData)(Activator.CreateInstance(typeof(CustomAttributeData), true) ?? throw new InvalidOperationException());
 
         var constructorBackingField = instance.GetType()
-            .GetField
-            (
-                "ctorInfo",
-                BindingFlags.Instance | BindingFlags.NonPublic
-            );
+        .GetField
+        (
+            "ctorInfo",
+            BindingFlags.Instance | BindingFlags.NonPublic
+        ) ?? throw new MissingFieldException();
 
         var constructor = typeof(MarshalAsAttribute).GetConstructor(new[] { typeof(UnmanagedType) });
 
@@ -59,11 +59,12 @@ internal static class MarshalAsAttributeExtensions
         constructorBackingField.SetValue(instance, constructor);
 
         var constructorArgListBackingField = instance.GetType()
-            .GetField
-            (
-                $"ctorArgs",
-                BindingFlags.Instance | BindingFlags.NonPublic
-            );
+        .GetField
+        (
+            "ctorArgs",
+            BindingFlags.Instance | BindingFlags.NonPublic
+        ) ?? throw new MissingFieldException();
+
         var constructorArgList = new List<CustomAttributeTypedArgument>
         (
             new[]

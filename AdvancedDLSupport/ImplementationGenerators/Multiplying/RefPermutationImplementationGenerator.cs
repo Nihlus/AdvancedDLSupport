@@ -164,8 +164,7 @@ internal sealed class RefPermutationImplementationGenerator : ImplementationGene
                 var permutationParameterType = permutationTypes[argumentIndex - 1];
                 if (originalParameterType.IsRefNullable() && permutationParameterType != typeof(IntPtr))
                 {
-                    // ReSharper disable once PossibleNullReferenceException
-                    var wrappedType = originalParameterType.GetElementType().GetGenericArguments().First();
+                    var wrappedType = originalParameterType.GetElementType()!.GetGenericArguments().First();
                     EmitNullableValueRef(methodIL, argumentIndex, wrappedType);
                 }
                 else if (permutationParameterType == typeof(IntPtr) && parameterTypes[argumentIndex - 1].IsRefNullable())
@@ -265,7 +264,7 @@ internal sealed class RefPermutationImplementationGenerator : ImplementationGene
     {
         // ReSharper disable once PossibleNullReferenceException
         var accessValueMethod = typeof(InternalNullableAccessor)
-            .GetMethod(nameof(InternalNullableAccessor.AccessUnderlyingValue))
+            .GetMethod(nameof(InternalNullableAccessor.AccessUnderlyingValue))!
             .MakeGenericMethod(wrappedType);
 
         il.EmitConvertToNativeInt();
@@ -362,8 +361,8 @@ internal sealed class RefPermutationImplementationGenerator : ImplementationGene
         methodIL.EmitLoadArgument((short)parameter.Index);
 
         var getHasValueMethod = parameter.Type
-            .GetElementType()
-            .GetProperty(nameof(Nullable<int>.HasValue))
+            .GetElementType()!
+            .GetProperty(nameof(Nullable<int>.HasValue))!
             .GetGetMethod();
 
         methodIL.EmitCallDirect(getHasValueMethod);

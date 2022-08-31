@@ -81,8 +81,8 @@ public class NativeLibraryBuilder
 
     private static readonly ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type> TypeCache;
 
-    private ILibraryLoader _customLibraryLoader;
-    private ISymbolLoader _customSymbolLoader;
+    private ILibraryLoader? _customLibraryLoader;
+    private ISymbolLoader? _customSymbolLoader;
 
     static NativeLibraryBuilder()
     {
@@ -198,16 +198,15 @@ public class NativeLibraryBuilder
             throw new InvalidOperationException("The assembly did not contain a compatible metadata type.");
         }
 
-        var typeDictionaryProperty = metadataType.GetProperty(nameof(IAOTMetadata.GeneratedTypes));
+        var typeDictionaryProperty = metadataType.GetProperty(nameof(IAOTMetadata.GeneratedTypes))!;
 
         var metadataInstance = Activator.CreateInstance(metadataType);
 
-        // ReSharper disable once PossibleNullReferenceException
         var typeDictionary =
             (IReadOnlyDictionary<GeneratedImplementationTypeIdentifier, Type>)typeDictionaryProperty.GetValue
             (
                 metadataInstance
-            );
+            )!;
 
         foreach (var generatedType in typeDictionary)
         {
@@ -364,7 +363,7 @@ public class NativeLibraryBuilder
             );
         }
 
-        libraryPath = resolveResult.Path;
+        libraryPath = resolveResult.Path!;
 
         // Check if we've already generated a type for this configuration
         var key = new GeneratedImplementationTypeIdentifier(baseClassType, interfaceTypes, Options);
@@ -447,7 +446,7 @@ public class NativeLibraryBuilder
 
         // Check if we've already generated a type for this configuration
         var key = new GeneratedImplementationTypeIdentifier(classType, interfaceTypes, Options);
-        Type generatedType;
+        Type? generatedType;
         lock (BuilderLock)
         {
             if (TypeCache.TryGetValue(key, out generatedType))
@@ -552,7 +551,7 @@ public class NativeLibraryBuilder
         ConstructProperties(pipeline, classType, interfaceTypes);
 
         constructorIL.Emit(OpCodes.Ret);
-        return typeBuilder.CreateTypeInfo();
+        return typeBuilder.CreateTypeInfo()!;
     }
 
     /// <summary>
@@ -619,7 +618,7 @@ public class NativeLibraryBuilder
             options,
             libLoader,
             symLoader
-        );
+        )!;
     }
 
     /// <summary>
@@ -754,16 +753,16 @@ public class NativeLibraryBuilder
                 var baseClassProperty = classType.GetProperty(property.Name, property.PropertyType);
                 if (!(baseClassProperty is null))
                 {
-                    var isFullyManaged = !baseClassProperty.GetGetMethod().IsAbstract &&
-                                         !baseClassProperty.GetSetMethod().IsAbstract;
+                    var isFullyManaged = !baseClassProperty.GetGetMethod()!.IsAbstract &&
+                                         !baseClassProperty.GetSetMethod()!.IsAbstract;
 
                     if (isFullyManaged)
                     {
                         continue;
                     }
 
-                    var isPartiallyAbstract = baseClassProperty.GetGetMethod().IsAbstract ^
-                                              baseClassProperty.GetSetMethod().IsAbstract;
+                    var isPartiallyAbstract = baseClassProperty.GetGetMethod()!.IsAbstract ^
+                                              baseClassProperty.GetSetMethod()!.IsAbstract;
 
                     if (isPartiallyAbstract)
                     {

@@ -230,8 +230,8 @@ public class ImplementationPipeline
             interfaceDefinition.ReturnParameterRequiredModifiers,
             interfaceDefinition.ReturnParameterOptionalModifiers,
             interfaceDefinition.ParameterTypes.ToArray(),
-            interfaceDefinition.ParameterRequiredModifiers.ToArray(),
-            interfaceDefinition.ParameterOptionalModifiers.ToArray()
+            interfaceDefinition.ParameterRequiredModifiers?.ToArray(),
+            interfaceDefinition.ParameterOptionalModifiers?.ToArray()
         );
 
         // In the following blocks, which set of attributes to pass through is selected. The logic is as follows:

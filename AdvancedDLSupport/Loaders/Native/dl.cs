@@ -73,7 +73,7 @@ internal static class dl
     private static class Unix
     {
         [DllImport(LibraryNameUnix)]
-        public static extern IntPtr dlopen(string fileName, SymbolFlag flags);
+        public static extern IntPtr dlopen(string? fileName, SymbolFlag flags);
 
         [DllImport(LibraryNameUnix)]
         public static extern IntPtr dlsym(IntPtr handle, string name);
@@ -88,7 +88,7 @@ internal static class dl
     private static class BSD
     {
         [DllImport(LibraryNameBSD)]
-        public static extern IntPtr dlopen(string fileName, SymbolFlag flags);
+        public static extern IntPtr dlopen(string? fileName, SymbolFlag flags);
 
         [DllImport(LibraryNameBSD)]
         public static extern IntPtr dlsym(IntPtr handle, string name);

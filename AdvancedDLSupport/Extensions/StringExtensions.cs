@@ -45,7 +45,7 @@ internal static class StringExtensions
             return false;
         }
 
-        if (@this.Any(c => Path.GetInvalidPathChars().Contains(c)))
+        if (@this!.Any(c => Path.GetInvalidPathChars().Contains(c)))
         {
             return false;
         }

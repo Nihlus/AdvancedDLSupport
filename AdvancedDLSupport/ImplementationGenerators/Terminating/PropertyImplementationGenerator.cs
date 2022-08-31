@@ -155,7 +155,7 @@ internal sealed class PropertyImplementationGenerator : ImplementationGeneratorB
         var actualSetMethod = wrappedProperty.GetSetMethod();
         var setterMethod = TargetType.DefineMethod
         (
-            actualSetMethod.Name,
+            actualSetMethod!.Name,
             PropertyMethodAttributes,
             actualSetMethod.CallingConvention,
             typeof(void),
@@ -234,7 +234,7 @@ internal sealed class PropertyImplementationGenerator : ImplementationGeneratorB
     )
     {
         var wrappedProperty = property.GetWrappedMember();
-        var actualGetMethod = wrappedProperty.GetGetMethod();
+        var actualGetMethod = wrappedProperty.GetGetMethod()!;
         var getterMethod = TargetType.DefineMethod
         (
             actualGetMethod.Name,

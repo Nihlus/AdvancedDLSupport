@@ -41,7 +41,7 @@ public static class Program
     /// <summary>
     /// Gets the command-line arguments to the program.
     /// </summary>
-    internal static CommandLineArguments Arguments { get; private set; }
+    internal static CommandLineArguments? Arguments { get; private set; }
 
     /// <summary>
     /// The main entry point.

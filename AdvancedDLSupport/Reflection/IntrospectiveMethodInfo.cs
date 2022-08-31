@@ -48,13 +48,13 @@ public class IntrospectiveMethodInfo : IntrospectiveMemberBase<MethodInfo>
     /// Gets the return parameter required modifiers of the method.
     /// </summary>
     [PublicAPI]
-    public Type[] ReturnParameterRequiredModifiers { get; }
+    public Type[]? ReturnParameterRequiredModifiers { get; }
 
     /// <summary>
     /// Gets the return parameter optional modifiers of the method.
     /// </summary>
     [PublicAPI]
-    public Type[] ReturnParameterOptionalModifiers { get; }
+    public Type[]? ReturnParameterOptionalModifiers { get; }
 
     /// <summary>
     /// Gets the parameter types of the method.
@@ -96,13 +96,13 @@ public class IntrospectiveMethodInfo : IntrospectiveMemberBase<MethodInfo>
     /// Gets the required modifiers of the parameters.
     /// </summary>
     [PublicAPI]
-    public IReadOnlyList<Type[]> ParameterRequiredModifiers { get; }
+    public IReadOnlyList<Type[]>? ParameterRequiredModifiers { get; }
 
     /// <summary>
     /// Gets the required modifiers of the parameters.
     /// </summary>
     [PublicAPI]
-    public IReadOnlyList<Type[]> ParameterOptionalModifiers { get; }
+    public IReadOnlyList<Type[]>? ParameterOptionalModifiers { get; }
 
     /// <summary>
     /// Gets the parameter attributes of the parameter definitions.
@@ -153,7 +153,7 @@ public class IntrospectiveMethodInfo : IntrospectiveMemberBase<MethodInfo>
         var parameterCustomAttributes = new List<IEnumerable<CustomAttributeData>>();
         foreach (var parameter in methodInfo.GetParameters())
         {
-            parameterNames.Add(parameter.Name);
+            parameterNames.Add(parameter.Name ?? throw new InvalidOperationException());
             parameterTypes.Add(parameter.ParameterType);
             parameterRequiredModifiers.Add(parameter.GetRequiredCustomModifiers());
             parameterOptionalModifiers.Add(parameter.GetOptionalCustomModifiers());

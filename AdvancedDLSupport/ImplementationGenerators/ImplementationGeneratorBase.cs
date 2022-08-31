@@ -190,7 +190,7 @@ public abstract class ImplementationGeneratorBase<T> : IImplementationGenerator<
         (
             nameof(NativeLibraryBase.LoadFunction),
             BindingFlags.NonPublic | BindingFlags.Instance
-        );
+        ) ?? throw new MissingMethodException();
 
         // ReSharper disable once PossibleNullReferenceException
         var loadFunc = loadFuncMethod.MakeGenericMethod(delegateType);

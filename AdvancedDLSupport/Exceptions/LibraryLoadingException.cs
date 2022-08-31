@@ -37,7 +37,7 @@ public class LibraryLoadingException : Exception
     /// Gets the name of the library that failed to load.
     /// </summary>
     [PublicAPI]
-    public string LibraryName { get; }
+    public string? LibraryName { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LibraryLoadingException"/> class.
@@ -91,24 +91,5 @@ public class LibraryLoadingException : Exception
         : base(message, inner)
     {
         LibraryName = libraryName;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LibraryLoadingException"/> class.
-    /// </summary>
-    /// <param name="info">The serialized information.</param>
-    /// <param name="context">The streaming context.</param>
-    protected LibraryLoadingException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
-    {
-        LibraryName = info.GetString(nameof(LibraryName));
-    }
-
-    /// <inheritdoc />
-    [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-    public override void GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        info.AddValue(nameof(LibraryName), LibraryName);
-        base.GetObjectData(info, context);
     }
 }

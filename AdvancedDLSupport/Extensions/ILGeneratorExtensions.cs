@@ -41,7 +41,7 @@ internal static class ILGeneratorExtensions
     /// <summary>
     /// Holds a delegate wrapping an action to retrieve an unmanaged signature helper.
     /// </summary>
-    private static readonly Func<CallingConvention, Type, SignatureHelper> GetMethodSignatureHelper;
+    private static readonly Func<CallingConvention, Type, SignatureHelper>? GetMethodSignatureHelper;
 
     static ILGeneratorExtensions()
     {

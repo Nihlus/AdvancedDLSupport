@@ -138,7 +138,7 @@ public static class ModuleBuilderExtensions
         );
 
         var setLastErrorField = typeof(UnmanagedFunctionPointerAttribute)
-            .GetField(nameof(UnmanagedFunctionPointerAttribute.SetLastError));
+            .GetField(nameof(UnmanagedFunctionPointerAttribute.SetLastError)) ?? throw new MissingFieldException();
 
         var functionPointerAttributeBuilder = new CustomAttributeBuilder
         (

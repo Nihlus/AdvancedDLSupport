@@ -46,9 +46,9 @@ internal sealed class LocalPathResolver : ILibraryPathResolver
         var entryAssembly = Assembly.GetEntryAssembly();
         _entryAssemblyDirectory = entryAssembly is null
             ? null
-            : Directory.GetParent(entryAssembly.Location).FullName;
+            : Directory.GetParent(entryAssembly.Location)?.FullName;
 
-        _executingAssemblyDirectory = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
+        _executingAssemblyDirectory = Directory.GetParent(Assembly.GetExecutingAssembly().Location)?.FullName;
 
         _currentDirectory = Directory.GetCurrentDirectory();
     }

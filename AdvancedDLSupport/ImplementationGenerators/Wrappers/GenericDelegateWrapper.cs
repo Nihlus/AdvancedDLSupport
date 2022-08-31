@@ -152,7 +152,7 @@ internal sealed class GenericDelegateWrapper : CallWrapperBase
             Options.HasFlagFast(ImplementationOptions.SuppressSecurity)
         );
 
-        return delegateDefinition.CreateTypeInfo();
+        return delegateDefinition.CreateTypeInfo()!;
     }
 
     /// <inheritdoc/>
