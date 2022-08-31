@@ -68,5 +68,5 @@ public interface IDelegateLibrary
 
     DelegateLibraryDelegates.Action GetNullDelegate();
 
-    int IsNullDelegate(DelegateLibraryDelegates.Action action);
+    int IsNullDelegate(DelegateLibraryDelegates.Action? action);
 }

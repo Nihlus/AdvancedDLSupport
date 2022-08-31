@@ -32,7 +32,7 @@ public interface IAttributePassthroughLibrary
     bool CheckIfGreaterThanZero(int value);
 
     [return: MarshalAs(UnmanagedType.I1)]
-    bool CheckIfStringIsNull(string value);
+    bool CheckIfStringIsNull(string? value);
 
     [return: MarshalAs(UnmanagedType.LPWStr)]
     string EchoWString([MarshalAs(UnmanagedType.LPWStr)] string value);

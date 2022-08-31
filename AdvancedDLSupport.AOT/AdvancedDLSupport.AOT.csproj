@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Remora.Sdk/1.0.0">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <ExecutableFrameworks>net461</ExecutableFrameworks>
+    <ExecutableFrameworks>net462</ExecutableFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>

@@ -43,7 +43,7 @@ public interface IStringLibrary
     string GetLPWString();
 
     [return: MarshalAs(UnmanagedType.I1)]
-    bool CheckIfStringIsNull(string value);
+    bool CheckIfStringIsNull(string? value);
 
     // ReSharper disable once ExplicitCallerInfoArgument
     [NativeSymbol("GetAllocatedString")]

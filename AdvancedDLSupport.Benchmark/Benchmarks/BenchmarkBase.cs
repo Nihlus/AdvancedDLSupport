@@ -43,22 +43,22 @@ public abstract class BenchmarkBase
     /// <summary>
     /// Gets a delegate-based implementation.
     /// </summary>
-    protected static ITest ADLLibrary { get; private set; }
+    protected static ITest ADLLibrary { get; private set; } = null!;
 
     /// <summary>
     /// Gets a delegate-based implementation without disposal checks.
     /// </summary>
-    protected static ITest ADLLibraryWithoutDisposeChecks { get; private set; }
+    protected static ITest ADLLibraryWithoutDisposeChecks { get; private set; } = null!;
 
     /// <summary>
     /// Gets a delegate-based implementation with suppressed unmanaged code security.
     /// </summary>
-    protected static ITest ADLLibraryWithSuppressedSecurity { get; private set; }
+    protected static ITest ADLLibraryWithSuppressedSecurity { get; private set; } = null!;
 
     /// <summary>
     /// Gets a calli-based implementation.
     /// </summary>
-    protected static ITest ADLLibraryWithCalli { get; private set; }
+    protected static ITest ADLLibraryWithCalli { get; private set; } = null!;
 
     /// <summary>
     /// Initializes the local data neccesary to run tests.

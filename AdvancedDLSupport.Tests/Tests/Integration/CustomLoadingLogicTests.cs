@@ -33,8 +33,8 @@ public class CustomLoadingLogicTests : LibraryTestBase<IStringLibrary>
 {
     private const string LibraryName = "StringTests";
 
-    private LibraryLoadingOverride _libraryLogicOverride;
-    private SymbolLoadingOverride _symbolLogicOverride;
+    private LibraryLoadingOverride? _libraryLogicOverride;
+    private SymbolLoadingOverride? _symbolLogicOverride;
 
     public CustomLoadingLogicTests()
         : base(LibraryName)
@@ -63,8 +63,8 @@ public class CustomLoadingLogicTests : LibraryTestBase<IStringLibrary>
     public void CustomLogicCalled()
     {
         Library.GetString();
-        Assert.True(_libraryLogicOverride.LoadLibraryCalled);
-        Assert.True(_symbolLogicOverride.LoadSymbolCalled);
+        Assert.True(_libraryLogicOverride?.LoadLibraryCalled);
+        Assert.True(_symbolLogicOverride?.LoadSymbolCalled);
     }
 
     [Fact]
