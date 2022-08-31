@@ -39,7 +39,7 @@ internal static class InternalNullableAccessor
     /// <typeparam name="T">The type of underlying value to access.</typeparam>
     /// <returns>The underlying value, passed by reference.</returns>
     [Pure]
-    public static unsafe ref T AccessUnderlyingValue<T>( byte* nullablePtr) where T : struct
+    public static unsafe ref T AccessUnderlyingValue<T>(byte* nullablePtr) where T : struct
     {
         // HACK: Working around weird memory layout in .NET Core vs Mono/FX
         var offset = NullableTLayoutScanner<T>.PayloadOffset;

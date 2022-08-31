@@ -608,8 +608,8 @@ public class NativeLibraryBuilder
         Type finalType,
         string? library,
         ImplementationOptions options,
-        ILibraryLoader libLoader = null,
-        ISymbolLoader symLoader = null
+        ILibraryLoader? libLoader = null,
+        ISymbolLoader? symLoader = null
     )
     {
         return Activator.CreateInstance

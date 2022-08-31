@@ -35,11 +35,11 @@ public struct ResolvePathResult : IResult
     /// Gets the resolved path.
     /// </summary>
     [PublicAPI]
-    public string Path { get; }
+    public string? Path { get; }
 
     /// <inheritdoc />
     [PublicAPI]
-    public string ErrorReason { get; }
+    public string? ErrorReason { get; }
 
     /// <inheritdoc />
     [PublicAPI]
@@ -47,7 +47,7 @@ public struct ResolvePathResult : IResult
 
     /// <inheritdoc />
     [PublicAPI]
-    public Exception Exception { get; }
+    public Exception? Exception { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ResolvePathResult"/> struct.

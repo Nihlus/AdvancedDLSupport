@@ -38,7 +38,7 @@ internal abstract class UnixPlatformLoader : PlatformLoaderBase
 
     private readonly Action _resetErrorAction;
 
-    private readonly Func<string, SymbolFlag, IntPtr> _openLibraryFunc;
+    private readonly Func<string?, SymbolFlag, IntPtr> _openLibraryFunc;
 
     private readonly Func<IntPtr, string, IntPtr> _openSymbolFunc;
 
@@ -85,7 +85,7 @@ internal abstract class UnixPlatformLoader : PlatformLoaderBase
     }
 
     /// <inheritdoc />
-    protected override IntPtr LoadLibraryInternal(string path) => LoadLibrary(path, SymbolFlag.RTLD_DEFAULT);
+    protected override IntPtr LoadLibraryInternal(string? path) => LoadLibrary(path, SymbolFlag.RTLD_DEFAULT);
 
     /// <inheritdoc />
     public override IntPtr LoadSymbol(IntPtr library, string symbolName)

@@ -98,9 +98,9 @@ public abstract class IntrospectiveMemberBase<TMemberInfo> : MemberInfo, IIntros
     {
         Member = memberInfo;
         Name = memberInfo.Name;
-        DeclaringType = memberInfo.DeclaringType;
+        DeclaringType = memberInfo.DeclaringType ?? throw new InvalidOperationException();
         MemberType = memberInfo.MemberType;
-        ReflectedType = memberInfo.ReflectedType;
+        ReflectedType = memberInfo.ReflectedType ?? throw new InvalidOperationException();
 
         MetadataType = metadataType;
 
@@ -183,7 +183,7 @@ public abstract class IntrospectiveMemberBase<TMemberInfo> : MemberInfo, IIntros
 
     /// <inheritdoc />
     [PublicAPI]
-    public TAttribute GetCustomAttribute<TAttribute>() where TAttribute : Attribute
+    public TAttribute? GetCustomAttribute<TAttribute>() where TAttribute : Attribute
     {
         var matchingData = CustomAttributes.FirstOrDefault(a => a.AttributeType == typeof(TAttribute));
 

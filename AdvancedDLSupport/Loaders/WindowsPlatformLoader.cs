@@ -32,7 +32,7 @@ namespace AdvancedDLSupport.Loaders;
 internal sealed class WindowsPlatformLoader : PlatformLoaderBase
 {
     /// <inheritdoc />
-    protected override IntPtr LoadLibraryInternal(string path)
+    protected override IntPtr LoadLibraryInternal(string? path)
     {
         if (path is null)
         {
