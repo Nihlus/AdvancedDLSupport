@@ -81,7 +81,7 @@ internal abstract class UnixPlatformLoader : PlatformLoaderBase
             throw new LibraryLoadingException("Library could not be loaded, and error information from dl library could not be found.", path);
         }
 
-        throw new LibraryLoadingException(string.Format("Library could not be loaded: {0}", Marshal.PtrToStringAnsi(errorPtr)), path);
+        throw new LibraryLoadingException($"Library could not be loaded: {Marshal.PtrToStringAnsi(errorPtr)}", path);
     }
 
     /// <inheritdoc />
