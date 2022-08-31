@@ -95,7 +95,6 @@ public abstract class NativeLibraryBase : IDisposable
     /// <param name="sym">The symbol name.</param>
     /// <typeparam name="T">The delegate to load the symbol as.</typeparam>
     /// <returns>A function delegate.</returns>
-    [NotNull]
     internal T LoadFunction<T>(string sym) => Marshal.GetDelegateForFunctionPointer<T>(LoadSymbol(sym));
 
     /// <summary>

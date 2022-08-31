@@ -58,9 +58,9 @@ internal sealed class RefPermutationImplementationGenerator : ImplementationGene
     /// <param name="options">The configuration object to use.</param>
     public RefPermutationImplementationGenerator
     (
-        [NotNull] ModuleBuilder targetModule,
-        [NotNull] TypeBuilder targetType,
-        [NotNull] ILGenerator targetTypeConstructorIL,
+        ModuleBuilder targetModule,
+        TypeBuilder targetType,
+        ILGenerator targetTypeConstructorIL,
         ImplementationOptions options
     )
         : base(targetModule, targetType, targetTypeConstructorIL, options)
@@ -115,8 +115,8 @@ internal sealed class RefPermutationImplementationGenerator : ImplementationGene
     /// <param name="permutations">The generated methods.</param>
     private void GenerateTopLevelMethodImplementation
     (
-        [NotNull] IntrospectiveMethodInfo definition,
-        [NotNull] IReadOnlyList<IntrospectiveMethodInfo> permutations
+        IntrospectiveMethodInfo definition,
+        IReadOnlyList<IntrospectiveMethodInfo> permutations
     )
     {
         if (!(definition.GetWrappedMember() is MethodBuilder builder))
@@ -205,12 +205,11 @@ internal sealed class RefPermutationImplementationGenerator : ImplementationGene
     /// <param name="il">The IL generator where the instructions should be emitted.</param>
     /// <param name="argumentIndex">The argument index to load.</param>
     /// <param name="wrappedType">The type wrapped by the nullable.</param>
-    [NotNull]
     private static LocalBuilder EmitNullableValueRef
     (
-        [NotNull] ILGenerator il,
+        ILGenerator il,
         short argumentIndex,
-        [NotNull] Type wrappedType
+        Type wrappedType
     )
     {
         var local = il.DeclareLocal(typeof(byte*), true);
@@ -237,8 +236,8 @@ internal sealed class RefPermutationImplementationGenerator : ImplementationGene
     /// <param name="argumentIndex">The argument index to load.</param>
     private static void EmitGetPinnedAddressOfNullable
     (
-        [NotNull] ILGenerator il,
-        [NotNull] Type nullableType,
+        ILGenerator il,
+        Type nullableType,
         short argumentIndex
     )
     {
@@ -262,7 +261,7 @@ internal sealed class RefPermutationImplementationGenerator : ImplementationGene
     /// </summary>
     /// <param name="il">The IL generator where the instructions should be emitted.</param>
     /// <param name="wrappedType">The type that the nullable wraps.</param>
-    private static void EmitAccessInternalNullableValue([NotNull] ILGenerator il, [NotNull] Type wrappedType)
+    private static void EmitAccessInternalNullableValue(ILGenerator il, Type wrappedType)
     {
         // ReSharper disable once PossibleNullReferenceException
         var accessValueMethod = typeof(InternalNullableAccessor)
@@ -279,7 +278,7 @@ internal sealed class RefPermutationImplementationGenerator : ImplementationGene
     /// back on the evaluation stack.
     /// </summary>
     /// <param name="il">The IL generator where the instructions should be emitted.</param>
-    private static void EmitPermutationIndex([NotNull] ILGenerator il)
+    private static void EmitPermutationIndex(ILGenerator il)
     {
         // Create a new BitArray to use as the mask
         var bitArrayConstructor = typeof(BitArray).GetConstructor(new[] { typeof(bool[]) });
@@ -297,11 +296,10 @@ internal sealed class RefPermutationImplementationGenerator : ImplementationGene
     /// <param name="il">The IL generator where the instructions should be emitted.</param>
     /// <param name="parameters">The method parameters.</param>
     /// <returns>The index of the local variable used for the array.</returns>
-    [NotNull]
     private static LocalBuilder EmitHasValueArray
     (
-        [NotNull] ILGenerator il,
-        [NotNull] IList<Type> parameters
+        ILGenerator il,
+        IList<Type> parameters
     )
     {
         var local = il.DeclareLocal(typeof(bool[]));
@@ -335,7 +333,7 @@ internal sealed class RefPermutationImplementationGenerator : ImplementationGene
         return local;
     }
 
-    private static void EmitDefaultSwitchCase([NotNull] ILGenerator methodIL, Label defaultCase)
+    private static void EmitDefaultSwitchCase(ILGenerator methodIL, Label defaultCase)
     {
         // Generate default case
         methodIL.MarkLabel(defaultCase);
@@ -359,7 +357,7 @@ internal sealed class RefPermutationImplementationGenerator : ImplementationGene
     /// <param name="methodIL">The IL generator where the instructions should be emitted.</param>
     /// <param name="parameter">A <see cref="ValueTuple"/> containing the parameter index, and its associated <see cref="ParameterInfo"/>.</param>
     [SuppressMessage("ReSharper", "PossibleNullReferenceException", Justification = "Known at compile time.")]
-    private static void EmitNullableGetHasValue([NotNull] ILGenerator methodIL, (int Index, Type Type) parameter)
+    private static void EmitNullableGetHasValue(ILGenerator methodIL, (int Index, Type Type) parameter)
     {
         methodIL.EmitLoadArgument((short)parameter.Index);
 

@@ -32,11 +32,10 @@ public abstract class LibraryTestBase<T> : IDisposable where T : class
 {
     protected ImplementationOptions Config { get; }
 
-    [NotNull]
     protected T Library { get; }
 
     [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor", Justification = "Used to set implementation options in derived classes")]
-    protected LibraryTestBase([NotNull] string libraryLocation)
+    protected LibraryTestBase(string libraryLocation)
     {
         Config = GetImplementationOptions();
         Library = GetImplementationBuilder().ActivateInterface<T>(libraryLocation);
@@ -47,7 +46,6 @@ public abstract class LibraryTestBase<T> : IDisposable where T : class
         return ImplementationOptions.GenerateDisposalChecks;
     }
 
-    [NotNull]
     protected virtual NativeLibraryBuilder GetImplementationBuilder()
     {
         return new NativeLibraryBuilder(Config);
