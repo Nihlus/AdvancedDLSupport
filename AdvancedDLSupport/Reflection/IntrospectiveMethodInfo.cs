@@ -41,25 +41,25 @@ namespace AdvancedDLSupport.Reflection
         /// <summary>
         /// Gets the return type of the method.
         /// </summary>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         public Type ReturnType { get; }
 
         /// <summary>
         /// Gets the return parameter required modifiers of the method.
         /// </summary>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         public Type[] ReturnParameterRequiredModifiers { get; }
 
         /// <summary>
         /// Gets the return parameter optional modifiers of the method.
         /// </summary>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         public Type[] ReturnParameterOptionalModifiers { get; }
 
         /// <summary>
         /// Gets the parameter types of the method.
         /// </summary>
-        [PublicAPI, NotNull, ItemNotNull]
+        [PublicAPI]
         public IReadOnlyList<Type> ParameterTypes { get; }
 
         /// <summary>
@@ -89,37 +89,37 @@ namespace AdvancedDLSupport.Reflection
         /// <summary>
         /// Gets the names of the parameters.
         /// </summary>
-        [PublicAPI, NotNull, ItemNotNull]
+        [PublicAPI]
         public IReadOnlyList<string> ParameterNames { get; }
 
         /// <summary>
         /// Gets the required modifiers of the parameters.
         /// </summary>
-        [PublicAPI, NotNull, ItemNotNull]
+        [PublicAPI]
         public IReadOnlyList<Type[]> ParameterRequiredModifiers { get; }
 
         /// <summary>
         /// Gets the required modifiers of the parameters.
         /// </summary>
-        [PublicAPI, NotNull, ItemNotNull]
+        [PublicAPI]
         public IReadOnlyList<Type[]> ParameterOptionalModifiers { get; }
 
         /// <summary>
         /// Gets the parameter attributes of the parameter definitions.
         /// </summary>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         public IReadOnlyList<ParameterAttributes> ParameterAttributes { get; }
 
         /// <summary>
         /// Gets the custom attributes applied to the return value parameter.
         /// </summary>
-        [PublicAPI, NotNull, ItemNotNull]
+        [PublicAPI]
         public IReadOnlyList<CustomAttributeData> ReturnParameterCustomAttributes { get; }
 
         /// <summary>
         /// Gets the custom attributes applied to the parameters.
         /// </summary>
-        [PublicAPI, NotNull, ItemNotNull]
+        [PublicAPI]
         public IReadOnlyList<IReadOnlyList<CustomAttributeData>> ParameterCustomAttributes { get; }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace AdvancedDLSupport.Reflection
         /// <param name="methodInfo">The <see cref="MethodInfo"/> to wrap.</param>
         /// <param name="metadataType">The type that the member gets native metadata from.</param>
         [PublicAPI]
-        public IntrospectiveMethodInfo([NotNull] MethodInfo methodInfo, [NotNull] Type metadataType)
+        public IntrospectiveMethodInfo(MethodInfo methodInfo, Type metadataType)
             : base(methodInfo, metadataType, methodInfo.CustomAttributes)
         {
             if (methodInfo is MethodBuilder)
@@ -246,10 +246,10 @@ namespace AdvancedDLSupport.Reflection
         [PublicAPI]
         public IntrospectiveMethodInfo
         (
-            [NotNull] MethodBuilder builder,
-            [NotNull] Type returnType,
-            [NotNull, ItemNotNull] IEnumerable<Type> parameterTypes,
-            [NotNull] Type metadataType,
+            MethodBuilder builder,
+            Type returnType,
+            IEnumerable<Type> parameterTypes,
+            Type metadataType,
             IntrospectiveMethodInfo? definitionToCopyAttributesFrom = null
         )
             : base(builder, metadataType, definitionToCopyAttributesFrom?.CustomAttributes ?? new List<CustomAttributeData>())
@@ -287,7 +287,7 @@ namespace AdvancedDLSupport.Reflection
         /// </summary>
         /// <param name="other">The other method info.</param>
         /// <returns>true if the signatures are the same; otherwise, false.</returns>
-        public bool HasSameSignatureAs([NotNull] IntrospectiveMethodInfo other)
+        public bool HasSameSignatureAs(IntrospectiveMethodInfo other)
         {
             if (Name != other.Name)
             {

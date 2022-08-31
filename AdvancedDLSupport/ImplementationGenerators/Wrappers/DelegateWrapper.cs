@@ -40,19 +40,14 @@ namespace AdvancedDLSupport.ImplementationGenerators
     /// </summary>
     public class DelegateWrapper : CallWrapperBase
     {
-        [NotNull]
         private static readonly MethodInfo _marshalPointerToDel;
 
-        [NotNull]
         private static readonly MethodInfo _marshalDelToPointer;
 
-        [NotNull]
         private static readonly MethodInfo _intPtrEquality;
 
-        [NotNull]
         private static readonly FieldInfo _intPtrZero;
 
-        [NotNull]
         private static readonly MethodInfo _allocMethod;
 
         static DelegateWrapper()
@@ -89,7 +84,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="targetType">The type in which the implementation should be generated.</param>
         /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
         /// <param name="options">The configuration object to use.</param>
-        public DelegateWrapper([NotNull] ModuleBuilder targetModule, [NotNull] TypeBuilder targetType, [NotNull] ILGenerator targetTypeConstructorIL, ImplementationOptions options)
+        public DelegateWrapper(ModuleBuilder targetModule, TypeBuilder targetType, ILGenerator targetTypeConstructorIL, ImplementationOptions options)
             : base(targetModule, targetType, targetTypeConstructorIL, options)
         {
         }
@@ -206,7 +201,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="customAttributes">The custom attributes applied to the parameter.</param>
         /// <returns>The delegate lifetime.</returns>
         [Pure]
-        private DelegateLifetime GetParameterDelegateLifetime([NotNull, ItemNotNull] IEnumerable<CustomAttributeData> customAttributes)
+        private DelegateLifetime GetParameterDelegateLifetime(IEnumerable<CustomAttributeData> customAttributes)
         {
             var lifetimeAttribute = customAttributes.FirstOrDefault
             (
@@ -263,8 +258,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="originalType">The original type.</param>
         /// <returns>The passed-through type.</returns>
-        [NotNull]
-        private Type GetParameterPassthroughType([NotNull] Type originalType)
+        private Type GetParameterPassthroughType(Type originalType)
         {
             return originalType.IsDelegate() ? typeof(IntPtr) : originalType;
         }

@@ -55,9 +55,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="options">The configuration object to use.</param>
         public GenericDelegateWrapper
         (
-            [NotNull] ModuleBuilder targetModule,
-            [NotNull] TypeBuilder targetType,
-            [NotNull] ILGenerator targetTypeConstructorIL,
+            ModuleBuilder targetModule,
+            TypeBuilder targetType,
+            ILGenerator targetTypeConstructorIL,
             ImplementationOptions options
         )
             : base
@@ -106,7 +106,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="module">The module to emit the type in.</param>
         /// <param name="genericDelegateType">The generic delegate type.</param>
-        private TypeInfo EmitExplicitDelegateDefinition([NotNull] ModuleBuilder module, [NotNull] Type genericDelegateType)
+        private TypeInfo EmitExplicitDelegateDefinition(ModuleBuilder module, Type genericDelegateType)
         {
             var existingDelegate = GetCreatedExplicitDelegateType(genericDelegateType);
             if (!(existingDelegate is null))
@@ -253,8 +253,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="originalType">The original type.</param>
         /// <returns>The passed-through type.</returns>
-        [NotNull]
-        private Type GetParameterPassthroughType([NotNull] Type originalType)
+        private Type GetParameterPassthroughType(Type originalType)
         {
             if (originalType.IsGenericDelegate())
             {
@@ -278,7 +277,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="originalType">The generic type.</param>
         /// <returns>The explicitly implemented type.</returns>
-        private Type? GetCreatedExplicitDelegateType([NotNull] Type originalType)
+        private Type? GetCreatedExplicitDelegateType(Type originalType)
         {
             var signature = GetSignatureTypesFromGenericDelegate(originalType);
             var delegateName = GetDelegateTypeName(signature.ReturnType, signature.ParameterTypes);
@@ -294,7 +293,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <exception cref="InvalidOperationException">Thrown if no types could be extracted.</exception>
         private (Type ReturnType, IReadOnlyList<Type> ParameterTypes) GetSignatureTypesFromGenericDelegate
         (
-            [NotNull] Type delegateType
+            Type delegateType
         )
         {
             var typeParameters = delegateType.GenericTypeArguments;
@@ -324,8 +323,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="returnType">The return type of the delegate.</param>
         /// <param name="parameterTypes">The parameter types of the delegate.</param>
         /// <returns>The generated name of the delegate.</returns>
-        [NotNull]
-        private string GetDelegateTypeName([NotNull] Type returnType, [NotNull] IReadOnlyCollection<Type> parameterTypes)
+        private string GetDelegateTypeName(Type returnType, IReadOnlyCollection<Type> parameterTypes)
         {
             var sb = new StringBuilder();
 

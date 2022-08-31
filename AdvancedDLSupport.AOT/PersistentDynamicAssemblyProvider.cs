@@ -48,12 +48,10 @@ namespace AdvancedDLSupport.AOT
         /// <summary>
         /// Gets the output filename of the assembly.
         /// </summary>
-        [NotNull]
         public string OutputFilename { get; }
 
         private bool _isDisposed;
 
-        [NotNull]
         private AssemblyBuilder _dynamicAssembly;
 
         private ModuleBuilder? _dynamicModule;
@@ -66,7 +64,7 @@ namespace AdvancedDLSupport.AOT
         /// </param>
         /// <param name="outputDirectory">The directory where the dynamic assembly should be saved.</param>
         [PublicAPI]
-        public PersistentDynamicAssemblyProvider([NotNull] string outputDirectory, bool debuggable)
+        public PersistentDynamicAssemblyProvider(string outputDirectory, bool debuggable)
         {
             IsDebuggable = debuggable;
 

@@ -39,7 +39,7 @@ namespace AdvancedDLSupport.Tests.Data.Classes
             _defaultLoader = @default;
         }
 
-        public IntPtr LoadSymbol(IntPtr library, [NotNull] string symbolName)
+        public IntPtr LoadSymbol(IntPtr library, string symbolName)
         {
             LoadSymbolCalled = true;
 

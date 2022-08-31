@@ -52,14 +52,14 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="member">The member definition.</param>
         /// <returns>true if the generator is applicable; otherwise, false.</returns>
         [PublicAPI, Pure]
-        bool IsApplicable([NotNull] TAccepted member);
+        bool IsApplicable(TAccepted member);
 
         /// <summary>
         /// Generates an implementation for the given member, optionally producing more definitions for processing.
         /// </summary>
         /// <param name="workUnit">The member to generate the implementation for.</param>
         /// <returns>An optional set of more definitions to be processed.</returns>
-        [PublicAPI, NotNull, ItemNotNull]
-        IEnumerable<PipelineWorkUnit<TAccepted>> GenerateImplementation([NotNull] PipelineWorkUnit<TAccepted> workUnit);
+        [PublicAPI]
+        IEnumerable<PipelineWorkUnit<TAccepted>> GenerateImplementation(PipelineWorkUnit<TAccepted> workUnit);
     }
 }

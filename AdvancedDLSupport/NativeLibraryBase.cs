@@ -87,7 +87,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="sym">The symbol name.</param>
         /// <returns>A handle to the symbol.</returns>
-        internal IntPtr LoadSymbol([NotNull] string sym) => _symbolLoader.LoadSymbol(_libraryHandle, sym);
+        internal IntPtr LoadSymbol(string sym) => _symbolLoader.LoadSymbol(_libraryHandle, sym);
 
         /// <summary>
         /// Forwards the function loading call to the wrapped platform loader.
@@ -96,7 +96,7 @@ namespace AdvancedDLSupport
         /// <typeparam name="T">The delegate to load the symbol as.</typeparam>
         /// <returns>A function delegate.</returns>
         [NotNull]
-        internal T LoadFunction<T>([NotNull] string sym) => Marshal.GetDelegateForFunctionPointer<T>(LoadSymbol(sym));
+        internal T LoadFunction<T>(string sym) => Marshal.GetDelegateForFunctionPointer<T>(LoadSymbol(sym));
 
         /// <summary>
         /// Throws if the library has been disposed.

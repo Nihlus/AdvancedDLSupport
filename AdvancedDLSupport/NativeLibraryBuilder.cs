@@ -59,7 +59,7 @@ namespace AdvancedDLSupport
         /// <see cref="ImplementationOptions.GenerateDisposalChecks"/> and
         /// <see cref="ImplementationOptions.EnableDllMapSupport"/>.
         /// </summary>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         public static NativeLibraryBuilder Default { get; }
 
         /// <summary>
@@ -71,19 +71,14 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Gets the path resolver to use for resolving libraries.
         /// </summary>
-        [NotNull]
         private ILibraryPathResolver PathResolver { get; }
 
-        [NotNull]
         private readonly IDynamicAssemblyProvider _assemblyProvider;
 
-        [NotNull]
         private readonly ModuleBuilder _moduleBuilder;
 
-        [NotNull]
         private static readonly object BuilderLock = new object();
 
-        [NotNull]
         private static readonly ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type> TypeCache;
 
         private ILibraryLoader _customLibraryLoader;
@@ -154,7 +149,7 @@ namespace AdvancedDLSupport
         /// The pattern to search for in file names. Defaults to all files ending with .dll.
         /// </param>
         [PublicAPI]
-        public static void DiscoverCompiledTypes([NotNull] string searchDirectory, [NotNull] string searchPattern = "*.dll")
+        public static void DiscoverCompiledTypes(string searchDirectory, string searchPattern = "*.dll")
         {
             var assemblyPaths = Directory.EnumerateFiles(searchDirectory, searchPattern, SearchOption.AllDirectories);
 
@@ -175,7 +170,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="stream">A stream of an assembly to search.</param>
         [PublicAPI]
-        public static void DiscoverCompiledTypes([NotNull] Stream stream)
+        public static void DiscoverCompiledTypes(Stream stream)
         {
             // unfortunately, we don't have any methods to load an assembly from Stream
             using (var byteStream = new MemoryStream())
@@ -190,7 +185,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="assembly">The assembly to search.</param>
         [PublicAPI]
-        public static void DiscoverCompiledTypes([NotNull] Assembly assembly)
+        public static void DiscoverCompiledTypes(Assembly assembly)
         {
             var metadataType = assembly.GetExportedTypes().FirstOrDefault
             (
@@ -242,8 +237,8 @@ namespace AdvancedDLSupport
         /// <exception cref="InvalidOperationException">
         /// Thrown if the resulting instance can't be cast to the expected class. Should never occur in user code.
         /// </exception>
-        [NotNull, PublicAPI]
-        public TInterface ActivateInterface<TInterface>([NotNull] string libraryPath) where TInterface : class
+        [PublicAPI]
+        public TInterface ActivateInterface<TInterface>(string libraryPath) where TInterface : class
         {
             // Check for remapping
             if (Options.HasFlagFast(EnableDllMapSupport))
@@ -274,8 +269,8 @@ namespace AdvancedDLSupport
         /// <exception cref="InvalidOperationException">
         /// Thrown if the resulting instance can't be cast to the expected class. Should never occur in user code.
         /// </exception>
-        [NotNull, PublicAPI]
-        public TClass ActivateClass<TClass>([NotNull] string libraryPath)
+        [PublicAPI]
+        public TClass ActivateClass<TClass>(string libraryPath)
             where TClass : NativeLibraryBase
         {
             var classType = typeof(TClass);
@@ -304,8 +299,8 @@ namespace AdvancedDLSupport
         /// <exception cref="InvalidOperationException">
         /// Thrown if the resulting instance can't be cast to the expected class. Should never occur in user code.
         /// </exception>
-        [NotNull, PublicAPI]
-        public TClass ActivateClass<TClass, TInterface>([NotNull] string libraryPath)
+        [PublicAPI]
+        public TClass ActivateClass<TClass, TInterface>(string libraryPath)
             where TClass : NativeLibraryBase
             where TInterface : class
         {
@@ -335,12 +330,12 @@ namespace AdvancedDLSupport
         /// <exception cref="InvalidOperationException">
         /// Thrown if the resulting instance can't be cast to the expected class. Should never occur in user code.
         /// </exception>
-        [NotNull, PublicAPI]
+        [PublicAPI]
         public object ActivateClass
         (
-            [NotNull] string libraryPath,
-            [NotNull] Type baseClassType,
-            [NotNull, ItemNotNull] params Type[] interfaceTypes
+            string libraryPath,
+            Type baseClassType,
+            params Type[] interfaceTypes
         )
         {
             if (!baseClassType.IsAbstract)
@@ -417,11 +412,10 @@ namespace AdvancedDLSupport
         /// Thrown if the specified library can't be found in any of the loader paths.
         /// </exception>
         /// <returns>A key-value tuple of the generated type identifier and the type.</returns>
-        [NotNull]
         internal Tuple<GeneratedImplementationTypeIdentifier, Type> PregenerateImplementationType
         (
-            [NotNull] Type classType,
-            [NotNull, ItemNotNull] params Type[] interfaceTypes
+            Type classType,
+            params Type[] interfaceTypes
         )
         {
             if (!classType.IsAbstract)
@@ -475,11 +469,11 @@ namespace AdvancedDLSupport
         /// <param name="classType">The base class for the implementation to generate.</param>
         /// <param name="interfaceTypes">The interfaces to implement.</param>
         /// <returns>The type.</returns>
-        [NotNull, Pure]
+        [Pure]
         private Type GenerateInterfaceImplementationType
         (
-            [NotNull] Type classType,
-            [NotNull, ItemNotNull] params Type[] interfaceTypes
+            Type classType,
+            params Type[] interfaceTypes
         )
         {
             if (!classType.IsAbstract)
@@ -566,8 +560,8 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="type">The type to generate the name for.</param>
         /// <returns>The name.</returns>
-        [NotNull, Pure]
-        private static string GenerateTypeName([NotNull] Type type)
+        [Pure]
+        private static string GenerateTypeName(Type type)
         {
             var typeName = type.Name.StartsWith("I")
                 ? type.Name.Substring(1)
@@ -594,8 +588,8 @@ namespace AdvancedDLSupport
         [NotNull, Pure]
         private TInterface CreateAnonymousImplementationInstance<TInterface>
         (
-            [NotNull] Type finalType,
-            [NotNull] string library,
+            Type finalType,
+            string library,
             ImplementationOptions options
         )
         {
@@ -609,10 +603,9 @@ namespace AdvancedDLSupport
         /// <param name="library">The path to or name of the library.</param>
         /// <param name="options">The generator options.</param>
         /// <returns>An instance of the anonymous type.</returns>
-        [NotNull]
         private object CreateAnonymousImplementationInstance
         (
-            [NotNull] Type finalType,
+            Type finalType,
             string? library,
             ImplementationOptions options,
             ILibraryLoader libLoader = null,
@@ -637,9 +630,9 @@ namespace AdvancedDLSupport
         /// <param name="interfaceTypes">The interfaces where the methods originate.</param>
         private void ConstructMethods
         (
-            [NotNull] ImplementationPipeline pipeline,
-            [NotNull] Type classType,
-            [NotNull, ItemNotNull] params Type[] interfaceTypes
+            ImplementationPipeline pipeline,
+            Type classType,
+            params Type[] interfaceTypes
         )
         {
             var constructedMethods = new List<IntrospectiveMethodInfo>();
@@ -735,9 +728,9 @@ namespace AdvancedDLSupport
         /// </exception>
         private void ConstructProperties
         (
-            [NotNull] ImplementationPipeline pipeline,
-            [NotNull] Type classType,
-            [NotNull, ItemNotNull] params Type[] interfaceTypes
+            ImplementationPipeline pipeline,
+            Type classType,
+            params Type[] interfaceTypes
         )
         {
             var constructedProperties = new List<IntrospectivePropertyInfo>();

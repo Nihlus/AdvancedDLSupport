@@ -41,7 +41,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="il">The generator where the instructions will be emitted.</param>
         /// <param name="workUnit">The method being worked on.</param>
         [PublicAPI]
-        void EmitPrologue([NotNull] ILGenerator il, [NotNull] PipelineWorkUnit<IntrospectiveMethodInfo> workUnit);
+        void EmitPrologue(ILGenerator il, PipelineWorkUnit<IntrospectiveMethodInfo> workUnit);
 
         /// <summary>
         /// Emits the wrapper prologue, that is, the instructions after the method call. The return value (if any) of
@@ -51,6 +51,6 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="il">The generator where the instructions will be emitted.</param>
         /// <param name="workUnit">The method being worked on.</param>
         [PublicAPI]
-        void EmitEpilogue([NotNull] ILGenerator il, [NotNull] PipelineWorkUnit<IntrospectiveMethodInfo> workUnit);
+        void EmitEpilogue(ILGenerator il, PipelineWorkUnit<IntrospectiveMethodInfo> workUnit);
     }
 }

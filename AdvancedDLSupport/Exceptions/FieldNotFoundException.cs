@@ -36,7 +36,7 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Gets the name of the field that was not found.
         /// </summary>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         public string FieldName { get; }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="fieldName">The message of the exception.</param>
         [PublicAPI]
-        public FieldNotFoundException([NotNull] string fieldName)
+        public FieldNotFoundException(string fieldName)
             : base($"Could not find the field \"{fieldName}\".")
         {
             FieldName = fieldName;
@@ -65,7 +65,7 @@ namespace AdvancedDLSupport
         /// <param name="fieldName">The name of the field that was not found.</param>
         /// <param name="inner">The exception which caused this exception.</param>
         [PublicAPI]
-        public FieldNotFoundException([NotNull] string fieldName, Exception? inner)
+        public FieldNotFoundException(string fieldName, Exception? inner)
             : base($"Could not find the field \"{fieldName}\".", inner)
         {
             FieldName = fieldName;
@@ -77,7 +77,7 @@ namespace AdvancedDLSupport
         /// <param name="message">The message of the exception.</param>
         /// <param name="fieldName">The name of the field that was not found.</param>
         [PublicAPI]
-        public FieldNotFoundException([NotNull] string message, [NotNull] string fieldName)
+        public FieldNotFoundException(string message, string fieldName)
             : base(message)
         {
             FieldName = fieldName;
@@ -90,7 +90,7 @@ namespace AdvancedDLSupport
         /// <param name="fieldName">The name of the field that was not found.</param>
         /// <param name="inner">The exception which caused this exception.</param>
         [PublicAPI]
-        public FieldNotFoundException([NotNull] string message, [NotNull] string fieldName, [NotNull] Exception inner)
+        public FieldNotFoundException(string message, string fieldName, Exception inner)
             : base(message, inner)
         {
             FieldName = fieldName;
@@ -101,7 +101,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="info">The serialized information.</param>
         /// <param name="context">The streaming context.</param>
-        protected FieldNotFoundException([NotNull] SerializationInfo info, StreamingContext context)
+        protected FieldNotFoundException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
             FieldName = info.GetString(nameof(FieldName)) ?? string.Empty;

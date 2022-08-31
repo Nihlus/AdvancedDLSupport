@@ -38,27 +38,21 @@ namespace AdvancedDLSupport.Pipeline
     [PublicAPI]
     public class ImplementationPipeline
     {
-        [NotNull]
         private readonly ModuleBuilder _targetModule;
 
-        [NotNull]
         private readonly ILGenerator _constructorIL;
 
         private readonly ImplementationOptions _options;
 
-        [NotNull]
         private readonly ImplementationGeneratorSorter _generatorSorter;
 
-        [NotNull, ItemNotNull]
         private IReadOnlyList<IImplementationGenerator<IntrospectiveMethodInfo>> _methodGeneratorPipeline;
 
-        [NotNull, ItemNotNull]
         private IReadOnlyList<IImplementationGenerator<IntrospectivePropertyInfo>> _propertyGeneratorPipeline;
 
         /// <summary>
         /// Gets the target type of the pipeline.
         /// </summary>
-        [NotNull]
         internal TypeBuilder TargetType { get; }
 
         /// <summary>
@@ -70,9 +64,9 @@ namespace AdvancedDLSupport.Pipeline
         /// <param name="options">The implementation options to use.</param>
         public ImplementationPipeline
         (
-            [NotNull] ModuleBuilder targetModule,
-            [NotNull] TypeBuilder targetType,
-            [NotNull] ILGenerator constructorIL,
+            ModuleBuilder targetModule,
+            TypeBuilder targetType,
+            ILGenerator constructorIL,
             ImplementationOptions options
         )
         {
@@ -92,7 +86,7 @@ namespace AdvancedDLSupport.Pipeline
         /// </summary>
         /// <param name="stages">The stages to inject.</param>
         [PublicAPI]
-        public void InjectMethodStages([NotNull] params IImplementationGenerator<IntrospectiveMethodInfo>[] stages)
+        public void InjectMethodStages(params IImplementationGenerator<IntrospectiveMethodInfo>[] stages)
         {
             _methodGeneratorPipeline = _generatorSorter.SortGenerators(GetBaselineMethodGenerators().Concat(stages)).ToList();
         }
@@ -101,7 +95,7 @@ namespace AdvancedDLSupport.Pipeline
         /// Gets the baseline set of method implementation generators.
         /// </summary>
         /// <returns>The baseline set.</returns>
-        [NotNull, ItemNotNull, Pure]
+        [Pure]
         private IEnumerable<IImplementationGenerator<IntrospectiveMethodInfo>> GetBaselineMethodGenerators()
         {
             yield return new RefPermutationImplementationGenerator
@@ -190,7 +184,7 @@ namespace AdvancedDLSupport.Pipeline
         /// </summary>
         /// <param name="stages">The stages to inject.</param>
         [PublicAPI]
-        public void InjectPropertyStage([NotNull] params IImplementationGenerator<IntrospectivePropertyInfo>[] stages)
+        public void InjectPropertyStage(params IImplementationGenerator<IntrospectivePropertyInfo>[] stages)
         {
             _propertyGeneratorPipeline = _generatorSorter.SortGenerators(GetBaselinePropertyGenerators().Concat(stages)).ToList();
         }
@@ -199,7 +193,7 @@ namespace AdvancedDLSupport.Pipeline
         /// Gets the baseline set of property implementation generators.
         /// </summary>
         /// <returns>The baseline set.</returns>
-        [NotNull, ItemNotNull, Pure]
+        [Pure]
         private IEnumerable<IImplementationGenerator<IntrospectivePropertyInfo>> GetBaselinePropertyGenerators()
         {
             yield return new PropertyImplementationGenerator
@@ -220,10 +214,9 @@ namespace AdvancedDLSupport.Pipeline
         /// The name to use for the method. If null, the interface member name is used.
         /// </param>
         /// <returns>An introspective method info for the definition.</returns>
-        [NotNull]
         internal IntrospectiveMethodInfo GenerateDefinitionFromSignature
         (
-            [NotNull] IntrospectiveMethodInfo interfaceDefinition,
+            IntrospectiveMethodInfo interfaceDefinition,
             IntrospectiveMethodInfo? abstractImplementation,
             string? nameOverride = null
         )
@@ -285,7 +278,7 @@ namespace AdvancedDLSupport.Pipeline
         /// </summary>
         /// <param name="methods">The definitions.</param>
         [PublicAPI]
-        public void ConsumeMethodDefinitions([NotNull, ItemNotNull] IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> methods)
+        public void ConsumeMethodDefinitions(IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> methods)
         {
             ConsumeDefinitions(methods, _methodGeneratorPipeline);
         }
@@ -295,7 +288,7 @@ namespace AdvancedDLSupport.Pipeline
         /// </summary>
         /// <param name="properties">The properties.</param>
         [PublicAPI]
-        public void ConsumePropertyDefinitions([NotNull] IEnumerable<PipelineWorkUnit<IntrospectivePropertyInfo>> properties)
+        public void ConsumePropertyDefinitions(IEnumerable<PipelineWorkUnit<IntrospectivePropertyInfo>> properties)
         {
             ConsumeDefinitions(properties, _propertyGeneratorPipeline);
         }
@@ -310,8 +303,8 @@ namespace AdvancedDLSupport.Pipeline
         /// <typeparam name="T">The type of definition to process.</typeparam>
         private void ConsumeDefinitions<T>
         (
-            [NotNull] IEnumerable<PipelineWorkUnit<T>> definitions,
-            [NotNull] IReadOnlyList<IImplementationGenerator<T>> pipeline
+            IEnumerable<PipelineWorkUnit<T>> definitions,
+            IReadOnlyList<IImplementationGenerator<T>> pipeline
         )
             where T : MemberInfo
         {

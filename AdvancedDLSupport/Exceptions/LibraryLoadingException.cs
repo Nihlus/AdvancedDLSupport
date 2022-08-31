@@ -63,7 +63,7 @@ namespace AdvancedDLSupport
         /// <param name="message">The message of the exception.</param>
         /// <param name="inner">The exception which caused this exception.</param>
         [PublicAPI]
-        public LibraryLoadingException(string? message, [NotNull] Exception inner)
+        public LibraryLoadingException(string? message, Exception inner)
             : base(message, inner)
         {
         }
@@ -74,7 +74,7 @@ namespace AdvancedDLSupport
         /// <param name="message">The message of the exception.</param>
         /// <param name="libraryName">The name of the library that failed to load.</param>
         [PublicAPI]
-        public LibraryLoadingException([NotNull] string message, string? libraryName)
+        public LibraryLoadingException(string message, string? libraryName)
             : base(message)
         {
             LibraryName = libraryName;
@@ -87,7 +87,7 @@ namespace AdvancedDLSupport
         /// <param name="libraryName">The name of the library that failed to load.</param>
         /// <param name="inner">The exception which caused this exception.</param>
         [PublicAPI]
-        public LibraryLoadingException([NotNull] string message, string? libraryName, [NotNull] Exception inner)
+        public LibraryLoadingException(string message, string? libraryName, Exception inner)
             : base(message, inner)
         {
             LibraryName = libraryName;
@@ -98,7 +98,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="info">The serialized information.</param>
         /// <param name="context">The streaming context.</param>
-        protected LibraryLoadingException([NotNull] SerializationInfo info, StreamingContext context)
+        protected LibraryLoadingException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
             LibraryName = info.GetString(nameof(LibraryName));

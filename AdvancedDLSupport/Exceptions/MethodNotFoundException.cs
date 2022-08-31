@@ -36,7 +36,7 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Gets the name of the method that was not found.
         /// </summary>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         public string MethodName { get; }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="methodName">The name of the method that was not found.</param>
         [PublicAPI]
-        public MethodNotFoundException([NotNull] string methodName)
+        public MethodNotFoundException(string methodName)
             : base($"Could not find the field \"{methodName}\".")
         {
             MethodName = methodName;
@@ -65,7 +65,7 @@ namespace AdvancedDLSupport
         /// <param name="methodName">The name of the method that was not found.</param>
         /// <param name="inner">The exception which caused this exception.</param>
         [PublicAPI]
-        public MethodNotFoundException([NotNull] string methodName, Exception? inner)
+        public MethodNotFoundException(string methodName, Exception? inner)
             : base($"Could not find the field \"{methodName}\".", inner)
         {
             MethodName = methodName;
@@ -77,7 +77,7 @@ namespace AdvancedDLSupport
         /// <param name="message">The message of the exception.</param>
         /// <param name="methodName">The name of the method that was not found.</param>
         [PublicAPI]
-        public MethodNotFoundException([NotNull] string message, [NotNull] string methodName)
+        public MethodNotFoundException(string message, string methodName)
             : base(message)
         {
             MethodName = methodName;
@@ -90,7 +90,7 @@ namespace AdvancedDLSupport
         /// <param name="methodName">The name of the method that was not found.</param>
         /// <param name="inner">The exception which caused this exception.</param>
         [PublicAPI]
-        public MethodNotFoundException([NotNull] string message, [NotNull] string methodName, [NotNull] Exception inner)
+        public MethodNotFoundException(string message, string methodName, Exception inner)
             : base(message, inner)
         {
             MethodName = methodName;
@@ -101,7 +101,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="info">The serialized information.</param>
         /// <param name="context">The streaming context.</param>
-        protected MethodNotFoundException([NotNull] SerializationInfo info, StreamingContext context)
+        protected MethodNotFoundException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
             MethodName = info.GetString(nameof(MethodName)) ?? string.Empty;

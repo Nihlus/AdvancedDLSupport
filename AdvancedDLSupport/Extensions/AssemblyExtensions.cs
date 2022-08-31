@@ -37,7 +37,7 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="this">The member info.</param>
         /// <typeparam name="T">The attribute type.</typeparam>
         /// <returns>true if it has one; otherwise, false.</returns>
-        public static bool HasCustomAttribute<T>([NotNull] this Assembly @this) where T : Attribute
+        public static bool HasCustomAttribute<T>(this Assembly @this) where T : Attribute
         {
             return !(@this.GetCustomAttribute<T>() is null);
         }

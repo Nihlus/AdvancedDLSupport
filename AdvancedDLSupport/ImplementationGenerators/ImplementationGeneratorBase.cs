@@ -51,19 +51,19 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <summary>
         /// Gets the module in which the implementation should be generated.
         /// </summary>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         protected ModuleBuilder TargetModule { get; }
 
         /// <summary>
         /// Gets the type in which the implementation should be generated.
         /// </summary>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         protected TypeBuilder TargetType { get; }
 
         /// <summary>
         /// Gets the IL generator for the constructor of the type in which the implementation should be generated.
         /// </summary>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         protected ILGenerator TargetTypeConstructorIL { get; }
 
         /// <summary>
@@ -76,9 +76,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         [PublicAPI]
         protected ImplementationGeneratorBase
         (
-            [NotNull] ModuleBuilder targetModule,
-            [NotNull] TypeBuilder targetType,
-            [NotNull] ILGenerator targetTypeConstructorIL,
+            ModuleBuilder targetModule,
+            TypeBuilder targetType,
+            ILGenerator targetTypeConstructorIL,
             ImplementationOptions options
         )
         {
@@ -100,7 +100,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="valueFactory">The value factory to use for the lazy loaded field.</param>
         /// <param name="type">The return type of the lazy field.</param>
         [PublicAPI]
-        protected void GenerateLazyLoadedObject([NotNull] MethodBuilder valueFactory, [NotNull] Type type)
+        protected void GenerateLazyLoadedObject(MethodBuilder valueFactory, Type type)
         {
             var funcType = typeof(Func<>).MakeGenericType(type);
             var lazyType = typeof(Lazy<>).MakeGenericType(type);
@@ -127,7 +127,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="il">The IL generator.</param>
         /// <param name="symbolField">The field to generate the IL for.</param>
         [PublicAPI]
-        protected void GenerateSymbolPush([NotNull] ILGenerator il, [NotNull] FieldInfo symbolField)
+        protected void GenerateSymbolPush(ILGenerator il, FieldInfo symbolField)
         {
             il.EmitLoadArgument(0);
             il.EmitLoadField(symbolField);
@@ -145,8 +145,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="symbolName">The name of the symbol.</param>
         /// <returns>A method which, when called, will load and return the given symbol.</returns>
-        [PublicAPI, NotNull]
-        protected MethodBuilder GenerateSymbolLoadingLambda([NotNull] string symbolName)
+        [PublicAPI]
+        protected MethodBuilder GenerateSymbolLoadingLambda(string symbolName)
         {
             var uniqueIdentifier = Guid.NewGuid().ToString().Replace('-', '_');
 
@@ -181,8 +181,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="delegateType">The type of delegate to load.</param>
         /// <param name="functionName">The name of the function.</param>
         /// <returns>A method which, when called, will load and return the given function.</returns>
-        [PublicAPI, NotNull]
-        protected MethodBuilder GenerateFunctionLoadingLambda([NotNull] Type delegateType, [NotNull] string functionName)
+        [PublicAPI]
+        protected MethodBuilder GenerateFunctionLoadingLambda(Type delegateType, string functionName)
         {
             var uniqueIdentifier = Guid.NewGuid().ToString().Replace('-', '_');
 

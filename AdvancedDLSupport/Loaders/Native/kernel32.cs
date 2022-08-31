@@ -34,10 +34,10 @@ namespace AdvancedDLSupport.Loaders
     internal static class kernel32
     {
         [DllImport("kernel32", SetLastError = true)]
-        public static extern HMODULE LoadLibrary([NotNull] string fileName);
+        public static extern HMODULE LoadLibrary(string fileName);
 
         [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Ansi, ExactSpelling = true), Pure]
-        public static extern FARPROC GetProcAddress(HMODULE module, [NotNull] string procName);
+        public static extern FARPROC GetProcAddress(HMODULE module, string procName);
 
         [DllImport("kernel32", SetLastError = true)]
         public static extern int FreeLibrary(HMODULE module);

@@ -41,7 +41,7 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Gets the default instance of the <see cref="SymbolTransformer"/> class.
         /// </summary>
-        [NotNull, PublicAPI]
+        [PublicAPI]
         public static readonly SymbolTransformer Default = new SymbolTransformer();
 
         /// <summary>
@@ -52,8 +52,8 @@ namespace AdvancedDLSupport
         /// <typeparam name="T">The type of the member.</typeparam>
         /// <returns>The transformed symbol.</returns>
         /// <exception cref="AmbiguousMatchException">Thrown if the member has more than one applicable name mangler.</exception>
-        [PublicAPI, NotNull, Pure]
-        public string GetTransformedSymbol<T>([NotNull] Type containingInterface, [NotNull] T memberInfo) where T : MemberInfo, IIntrospectiveMember
+        [PublicAPI, Pure]
+        public string GetTransformedSymbol<T>(Type containingInterface, T memberInfo) where T : MemberInfo, IIntrospectiveMember
         {
             var symbolName = GetTransformedUnmangledSymbol(containingInterface, memberInfo);
 
@@ -83,7 +83,7 @@ namespace AdvancedDLSupport
         /// <typeparam name="T">The type of the member.</typeparam>
         /// <returns>The transformed unmangled symbol.</returns>
         /// <exception cref="AmbiguousMatchException">Thrown if the member has more than one applicable name mangler.</exception>
-        internal string GetTransformedUnmangledSymbol<T>([NotNull] Type containingInterface, [NotNull] T memberInfo) where T : MemberInfo, IIntrospectiveMember
+        internal string GetTransformedUnmangledSymbol<T>(Type containingInterface, T memberInfo) where T : MemberInfo, IIntrospectiveMember
         {
             var symbolName = memberInfo.GetNativeEntrypoint();
 
@@ -104,10 +104,10 @@ namespace AdvancedDLSupport
         /// <param name="prefix">The prefix to be added to the symbol. Defaults to nothing.</param>
         /// <param name="method">The transformer to apply to the symbol after concatenation.</param>
         /// <returns>The transformed symbol name.</returns>
-        [PublicAPI, NotNull, Pure]
+        [PublicAPI, Pure]
         private string Transform
         (
-            [NotNull] string symbol,
+            string symbol,
             string? prefix = null,
             SymbolTransformationMethod method = None
         )

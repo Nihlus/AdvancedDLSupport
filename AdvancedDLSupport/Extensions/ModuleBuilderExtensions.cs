@@ -45,12 +45,11 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="baseMember">The base member to take parameter types from.</param>
         /// <param name="suppressSecurity">Whether or not code security should be suppressed on the delegate.</param>
         /// <returns>The delegate type.</returns>
-        [NotNull]
         public static TypeBuilder DefineDelegate
         (
-            [NotNull] this ModuleBuilder module,
-            [NotNull] string name,
-            [NotNull] IntrospectiveMethodInfo baseMember,
+            this ModuleBuilder module,
+            string name,
+            IntrospectiveMethodInfo baseMember,
             bool suppressSecurity = false
         )
         {
@@ -85,14 +84,13 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="parameterTypes">The parameter types of the delegate.</param>
         /// <param name="suppressSecurity">Whether or not code security should be suppressed on the delegate.</param>
         /// <returns>The delegate type.</returns>
-        [NotNull]
         public static TypeBuilder DefineDelegate
         (
-            [NotNull] this ModuleBuilder module,
-            [NotNull] string name,
+            this ModuleBuilder module,
+            string name,
             CallingConvention callingConvention,
-            [NotNull] Type returnType,
-            [NotNull] Type[] parameterTypes,
+            Type returnType,
+            Type[] parameterTypes,
             bool suppressSecurity = false
             )
         {
@@ -117,11 +115,10 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="callingConvention">The unmanaged calling convention to use.</param>
         /// <param name="suppressSecurity">Whether or not code security should be suppressed on the delegate.</param>
         /// <returns>The delegate type.</returns>
-        [NotNull]
         private static TypeBuilder DefineDelegateType
         (
-            [NotNull] ModuleBuilder module,
-            [NotNull] string name,
+            ModuleBuilder module,
+            string name,
             CallingConvention callingConvention,
             bool suppressSecurity = false)
         {
@@ -185,12 +182,11 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="returnType">The return type of the method.</param>
         /// <param name="parameterTypes">The parameter types of the method.</param>
         /// <returns>The delegate invocation method.</returns>
-        [NotNull]
         private static MethodBuilder DefineDelegateInvocationMethod
         (
-            [NotNull] TypeBuilder delegateBuilder,
-            [NotNull] Type returnType,
-            [NotNull] Type[] parameterTypes
+            TypeBuilder delegateBuilder,
+            Type returnType,
+            Type[] parameterTypes
         )
         {
             var delegateMethodBuilder = delegateBuilder.DefineMethod

@@ -38,6 +38,6 @@ namespace AdvancedDLSupport.Loaders
         /// <exception cref="SymbolLoadingException">Thrown if the symbol could not be loaded.</exception>
         /// <returns>A handle to the symbol.</returns>
         [PublicAPI, Pure]
-        IntPtr LoadSymbol(IntPtr library, [NotNull] string symbolName);
+        IntPtr LoadSymbol(IntPtr library, string symbolName);
     }
 }

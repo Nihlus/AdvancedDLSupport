@@ -88,7 +88,7 @@ namespace AdvancedDLSupport
             return ResolvePathResult.FromError(new FileNotFoundException("No local copy of the given library could be found.", library));
         }
 
-        private ResolvePathResult ScanPathForLibrary([NotNull] string path, [NotNull] string library)
+        private ResolvePathResult ScanPathForLibrary(string path, string library)
         {
             var libraryLocation = Path.GetFullPath(Path.Combine(path, library));
             if (File.Exists(libraryLocation))

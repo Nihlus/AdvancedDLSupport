@@ -54,9 +54,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="options">The configuration object to use.</param>
         public DelegateMethodImplementationGenerator
         (
-            [NotNull] ModuleBuilder targetModule,
-            [NotNull] TypeBuilder targetType,
-            [NotNull] ILGenerator targetTypeConstructorIL,
+            ModuleBuilder targetModule,
+            TypeBuilder targetType,
+            ILGenerator targetTypeConstructorIL,
             ImplementationOptions options
         )
             : base(targetModule, targetType, targetTypeConstructorIL, options)
@@ -107,9 +107,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="backingField">The backing delegate field.</param>
         private void AugmentHostingTypeConstructorWithDelegateInitialization
         (
-            [NotNull] string entrypointName,
-            [NotNull] Type backingFieldType,
-            [NotNull] FieldInfo backingField
+            string entrypointName,
+            Type backingFieldType,
+            FieldInfo backingField
         )
         {
             var loadFunctionMethod = typeof(NativeLibraryBase).GetMethod
@@ -143,9 +143,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="delegateField">The delegate field.</param>
         private void GenerateDelegateInvokerBody
         (
-            [NotNull] IntrospectiveMethodInfo method,
-            [NotNull] Type delegateBuilderType,
-            [NotNull] FieldInfo delegateField
+            IntrospectiveMethodInfo method,
+            Type delegateBuilderType,
+            FieldInfo delegateField
         )
         {
             if (!(method.GetWrappedMember() is MethodBuilder builder))
@@ -172,10 +172,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="workUnit">The method to generate a delegate type for.</param>
         /// <returns>A delegate type.</returns>
-        [NotNull]
         private TypeBuilder GenerateDelegateType
         (
-            [NotNull] PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
+            PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
         )
         {
             var definition = workUnit.Definition;

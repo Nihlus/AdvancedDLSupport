@@ -41,10 +41,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="generators">The input generators.</param>
         /// <typeparam name="T">The member that the generators accept.</typeparam>
         /// <returns>The sorted generators.</returns>
-        [NotNull, ItemNotNull]
         public IEnumerable<IImplementationGenerator<T>> SortGenerators<T>
         (
-            [NotNull] IEnumerable<IImplementationGenerator<T>> generators
+            IEnumerable<IImplementationGenerator<T>> generators
         )
             where T : MemberInfo
         {

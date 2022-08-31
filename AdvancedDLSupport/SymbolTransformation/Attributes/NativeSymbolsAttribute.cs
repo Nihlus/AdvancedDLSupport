@@ -34,7 +34,7 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Gets or sets the prefixes used for the symbols in the interface.
         /// </summary>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         public string Prefix { get; set; }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="prefix">The symbol prefix to use.</param>
         /// <param name="symbolTransformationMethod">The expansion method for symbols.</param>
-        public NativeSymbolsAttribute([NotNull] string prefix, SymbolTransformationMethod symbolTransformationMethod)
+        public NativeSymbolsAttribute(string prefix, SymbolTransformationMethod symbolTransformationMethod)
         {
             Prefix = prefix;
             SymbolTransformationMethod = symbolTransformationMethod;

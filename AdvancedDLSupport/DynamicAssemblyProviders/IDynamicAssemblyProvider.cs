@@ -35,14 +35,14 @@ namespace AdvancedDLSupport.DynamicAssemblyProviders
         /// Gets the dynamic assembly provided by this instance.
         /// </summary>
         /// <returns>The assembly.</returns>
-        [PublicAPI, NotNull, Pure]
+        [PublicAPI, Pure]
         AssemblyBuilder GetDynamicAssembly();
 
         /// <summary>
         /// Gets the dynamic module from the assembly, creating one if it doesn't exist.
         /// </summary>
         /// <returns>The module.</returns>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         ModuleBuilder GetDynamicModule();
     }
 }

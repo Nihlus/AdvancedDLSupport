@@ -87,7 +87,7 @@ namespace AdvancedDLSupport
         /// <param name="errorReason">The reason why the resolution failed.</param>
         /// <returns>A failed result.</returns>
         [PublicAPI]
-        public static ResolvePathResult FromError([NotNull] string errorReason)
+        public static ResolvePathResult FromError(string errorReason)
         {
             return new ResolvePathResult(null, errorReason, false, null);
         }
@@ -98,7 +98,7 @@ namespace AdvancedDLSupport
         /// <param name="exception">The exception that caused the resolution to fail.</param>
         /// <returns>A failed result.</returns>
         [PublicAPI]
-        public static ResolvePathResult FromError([NotNull] Exception exception)
+        public static ResolvePathResult FromError(Exception exception)
         {
             return new ResolvePathResult(null, exception.Message, false, exception);
         }

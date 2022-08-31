@@ -47,7 +47,7 @@ namespace AdvancedDLSupport.Loaders
         }
 
         [Pure]
-        public static IntPtr sym(IntPtr handle, [NotNull] string name, bool useCLibrary = false)
+        public static IntPtr sym(IntPtr handle, string name, bool useCLibrary = false)
         {
             return useCLibrary ? BSD.dlsym(handle, name) : Unix.dlsym(handle, name);
         }

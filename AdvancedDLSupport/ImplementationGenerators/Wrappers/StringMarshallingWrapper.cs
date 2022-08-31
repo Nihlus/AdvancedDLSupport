@@ -52,26 +52,19 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// Holds local variables defined for a given work unit. The nested dictionary contains the 0-based input
         /// parameter index matched with the local variable containing an unmanaged pointer.
         /// </summary>
-        [NotNull]
         private Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>> _workUnitLocals
             = new Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>>();
 
-        [NotNull]
         private static Dictionary<UnmanagedType, MethodInfo> _stringToPtrMethods;
 
-        [NotNull]
         private static Dictionary<UnmanagedType, MethodInfo> _ptrToStringMethods;
 
-        [NotNull]
         private static MethodInfo _freeBStrMethod;
 
-        [NotNull]
         private static MethodInfo _freeHGlobalMethod;
 
-        [NotNull]
         private static MethodInfo _freeCoTaskMemMethod;
 
-        [CanBeNull]
         private static UnmanagedType? _utf8UnmanagedType;
 
         static StringMarshallingWrapper()
@@ -223,9 +216,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="options">The configuration object to use.</param>
         public StringMarshallingWrapper
         (
-            [NotNull] ModuleBuilder targetModule,
-            [NotNull] TypeBuilder targetType,
-            [NotNull] ILGenerator targetTypeConstructorIL,
+            ModuleBuilder targetModule,
+            TypeBuilder targetType,
+            ILGenerator targetTypeConstructorIL,
             ImplementationOptions options
         )
             : base
@@ -400,7 +393,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown if the given unmanaged type is not a string type.
         /// </exception>
-        [NotNull, Pure]
+        [Pure]
         private MethodInfo SelectManagedToUnmanagedTransformationMethod(UnmanagedType unmanagedType)
         {
             switch (unmanagedType)
@@ -447,7 +440,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown if the given unmanaged type is not a string type.
         /// </exception>
-        [NotNull, Pure]
+        [Pure]
         private MethodInfo SelectUnmanagedToManagedTransformationMethod(UnmanagedType unmanagedType)
         {
             switch (unmanagedType)
@@ -494,7 +487,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown if the given unmanaged type is not a string type.
         /// </exception>
-        [NotNull, Pure]
+        [Pure]
         private MethodInfo SelectUnmanagedFreeMethod(UnmanagedType unmanagedType)
         {
             switch (unmanagedType)
@@ -533,7 +526,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <returns>The parameter type.</returns>
         private UnmanagedType GetParameterUnmanagedType
         (
-            [NotNull, ItemNotNull] IEnumerable<CustomAttributeData> customAttributes
+            IEnumerable<CustomAttributeData> customAttributes
         )
         {
             var marshalAsAttribute = customAttributes.FirstOrDefault

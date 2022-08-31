@@ -37,7 +37,7 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="this">The array.</param>
         /// <returns>An equivalent integer.</returns>
         [PublicAPI, Pure]
-        public static int ToInt32([NotNull] this BitArray @this)
+        public static int ToInt32(this BitArray @this)
         {
             if (@this.Count > 32)
             {

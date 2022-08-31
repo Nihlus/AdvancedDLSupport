@@ -50,9 +50,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="options">The configuration object to use.</param>
         protected CallWrapperBase
         (
-            [NotNull] ModuleBuilder targetModule,
-            [NotNull] TypeBuilder targetType,
-            [NotNull] ILGenerator targetTypeConstructorIL,
+            ModuleBuilder targetModule,
+            TypeBuilder targetType,
+            ILGenerator targetTypeConstructorIL,
             ImplementationOptions options
         )
             : base(targetModule, targetType, targetTypeConstructorIL, options)
@@ -66,8 +66,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="workUnit">The unit to generate the types from.</param>
         public virtual void EmitAdditionalTypes
         (
-            [NotNull] ModuleBuilder module,
-            [NotNull] PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
+            ModuleBuilder module,
+            PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
         )
         {
         }
@@ -104,8 +104,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="workUnit">The original definition.</param>
         /// <returns>The passthrough method.</returns>
-        [NotNull]
-        public virtual IntrospectiveMethodInfo GeneratePassthroughDefinition([NotNull] PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
+        public virtual IntrospectiveMethodInfo GeneratePassthroughDefinition(PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
         {
             var definition = workUnit.Definition;
 

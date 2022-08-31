@@ -43,7 +43,7 @@ namespace AdvancedDLSupport.AOT.Arguments
             Required = true,
             HelpText = "Input assemblies to process."
         )]
-        [PublicAPI, NotNull, ItemNotNull]
+        [PublicAPI]
         public IEnumerable<string> InputAssemblies { get; set; } = new List<string>();
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace AdvancedDLSupport.AOT.Arguments
             Required = false,
             HelpText = "The output path where the generated assemblies should be stored. Defaults to the current directory."
         )]
-        [PublicAPI, NotNull]
+        [PublicAPI]
         public string OutputPath { get; set; } = string.Empty;
 
         /// <summary>

@@ -64,7 +64,7 @@ namespace AdvancedDLSupport.Reflection
         /// <param name="memberInfo">The property info to wrap.</param>
         /// <param name="metadataType">The type that the member gets native metadata from.</param>
         [PublicAPI]
-        public IntrospectivePropertyInfo([NotNull] PropertyInfo memberInfo, [NotNull] Type metadataType)
+        public IntrospectivePropertyInfo(PropertyInfo memberInfo, Type metadataType)
             : base(memberInfo, metadataType)
         {
             PropertyType = memberInfo.PropertyType;
@@ -78,7 +78,7 @@ namespace AdvancedDLSupport.Reflection
         /// </summary>
         /// <param name="other">The other property info.</param>
         /// <returns>true if the signatures are the same; otherwise, false.</returns>
-        public bool HasSameSignatureAs([NotNull] IntrospectivePropertyInfo other)
+        public bool HasSameSignatureAs(IntrospectivePropertyInfo other)
         {
             if (Name != other.Name)
             {

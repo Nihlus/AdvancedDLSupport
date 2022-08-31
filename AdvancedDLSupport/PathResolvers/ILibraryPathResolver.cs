@@ -42,6 +42,6 @@ namespace AdvancedDLSupport
         /// resolver defined.</exception>
         /// <exception cref="FileNotFoundException">Thrown if no library file can be found.</exception>
         [PublicAPI, Pure]
-        ResolvePathResult Resolve([NotNull] string library);
+        ResolvePathResult Resolve(string library);
     }
 }

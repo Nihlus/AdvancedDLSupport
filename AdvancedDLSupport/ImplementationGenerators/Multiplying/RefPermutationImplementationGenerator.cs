@@ -116,7 +116,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         private void GenerateTopLevelMethodImplementation
         (
             [NotNull] IntrospectiveMethodInfo definition,
-            [NotNull, ItemNotNull] IReadOnlyList<IntrospectiveMethodInfo> permutations
+            [NotNull] IReadOnlyList<IntrospectiveMethodInfo> permutations
         )
         {
             if (!(definition.GetWrappedMember() is MethodBuilder builder))
@@ -301,7 +301,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         private static LocalBuilder EmitHasValueArray
         (
             [NotNull] ILGenerator il,
-            [NotNull, ItemNotNull] IList<Type> parameters
+            [NotNull] IList<Type> parameters
         )
         {
             var local = il.DeclareLocal(typeof(bool[]));

@@ -62,9 +62,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="options">The configuration object to use.</param>
         public PropertyImplementationGenerator
         (
-            [NotNull] ModuleBuilder targetModule,
-            [NotNull] TypeBuilder targetType,
-            [NotNull] ILGenerator targetTypeConstructorIL,
+            ModuleBuilder targetModule,
+            TypeBuilder targetType,
+            ILGenerator targetTypeConstructorIL,
             ImplementationOptions options
         )
             : base(targetModule, targetType, targetTypeConstructorIL, options)
@@ -117,8 +117,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
         private void AugmentHostingTypeConstructor
         (
-            [NotNull] string symbolName,
-            [NotNull] FieldInfo propertyFieldBuilder
+            string symbolName,
+            FieldInfo propertyFieldBuilder
         )
         {
             var loadSymbolMethod = typeof(NativeLibraryBase).GetMethod
@@ -146,9 +146,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
         private void GeneratePropertySetter
         (
-            [NotNull] IntrospectivePropertyInfo property,
-            [NotNull] FieldInfo propertyFieldBuilder,
-            [NotNull] PropertyBuilder propertyBuilder
+            IntrospectivePropertyInfo property,
+            FieldInfo propertyFieldBuilder,
+            PropertyBuilder propertyBuilder
         )
         {
             var wrappedProperty = property.GetWrappedMember();
@@ -228,9 +228,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
 
         private void GeneratePropertyGetter
         (
-            [NotNull] IntrospectivePropertyInfo property,
-            [NotNull] FieldInfo propertyFieldBuilder,
-            [NotNull] PropertyBuilder propertyBuilder
+            IntrospectivePropertyInfo property,
+            FieldInfo propertyFieldBuilder,
+            PropertyBuilder propertyBuilder
         )
         {
             var wrappedProperty = property.GetWrappedMember();
@@ -294,7 +294,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="il">The IL generator.</param>
         [PublicAPI]
-        private void EmitDisposalCheck([NotNull] ILGenerator il)
+        private void EmitDisposalCheck(ILGenerator il)
         {
             var throwMethod = typeof(NativeLibraryBase).GetMethod("ThrowIfDisposed", BindingFlags.NonPublic | BindingFlags.Instance);
 

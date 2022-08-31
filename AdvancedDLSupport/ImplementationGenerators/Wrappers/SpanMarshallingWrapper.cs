@@ -49,9 +49,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="options">The configuration object to use.</param>
         public SpanMarshallingWrapper
         (
-            [NotNull] ModuleBuilder targetModule,
-            [NotNull] TypeBuilder targetType,
-            [NotNull] ILGenerator targetTypeConstructorIL,
+            ModuleBuilder targetModule,
+            TypeBuilder targetType,
+            ILGenerator targetTypeConstructorIL,
             ImplementationOptions options
         )
             : base
@@ -203,7 +203,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// Determines whether the <see cref="Type" /> provided is a generic span.
         /// </summary>
         /// <param name="type">The type to check.</param>
-        private static bool IsSpanType([NotNull] Type type)
+        private static bool IsSpanType(Type type)
         {
             if (type.IsGenericType)
             {

@@ -38,7 +38,7 @@ namespace AdvancedDLSupport
         /// <param name="member">The member to check.</param>
         /// <returns>true if the mangler is applicable; otherwise, false.</returns>
         [PublicAPI]
-        bool IsManglerApplicable([NotNull] MemberInfo member);
+        bool IsManglerApplicable(MemberInfo member);
 
         /// <summary>
         /// Mangles the given member.
@@ -46,15 +46,15 @@ namespace AdvancedDLSupport
         /// <typeparam name="T">The type of the member to mangle.</typeparam>
         /// <param name="member">The member to mangle.</param>
         /// <returns>The mangled entrypoint.</returns>
-        [PublicAPI, NotNull]
-        string Mangle<T>([NotNull] T member) where T : IIntrospectiveMember;
+        [PublicAPI]
+        string Mangle<T>(T member) where T : IIntrospectiveMember;
 
         /// <summary>
         /// Demangles a mangled entrypoint name, returning it to its original state.
         /// </summary>
         /// <param name="mangledEntrypoint">A mangled entrypoint name.</param>
         /// <returns>The demangled entrypoint.</returns>
-        [PublicAPI, NotNull]
-        string Demangle([NotNull] string mangledEntrypoint);
+        [PublicAPI]
+        string Demangle(string mangledEntrypoint);
     }
 }

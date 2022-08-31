@@ -36,7 +36,7 @@ namespace AdvancedDLSupport.Pipeline
         /// <summary>
         /// Gets the name of the native symbol that the unit of work maps to.
         /// </summary>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         public string SymbolName { get; }
 
         /// <summary>
@@ -48,13 +48,13 @@ namespace AdvancedDLSupport.Pipeline
         /// <summary>
         /// Gets a unique identifier that can be used in generated definition names.
         /// </summary>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         public string UniqueIdentifier { get; }
 
         /// <summary>
         /// Gets the definition that the work unit wraps.
         /// </summary>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         public T Definition { get; }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace AdvancedDLSupport.Pipeline
         /// <param name="symbolName">The native symbol name.</param>
         /// <param name="options">The options used when this work unit was created.</param>
         [PublicAPI]
-        public PipelineWorkUnit([NotNull] T definition, [NotNull] string symbolName, ImplementationOptions options)
+        public PipelineWorkUnit(T definition, string symbolName, ImplementationOptions options)
         {
             Definition = definition;
             BaseMemberName = definition.Name;
@@ -78,7 +78,7 @@ namespace AdvancedDLSupport.Pipeline
         /// <param name="definition">The definition to wrap.</param>
         /// <param name="baseUnit">The unit of work to base this unit off of.</param>
         [PublicAPI]
-        public PipelineWorkUnit([NotNull] T definition, [NotNull] PipelineWorkUnit<T> baseUnit)
+        public PipelineWorkUnit(T definition, PipelineWorkUnit<T> baseUnit)
         {
             Definition = definition;
             SymbolName = baseUnit.SymbolName;
@@ -90,7 +90,7 @@ namespace AdvancedDLSupport.Pipeline
         /// option combination.
         /// </summary>
         /// <returns>The base member name.</returns>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         public string GetUniqueBaseMemberName()
         {
             return $"{BaseMemberName}_{SymbolName}_{UniqueIdentifier}_{Guid.NewGuid().ToString().ToLowerInvariant()}";

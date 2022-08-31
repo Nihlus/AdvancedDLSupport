@@ -66,10 +66,10 @@ namespace AdvancedDLSupport.Extensions
         /// </param>
         public static void ApplyCustomAttributesFrom
         (
-            [NotNull] this MethodBuilder @this,
-            [NotNull] IntrospectiveMethodInfo source,
+            this MethodBuilder @this,
+            IntrospectiveMethodInfo source,
             Type? newReturnParameterType = null,
-            [ItemNotNull] IReadOnlyList<Type>? newParameterTypes = null,
+            IReadOnlyList<Type>? newParameterTypes = null,
             Func<CustomAttributeData, bool>? returnParameterAttributeFilter = null,
             Func<CustomAttributeData, int, bool>? parameterAttributeFilter = null
         )

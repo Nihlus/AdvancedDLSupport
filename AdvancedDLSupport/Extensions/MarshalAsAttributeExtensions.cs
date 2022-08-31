@@ -39,8 +39,8 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The instance.</param>
         /// <returns>The data.</returns>
-        [Pure, NotNull]
-        public static CustomAttributeData GetAttributeData([NotNull] this MarshalAsAttribute @this)
+        [Pure]
+        public static CustomAttributeData GetAttributeData(this MarshalAsAttribute @this)
         {
             var unmanagedType = @this.Value;
 

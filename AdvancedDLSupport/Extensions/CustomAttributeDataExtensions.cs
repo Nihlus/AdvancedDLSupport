@@ -39,8 +39,8 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The attribute data to create a builder for.</param>
         /// <returns>An attribute builder.</returns>
-        [NotNull, Pure]
-        public static CustomAttributeBuilder GetAttributeBuilder([NotNull] this CustomAttributeData @this)
+        [Pure]
+        public static CustomAttributeBuilder GetAttributeBuilder(this CustomAttributeData @this)
         {
             var namedFields = @this.NamedArguments?.Where(a => a.IsField).ToList() ?? new List<CustomAttributeNamedArgument>();
             var namedProperties = @this.NamedArguments?.Where(a => a.MemberInfo is PropertyInfo).ToList() ?? new List<CustomAttributeNamedArgument>();
@@ -63,8 +63,7 @@ namespace AdvancedDLSupport.Extensions
         /// <typeparam name="T">The encapsulated type of the attribute.</typeparam>
         /// <returns>An instance of the attribute as described by the attribute data.</returns>
         /// <exception cref="ArgumentException">Thrown if the attribute type and the generic type doesn't match.</exception>
-        [NotNull]
-        public static T ToInstance<T>([NotNull] this CustomAttributeData @this) where T : Attribute
+        public static T ToInstance<T>(this CustomAttributeData @this) where T : Attribute
         {
             if (typeof(T) != @this.AttributeType)
             {

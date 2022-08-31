@@ -47,7 +47,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="type">The type to check.</param>
         /// <returns>True if the type is blittable.</returns>
-        public static bool IsUnmanaged([NotNull] this Type type)
+        public static bool IsUnmanaged(this Type type)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The type.</param>
         /// <returns>true if the type is a delegate type; Otherwise, false.</returns>
-        public static bool IsDelegate([NotNull] this Type @this)
+        public static bool IsDelegate(this Type @this)
         {
             return typeof(Delegate).IsAssignableFrom(@this);
         }
@@ -76,7 +76,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The type.</param>
         /// <returns>true if the type is a generic delegate type; Otherwise, false.</returns>
-        public static bool IsGenericDelegate([NotNull] this Type @this)
+        public static bool IsGenericDelegate(this Type @this)
         {
             // The parameterless action is technically not a generic type, so it'll get caught here
             if (!@this.IsGenericType)
@@ -108,7 +108,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The type.</param>
         /// <returns>true if the type is an action delegate; otherwise, false.</returns>
-        public static bool IsGenericActionDelegate([NotNull] this Type @this)
+        public static bool IsGenericActionDelegate(this Type @this)
         {
             // ReSharper disable once PossibleNullReferenceException
             var genericBaseName = @this.FullName.Split('`').First();
@@ -126,7 +126,7 @@ namespace AdvancedDLSupport.Extensions
         /// </summary>
         /// <param name="this">The type.</param>
         /// <returns>true if the type is a func delegate; otherwise, false.</returns>
-        public static bool IsGenericFuncDelegate([NotNull] this Type @this)
+        public static bool IsGenericFuncDelegate(this Type @this)
         {
             // ReSharper disable once PossibleNullReferenceException
             var genericBaseName = @this.FullName.Split('`').First();
@@ -147,8 +147,8 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="this">The type to inspect.</param>
         /// <param name="flattenHierarchy">Whether or not the hierarchy of the type should be flattened when scanning.</param>
         /// <returns>The methods.</returns>
-        [Pure, NotNull, ItemNotNull]
-        public static IEnumerable<IntrospectiveMethodInfo> GetIntrospectiveMethods([NotNull] this Type @this, bool flattenHierarchy = false)
+        [Pure]
+        public static IEnumerable<IntrospectiveMethodInfo> GetIntrospectiveMethods(this Type @this, bool flattenHierarchy = false)
         {
             var basicBindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
             var flattenedBindingFlags = basicBindingFlags | BindingFlags.FlattenHierarchy;
@@ -186,9 +186,9 @@ namespace AdvancedDLSupport.Extensions
         [Pure]
         public static IntrospectiveMethodInfo? GetIntrospectiveMethod
         (
-            [NotNull] this Type @this,
-            [NotNull] string name,
-            [NotNull, ItemNotNull] Type[] parameterTypes
+            this Type @this,
+            string name,
+            Type[] parameterTypes
         )
         {
             var method = @this.GetMethod(name, parameterTypes);
@@ -203,7 +203,7 @@ namespace AdvancedDLSupport.Extensions
         /// <exception cref="ArgumentException">Thrown if the interface type is not an interface.</exception>
         /// <returns>true if the type implements the interface; otherwise, false.</returns>
         [Pure]
-        public static bool HasInterface<T>([NotNull] this Type @this) where T : class
+        public static bool HasInterface<T>(this Type @this) where T : class
         {
             if (!typeof(T).IsInterface)
             {
@@ -219,7 +219,7 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="this">The type.</param>
         /// <returns>true if it is a nullable that is not passed by reference; otherwise, false.</returns>
         [Pure]
-        public static bool IsNonRefNullable([NotNull] this Type @this)
+        public static bool IsNonRefNullable(this Type @this)
         {
             if (@this.IsByRef)
             {
@@ -236,7 +236,7 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="this">The type.</param>
         /// <returns>true if it is a nullable passed by reference; otherwise, false.</returns>
         [Pure]
-        public static bool IsRefNullable([NotNull] this Type @this)
+        public static bool IsRefNullable(this Type @this)
         {
             if (!@this.IsByRef)
             {

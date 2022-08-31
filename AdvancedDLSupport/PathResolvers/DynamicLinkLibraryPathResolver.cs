@@ -35,10 +35,8 @@ namespace AdvancedDLSupport
     /// </summary>
     internal class DynamicLinkLibraryPathResolver : ILibraryPathResolver
     {
-        [NotNull]
         private static readonly ILibraryPathResolver LocalPathResolver;
 
-        [NotNull]
         private static readonly ILibraryPathResolver PathResolver;
 
         private bool SearchLocalFirst { get; }
@@ -58,7 +56,6 @@ namespace AdvancedDLSupport
             SearchLocalFirst = searchLocalFirst;
         }
 
-        [NotNull]
         private static ILibraryPathResolver SelectPathResolver()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -100,7 +97,7 @@ namespace AdvancedDLSupport
         /// Thrown if the current platform doesn't have a path
         /// resolver defined.</exception>
         /// <exception cref="FileNotFoundException">Thrown if no library file can be found.</exception>
-        private ResolvePathResult ResolveAbsolutePath([NotNull] string library, bool localFirst)
+        private ResolvePathResult ResolveAbsolutePath(string library, bool localFirst)
         {
             var candidates = GenerateLibraryCandidates(library).ToList();
 
@@ -167,8 +164,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="library">The library name to generate candidates for.</param>
         /// <returns>A list of candidates.</returns>
-        [NotNull, ItemNotNull]
-        private static IEnumerable<string> GenerateLibraryCandidates([NotNull] string library)
+        private static IEnumerable<string> GenerateLibraryCandidates(string library)
         {
             bool doesLibraryContainPath = false;
             var parentDirectory = Path.GetDirectoryName(library) ?? string.Empty;
@@ -203,14 +199,14 @@ namespace AdvancedDLSupport
             return candidates;
         }
 
-        [NotNull, ItemNotNull, Pure]
-        private static IEnumerable<string> GenerateWindowsCandidates([NotNull] string library)
+        [Pure]
+        private static IEnumerable<string> GenerateWindowsCandidates(string library)
         {
             yield return $"{library}.dll";
         }
 
-        [NotNull, ItemNotNull, Pure]
-        private static IEnumerable<string> GenerateUnixCandidates([NotNull] string library)
+        [Pure]
+        private static IEnumerable<string> GenerateUnixCandidates(string library)
         {
             const string prefix = "lib";
             var suffix = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? ".dylib" : ".so";

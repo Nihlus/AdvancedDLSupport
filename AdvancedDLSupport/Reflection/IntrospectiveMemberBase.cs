@@ -44,11 +44,11 @@ namespace AdvancedDLSupport.Reflection
         /// <summary>
         /// Gets the custom attributes applies to this member.
         /// </summary>
-        [PublicAPI, NotNull, ItemNotNull]
+        [PublicAPI]
         public override IEnumerable<CustomAttributeData> CustomAttributes { get; }
 
         /// <inheritdoc />
-        [PublicAPI, NotNull]
+        [PublicAPI]
         public override Type DeclaringType { get; }
 
         /// <inheritdoc />
@@ -62,13 +62,13 @@ namespace AdvancedDLSupport.Reflection
         /// <summary>
         /// Gets the wrapped member.
         /// </summary>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         protected TMemberInfo Member { get; }
 
         /// <summary>
         /// Gets the type that the member gets native metadata from (typically an interface or a mixed-mode class).
         /// </summary>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         public Type MetadataType { get; }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace AdvancedDLSupport.Reflection
         /// <param name="memberInfo">The member info object to wrap.</param>
         /// <param name="metadataType">The type that the member gets native metadata from.</param>
         [PublicAPI]
-        protected IntrospectiveMemberBase([NotNull] TMemberInfo memberInfo, [NotNull] Type metadataType)
+        protected IntrospectiveMemberBase(TMemberInfo memberInfo, Type metadataType)
             : this(memberInfo, metadataType, memberInfo.CustomAttributes)
         {
         }
@@ -91,9 +91,9 @@ namespace AdvancedDLSupport.Reflection
         [PublicAPI]
         protected IntrospectiveMemberBase
         (
-            [NotNull] TMemberInfo memberInfo,
-            [NotNull] Type metadataType,
-            [ItemNotNull] IEnumerable<CustomAttributeData>? customAttributes = default
+            TMemberInfo memberInfo,
+            Type metadataType,
+            IEnumerable<CustomAttributeData>? customAttributes = default
         )
         {
             Member = memberInfo;
@@ -113,7 +113,7 @@ namespace AdvancedDLSupport.Reflection
         /// <param name="other">The other member.</param>
         /// <returns>true if the members have the same native entrypoint; otherwise, false.</returns>
         [PublicAPI, Pure]
-        public bool HasSameNativeEntrypointAs([NotNull] IntrospectiveMethodInfo other)
+        public bool HasSameNativeEntrypointAs(IntrospectiveMethodInfo other)
         {
             return GetFullNativeEntrypoint() == other.GetFullNativeEntrypoint();
         }
@@ -154,7 +154,7 @@ namespace AdvancedDLSupport.Reflection
         /// Gets the wrapped member information. No guarantees can be made about its introspective capabilities.
         /// </summary>
         /// <returns>The wrapped method.</returns>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         public TMemberInfo GetWrappedMember() => Member;
 
         /// <inheritdoc />

@@ -36,7 +36,7 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Gets or sets the name of the function's entrypoint.
         /// </summary>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         public string Entrypoint { get; set; }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="entrypoint">The name of the function's entry point.</param>
         [PublicAPI]
-        public NativeSymbolAttribute([NotNull, CallerMemberName] string entrypoint = "")
+        public NativeSymbolAttribute([CallerMemberName] string entrypoint = "")
         {
             CallingConvention = CallingConvention.Cdecl;
             Entrypoint = entrypoint;

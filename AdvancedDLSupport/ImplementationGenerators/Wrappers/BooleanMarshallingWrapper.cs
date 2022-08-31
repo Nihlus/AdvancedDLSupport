@@ -59,9 +59,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="options">The configuration object to use.</param>
         public BooleanMarshallingWrapper
         (
-            [NotNull] ModuleBuilder targetModule,
-            [NotNull] TypeBuilder targetType,
-            [NotNull] ILGenerator targetTypeConstructorIL,
+            ModuleBuilder targetModule,
+            TypeBuilder targetType,
+            ILGenerator targetTypeConstructorIL,
             ImplementationOptions options
         )
         : base
@@ -166,7 +166,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="il">The generator where the IL is to be emitted.</param>
         /// <param name="unmanagedType">The unmanaged type of the boolean.</param>
-        private void EmitBooleanToUnmanagedIntegerConversion([NotNull] ILGenerator il, UnmanagedType unmanagedType)
+        private void EmitBooleanToUnmanagedIntegerConversion(ILGenerator il, UnmanagedType unmanagedType)
         {
             var trueCase = il.DefineLabel();
             var endOfCondition = il.DefineLabel();
@@ -205,7 +205,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="il">The generator where the IL is to be emitted.</param>
         /// <param name="unmanagedType">The unmanaged type of the boolean.</param>
-        private void EmitUnmanagedIntegerToBooleanConversion([NotNull] ILGenerator il, UnmanagedType unmanagedType)
+        private void EmitUnmanagedIntegerToBooleanConversion(ILGenerator il, UnmanagedType unmanagedType)
         {
             var trueCase = il.DefineLabel();
             var endOfCondition = il.DefineLabel();
@@ -270,7 +270,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="customAttributes">The custom attributes applied to the parameter.</param>
         /// <returns>The parameter type.</returns>
         [Pure]
-        private UnmanagedType GetParameterUnmanagedType([NotNull, ItemNotNull] IEnumerable<CustomAttributeData> customAttributes)
+        private UnmanagedType GetParameterUnmanagedType(IEnumerable<CustomAttributeData> customAttributes)
         {
             var marshalAsAttribute = customAttributes.FirstOrDefault
             (
@@ -294,8 +294,8 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="customAttributes">The custom attributes applied to the parameter.</param>
         /// <returns>The parameter type.</returns>
-        [NotNull, Pure]
-        private Type GetParameterMarshallingType([NotNull, ItemNotNull] IEnumerable<CustomAttributeData> customAttributes)
+        [Pure]
+        private Type GetParameterMarshallingType(IEnumerable<CustomAttributeData> customAttributes)
         {
             var unmanagedType = GetParameterUnmanagedType(customAttributes);
 

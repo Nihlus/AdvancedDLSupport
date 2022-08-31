@@ -56,9 +56,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="options">The configuration object to use.</param>
         public IndirectCallMethodImplementationGenerator
         (
-            [NotNull] ModuleBuilder targetModule,
-            [NotNull] TypeBuilder targetType,
-            [NotNull] ILGenerator targetTypeConstructorIL,
+            ModuleBuilder targetModule,
+            TypeBuilder targetType,
+            ILGenerator targetTypeConstructorIL,
             ImplementationOptions options
         )
             : base(targetModule, targetType, targetTypeConstructorIL, options)
@@ -106,9 +106,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="backingField">The backing pointer field.</param>
         private void AugmentHostingTypeConstructorWithNativeInitialization
         (
-            [NotNull] string entrypointName,
-            [NotNull] Type backingFieldType,
-            [NotNull] FieldInfo backingField
+            string entrypointName,
+            Type backingFieldType,
+            FieldInfo backingField
         )
         {
             TargetTypeConstructorIL.EmitLoadArgument(0);
@@ -142,9 +142,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="backingField">The backing field.</param>
         private void GenerateNativeInvokerBody
         (
-            [NotNull] IntrospectiveMethodInfo method,
+            IntrospectiveMethodInfo method,
             CallingConvention callingConvention,
-            [NotNull] FieldInfo backingField
+            FieldInfo backingField
         )
         {
             if (!(method.GetWrappedMember() is MethodBuilder builder))

@@ -35,7 +35,7 @@ namespace AdvancedDLSupport.Reflection
         /// <summary>
         /// Gets the name of the member.
         /// </summary>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         string Name { get; }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace AdvancedDLSupport.Reflection
         /// transformations applied.
         /// </summary>
         /// <returns>The native entrypoint.</returns>
-        [PublicAPI, Pure, NotNull]
+        [PublicAPI, Pure]
         string GetFullNativeEntrypoint();
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace AdvancedDLSupport.Reflection
         /// transformations except name mangling applied.
         /// </summary>
         /// <returns>The native entrypoint.</returns>
-        [PublicAPI, Pure, NotNull]
+        [PublicAPI, Pure]
         string GetFullUnmangledNativeEntrypoint();
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace AdvancedDLSupport.Reflection
         /// transformations applied.
         /// </summary>
         /// <returns>The native entrypoint.</returns>
-        [PublicAPI, Pure, NotNull]
+        [PublicAPI, Pure]
         string GetNativeEntrypoint();
 
         /// <summary>

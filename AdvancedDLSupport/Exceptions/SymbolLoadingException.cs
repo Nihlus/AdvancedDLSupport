@@ -52,7 +52,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="message">The message of the exception.</param>
         [PublicAPI]
-        public SymbolLoadingException([NotNull] string message)
+        public SymbolLoadingException(string message)
             : base(message)
         {
         }
@@ -63,7 +63,7 @@ namespace AdvancedDLSupport
         /// <param name="message">The message of the exception.</param>
         /// <param name="inner">The exception which caused this exception.</param>
         [PublicAPI]
-        public SymbolLoadingException(string? message, [NotNull] Exception inner)
+        public SymbolLoadingException(string? message, Exception inner)
             : base(message, inner)
         {
         }
@@ -74,7 +74,7 @@ namespace AdvancedDLSupport
         /// <param name="message">The message of the exception.</param>
         /// <param name="symbolName">The name of the symbol that failed to load.</param>
         [PublicAPI]
-        public SymbolLoadingException([NotNull] string message, [NotNull] string symbolName)
+        public SymbolLoadingException(string message, string symbolName)
             : base(message)
         {
             SymbolName = symbolName;
@@ -87,7 +87,7 @@ namespace AdvancedDLSupport
         /// <param name="symbolName">The name of the symbol that failed to load.</param>
         /// <param name="inner">The exception which caused this exception.</param>
         [PublicAPI]
-        public SymbolLoadingException([NotNull] string message, [NotNull] string symbolName, [NotNull] Exception inner)
+        public SymbolLoadingException(string message, string symbolName, Exception inner)
             : base(message, inner)
         {
             SymbolName = symbolName;
@@ -98,7 +98,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="info">The serialized information.</param>
         /// <param name="context">The streaming context.</param>
-        protected SymbolLoadingException([NotNull] SerializationInfo info, StreamingContext context)
+        protected SymbolLoadingException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
             SymbolName = info.GetString(nameof(SymbolName));

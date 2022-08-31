@@ -36,19 +36,14 @@ namespace AdvancedDLSupport.Loaders
         /// </summary>
         protected abstract bool UseCLibrary { get; }
 
-        [NotNull]
         private readonly Action _resetErrorAction;
 
-        [NotNull]
         private readonly Func<string, SymbolFlag, IntPtr> _openLibraryFunc;
 
-        [NotNull]
         private readonly Func<IntPtr, string, IntPtr> _openSymbolFunc;
 
-        [NotNull]
         private readonly Func<IntPtr, int> _closeLibraryFunc;
 
-        [NotNull]
         private readonly Func<IntPtr> _getErrorFunc;
 
         /// <summary>

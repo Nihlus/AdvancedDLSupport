@@ -51,26 +51,19 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// Holds local variables defined for a given work unit. The nested dictionary contains the 0-based input
         /// parameter index matched with the local variable containing an unmanaged pointer.
         /// </summary>
-        [NotNull]
         private Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>> _workUnitLocals
             = new Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>>();
 
-        [NotNull]
         private static FieldInfo _nullPtrField;
 
-        [NotNull]
         private static MethodInfo _ptrInequalityOperator;
 
-        [NotNull]
         private static MethodInfo _structureToPtrMethod;
 
-        [NotNull]
         private static MethodInfo _ptrToStructureMethodBase;
 
-        [NotNull]
         private static MethodInfo _allocHGlobalMethod;
 
-        [NotNull]
         private static MethodInfo _freeHGlobalMethod;
 
         static ValueNullableMarshallingWrapper()
@@ -123,9 +116,9 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// <param name="options">The configuration object to use.</param>
         public ValueNullableMarshallingWrapper
         (
-            [NotNull] ModuleBuilder targetModule,
-            [NotNull] TypeBuilder targetType,
-            [NotNull] ILGenerator targetTypeConstructorIL,
+            ModuleBuilder targetModule,
+            TypeBuilder targetType,
+            ILGenerator targetTypeConstructorIL,
             ImplementationOptions options
         )
             : base
@@ -347,8 +340,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="nullableType">The type T of the nullable.</param>
         /// <returns>The method.</returns>
-        [NotNull]
-        private MethodInfo GetHasValueMethod([NotNull] Type nullableType)
+        private MethodInfo GetHasValueMethod(Type nullableType)
         {
             return typeof(Nullable<>)
                        .MakeGenericType(nullableType)
@@ -361,8 +353,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="nullableType">The type T of the nullable.</param>
         /// <returns>The method.</returns>
-        [NotNull]
-        private MethodInfo GetGetValueMethod([NotNull] Type nullableType)
+        private MethodInfo GetGetValueMethod(Type nullableType)
         {
             return typeof(Nullable<>)
                        .MakeGenericType(nullableType)
@@ -375,8 +366,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="nullableType">The type T of the nullable.</param>
         /// <returns>The constructor.</returns>
-        [NotNull]
-        private ConstructorInfo GetNullableConstructor([NotNull] Type nullableType)
+        private ConstructorInfo GetNullableConstructor(Type nullableType)
         {
             return typeof(Nullable<>).MakeGenericType(nullableType).GetConstructor
             (

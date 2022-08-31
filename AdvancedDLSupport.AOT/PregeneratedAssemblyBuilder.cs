@@ -43,16 +43,12 @@ namespace AdvancedDLSupport.AOT
     [PublicAPI]
     public class PregeneratedAssemblyBuilder
     {
-        [NotNull]
         private static ILogger _log = LogManager.GetCurrentClassLogger();
 
-        [NotNull]
         private static object _fileCopyLock = new object();
 
-        [NotNull, ItemNotNull]
         private List<Assembly> SourceAssemblies { get; }
 
-        [NotNull]
         private List<(Type ClassType, IReadOnlyList<Type> InterfaceTypes)> SourceExplicitTypeCombinations { get; }
 
         private ImplementationOptions _options;
@@ -75,8 +71,8 @@ namespace AdvancedDLSupport.AOT
         /// </summary>
         /// <param name="assembly">The source assembly.</param>
         /// <returns>The builder, with the assembly.</returns>
-        [PublicAPI, NotNull]
-        public PregeneratedAssemblyBuilder WithSourceAssembly([NotNull] Assembly assembly)
+        [PublicAPI]
+        public PregeneratedAssemblyBuilder WithSourceAssembly(Assembly assembly)
         {
             if (SourceAssemblies.Contains(assembly))
             {
@@ -93,7 +89,7 @@ namespace AdvancedDLSupport.AOT
         /// <typeparam name="TBaseClass">The base class of the type.</typeparam>
         /// <typeparam name="TInterface">The interface to implement.</typeparam>
         /// <returns>The builder, with the combination.</returns>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         public PregeneratedAssemblyBuilder WithSourceExplicitTypeCombination<TBaseClass, TInterface>()
             where TBaseClass : NativeLibraryBase
             where TInterface : class
@@ -107,11 +103,11 @@ namespace AdvancedDLSupport.AOT
         /// <param name="classType">The base class of the type.</param>
         /// <param name="interfaceTypes">The interfaces to implement.</param>
         /// <returns>The builder, with the combination.</returns>
-        [PublicAPI, NotNull]
+        [PublicAPI]
         public PregeneratedAssemblyBuilder WithSourceExplicitTypeCombination
         (
-            [NotNull] Type classType,
-            [NotNull, ItemNotNull] params Type[] interfaceTypes
+            Type classType,
+            params Type[] interfaceTypes
         )
         {
             if (!classType.IsAbstract)
@@ -168,8 +164,8 @@ namespace AdvancedDLSupport.AOT
         /// </summary>
         /// <param name="outputPath">The path where the assembly should be saved.</param>
         /// <returns>The name of the output assembly.</returns>
-        [PublicAPI, NotNull]
-        public string Build([NotNull] string outputPath)
+        [PublicAPI]
+        public string Build(string outputPath)
         {
             outputPath = outputPath.IsNullOrWhiteSpace()
                 ? Directory.GetCurrentDirectory()
@@ -251,8 +247,8 @@ namespace AdvancedDLSupport.AOT
         /// <param name="typeDictionary">The generated types.</param>
         private void CreateMetadataType
         (
-            [NotNull] ModuleBuilder module,
-            [NotNull] IReadOnlyDictionary<GeneratedImplementationTypeIdentifier, Type> typeDictionary
+            ModuleBuilder module,
+            IReadOnlyDictionary<GeneratedImplementationTypeIdentifier, Type> typeDictionary
         )
         {
             var type = module.DefineType
@@ -339,7 +335,7 @@ namespace AdvancedDLSupport.AOT
         /// <param name="entryKey">The instance to emit.</param>
         private void EmitCreateKeyInstance
         (
-            [NotNull] ILGenerator constructorIL,
+            ILGenerator constructorIL,
             GeneratedImplementationTypeIdentifier entryKey
         )
         {

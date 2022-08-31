@@ -54,7 +54,7 @@ namespace AdvancedDLSupport.DynamicAssemblyProviders
         /// Whether or not the assembly should be marked as debuggable. This disables any compiler optimizations.
         /// </param>
         [PublicAPI]
-        public TransientDynamicAssemblyProvider([NotNull] string assemblyName, bool debuggable)
+        public TransientDynamicAssemblyProvider(string assemblyName, bool debuggable)
         {
             IsDebuggable = debuggable;
 

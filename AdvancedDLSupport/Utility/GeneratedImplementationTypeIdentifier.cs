@@ -40,8 +40,8 @@ namespace AdvancedDLSupport
         /// <param name="options">The configuration used for the library.</param>
         public GeneratedImplementationTypeIdentifier
         (
-            [NotNull] Type baseClassType,
-            [NotNull] IReadOnlyList<Type> interfaceType,
+            Type baseClassType,
+            IReadOnlyList<Type> interfaceType,
             ImplementationOptions options
         )
         {
