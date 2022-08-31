@@ -24,11 +24,6 @@
     </AdditionalFiles>
   </ItemGroup>
   <ItemGroup>
-    <AdditionalFiles Include="FodyWeavers.xml">
-      <InProject>false</InProject>
-    </AdditionalFiles>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="System.Memory" Version="4.5.2" />
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
     <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.3.0" />
@@ -41,7 +36,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="11.1.0" PrivateAssets="all" />
-    <PackageReference Include="JetBrainsAnnotations.Fody" Version="2.2.0" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.DllMap\Mono.DllMap.csproj" />

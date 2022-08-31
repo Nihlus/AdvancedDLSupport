@@ -18,14 +18,8 @@
     <PackageReleaseNotes>Relicense under LGPLv3.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
-    <AdditionalFiles Include="FodyWeavers.xml">
-      <InProject>false</InProject>
-    </AdditionalFiles>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
     <PackageReference Include="JetBrains.Annotations" Version="11.1.0" PrivateAssets="all" />
-    <PackageReference Include="JetBrainsAnnotations.Fody" Version="2.2.0" PrivateAssets="all" />
   </ItemGroup>
 
   <!-- Common properties -->

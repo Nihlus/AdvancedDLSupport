@@ -19,11 +19,6 @@
     <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
-    <AdditionalFiles Include="FodyWeavers.xml">
-      <InProject>false</InProject>
-    </AdditionalFiles>
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="netstandard" />
     <Reference Include="System.Reflection.Emit" />
   </ItemGroup>
@@ -32,7 +27,6 @@
     <PackageReference Include="NLog" Version="4.5.3" />
     <PackageReference Include="StrictEmit" Version="2.4.2" PrivateAssets="Compile;Build;Analyzers;ContentFiles"/>
     <PackageReference Include="JetBrains.Annotations" Version="11.1.0" PrivateAssets="all" />
-    <PackageReference Include="JetBrainsAnnotations.Fody" Version="2.2.0" PrivateAssets="all" />
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
