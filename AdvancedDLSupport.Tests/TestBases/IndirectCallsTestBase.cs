@@ -25,99 +25,98 @@ using Xunit;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.TestBases
+namespace AdvancedDLSupport.Tests.TestBases;
+
+public abstract class IndirectCallsTestBase<T> : LibraryTestBase<T> where T : class, IIndirectCallLibrary
 {
-    public abstract class IndirectCallsTestBase<T> : LibraryTestBase<T> where T : class, IIndirectCallLibrary
+    private const string LibraryName = "IndirectCallTests";
+
+    protected IndirectCallsTestBase()
+        : base(LibraryName)
     {
-        private const string LibraryName = "IndirectCallTests";
+    }
 
-        protected IndirectCallsTestBase()
-            : base(LibraryName)
-        {
-        }
+    protected override ImplementationOptions GetImplementationOptions()
+    {
+        return ImplementationOptions.UseIndirectCalls;
+    }
 
-        protected override ImplementationOptions GetImplementationOptions()
-        {
-            return ImplementationOptions.UseIndirectCalls;
-        }
+    [Fact]
+    public void CanCallSimpleFunction()
+    {
+        var result = Library.Multiply(5, 5);
 
-        [Fact]
-        public void CanCallSimpleFunction()
-        {
-            var result = Library.Multiply(5, 5);
+        Assert.Equal(25, result);
+    }
 
-            Assert.Equal(25, result);
-        }
+    [Fact]
+    public void CanCallFunctionWithByRefParameter()
+    {
+        var data = new TestStruct { A = 5, B = 15 };
+        var result = Library.GetStructAValueByRef(ref data);
 
-        [Fact]
-        public void CanCallFunctionWithByRefParameter()
-        {
-            var data = new TestStruct { A = 5, B = 15 };
-            var result = Library.GetStructAValueByRef(ref data);
+        Assert.Equal(data.A, result);
+    }
 
-            Assert.Equal(data.A, result);
-        }
+    [Fact]
+    public void CanCallFunctionWithByInParameter()
+    {
+        var data = new TestStruct { A = 5, B = 15 };
+        var result = Library.GetStructAValueByIn(data);
 
-        [Fact]
-        public void CanCallFunctionWithByInParameter()
-        {
-            var data = new TestStruct { A = 5, B = 15 };
-            var result = Library.GetStructAValueByIn(data);
+        Assert.Equal(data.A, result);
+    }
 
-            Assert.Equal(data.A, result);
-        }
+    [Fact]
+    public void CanCallFunctionWithByValueParameter()
+    {
+        var data = new TestStruct { A = 5, B = 15 };
+        var result = Library.GetStructAValueByValue(data);
 
-        [Fact]
-        public void CanCallFunctionWithByValueParameter()
-        {
-            var data = new TestStruct { A = 5, B = 15 };
-            var result = Library.GetStructAValueByValue(data);
+        Assert.Equal(data.A, result);
+    }
 
-            Assert.Equal(data.A, result);
-        }
+    [Fact]
+    public void CanCallFunctionWithByRefReturnValue()
+    {
+        const int a = 5;
+        const int b = 15;
 
-        [Fact]
-        public void CanCallFunctionWithByRefReturnValue()
-        {
-            const int a = 5;
-            const int b = 15;
+        ref var result = ref Library.GetInitializedStructByRef(a, b);
 
-            ref var result = ref Library.GetInitializedStructByRef(a, b);
+        Assert.Equal(a, result.A);
+        Assert.Equal(b, result.B);
+    }
 
-            Assert.Equal(a, result.A);
-            Assert.Equal(b, result.B);
-        }
+    [Fact]
+    public void CanCallFunctionWithByValueReturnValue()
+    {
+        const int a = 5;
+        const int b = 15;
 
-        [Fact]
-        public void CanCallFunctionWithByValueReturnValue()
-        {
-            const int a = 5;
-            const int b = 15;
+        var result = Library.GetInitializedStructByValue(a, b);
 
-            var result = Library.GetInitializedStructByValue(a, b);
+        Assert.Equal(a, result.A);
+        Assert.Equal(b, result.B);
+    }
 
-            Assert.Equal(a, result.A);
-            Assert.Equal(b, result.B);
-        }
+    [Fact]
+    public void CanCallFunctionWithNullableReturnValue()
+    {
+        var result = Library.GetNullTestStruct();
 
-        [Fact]
-        public void CanCallFunctionWithNullableReturnValue()
-        {
-            var result = Library.GetNullTestStruct();
+        Assert.Null(result);
+    }
 
-            Assert.Null(result);
-        }
+    [Fact]
+    public void CanCallFunctionWithNullableParameter()
+    {
+        var resultNull = Library.IsTestStructNull(null);
 
-        [Fact]
-        public void CanCallFunctionWithNullableParameter()
-        {
-            var resultNull = Library.IsTestStructNull(null);
+        var strct = new TestStruct { A = 5, B = 15 };
+        var resultNotNull = Library.IsTestStructNull(strct);
 
-            var strct = new TestStruct { A = 5, B = 15 };
-            var resultNotNull = Library.IsTestStructNull(strct);
-
-            Assert.True(resultNull);
-            Assert.False(resultNotNull);
-        }
+        Assert.True(resultNull);
+        Assert.False(resultNotNull);
     }
 }

@@ -27,73 +27,72 @@ using System.Reflection;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport;
+
+/// <summary>
+/// Repository class for name manglers.
+/// </summary>
+[PublicAPI]
+public class ManglerRepository
 {
     /// <summary>
-    /// Repository class for name manglers.
+    /// Gets the default instance of the <see cref="ManglerRepository"/> class. This instance contains all discovered
+    /// mangler types.
     /// </summary>
     [PublicAPI]
-    public class ManglerRepository
+    public static ManglerRepository Default { get; }
+
+    private List<IEntrypointMangler> Manglers { get; }
+
+    /// <summary>
+    /// Initializes static members of the <see cref="ManglerRepository"/> class.
+    /// </summary>
+    static ManglerRepository()
     {
-        /// <summary>
-        /// Gets the default instance of the <see cref="ManglerRepository"/> class. This instance contains all discovered
-        /// mangler types.
-        /// </summary>
-        [PublicAPI]
-        public static ManglerRepository Default { get; }
+        Default = new ManglerRepository();
+        Default.DiscoverManglers();
+    }
 
-        private List<IEntrypointMangler> Manglers { get; }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ManglerRepository"/> class.
+    /// </summary>
+    private ManglerRepository()
+    {
+        Manglers = new List<IEntrypointMangler>();
+    }
 
-        /// <summary>
-        /// Initializes static members of the <see cref="ManglerRepository"/> class.
-        /// </summary>
-        static ManglerRepository()
+    /// <summary>
+    /// Scans the currently executing assembly for classes implementing the <see cref="IEntrypointMangler"/>
+    /// interface, and creates an instance of each which is added to the repository's internal store.
+    /// </summary>
+    internal void DiscoverManglers()
+    {
+        Manglers.Clear();
+
+        var assembly = Assembly.GetExecutingAssembly();
+        var manglerTypes = assembly.DefinedTypes.Where
+        (
+            t =>
+                t.IsClass &&
+                t.ImplementedInterfaces.Contains(typeof(IEntrypointMangler))
+        );
+
+        foreach (var manglerType in manglerTypes)
         {
-            Default = new ManglerRepository();
-            Default.DiscoverManglers();
+            var mangler = (IEntrypointMangler)Activator.CreateInstance(manglerType);
+            Manglers.Add(mangler);
         }
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ManglerRepository"/> class.
-        /// </summary>
-        private ManglerRepository()
-        {
-            Manglers = new List<IEntrypointMangler>();
-        }
-
-        /// <summary>
-        /// Scans the currently executing assembly for classes implementing the <see cref="IEntrypointMangler"/>
-        /// interface, and creates an instance of each which is added to the repository's internal store.
-        /// </summary>
-        internal void DiscoverManglers()
-        {
-            Manglers.Clear();
-
-            var assembly = Assembly.GetExecutingAssembly();
-            var manglerTypes = assembly.DefinedTypes.Where
-            (
-                t =>
-                    t.IsClass &&
-                    t.ImplementedInterfaces.Contains(typeof(IEntrypointMangler))
-            );
-
-            foreach (var manglerType in manglerTypes)
-            {
-                var mangler = (IEntrypointMangler)Activator.CreateInstance(manglerType);
-                Manglers.Add(mangler);
-            }
-        }
-
-        /// <summary>
-        /// Gets the manglers that are applicable to the given member.
-        /// </summary>
-        /// <param name="member">The member.</param>
-        /// <typeparam name="T">A member implementing the <see cref="IIntrospectiveMember"/> interface.</typeparam>
-        /// <returns>A set of applicable manglers, if any.</returns>
-        [PublicAPI]
-        public IEnumerable<IEntrypointMangler> GetApplicableManglers<T>(T member) where T : MemberInfo
-        {
-            return Manglers.Where(m => m.IsManglerApplicable(member));
-        }
+    /// <summary>
+    /// Gets the manglers that are applicable to the given member.
+    /// </summary>
+    /// <param name="member">The member.</param>
+    /// <typeparam name="T">A member implementing the <see cref="IIntrospectiveMember"/> interface.</typeparam>
+    /// <returns>A set of applicable manglers, if any.</returns>
+    [PublicAPI]
+    public IEnumerable<IEntrypointMangler> GetApplicableManglers<T>(T member) where T : MemberInfo
+    {
+        return Manglers.Where(m => m.IsManglerApplicable(member));
     }
 }

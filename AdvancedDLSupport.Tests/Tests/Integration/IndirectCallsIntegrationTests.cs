@@ -28,46 +28,45 @@ using static AdvancedDLSupport.ImplementationOptions;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Integration
+namespace AdvancedDLSupport.Tests.Integration;
+
+public class IndirectCallsIntegrationTests
 {
-    public class IndirectCallsIntegrationTests
+    public class Simple : IndirectCallsTestBase<IIndirectCallLibrary>
     {
-        public class Simple : IndirectCallsTestBase<IIndirectCallLibrary>
+        protected override ImplementationOptions GetImplementationOptions()
         {
-            protected override ImplementationOptions GetImplementationOptions()
-            {
-                return UseIndirectCalls;
-            }
+            return UseIndirectCalls;
+        }
+    }
+
+    public class LazyBinding : IndirectCallsTestBase<ILazyLoadedIndirectCallLibrary>
+    {
+        protected override ImplementationOptions GetImplementationOptions()
+        {
+            return UseIndirectCalls | UseLazyBinding;
         }
 
-        public class LazyBinding : IndirectCallsTestBase<ILazyLoadedIndirectCallLibrary>
+        [Fact]
+        public void ThrowsIfMissingMemberIsCalled()
         {
-            protected override ImplementationOptions GetImplementationOptions()
-            {
-                return UseIndirectCalls | UseLazyBinding;
-            }
+            Assert.Throws<SymbolLoadingException>(() => Library.MissingMethod());
+        }
+    }
 
-            [Fact]
-            public void ThrowsIfMissingMemberIsCalled()
-            {
-                Assert.Throws<SymbolLoadingException>(() => Library.MissingMethod());
-            }
+    public class DisposalChecks : IndirectCallsTestBase<IDisposableIndirectCallLibrary>
+    {
+        protected override ImplementationOptions GetImplementationOptions()
+        {
+            return UseIndirectCalls | GenerateDisposalChecks;
         }
 
-        public class DisposalChecks : IndirectCallsTestBase<IDisposableIndirectCallLibrary>
+        [Fact]
+        public void ThrowsIfMemberIsCalledOnDisposedObject()
         {
-            protected override ImplementationOptions GetImplementationOptions()
-            {
-                return UseIndirectCalls | GenerateDisposalChecks;
-            }
+            Library.Dispose();
 
-            [Fact]
-            public void ThrowsIfMemberIsCalledOnDisposedObject()
-            {
-                Library.Dispose();
-
-                Assert.Throws<ObjectDisposedException>(() => Library.Multiply(5, 5));
-            }
+            Assert.Throws<ObjectDisposedException>(() => Library.Multiply(5, 5));
         }
     }
 }

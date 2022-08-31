@@ -24,21 +24,20 @@ using System.Diagnostics.CodeAnalysis;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.AOT.Tests.TestBases
+namespace AdvancedDLSupport.AOT.Tests.TestBases;
+
+public class NativeLibraryBuilderTestBase : PregeneratedAssemblyBuilderTestBase
 {
-    public class NativeLibraryBuilderTestBase : PregeneratedAssemblyBuilderTestBase
+    protected NativeLibraryBuilder LibraryBuilder { get; }
+
+    [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor", Justification = "Used to set implementation options in derived classes")]
+    protected NativeLibraryBuilderTestBase()
     {
-        protected NativeLibraryBuilder LibraryBuilder { get; }
+        LibraryBuilder = new NativeLibraryBuilder(GetImplementationOptions());
+    }
 
-        [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor", Justification = "Used to set implementation options in derived classes")]
-        protected NativeLibraryBuilderTestBase()
-        {
-            LibraryBuilder = new NativeLibraryBuilder(GetImplementationOptions());
-        }
-
-        protected override ImplementationOptions GetImplementationOptions()
-        {
-            return ImplementationOptions.UseLazyBinding;
-        }
+    protected override ImplementationOptions GetImplementationOptions()
+    {
+        return ImplementationOptions.UseLazyBinding;
     }
 }

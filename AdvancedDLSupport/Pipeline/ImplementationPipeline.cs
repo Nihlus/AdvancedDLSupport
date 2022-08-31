@@ -30,305 +30,304 @@ using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using static System.Reflection.MethodAttributes;
 
-namespace AdvancedDLSupport.Pipeline
+namespace AdvancedDLSupport.Pipeline;
+
+/// <summary>
+/// Represents a pipeline which consumes definitions, and processes them to generate a dynamic type.
+/// </summary>
+[PublicAPI]
+public class ImplementationPipeline
 {
+    private readonly ModuleBuilder _targetModule;
+
+    private readonly ILGenerator _constructorIL;
+
+    private readonly ImplementationOptions _options;
+
+    private readonly ImplementationGeneratorSorter _generatorSorter;
+
+    private IReadOnlyList<IImplementationGenerator<IntrospectiveMethodInfo>> _methodGeneratorPipeline;
+
+    private IReadOnlyList<IImplementationGenerator<IntrospectivePropertyInfo>> _propertyGeneratorPipeline;
+
     /// <summary>
-    /// Represents a pipeline which consumes definitions, and processes them to generate a dynamic type.
+    /// Gets the target type of the pipeline.
     /// </summary>
-    [PublicAPI]
-    public class ImplementationPipeline
+    internal TypeBuilder TargetType { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ImplementationPipeline"/> class.
+    /// </summary>
+    /// <param name="targetModule">The module to generates any additional types in.</param>
+    /// <param name="targetType">The target type to generate implementations in.</param>
+    /// <param name="constructorIL">The <see cref="ILGenerator"/> of the target type's constructor.</param>
+    /// <param name="options">The implementation options to use.</param>
+    public ImplementationPipeline
+    (
+        ModuleBuilder targetModule,
+        TypeBuilder targetType,
+        ILGenerator constructorIL,
+        ImplementationOptions options
+    )
     {
-        private readonly ModuleBuilder _targetModule;
+        _targetModule = targetModule;
+        TargetType = targetType;
+        _constructorIL = constructorIL;
+        _options = options;
 
-        private readonly ILGenerator _constructorIL;
+        _generatorSorter = new ImplementationGeneratorSorter();
 
-        private readonly ImplementationOptions _options;
+        _methodGeneratorPipeline = _generatorSorter.SortGenerators(GetBaselineMethodGenerators()).ToList();
+        _propertyGeneratorPipeline = _generatorSorter.SortGenerators(GetBaselinePropertyGenerators()).ToList();
+    }
 
-        private readonly ImplementationGeneratorSorter _generatorSorter;
+    /// <summary>
+    /// Injects a set of method implementation generation stages into the pipeline.
+    /// </summary>
+    /// <param name="stages">The stages to inject.</param>
+    [PublicAPI]
+    public void InjectMethodStages(params IImplementationGenerator<IntrospectiveMethodInfo>[] stages)
+    {
+        _methodGeneratorPipeline = _generatorSorter.SortGenerators(GetBaselineMethodGenerators().Concat(stages)).ToList();
+    }
 
-        private IReadOnlyList<IImplementationGenerator<IntrospectiveMethodInfo>> _methodGeneratorPipeline;
-
-        private IReadOnlyList<IImplementationGenerator<IntrospectivePropertyInfo>> _propertyGeneratorPipeline;
-
-        /// <summary>
-        /// Gets the target type of the pipeline.
-        /// </summary>
-        internal TypeBuilder TargetType { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImplementationPipeline"/> class.
-        /// </summary>
-        /// <param name="targetModule">The module to generates any additional types in.</param>
-        /// <param name="targetType">The target type to generate implementations in.</param>
-        /// <param name="constructorIL">The <see cref="ILGenerator"/> of the target type's constructor.</param>
-        /// <param name="options">The implementation options to use.</param>
-        public ImplementationPipeline
+    /// <summary>
+    /// Gets the baseline set of method implementation generators.
+    /// </summary>
+    /// <returns>The baseline set.</returns>
+    [Pure]
+    private IEnumerable<IImplementationGenerator<IntrospectiveMethodInfo>> GetBaselineMethodGenerators()
+    {
+        yield return new RefPermutationImplementationGenerator
         (
-            ModuleBuilder targetModule,
-            TypeBuilder targetType,
-            ILGenerator constructorIL,
-            ImplementationOptions options
-        )
-        {
-            _targetModule = targetModule;
-            TargetType = targetType;
-            _constructorIL = constructorIL;
-            _options = options;
+            _targetModule,
+            TargetType,
+            _constructorIL,
+            _options
+        );
 
-            _generatorSorter = new ImplementationGeneratorSorter();
-
-            _methodGeneratorPipeline = _generatorSorter.SortGenerators(GetBaselineMethodGenerators()).ToList();
-            _propertyGeneratorPipeline = _generatorSorter.SortGenerators(GetBaselinePropertyGenerators()).ToList();
-        }
-
-        /// <summary>
-        /// Injects a set of method implementation generation stages into the pipeline.
-        /// </summary>
-        /// <param name="stages">The stages to inject.</param>
-        [PublicAPI]
-        public void InjectMethodStages(params IImplementationGenerator<IntrospectiveMethodInfo>[] stages)
-        {
-            _methodGeneratorPipeline = _generatorSorter.SortGenerators(GetBaselineMethodGenerators().Concat(stages)).ToList();
-        }
-
-        /// <summary>
-        /// Gets the baseline set of method implementation generators.
-        /// </summary>
-        /// <returns>The baseline set.</returns>
-        [Pure]
-        private IEnumerable<IImplementationGenerator<IntrospectiveMethodInfo>> GetBaselineMethodGenerators()
-        {
-            yield return new RefPermutationImplementationGenerator
-            (
-                _targetModule,
-                TargetType,
-                _constructorIL,
-                _options
-            );
-
-            yield return new DelegateMethodImplementationGenerator
-            (
-                _targetModule,
-                TargetType,
-                _constructorIL,
-                _options
-            );
-
-            yield return new IndirectCallMethodImplementationGenerator
-            (
-                _targetModule,
-                TargetType,
-                _constructorIL,
-                _options
-            );
-
-            yield return new BooleanMarshallingWrapper
-            (
-                _targetModule,
-                TargetType,
-                _constructorIL,
-                _options
-            );
-
-            yield return new DisposalCallWrapper
-            (
-                _targetModule,
-                TargetType,
-                _constructorIL,
-                _options
-            );
-
-            yield return new StringMarshallingWrapper
-            (
-                _targetModule,
-                TargetType,
-                _constructorIL,
-                _options
-            );
-
-            yield return new ValueNullableMarshallingWrapper
-            (
-                _targetModule,
-                TargetType,
-                _constructorIL,
-                _options
-            );
-
-            yield return new GenericDelegateWrapper
-            (
-                _targetModule,
-                TargetType,
-                _constructorIL,
-                _options
-            );
-
-            yield return new DelegateWrapper
-            (
-                _targetModule,
-                TargetType,
-                _constructorIL,
-                _options
-            );
-
-            yield return new SpanMarshallingWrapper
-            (
-                _targetModule,
-                TargetType,
-                _constructorIL,
-                _options
-            );
-        }
-
-        /// <summary>
-        /// Injects a set of property implementation stages into the pipeline.
-        /// </summary>
-        /// <param name="stages">The stages to inject.</param>
-        [PublicAPI]
-        public void InjectPropertyStage(params IImplementationGenerator<IntrospectivePropertyInfo>[] stages)
-        {
-            _propertyGeneratorPipeline = _generatorSorter.SortGenerators(GetBaselinePropertyGenerators().Concat(stages)).ToList();
-        }
-
-        /// <summary>
-        /// Gets the baseline set of property implementation generators.
-        /// </summary>
-        /// <returns>The baseline set.</returns>
-        [Pure]
-        private IEnumerable<IImplementationGenerator<IntrospectivePropertyInfo>> GetBaselinePropertyGenerators()
-        {
-            yield return new PropertyImplementationGenerator
-            (
-                _targetModule,
-                TargetType,
-                _constructorIL,
-                _options
-            );
-        }
-
-        /// <summary>
-        /// Generates the definition of the complex method.
-        /// </summary>
-        /// <param name="interfaceDefinition">The interface definition to base it on.</param>
-        /// <param name="abstractImplementation">The abstract implementation, if any.</param>
-        /// <param name="nameOverride">
-        /// The name to use for the method. If null, the interface member name is used.
-        /// </param>
-        /// <returns>An introspective method info for the definition.</returns>
-        internal IntrospectiveMethodInfo GenerateDefinitionFromSignature
+        yield return new DelegateMethodImplementationGenerator
         (
-            IntrospectiveMethodInfo interfaceDefinition,
-            IntrospectiveMethodInfo? abstractImplementation,
-            string? nameOverride = null
-        )
-        {
-            var methodBuilder = TargetType.DefineMethod
-            (
-                nameOverride ?? interfaceDefinition.Name,
-                Public | Final | Virtual | HideBySig | NewSlot,
-                CallingConventions.Standard,
-                interfaceDefinition.ReturnType,
-                interfaceDefinition.ReturnParameterRequiredModifiers,
-                interfaceDefinition.ReturnParameterOptionalModifiers,
-                interfaceDefinition.ParameterTypes.ToArray(),
-                interfaceDefinition.ParameterRequiredModifiers.ToArray(),
-                interfaceDefinition.ParameterOptionalModifiers.ToArray()
-            );
+            _targetModule,
+            TargetType,
+            _constructorIL,
+            _options
+        );
 
-            // In the following blocks, which set of attributes to pass through is selected. The logic is as follows:
-            // If either the interface or abstract implementation have attributes, select the one which does
-            // If both have attributes, select the abstract implementation
-            // If neither have attributes, select the interface definition
-            if (!(abstractImplementation is null))
+        yield return new IndirectCallMethodImplementationGenerator
+        (
+            _targetModule,
+            TargetType,
+            _constructorIL,
+            _options
+        );
+
+        yield return new BooleanMarshallingWrapper
+        (
+            _targetModule,
+            TargetType,
+            _constructorIL,
+            _options
+        );
+
+        yield return new DisposalCallWrapper
+        (
+            _targetModule,
+            TargetType,
+            _constructorIL,
+            _options
+        );
+
+        yield return new StringMarshallingWrapper
+        (
+            _targetModule,
+            TargetType,
+            _constructorIL,
+            _options
+        );
+
+        yield return new ValueNullableMarshallingWrapper
+        (
+            _targetModule,
+            TargetType,
+            _constructorIL,
+            _options
+        );
+
+        yield return new GenericDelegateWrapper
+        (
+            _targetModule,
+            TargetType,
+            _constructorIL,
+            _options
+        );
+
+        yield return new DelegateWrapper
+        (
+            _targetModule,
+            TargetType,
+            _constructorIL,
+            _options
+        );
+
+        yield return new SpanMarshallingWrapper
+        (
+            _targetModule,
+            TargetType,
+            _constructorIL,
+            _options
+        );
+    }
+
+    /// <summary>
+    /// Injects a set of property implementation stages into the pipeline.
+    /// </summary>
+    /// <param name="stages">The stages to inject.</param>
+    [PublicAPI]
+    public void InjectPropertyStage(params IImplementationGenerator<IntrospectivePropertyInfo>[] stages)
+    {
+        _propertyGeneratorPipeline = _generatorSorter.SortGenerators(GetBaselinePropertyGenerators().Concat(stages)).ToList();
+    }
+
+    /// <summary>
+    /// Gets the baseline set of property implementation generators.
+    /// </summary>
+    /// <returns>The baseline set.</returns>
+    [Pure]
+    private IEnumerable<IImplementationGenerator<IntrospectivePropertyInfo>> GetBaselinePropertyGenerators()
+    {
+        yield return new PropertyImplementationGenerator
+        (
+            _targetModule,
+            TargetType,
+            _constructorIL,
+            _options
+        );
+    }
+
+    /// <summary>
+    /// Generates the definition of the complex method.
+    /// </summary>
+    /// <param name="interfaceDefinition">The interface definition to base it on.</param>
+    /// <param name="abstractImplementation">The abstract implementation, if any.</param>
+    /// <param name="nameOverride">
+    /// The name to use for the method. If null, the interface member name is used.
+    /// </param>
+    /// <returns>An introspective method info for the definition.</returns>
+    internal IntrospectiveMethodInfo GenerateDefinitionFromSignature
+    (
+        IntrospectiveMethodInfo interfaceDefinition,
+        IntrospectiveMethodInfo? abstractImplementation,
+        string? nameOverride = null
+    )
+    {
+        var methodBuilder = TargetType.DefineMethod
+        (
+            nameOverride ?? interfaceDefinition.Name,
+            Public | Final | Virtual | HideBySig | NewSlot,
+            CallingConventions.Standard,
+            interfaceDefinition.ReturnType,
+            interfaceDefinition.ReturnParameterRequiredModifiers,
+            interfaceDefinition.ReturnParameterOptionalModifiers,
+            interfaceDefinition.ParameterTypes.ToArray(),
+            interfaceDefinition.ParameterRequiredModifiers.ToArray(),
+            interfaceDefinition.ParameterOptionalModifiers.ToArray()
+        );
+
+        // In the following blocks, which set of attributes to pass through is selected. The logic is as follows:
+        // If either the interface or abstract implementation have attributes, select the one which does
+        // If both have attributes, select the abstract implementation
+        // If neither have attributes, select the interface definition
+        if (!(abstractImplementation is null))
+        {
+            if (abstractImplementation.CustomAttributes.Any())
             {
-                if (abstractImplementation.CustomAttributes.Any())
-                {
-                    methodBuilder.ApplyCustomAttributesFrom(abstractImplementation);
-                }
-                else
-                {
-                    methodBuilder.ApplyCustomAttributesFrom(interfaceDefinition);
-                }
-
-                TargetType.DefineMethodOverride(methodBuilder, abstractImplementation.GetWrappedMember());
+                methodBuilder.ApplyCustomAttributesFrom(abstractImplementation);
             }
             else
             {
                 methodBuilder.ApplyCustomAttributesFrom(interfaceDefinition);
-                TargetType.DefineMethodOverride(methodBuilder, interfaceDefinition.GetWrappedMember());
             }
 
-            var attributePassthroughDefinition = interfaceDefinition;
-            if (!(abstractImplementation is null) && abstractImplementation.CustomAttributes.Any())
-            {
-                attributePassthroughDefinition = abstractImplementation;
-            }
-
-            return new IntrospectiveMethodInfo
-            (
-                methodBuilder,
-                interfaceDefinition.ReturnType,
-                interfaceDefinition.ParameterTypes,
-                interfaceDefinition.MetadataType,
-                attributePassthroughDefinition
-            );
+            TargetType.DefineMethodOverride(methodBuilder, abstractImplementation.GetWrappedMember());
         }
-
-        /// <summary>
-        /// Consumes a set of method definitions, passing them through the pipeline.
-        /// </summary>
-        /// <param name="methods">The definitions.</param>
-        [PublicAPI]
-        public void ConsumeMethodDefinitions(IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> methods)
+        else
         {
-            ConsumeDefinitions(methods, _methodGeneratorPipeline);
+            methodBuilder.ApplyCustomAttributesFrom(interfaceDefinition);
+            TargetType.DefineMethodOverride(methodBuilder, interfaceDefinition.GetWrappedMember());
         }
 
-        /// <summary>
-        /// Consumes a set of property definitions, passing them through the pipeline.
-        /// </summary>
-        /// <param name="properties">The properties.</param>
-        [PublicAPI]
-        public void ConsumePropertyDefinitions(IEnumerable<PipelineWorkUnit<IntrospectivePropertyInfo>> properties)
+        var attributePassthroughDefinition = interfaceDefinition;
+        if (!(abstractImplementation is null) && abstractImplementation.CustomAttributes.Any())
         {
-            ConsumeDefinitions(properties, _propertyGeneratorPipeline);
+            attributePassthroughDefinition = abstractImplementation;
         }
 
-        /// <summary>
-        /// Consumes a set of definitions, passing them through the given pipeline. Each stage is guaranteed to run only
-        /// once for any given branch of the input definitions. The generation process follows a recursive depth-first
-        /// reductive algorithm.
-        /// </summary>
-        /// <param name="definitions">The definitions to process.</param>
-        /// <param name="pipeline">A sorted list of generators, acting as the process pipeline.</param>
-        /// <typeparam name="T">The type of definition to process.</typeparam>
-        private void ConsumeDefinitions<T>
+        return new IntrospectiveMethodInfo
         (
-            IEnumerable<PipelineWorkUnit<T>> definitions,
-            IReadOnlyList<IImplementationGenerator<T>> pipeline
-        )
-            where T : MemberInfo
+            methodBuilder,
+            interfaceDefinition.ReturnType,
+            interfaceDefinition.ParameterTypes,
+            interfaceDefinition.MetadataType,
+            attributePassthroughDefinition
+        );
+    }
+
+    /// <summary>
+    /// Consumes a set of method definitions, passing them through the pipeline.
+    /// </summary>
+    /// <param name="methods">The definitions.</param>
+    [PublicAPI]
+    public void ConsumeMethodDefinitions(IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> methods)
+    {
+        ConsumeDefinitions(methods, _methodGeneratorPipeline);
+    }
+
+    /// <summary>
+    /// Consumes a set of property definitions, passing them through the pipeline.
+    /// </summary>
+    /// <param name="properties">The properties.</param>
+    [PublicAPI]
+    public void ConsumePropertyDefinitions(IEnumerable<PipelineWorkUnit<IntrospectivePropertyInfo>> properties)
+    {
+        ConsumeDefinitions(properties, _propertyGeneratorPipeline);
+    }
+
+    /// <summary>
+    /// Consumes a set of definitions, passing them through the given pipeline. Each stage is guaranteed to run only
+    /// once for any given branch of the input definitions. The generation process follows a recursive depth-first
+    /// reductive algorithm.
+    /// </summary>
+    /// <param name="definitions">The definitions to process.</param>
+    /// <param name="pipeline">A sorted list of generators, acting as the process pipeline.</param>
+    /// <typeparam name="T">The type of definition to process.</typeparam>
+    private void ConsumeDefinitions<T>
+    (
+        IEnumerable<PipelineWorkUnit<T>> definitions,
+        IReadOnlyList<IImplementationGenerator<T>> pipeline
+    )
+        where T : MemberInfo
+    {
+        var definitionQueue = new Queue<PipelineWorkUnit<T>>(definitions);
+
+        while (definitionQueue.Any())
         {
-            var definitionQueue = new Queue<PipelineWorkUnit<T>>(definitions);
+            var workUnit = definitionQueue.Dequeue();
+            var definition = workUnit.Definition;
 
-            while (definitionQueue.Any())
+            // Find the entry stage of the pipeline
+            var stage = pipeline.First(s => s.IsApplicable(definition));
+
+            // GetTransformedSymbol the definitions through the stage
+            var generatedDefinitions = stage.GenerateImplementation(workUnit).ToList();
+
+            if (!generatedDefinitions.Any())
             {
-                var workUnit = definitionQueue.Dequeue();
-                var definition = workUnit.Definition;
-
-                // Find the entry stage of the pipeline
-                var stage = pipeline.First(s => s.IsApplicable(definition));
-
-                // GetTransformedSymbol the definitions through the stage
-                var generatedDefinitions = stage.GenerateImplementation(workUnit).ToList();
-
-                if (!generatedDefinitions.Any())
-                {
-                    continue;
-                }
-
-                // Run the new definitions through the remaining stages of the pipeline
-                ConsumeDefinitions(generatedDefinitions, pipeline.Except(new[] { stage }).ToList());
+                continue;
             }
+
+            // Run the new definitions through the remaining stages of the pipeline
+            ConsumeDefinitions(generatedDefinitions, pipeline.Except(new[] { stage }).ToList());
         }
     }
 }

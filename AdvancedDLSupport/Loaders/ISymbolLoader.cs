@@ -23,21 +23,20 @@
 using System;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Loaders
+namespace AdvancedDLSupport.Loaders;
+
+/// <summary>
+/// Represents a class which can load symbols on a specific platform.
+/// </summary>
+public interface ISymbolLoader
 {
     /// <summary>
-    /// Represents a class which can load symbols on a specific platform.
+    /// Load the given symbol.
     /// </summary>
-    public interface ISymbolLoader
-    {
-        /// <summary>
-        /// Load the given symbol.
-        /// </summary>
-        /// <param name="library">The handle to the library in which the symbol exists.</param>
-        /// <param name="symbolName">The name of the symbol to load.</param>
-        /// <exception cref="SymbolLoadingException">Thrown if the symbol could not be loaded.</exception>
-        /// <returns>A handle to the symbol.</returns>
-        [PublicAPI, Pure]
-        IntPtr LoadSymbol(IntPtr library, string symbolName);
-    }
+    /// <param name="library">The handle to the library in which the symbol exists.</param>
+    /// <param name="symbolName">The name of the symbol to load.</param>
+    /// <exception cref="SymbolLoadingException">Thrown if the symbol could not be loaded.</exception>
+    /// <returns>A handle to the symbol.</returns>
+    [PublicAPI, Pure]
+    IntPtr LoadSymbol(IntPtr library, string symbolName);
 }

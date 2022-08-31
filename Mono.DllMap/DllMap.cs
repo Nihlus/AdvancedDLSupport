@@ -24,30 +24,29 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using JetBrains.Annotations;
 
-namespace Mono.DllMap
+namespace Mono.DllMap;
+
+/// <summary>
+/// Represents an entry in a Mono DllMap configuration.
+/// </summary>
+[PublicAPI, XmlRoot("dllmap")]
+public class DllMap : MappingBase
 {
     /// <summary>
-    /// Represents an entry in a Mono DllMap configuration.
+    /// Gets or sets the name of the source library that the map maps.
     /// </summary>
-    [PublicAPI, XmlRoot("dllmap")]
-    public class DllMap : MappingBase
-    {
-        /// <summary>
-        /// Gets or sets the name of the source library that the map maps.
-        /// </summary>
-        [PublicAPI, XmlAttribute("dll")]
-        public string? SourceLibrary { get; set; }
+    [PublicAPI, XmlAttribute("dll")]
+    public string? SourceLibrary { get; set; }
 
-        /// <summary>
-        /// Gets or sets the name of the target library that the map maps to.
-        /// </summary>
-        [PublicAPI, XmlAttribute("target")]
-        public string? TargetLibrary { get; set; }
+    /// <summary>
+    /// Gets or sets the name of the target library that the map maps to.
+    /// </summary>
+    [PublicAPI, XmlAttribute("target")]
+    public string? TargetLibrary { get; set; }
 
-        /// <summary>
-        /// Gets or sets the list of symbol remapping entries in the mapping entry.
-        /// </summary>
-        [PublicAPI, XmlElement("dllentry")]
-        public List<DllEntry>? SymbolEntries { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the list of symbol remapping entries in the mapping entry.
+    /// </summary>
+    [PublicAPI, XmlElement("dllentry")]
+    public List<DllEntry>? SymbolEntries { get; set; }
 }

@@ -24,76 +24,75 @@ using System;
 using System.Reflection;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Pipeline
+namespace AdvancedDLSupport.Pipeline;
+
+/// <summary>
+/// Represents a unit of work passing through the pipeline.
+/// </summary>
+/// <typeparam name="T">The type of the unit being worked on.</typeparam>
+[PublicAPI]
+public class PipelineWorkUnit<T> where T : MemberInfo
 {
     /// <summary>
-    /// Represents a unit of work passing through the pipeline.
+    /// Gets the name of the native symbol that the unit of work maps to.
     /// </summary>
-    /// <typeparam name="T">The type of the unit being worked on.</typeparam>
     [PublicAPI]
-    public class PipelineWorkUnit<T> where T : MemberInfo
+    public string SymbolName { get; }
+
+    /// <summary>
+    /// Gets the name of the original member that the unit of work stems from.
+    /// </summary>
+    [PublicAPI]
+    public string? BaseMemberName { get; }
+
+    /// <summary>
+    /// Gets a unique identifier that can be used in generated definition names.
+    /// </summary>
+    [PublicAPI]
+    public string UniqueIdentifier { get; }
+
+    /// <summary>
+    /// Gets the definition that the work unit wraps.
+    /// </summary>
+    [PublicAPI]
+    public T Definition { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PipelineWorkUnit{T}"/> class.
+    /// </summary>
+    /// <param name="definition">The definition to wrap.</param>
+    /// <param name="symbolName">The native symbol name.</param>
+    /// <param name="options">The options used when this work unit was created.</param>
+    [PublicAPI]
+    public PipelineWorkUnit(T definition, string symbolName, ImplementationOptions options)
     {
-        /// <summary>
-        /// Gets the name of the native symbol that the unit of work maps to.
-        /// </summary>
-        [PublicAPI]
-        public string SymbolName { get; }
+        Definition = definition;
+        BaseMemberName = definition.Name;
+        SymbolName = symbolName;
+        UniqueIdentifier = ((ulong)options).ToString();
+    }
 
-        /// <summary>
-        /// Gets the name of the original member that the unit of work stems from.
-        /// </summary>
-        [PublicAPI]
-        public string? BaseMemberName { get; }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PipelineWorkUnit{T}"/> class.
+    /// </summary>
+    /// <param name="definition">The definition to wrap.</param>
+    /// <param name="baseUnit">The unit of work to base this unit off of.</param>
+    [PublicAPI]
+    public PipelineWorkUnit(T definition, PipelineWorkUnit<T> baseUnit)
+    {
+        Definition = definition;
+        SymbolName = baseUnit.SymbolName;
+        UniqueIdentifier = baseUnit.UniqueIdentifier;
+    }
 
-        /// <summary>
-        /// Gets a unique identifier that can be used in generated definition names.
-        /// </summary>
-        [PublicAPI]
-        public string UniqueIdentifier { get; }
-
-        /// <summary>
-        /// Gets the definition that the work unit wraps.
-        /// </summary>
-        [PublicAPI]
-        public T Definition { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PipelineWorkUnit{T}"/> class.
-        /// </summary>
-        /// <param name="definition">The definition to wrap.</param>
-        /// <param name="symbolName">The native symbol name.</param>
-        /// <param name="options">The options used when this work unit was created.</param>
-        [PublicAPI]
-        public PipelineWorkUnit(T definition, string symbolName, ImplementationOptions options)
-        {
-            Definition = definition;
-            BaseMemberName = definition.Name;
-            SymbolName = symbolName;
-            UniqueIdentifier = ((ulong)options).ToString();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PipelineWorkUnit{T}"/> class.
-        /// </summary>
-        /// <param name="definition">The definition to wrap.</param>
-        /// <param name="baseUnit">The unit of work to base this unit off of.</param>
-        [PublicAPI]
-        public PipelineWorkUnit(T definition, PipelineWorkUnit<T> baseUnit)
-        {
-            Definition = definition;
-            SymbolName = baseUnit.SymbolName;
-            UniqueIdentifier = baseUnit.UniqueIdentifier;
-        }
-
-        /// <summary>
-        /// Gets the base member name. This name is guaranteed to be unique for a given native symbol and implementation
-        /// option combination.
-        /// </summary>
-        /// <returns>The base member name.</returns>
-        [PublicAPI]
-        public string GetUniqueBaseMemberName()
-        {
-            return $"{BaseMemberName}_{SymbolName}_{UniqueIdentifier}_{Guid.NewGuid().ToString().ToLowerInvariant()}";
-        }
+    /// <summary>
+    /// Gets the base member name. This name is guaranteed to be unique for a given native symbol and implementation
+    /// option combination.
+    /// </summary>
+    /// <returns>The base member name.</returns>
+    [PublicAPI]
+    public string GetUniqueBaseMemberName()
+    {
+        return $"{BaseMemberName}_{SymbolName}_{UniqueIdentifier}_{Guid.NewGuid().ToString().ToLowerInvariant()}";
     }
 }

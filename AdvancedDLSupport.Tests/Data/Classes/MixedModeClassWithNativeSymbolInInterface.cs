@@ -25,16 +25,15 @@ using System;
 #pragma warning disable SA1600, CS1591
 
 // ReSharper disable ValueParameterNotUsed
-namespace AdvancedDLSupport.Tests.Data.Classes
-{
-    public abstract class MixedModeClassWithNativeSymbolInInterface
-        : NativeLibraryBase, IMixedModeLibraryWithNativeSymbolInInterface
-    {
-        public MixedModeClassWithNativeSymbolInInterface(string path, Type interfaceType, ImplementationOptions options)
-            : base(path, options)
-        {
-        }
+namespace AdvancedDLSupport.Tests.Data.Classes;
 
-        public abstract int SubtractWithRemappedName(int a, int b);
+public abstract class MixedModeClassWithNativeSymbolInInterface
+    : NativeLibraryBase, IMixedModeLibraryWithNativeSymbolInInterface
+{
+    public MixedModeClassWithNativeSymbolInInterface(string path, Type interfaceType, ImplementationOptions options)
+        : base(path, options)
+    {
     }
+
+    public abstract int SubtractWithRemappedName(int a, int b);
 }

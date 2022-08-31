@@ -25,66 +25,65 @@ using static System.Runtime.InteropServices.UnmanagedType;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
+namespace AdvancedDLSupport.Tests.Data;
+
+public interface IBooleanMarshallingTests
 {
-    public interface IBooleanMarshallingTests
-    {
-        void DoSomethingWithBoolean(bool boolean);
+    void DoSomethingWithBoolean(bool boolean);
 
-        [NativeSymbol(Entrypoint = "IsByteTrue")]
-        int IsDefaultTrue(bool boolean);
+    [NativeSymbol(Entrypoint = "IsByteTrue")]
+    int IsDefaultTrue(bool boolean);
 
-        int IsSByteTrue([MarshalAs(I1)] bool boolean);
+    int IsSByteTrue([MarshalAs(I1)] bool boolean);
 
-        int IsShortTrue([MarshalAs(I2)] bool boolean);
+    int IsShortTrue([MarshalAs(I2)] bool boolean);
 
-        int IsIntTrue([MarshalAs(I4)] bool boolean);
+    int IsIntTrue([MarshalAs(I4)] bool boolean);
 
-        int IsLongTrue([MarshalAs(I8)] bool boolean);
+    int IsLongTrue([MarshalAs(I8)] bool boolean);
 
-        int IsByteTrue([MarshalAs(U1)] bool boolean);
+    int IsByteTrue([MarshalAs(U1)] bool boolean);
 
-        int IsUShortTrue([MarshalAs(U2)] bool boolean);
+    int IsUShortTrue([MarshalAs(U2)] bool boolean);
 
-        int IsUIntTrue([MarshalAs(U4)] bool boolean);
+    int IsUIntTrue([MarshalAs(U4)] bool boolean);
 
-        int IsULongTrue([MarshalAs(U8)] bool boolean);
+    int IsULongTrue([MarshalAs(U8)] bool boolean);
 
-        int IsBOOLTrue([MarshalAs(Bool)] bool boolean);
+    int IsBOOLTrue([MarshalAs(Bool)] bool boolean);
 
-        int IsVariantBoolTrue([MarshalAs(VariantBool)] bool boolean);
+    int IsVariantBoolTrue([MarshalAs(VariantBool)] bool boolean);
 
-        [NativeSymbol(Entrypoint = "GetTrueByte")]
-        bool GetTrueDefault();
+    [NativeSymbol(Entrypoint = "GetTrueByte")]
+    bool GetTrueDefault();
 
-        [return: MarshalAs(I1)]
-        bool GetTrueSByte();
+    [return: MarshalAs(I1)]
+    bool GetTrueSByte();
 
-        [return: MarshalAs(I2)]
-        bool GetTrueShort();
+    [return: MarshalAs(I2)]
+    bool GetTrueShort();
 
-        [return: MarshalAs(I4)]
-        bool GetTrueInt();
+    [return: MarshalAs(I4)]
+    bool GetTrueInt();
 
-        [return: MarshalAs(I8)]
-        bool GetTrueLong();
+    [return: MarshalAs(I8)]
+    bool GetTrueLong();
 
-        [return: MarshalAs(U1)]
-        bool GetTrueByte();
+    [return: MarshalAs(U1)]
+    bool GetTrueByte();
 
-        [return: MarshalAs(U2)]
-        bool GetTrueUShort();
+    [return: MarshalAs(U2)]
+    bool GetTrueUShort();
 
-        [return: MarshalAs(U4)]
-        bool GetTrueUInt();
+    [return: MarshalAs(U4)]
+    bool GetTrueUInt();
 
-        [return: MarshalAs(U8)]
-        bool GetTrueULong();
+    [return: MarshalAs(U8)]
+    bool GetTrueULong();
 
-        [return: MarshalAs(Bool)]
-        bool GetTrueBOOL();
+    [return: MarshalAs(Bool)]
+    bool GetTrueBOOL();
 
-        [return: MarshalAs(VariantBool)]
-        bool GetTrueVariantBool();
-    }
+    [return: MarshalAs(VariantBool)]
+    bool GetTrueVariantBool();
 }

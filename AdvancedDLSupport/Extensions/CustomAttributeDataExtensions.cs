@@ -27,64 +27,63 @@ using System.Reflection;
 using System.Reflection.Emit;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Extensions
+namespace AdvancedDLSupport.Extensions;
+
+/// <summary>
+/// Extension methods for the <see cref="CustomAttributeData"/> class.
+/// </summary>
+internal static class CustomAttributeDataExtensions
 {
     /// <summary>
-    /// Extension methods for the <see cref="CustomAttributeData"/> class.
+    /// Gets an attribute builder for the given attribute data instance.
     /// </summary>
-    internal static class CustomAttributeDataExtensions
+    /// <param name="this">The attribute data to create a builder for.</param>
+    /// <returns>An attribute builder.</returns>
+    [Pure]
+    public static CustomAttributeBuilder GetAttributeBuilder(this CustomAttributeData @this)
     {
-        /// <summary>
-        /// Gets an attribute builder for the given attribute data instance.
-        /// </summary>
-        /// <param name="this">The attribute data to create a builder for.</param>
-        /// <returns>An attribute builder.</returns>
-        [Pure]
-        public static CustomAttributeBuilder GetAttributeBuilder(this CustomAttributeData @this)
-        {
-            var namedFields = @this.NamedArguments?.Where(a => a.IsField).ToList() ?? new List<CustomAttributeNamedArgument>();
-            var namedProperties = @this.NamedArguments?.Where(a => a.MemberInfo is PropertyInfo).ToList() ?? new List<CustomAttributeNamedArgument>();
+        var namedFields = @this.NamedArguments?.Where(a => a.IsField).ToList() ?? new List<CustomAttributeNamedArgument>();
+        var namedProperties = @this.NamedArguments?.Where(a => a.MemberInfo is PropertyInfo).ToList() ?? new List<CustomAttributeNamedArgument>();
 
-            return new CustomAttributeBuilder
-            (
-                @this.Constructor,
-                @this.ConstructorArguments.Select(a => a.Value).ToArray(),
-                namedProperties.Select(p => p.MemberInfo).Cast<PropertyInfo>().ToArray(),
-                namedProperties.Select(p => p.TypedValue.Value).ToArray(),
-                namedFields.Select(f => f.MemberInfo).Cast<FieldInfo>().ToArray(),
-                namedFields.Select(f => f.TypedValue.Value).ToArray()
-            );
+        return new CustomAttributeBuilder
+        (
+            @this.Constructor,
+            @this.ConstructorArguments.Select(a => a.Value).ToArray(),
+            namedProperties.Select(p => p.MemberInfo).Cast<PropertyInfo>().ToArray(),
+            namedProperties.Select(p => p.TypedValue.Value).ToArray(),
+            namedFields.Select(f => f.MemberInfo).Cast<FieldInfo>().ToArray(),
+            namedFields.Select(f => f.TypedValue.Value).ToArray()
+        );
+    }
+
+    /// <summary>
+    /// Uses the attribute data to create an instance of the attribute.
+    /// </summary>
+    /// <param name="this">The attribute data.</param>
+    /// <typeparam name="T">The encapsulated type of the attribute.</typeparam>
+    /// <returns>An instance of the attribute as described by the attribute data.</returns>
+    /// <exception cref="ArgumentException">Thrown if the attribute type and the generic type doesn't match.</exception>
+    public static T ToInstance<T>(this CustomAttributeData @this) where T : Attribute
+    {
+        if (typeof(T) != @this.AttributeType)
+        {
+            throw new ArgumentException($"Incorrect generic argument type. Use {@this.AttributeType.Name}.", nameof(@this));
         }
 
-        /// <summary>
-        /// Uses the attribute data to create an instance of the attribute.
-        /// </summary>
-        /// <param name="this">The attribute data.</param>
-        /// <typeparam name="T">The encapsulated type of the attribute.</typeparam>
-        /// <returns>An instance of the attribute as described by the attribute data.</returns>
-        /// <exception cref="ArgumentException">Thrown if the attribute type and the generic type doesn't match.</exception>
-        public static T ToInstance<T>(this CustomAttributeData @this) where T : Attribute
+        var instance = @this.Constructor.Invoke(@this.ConstructorArguments.Select(a => a.Value).ToArray());
+
+        var namedFields = @this.NamedArguments?.Where(a => a.IsField).ToList();
+        foreach (var field in namedFields ?? new List<CustomAttributeNamedArgument>())
         {
-            if (typeof(T) != @this.AttributeType)
-            {
-                throw new ArgumentException($"Incorrect generic argument type. Use {@this.AttributeType.Name}.", nameof(@this));
-            }
-
-            var instance = @this.Constructor.Invoke(@this.ConstructorArguments.Select(a => a.Value).ToArray());
-
-            var namedFields = @this.NamedArguments?.Where(a => a.IsField).ToList();
-            foreach (var field in namedFields ?? new List<CustomAttributeNamedArgument>())
-            {
-                (field.MemberInfo as FieldInfo)?.SetValue(instance, field.TypedValue.Value);
-            }
-
-            var namedProperties = @this.NamedArguments?.Where(a => a.MemberInfo is PropertyInfo).ToList();
-            foreach (var property in namedProperties ?? new List<CustomAttributeNamedArgument>())
-            {
-                (property.MemberInfo as PropertyInfo)?.SetValue(instance, property.TypedValue.Value);
-            }
-
-            return (T)instance;
+            (field.MemberInfo as FieldInfo)?.SetValue(instance, field.TypedValue.Value);
         }
+
+        var namedProperties = @this.NamedArguments?.Where(a => a.MemberInfo is PropertyInfo).ToList();
+        foreach (var property in namedProperties ?? new List<CustomAttributeNamedArgument>())
+        {
+            (property.MemberInfo as PropertyInfo)?.SetValue(instance, property.TypedValue.Value);
+        }
+
+        return (T)instance;
     }
 }

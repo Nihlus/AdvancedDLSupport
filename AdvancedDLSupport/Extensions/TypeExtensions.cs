@@ -27,231 +27,230 @@ using System.Reflection;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Extensions
+namespace AdvancedDLSupport.Extensions;
+
+/// <summary>
+/// Extension methods for the <see cref="Type"/> class.
+/// </summary>
+internal static class TypeExtensions
 {
     /// <summary>
-    /// Extension methods for the <see cref="Type"/> class.
+    /// A class used for testing whether a generic argument is blittable/unmanaged.
     /// </summary>
-    internal static class TypeExtensions
+    private class UnmanagedTest<T>
+        where T : unmanaged
     {
-        /// <summary>
-        /// A class used for testing whether a generic argument is blittable/unmanaged.
-        /// </summary>
-        private class UnmanagedTest<T>
-            where T : unmanaged
+    }
+
+    /// <summary>
+    /// Determines whether the given type is blittable.
+    /// </summary>
+    /// <param name="type">The type to check.</param>
+    /// <returns>True if the type is blittable.</returns>
+    public static bool IsUnmanaged(this Type type)
+    {
+        try
         {
+            typeof(UnmanagedTest<>).MakeGenericType(type);
+            return true;
         }
-
-        /// <summary>
-        /// Determines whether the given type is blittable.
-        /// </summary>
-        /// <param name="type">The type to check.</param>
-        /// <returns>True if the type is blittable.</returns>
-        public static bool IsUnmanaged(this Type type)
+        catch
         {
-            try
-            {
-                typeof(UnmanagedTest<>).MakeGenericType(type);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            return false;
         }
+    }
 
-        /// <summary>
-        /// Determines whether the given type is a delegate type.
-        /// </summary>
-        /// <param name="this">The type.</param>
-        /// <returns>true if the type is a delegate type; Otherwise, false.</returns>
-        public static bool IsDelegate(this Type @this)
+    /// <summary>
+    /// Determines whether the given type is a delegate type.
+    /// </summary>
+    /// <param name="this">The type.</param>
+    /// <returns>true if the type is a delegate type; Otherwise, false.</returns>
+    public static bool IsDelegate(this Type @this)
+    {
+        return typeof(Delegate).IsAssignableFrom(@this);
+    }
+
+    /// <summary>
+    /// Determines whether the given type is a generic delegate type - that is, a <see cref="Func{TResult}"/> or
+    /// <see cref="Action"/>.
+    /// </summary>
+    /// <param name="this">The type.</param>
+    /// <returns>true if the type is a generic delegate type; Otherwise, false.</returns>
+    public static bool IsGenericDelegate(this Type @this)
+    {
+        // The parameterless action is technically not a generic type, so it'll get caught here
+        if (!@this.IsGenericType)
         {
-            return typeof(Delegate).IsAssignableFrom(@this);
-        }
-
-        /// <summary>
-        /// Determines whether the given type is a generic delegate type - that is, a <see cref="Func{TResult}"/> or
-        /// <see cref="Action"/>.
-        /// </summary>
-        /// <param name="this">The type.</param>
-        /// <returns>true if the type is a generic delegate type; Otherwise, false.</returns>
-        public static bool IsGenericDelegate(this Type @this)
-        {
-            // The parameterless action is technically not a generic type, so it'll get caught here
-            if (!@this.IsGenericType)
-            {
-                return false;
-            }
-
-            var genericType = @this.GetGenericTypeDefinition();
-            if (genericType.FullName is null)
-            {
-                throw new InvalidOperationException("Couldn't get the full name of the given type.");
-            }
-
-            if (genericType.IsGenericFuncDelegate())
-            {
-                return true;
-            }
-
-            if (genericType.IsGenericActionDelegate())
-            {
-                return true;
-            }
-
             return false;
         }
 
-        /// <summary>
-        /// Determines whether or not the given type is a generic <see cref="Action"/> delegate.
-        /// </summary>
-        /// <param name="this">The type.</param>
-        /// <returns>true if the type is an action delegate; otherwise, false.</returns>
-        public static bool IsGenericActionDelegate(this Type @this)
+        var genericType = @this.GetGenericTypeDefinition();
+        if (genericType.FullName is null)
         {
-            // ReSharper disable once PossibleNullReferenceException
-            var genericBaseName = @this.FullName.Split('`').First();
-
-            if (genericBaseName == typeof(Action).FullName)
-            {
-                return true;
-            }
-
-            return false;
+            throw new InvalidOperationException("Couldn't get the full name of the given type.");
         }
 
-        /// <summary>
-        /// Determines whether or not the given type is a generic <see cref="Func{TResult}"/> delegate.
-        /// </summary>
-        /// <param name="this">The type.</param>
-        /// <returns>true if the type is a func delegate; otherwise, false.</returns>
-        public static bool IsGenericFuncDelegate(this Type @this)
+        if (genericType.IsGenericFuncDelegate())
         {
-            // ReSharper disable once PossibleNullReferenceException
-            var genericBaseName = @this.FullName.Split('`').First();
-
-            // ReSharper disable once PossibleNullReferenceException
-            var funcBaseName = typeof(Func<>).FullName.Split('`').First();
-            if (genericBaseName == funcBaseName)
-            {
-                return true;
-            }
-
-            return false;
+            return true;
         }
 
-        /// <summary>
-        /// Gets the methods defined in the given type as wrapped introspective methods.
-        /// </summary>
-        /// <param name="this">The type to inspect.</param>
-        /// <param name="flattenHierarchy">Whether or not the hierarchy of the type should be flattened when scanning.</param>
-        /// <returns>The methods.</returns>
-        [Pure]
-        public static IEnumerable<IntrospectiveMethodInfo> GetIntrospectiveMethods(this Type @this, bool flattenHierarchy = false)
+        if (genericType.IsGenericActionDelegate())
         {
-            var basicBindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
-            var flattenedBindingFlags = basicBindingFlags | BindingFlags.FlattenHierarchy;
+            return true;
+        }
 
-            var bindingFlags = flattenHierarchy ? flattenedBindingFlags : basicBindingFlags;
+        return false;
+    }
 
-            var methods = @this.GetMethods(bindingFlags);
-            foreach (var method in methods)
+    /// <summary>
+    /// Determines whether or not the given type is a generic <see cref="Action"/> delegate.
+    /// </summary>
+    /// <param name="this">The type.</param>
+    /// <returns>true if the type is an action delegate; otherwise, false.</returns>
+    public static bool IsGenericActionDelegate(this Type @this)
+    {
+        // ReSharper disable once PossibleNullReferenceException
+        var genericBaseName = @this.FullName.Split('`').First();
+
+        if (genericBaseName == typeof(Action).FullName)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Determines whether or not the given type is a generic <see cref="Func{TResult}"/> delegate.
+    /// </summary>
+    /// <param name="this">The type.</param>
+    /// <returns>true if the type is a func delegate; otherwise, false.</returns>
+    public static bool IsGenericFuncDelegate(this Type @this)
+    {
+        // ReSharper disable once PossibleNullReferenceException
+        var genericBaseName = @this.FullName.Split('`').First();
+
+        // ReSharper disable once PossibleNullReferenceException
+        var funcBaseName = typeof(Func<>).FullName.Split('`').First();
+        if (genericBaseName == funcBaseName)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Gets the methods defined in the given type as wrapped introspective methods.
+    /// </summary>
+    /// <param name="this">The type to inspect.</param>
+    /// <param name="flattenHierarchy">Whether or not the hierarchy of the type should be flattened when scanning.</param>
+    /// <returns>The methods.</returns>
+    [Pure]
+    public static IEnumerable<IntrospectiveMethodInfo> GetIntrospectiveMethods(this Type @this, bool flattenHierarchy = false)
+    {
+        var basicBindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
+        var flattenedBindingFlags = basicBindingFlags | BindingFlags.FlattenHierarchy;
+
+        var bindingFlags = flattenHierarchy ? flattenedBindingFlags : basicBindingFlags;
+
+        var methods = @this.GetMethods(bindingFlags);
+        foreach (var method in methods)
+        {
+            yield return new IntrospectiveMethodInfo(method, @this);
+        }
+
+        if (!@this.IsInterface || !flattenHierarchy)
+        {
+            yield break;
+        }
+
+        foreach (var inf in @this.GetInterfaces())
+        {
+            var interfaceMethods = inf.GetMethods(bindingFlags);
+            foreach (var method in interfaceMethods)
             {
                 yield return new IntrospectiveMethodInfo(method, @this);
             }
-
-            if (!@this.IsInterface || !flattenHierarchy)
-            {
-                yield break;
-            }
-
-            foreach (var inf in @this.GetInterfaces())
-            {
-                var interfaceMethods = inf.GetMethods(bindingFlags);
-                foreach (var method in interfaceMethods)
-                {
-                    yield return new IntrospectiveMethodInfo(method, @this);
-                }
-            }
         }
+    }
 
-        /// <summary>
-        /// Gets a method defined in the given type by its name and parameter types.
-        /// </summary>
-        /// <param name="this">The type to inspect.</param>
-        /// <param name="name">The name of the method.</param>
-        /// <param name="parameterTypes">The parameter types of the method.</param>
-        /// <returns>The method.</returns>
-        [Pure]
-        public static IntrospectiveMethodInfo? GetIntrospectiveMethod
-        (
-            this Type @this,
-            string name,
-            Type[] parameterTypes
-        )
+    /// <summary>
+    /// Gets a method defined in the given type by its name and parameter types.
+    /// </summary>
+    /// <param name="this">The type to inspect.</param>
+    /// <param name="name">The name of the method.</param>
+    /// <param name="parameterTypes">The parameter types of the method.</param>
+    /// <returns>The method.</returns>
+    [Pure]
+    public static IntrospectiveMethodInfo? GetIntrospectiveMethod
+    (
+        this Type @this,
+        string name,
+        Type[] parameterTypes
+    )
+    {
+        var method = @this.GetMethod(name, parameterTypes);
+        return method is null ? null : new IntrospectiveMethodInfo(method, @this);
+    }
+
+    /// <summary>
+    /// Checks if the give type implements a given interface type.
+    /// </summary>
+    /// <param name="this">The type.</param>
+    /// <typeparam name="T">The interface.</typeparam>
+    /// <exception cref="ArgumentException">Thrown if the interface type is not an interface.</exception>
+    /// <returns>true if the type implements the interface; otherwise, false.</returns>
+    [Pure]
+    public static bool HasInterface<T>(this Type @this) where T : class
+    {
+        if (!typeof(T).IsInterface)
         {
-            var method = @this.GetMethod(name, parameterTypes);
-            return method is null ? null : new IntrospectiveMethodInfo(method, @this);
+            throw new ArgumentException($"The type {typeof(T).Name} was not an interface.", nameof(T));
         }
 
-        /// <summary>
-        /// Checks if the give type implements a given interface type.
-        /// </summary>
-        /// <param name="this">The type.</param>
-        /// <typeparam name="T">The interface.</typeparam>
-        /// <exception cref="ArgumentException">Thrown if the interface type is not an interface.</exception>
-        /// <returns>true if the type implements the interface; otherwise, false.</returns>
-        [Pure]
-        public static bool HasInterface<T>(this Type @this) where T : class
+        return !(@this.GetInterface(typeof(T).Name) is null);
+    }
+
+    /// <summary>
+    /// Determines whether or not the given type is a <see cref="Nullable{T}"/> that is not passed by reference.
+    /// </summary>
+    /// <param name="this">The type.</param>
+    /// <returns>true if it is a nullable that is not passed by reference; otherwise, false.</returns>
+    [Pure]
+    public static bool IsNonRefNullable(this Type @this)
+    {
+        if (@this.IsByRef)
         {
-            if (!typeof(T).IsInterface)
-            {
-                throw new ArgumentException($"The type {typeof(T).Name} was not an interface.", nameof(T));
-            }
-
-            return !(@this.GetInterface(typeof(T).Name) is null);
+            return false;
         }
 
-        /// <summary>
-        /// Determines whether or not the given type is a <see cref="Nullable{T}"/> that is not passed by reference.
-        /// </summary>
-        /// <param name="this">The type.</param>
-        /// <returns>true if it is a nullable that is not passed by reference; otherwise, false.</returns>
-        [Pure]
-        public static bool IsNonRefNullable(this Type @this)
+        return @this.IsGenericType &&
+               @this.GetGenericTypeDefinition() == typeof(Nullable<>);
+    }
+
+    /// <summary>
+    /// Determines whether or not the given type is a <see cref="Nullable{T}"/> passed by reference.
+    /// </summary>
+    /// <param name="this">The type.</param>
+    /// <returns>true if it is a nullable passed by reference; otherwise, false.</returns>
+    [Pure]
+    public static bool IsRefNullable(this Type @this)
+    {
+        if (!@this.IsByRef)
         {
-            if (@this.IsByRef)
-            {
-                return false;
-            }
-
-            return @this.IsGenericType &&
-                   @this.GetGenericTypeDefinition() == typeof(Nullable<>);
+            return false;
         }
 
-        /// <summary>
-        /// Determines whether or not the given type is a <see cref="Nullable{T}"/> passed by reference.
-        /// </summary>
-        /// <param name="this">The type.</param>
-        /// <returns>true if it is a nullable passed by reference; otherwise, false.</returns>
-        [Pure]
-        public static bool IsRefNullable(this Type @this)
+        var underlying = @this.GetElementType();
+
+        if (underlying is null)
         {
-            if (!@this.IsByRef)
-            {
-                return false;
-            }
-
-            var underlying = @this.GetElementType();
-
-            if (underlying is null)
-            {
-                return false;
-            }
-
-            return underlying.IsGenericType &&
-                   underlying.GetGenericTypeDefinition() == typeof(Nullable<>);
+            return false;
         }
+
+        return underlying.IsGenericType &&
+               underlying.GetGenericTypeDefinition() == typeof(Nullable<>);
     }
 }

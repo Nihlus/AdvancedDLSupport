@@ -27,48 +27,47 @@ using Xunit;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Integration
+namespace AdvancedDLSupport.Tests.Integration;
+
+public class DisposeChecksIntegrationTests : LibraryTestBase<IDisposeCheckLibrary>
 {
-    public class DisposeChecksIntegrationTests : LibraryTestBase<IDisposeCheckLibrary>
+    private const string LibraryName = "DisposeTests";
+
+    public DisposeChecksIntegrationTests()
+        : base(LibraryName)
     {
-        private const string LibraryName = "DisposeTests";
+    }
 
-        public DisposeChecksIntegrationTests()
-            : base(LibraryName)
-        {
-        }
+    [Fact]
+    public void DisposedLibraryWithoutGeneratedChecksDoesNotThrow()
+    {
+        var library = new NativeLibraryBuilder().ActivateInterface<IDisposeCheckLibrary>(LibraryName);
+        library.Dispose();
+        library.Multiply(5, 5);
+    }
 
-        [Fact]
-        public void DisposedLibraryWithoutGeneratedChecksDoesNotThrow()
-        {
-            var library = new NativeLibraryBuilder().ActivateInterface<IDisposeCheckLibrary>(LibraryName);
-            library.Dispose();
-            library.Multiply(5, 5);
-        }
+    [Fact]
+    public void UndisposedLibraryDoesNotThrow()
+    {
+        Library.Multiply(5, 5);
+    }
 
-        [Fact]
-        public void UndisposedLibraryDoesNotThrow()
-        {
-            Library.Multiply(5, 5);
-        }
+    [Fact]
+    public void DisposedLibraryThrows()
+    {
+        Library.Dispose();
 
-        [Fact]
-        public void DisposedLibraryThrows()
-        {
-            Library.Dispose();
+        Assert.Throws<ObjectDisposedException>(() => Library.Multiply(5, 5));
+    }
 
-            Assert.Throws<ObjectDisposedException>(() => Library.Multiply(5, 5));
-        }
+    [Fact]
+    public void CanGetNewInstanceOfInterfaceAfterDisposalOfExistingInstance()
+    {
+        Library.Dispose();
 
-        [Fact]
-        public void CanGetNewInstanceOfInterfaceAfterDisposalOfExistingInstance()
-        {
-            Library.Dispose();
+        var newLibrary = new NativeLibraryBuilder(Config).ActivateInterface<IDisposeCheckLibrary>(LibraryName);
 
-            var newLibrary = new NativeLibraryBuilder(Config).ActivateInterface<IDisposeCheckLibrary>(LibraryName);
-
-            newLibrary.Multiply(5, 5);
-            Assert.NotSame(Library, newLibrary);
-        }
+        newLibrary.Multiply(5, 5);
+        Assert.NotSame(Library, newLibrary);
     }
 }

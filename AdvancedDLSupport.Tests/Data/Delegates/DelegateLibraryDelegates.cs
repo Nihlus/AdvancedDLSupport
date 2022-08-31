@@ -24,26 +24,25 @@
 
 using System.Runtime.InteropServices;
 
-namespace AdvancedDLSupport.Tests.Data
+namespace AdvancedDLSupport.Tests.Data;
+
+public class DelegateLibraryDelegates
 {
-    public class DelegateLibraryDelegates
-    {
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void Action();
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void Action();
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void ActionInt(int param);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void ActionInt(int param);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate int IntFunc();
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate int IntFunc();
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate int IntFuncInt(int param);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate int IntFuncInt(int param);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void ActinIntInAction(ActionInt param);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void ActinIntInAction(ActionInt param);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate int IntFuncIntInFuncInt(IntFuncInt param1);
-    }
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate int IntFuncIntInFuncInt(IntFuncInt param1);
 }

@@ -26,60 +26,59 @@ using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
 using Mono.DllMap.Utility;
 
-namespace Mono.DllMap
+namespace Mono.DllMap;
+
+/// <summary>
+/// The base class for Dll mapping entries, containing system constraint information.
+/// </summary>
+[PublicAPI]
+public abstract class MappingBase
 {
     /// <summary>
-    /// The base class for Dll mapping entries, containing system constraint information.
+    /// Gets or sets the raw string containing the supported operating systems.
     /// </summary>
-    [PublicAPI]
-    public abstract class MappingBase
+    [PublicAPI, XmlAttribute("os")]
+    public string? RawOperatingSystems { get; set; }
+
+    /// <summary>
+    /// Gets or sets the raw string containing the supported processor architectures.
+    /// </summary>
+    [PublicAPI, XmlAttribute("cpu")]
+    public string? RawArchitecture { get; set; }
+
+    /// <summary>
+    /// Gets or sets the raw string containing the supported word sizes.
+    /// </summary>
+    [PublicAPI, XmlAttribute("wordsize")]
+    public string? RawWordSize { get; set; }
+
+    /// <summary>
+    /// Gets the supported operating systems of the entry.
+    /// </summary>
+    [PublicAPI, XmlIgnore]
+    public DllMapOS OperatingSystems
     {
-        /// <summary>
-        /// Gets or sets the raw string containing the supported operating systems.
-        /// </summary>
-        [PublicAPI, XmlAttribute("os")]
-        public string? RawOperatingSystems { get; set; }
+        get => DllMapAttributeParser.Parse<DllMapOS>(RawOperatingSystems);
+        internal set => RawOperatingSystems = string.Join(",", value.GetFlags().Select(v => v.ToString().ToLowerInvariant()));
+    }
 
-        /// <summary>
-        /// Gets or sets the raw string containing the supported processor architectures.
-        /// </summary>
-        [PublicAPI, XmlAttribute("cpu")]
-        public string? RawArchitecture { get; set; }
+    /// <summary>
+    /// Gets the supported processor architectures of the entry.
+    /// </summary>
+    [PublicAPI, XmlIgnore]
+    public DllMapArchitecture Architecture
+    {
+        get => DllMapAttributeParser.Parse<DllMapArchitecture>(RawArchitecture);
+        internal set => RawArchitecture = string.Join(",", value.GetFlags().Select(v => v.ToString().ToLowerInvariant()));
+    }
 
-        /// <summary>
-        /// Gets or sets the raw string containing the supported word sizes.
-        /// </summary>
-        [PublicAPI, XmlAttribute("wordsize")]
-        public string? RawWordSize { get; set; }
-
-        /// <summary>
-        /// Gets the supported operating systems of the entry.
-        /// </summary>
-        [PublicAPI, XmlIgnore]
-        public DllMapOS OperatingSystems
-        {
-            get => DllMapAttributeParser.Parse<DllMapOS>(RawOperatingSystems);
-            internal set => RawOperatingSystems = string.Join(",", value.GetFlags().Select(v => v.ToString().ToLowerInvariant()));
-        }
-
-        /// <summary>
-        /// Gets the supported processor architectures of the entry.
-        /// </summary>
-        [PublicAPI, XmlIgnore]
-        public DllMapArchitecture Architecture
-        {
-            get => DllMapAttributeParser.Parse<DllMapArchitecture>(RawArchitecture);
-            internal set => RawArchitecture = string.Join(",", value.GetFlags().Select(v => v.ToString().ToLowerInvariant()));
-        }
-
-        /// <summary>
-        /// Gets the supported word sizes of the entry.
-        /// </summary>
-        [PublicAPI, XmlIgnore]
-        public DllMapWordSize WordSize
-        {
-            get => DllMapAttributeParser.Parse<DllMapWordSize>(RawWordSize);
-            internal set => RawWordSize = string.Join(",", value.GetFlags().Select(v => v.ToString().ToLowerInvariant()));
-        }
+    /// <summary>
+    /// Gets the supported word sizes of the entry.
+    /// </summary>
+    [PublicAPI, XmlIgnore]
+    public DllMapWordSize WordSize
+    {
+        get => DllMapAttributeParser.Parse<DllMapWordSize>(RawWordSize);
+        internal set => RawWordSize = string.Join(",", value.GetFlags().Select(v => v.ToString().ToLowerInvariant()));
     }
 }

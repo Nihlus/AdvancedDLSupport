@@ -26,113 +26,112 @@ using Xunit;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Integration
+namespace AdvancedDLSupport.Tests.Integration;
+
+public class MixedModeTests : IDisposable
 {
-    public class MixedModeTests : IDisposable
+    private const string LibraryName = "MixedModeTests";
+
+    private readonly MixedModeClass _mixedModeClass;
+    private readonly NativeLibraryBuilder _builder;
+
+    public MixedModeTests()
     {
-        private const string LibraryName = "MixedModeTests";
+        _builder = new NativeLibraryBuilder(ImplementationOptions.GenerateDisposalChecks);
 
-        private readonly MixedModeClass _mixedModeClass;
-        private readonly NativeLibraryBuilder _builder;
+        _mixedModeClass = _builder.ActivateClass<MixedModeClass>(LibraryName);
+    }
 
-        public MixedModeTests()
-        {
-            _builder = new NativeLibraryBuilder(ImplementationOptions.GenerateDisposalChecks);
+    [Fact]
+    public void ThrowsIfClassIsNotAbstract()
+    {
+        Assert.Throws<ArgumentException>
+        (
+            () =>
+                _builder.ActivateClass<MixedModeClassThatIsNotAbstract>(LibraryName)
+        );
+    }
 
-            _mixedModeClass = _builder.ActivateClass<MixedModeClass>(LibraryName);
-        }
+    [Fact]
+    public void CanActivateClassWithMultipleNativeInterfaces()
+    {
+        _builder.ActivateClass<MixedModeClassWithMultipleNativeInterfaces>(LibraryName);
+    }
 
-        [Fact]
-        public void ThrowsIfClassIsNotAbstract()
-        {
-            Assert.Throws<ArgumentException>
-            (
-                () =>
-                    _builder.ActivateClass<MixedModeClassThatIsNotAbstract>(LibraryName)
-            );
-        }
+    [Fact]
+    public void CanActivateClassWithNativeSymbolInInterface()
+    {
+        var library = _builder.ActivateClass<MixedModeClassWithNativeSymbolInInterface>(LibraryName);
+        Assert.Equal(5, library.SubtractWithRemappedName(10, 5));
+    }
 
-        [Fact]
-        public void CanActivateClassWithMultipleNativeInterfaces()
-        {
-            _builder.ActivateClass<MixedModeClassWithMultipleNativeInterfaces>(LibraryName);
-        }
+    [Fact]
+    public void CanActivateClassWithNativeSymbolInClass()
+    {
+        var library = _builder.ActivateClass<MixedModeClassWithNativeSymbolInClass>(LibraryName);
+        Assert.Equal(5, library.SubtractWithRemappedName(10, 5));
+    }
 
-        [Fact]
-        public void CanActivateClassWithNativeSymbolInInterface()
-        {
-            var library = _builder.ActivateClass<MixedModeClassWithNativeSymbolInInterface>(LibraryName);
-            Assert.Equal(5, library.SubtractWithRemappedName(10, 5));
-        }
+    [Fact]
+    public void CanActivateClassWithNativeSymbolInBothInterfaceAndClass()
+    {
+        var library = _builder.ActivateClass<MixedModeClassWithNativeSymbolInInterfaceAndClass>(LibraryName);
+        Assert.Equal(5, library.SubtractWithRemappedName(10, 5));
+    }
 
-        [Fact]
-        public void CanActivateClassWithNativeSymbolInClass()
-        {
-            var library = _builder.ActivateClass<MixedModeClassWithNativeSymbolInClass>(LibraryName);
-            Assert.Equal(5, library.SubtractWithRemappedName(10, 5));
-        }
+    [Fact]
+    public void CanActivateClassWithInheritedNativeInterfaces()
+    {
+        _builder.ActivateClass<MixedModeClassWithInheritedInterface>(LibraryName);
+    }
 
-        [Fact]
-        public void CanActivateClassWithNativeSymbolInBothInterfaceAndClass()
-        {
-            var library = _builder.ActivateClass<MixedModeClassWithNativeSymbolInInterfaceAndClass>(LibraryName);
-            Assert.Equal(5, library.SubtractWithRemappedName(10, 5));
-        }
+    [Fact]
+    public void CanOverrideNativeFunctionWithManagedImplementationOnClass()
+    {
+        var result = _mixedModeClass.Subtract(10, 5);
 
-        [Fact]
-        public void CanActivateClassWithInheritedNativeInterfaces()
-        {
-            _builder.ActivateClass<MixedModeClassWithInheritedInterface>(LibraryName);
-        }
+        Assert.Equal(5, result);
+        Assert.True(_mixedModeClass.RanManagedSubtract);
+    }
 
-        [Fact]
-        public void CanOverrideNativeFunctionWithManagedImplementationOnClass()
-        {
-            var result = _mixedModeClass.Subtract(10, 5);
+    [Fact]
+    public void CanCallPurelyManagedFunctionOnClass()
+    {
+        var result = _mixedModeClass.ManagedAdd(5, 5);
 
-            Assert.Equal(5, result);
-            Assert.True(_mixedModeClass.RanManagedSubtract);
-        }
+        Assert.Equal(10, result);
+    }
 
-        [Fact]
-        public void CanCallPurelyManagedFunctionOnClass()
-        {
-            var result = _mixedModeClass.ManagedAdd(5, 5);
+    [Fact]
+    public void CanCallNativeFunctionOnClass()
+    {
+        var result = _mixedModeClass.Multiply(5, 5);
 
-            Assert.Equal(10, result);
-        }
+        Assert.Equal(25, result);
+    }
 
-        [Fact]
-        public void CanCallNativeFunctionOnClass()
-        {
-            var result = _mixedModeClass.Multiply(5, 5);
+    [Fact]
+    public void CanUseNativePropertyOnClass()
+    {
+        var originalValue = _mixedModeClass.NativeProperty;
+        Assert.Equal(0, originalValue);
 
-            Assert.Equal(25, result);
-        }
+        var newValue = 16;
+        _mixedModeClass.NativeProperty = newValue;
+        Assert.Equal(newValue, _mixedModeClass.NativeProperty);
+    }
 
-        [Fact]
-        public void CanUseNativePropertyOnClass()
-        {
-            var originalValue = _mixedModeClass.NativeProperty;
-            Assert.Equal(0, originalValue);
+    [Fact]
+    public void CanOverrideNativePropertyWithManagedImplementationOnClass()
+    {
+        Assert.Equal(32, _mixedModeClass.OtherNativeProperty);
 
-            var newValue = 16;
-            _mixedModeClass.NativeProperty = newValue;
-            Assert.Equal(newValue, _mixedModeClass.NativeProperty);
-        }
+        _mixedModeClass.OtherNativeProperty = 255;
+        Assert.True(_mixedModeClass.RanManagedSetter);
+    }
 
-        [Fact]
-        public void CanOverrideNativePropertyWithManagedImplementationOnClass()
-        {
-            Assert.Equal(32, _mixedModeClass.OtherNativeProperty);
-
-            _mixedModeClass.OtherNativeProperty = 255;
-            Assert.True(_mixedModeClass.RanManagedSetter);
-        }
-
-        public void Dispose()
-        {
-            _mixedModeClass?.Dispose();
-        }
+    public void Dispose()
+    {
+        _mixedModeClass?.Dispose();
     }
 }

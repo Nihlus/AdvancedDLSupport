@@ -25,94 +25,93 @@ using System.Runtime.Serialization;
 using System.Security.Permissions;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport;
+
+/// <summary>
+/// Represents a failure to find a required field.
+/// </summary>
+[PublicAPI, Serializable]
+public class FieldNotFoundException : Exception
 {
     /// <summary>
-    /// Represents a failure to find a required field.
+    /// Gets the name of the field that was not found.
     /// </summary>
-    [PublicAPI, Serializable]
-    public class FieldNotFoundException : Exception
+    [PublicAPI]
+    public string FieldName { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FieldNotFoundException"/> class.
+    /// </summary>
+    [PublicAPI]
+    public FieldNotFoundException()
     {
-        /// <summary>
-        /// Gets the name of the field that was not found.
-        /// </summary>
-        [PublicAPI]
-        public string FieldName { get; }
+        FieldName = string.Empty;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FieldNotFoundException"/> class.
-        /// </summary>
-        [PublicAPI]
-        public FieldNotFoundException()
-        {
-            FieldName = string.Empty;
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FieldNotFoundException"/> class.
+    /// </summary>
+    /// <param name="fieldName">The message of the exception.</param>
+    [PublicAPI]
+    public FieldNotFoundException(string fieldName)
+        : base($"Could not find the field \"{fieldName}\".")
+    {
+        FieldName = fieldName;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FieldNotFoundException"/> class.
-        /// </summary>
-        /// <param name="fieldName">The message of the exception.</param>
-        [PublicAPI]
-        public FieldNotFoundException(string fieldName)
-            : base($"Could not find the field \"{fieldName}\".")
-        {
-            FieldName = fieldName;
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FieldNotFoundException"/> class.
+    /// </summary>
+    /// <param name="fieldName">The name of the field that was not found.</param>
+    /// <param name="inner">The exception which caused this exception.</param>
+    [PublicAPI]
+    public FieldNotFoundException(string fieldName, Exception? inner)
+        : base($"Could not find the field \"{fieldName}\".", inner)
+    {
+        FieldName = fieldName;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FieldNotFoundException"/> class.
-        /// </summary>
-        /// <param name="fieldName">The name of the field that was not found.</param>
-        /// <param name="inner">The exception which caused this exception.</param>
-        [PublicAPI]
-        public FieldNotFoundException(string fieldName, Exception? inner)
-            : base($"Could not find the field \"{fieldName}\".", inner)
-        {
-            FieldName = fieldName;
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FieldNotFoundException"/> class.
+    /// </summary>
+    /// <param name="message">The message of the exception.</param>
+    /// <param name="fieldName">The name of the field that was not found.</param>
+    [PublicAPI]
+    public FieldNotFoundException(string message, string fieldName)
+        : base(message)
+    {
+        FieldName = fieldName;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FieldNotFoundException"/> class.
-        /// </summary>
-        /// <param name="message">The message of the exception.</param>
-        /// <param name="fieldName">The name of the field that was not found.</param>
-        [PublicAPI]
-        public FieldNotFoundException(string message, string fieldName)
-            : base(message)
-        {
-            FieldName = fieldName;
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FieldNotFoundException"/> class.
+    /// </summary>
+    /// <param name="message">The message of the exception.</param>
+    /// <param name="fieldName">The name of the field that was not found.</param>
+    /// <param name="inner">The exception which caused this exception.</param>
+    [PublicAPI]
+    public FieldNotFoundException(string message, string fieldName, Exception inner)
+        : base(message, inner)
+    {
+        FieldName = fieldName;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FieldNotFoundException"/> class.
-        /// </summary>
-        /// <param name="message">The message of the exception.</param>
-        /// <param name="fieldName">The name of the field that was not found.</param>
-        /// <param name="inner">The exception which caused this exception.</param>
-        [PublicAPI]
-        public FieldNotFoundException(string message, string fieldName, Exception inner)
-            : base(message, inner)
-        {
-            FieldName = fieldName;
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FieldNotFoundException"/> class.
+    /// </summary>
+    /// <param name="info">The serialized information.</param>
+    /// <param name="context">The streaming context.</param>
+    protected FieldNotFoundException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
+        FieldName = info.GetString(nameof(FieldName)) ?? string.Empty;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FieldNotFoundException"/> class.
-        /// </summary>
-        /// <param name="info">The serialized information.</param>
-        /// <param name="context">The streaming context.</param>
-        protected FieldNotFoundException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            FieldName = info.GetString(nameof(FieldName)) ?? string.Empty;
-        }
-
-        /// <inheritdoc />
-        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue(nameof(FieldName), FieldName);
-            base.GetObjectData(info, context);
-        }
+    /// <inheritdoc />
+    [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+    public override void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+        info.AddValue(nameof(FieldName), FieldName);
+        base.GetObjectData(info, context);
     }
 }

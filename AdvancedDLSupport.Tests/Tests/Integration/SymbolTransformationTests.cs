@@ -44,6 +44,5 @@ namespace AdvancedDLSupport.Tests.Integration
             var actual = Library.DoThing(5, 5);
 
             Assert.Equal(expected, actual);
-        }
     }
 }

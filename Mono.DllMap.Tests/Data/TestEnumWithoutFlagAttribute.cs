@@ -22,12 +22,11 @@
 
 #pragma warning disable SA1600, SA1602, CS1591
 
-namespace Mono.DllMap.Tests.Data
+namespace Mono.DllMap.Tests.Data;
+
+public enum TestEnumWithoutFlagAttribute
 {
-    public enum TestEnumWithoutFlagAttribute
-    {
-        Foo = 1 << 0,
-        Bar = 1 << 1,
-        Baz = 1 << 2
-    }
+    Foo = 1 << 0,
+    Bar = 1 << 1,
+    Baz = 1 << 2
 }

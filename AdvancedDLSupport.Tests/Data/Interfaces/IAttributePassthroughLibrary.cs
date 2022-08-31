@@ -24,17 +24,16 @@ using System.Runtime.InteropServices;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
+namespace AdvancedDLSupport.Tests.Data;
+
+public interface IAttributePassthroughLibrary
 {
-    public interface IAttributePassthroughLibrary
-    {
-        [return: MarshalAs(UnmanagedType.I1)]
-        bool CheckIfGreaterThanZero(int value);
+    [return: MarshalAs(UnmanagedType.I1)]
+    bool CheckIfGreaterThanZero(int value);
 
-        [return: MarshalAs(UnmanagedType.I1)]
-        bool CheckIfStringIsNull(string value);
+    [return: MarshalAs(UnmanagedType.I1)]
+    bool CheckIfStringIsNull(string value);
 
-        [return: MarshalAs(UnmanagedType.LPWStr)]
-        string EchoWString([MarshalAs(UnmanagedType.LPWStr)] string value);
-    }
+    [return: MarshalAs(UnmanagedType.LPWStr)]
+    string EchoWString([MarshalAs(UnmanagedType.LPWStr)] string value);
 }

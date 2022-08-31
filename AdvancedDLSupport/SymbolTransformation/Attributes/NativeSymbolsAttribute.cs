@@ -23,43 +23,42 @@
 using System;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport;
+
+/// <summary>
+/// Provides metadata information for expansion of native symbol names in an interface.
+/// </summary>
+[PublicAPI, AttributeUsage(AttributeTargets.Interface)]
+public class NativeSymbolsAttribute : Attribute
 {
     /// <summary>
-    /// Provides metadata information for expansion of native symbol names in an interface.
+    /// Gets or sets the prefixes used for the symbols in the interface.
     /// </summary>
-    [PublicAPI, AttributeUsage(AttributeTargets.Interface)]
-    public class NativeSymbolsAttribute : Attribute
+    [PublicAPI]
+    public string Prefix { get; set; }
+
+    /// <summary>
+    /// Gets or sets the expansion method used for symbol names in the interface.
+    /// </summary>
+    [PublicAPI]
+    public SymbolTransformationMethod SymbolTransformationMethod { get; set; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NativeSymbolsAttribute"/> class.
+    /// </summary>
+    public NativeSymbolsAttribute()
     {
-        /// <summary>
-        /// Gets or sets the prefixes used for the symbols in the interface.
-        /// </summary>
-        [PublicAPI]
-        public string Prefix { get; set; }
+        Prefix = string.Empty;
+    }
 
-        /// <summary>
-        /// Gets or sets the expansion method used for symbol names in the interface.
-        /// </summary>
-        [PublicAPI]
-        public SymbolTransformationMethod SymbolTransformationMethod { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NativeSymbolsAttribute"/> class.
-        /// </summary>
-        public NativeSymbolsAttribute()
-        {
-            Prefix = string.Empty;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NativeSymbolsAttribute"/> class.
-        /// </summary>
-        /// <param name="prefix">The symbol prefix to use.</param>
-        /// <param name="symbolTransformationMethod">The expansion method for symbols.</param>
-        public NativeSymbolsAttribute(string prefix, SymbolTransformationMethod symbolTransformationMethod)
-        {
-            Prefix = prefix;
-            SymbolTransformationMethod = symbolTransformationMethod;
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NativeSymbolsAttribute"/> class.
+    /// </summary>
+    /// <param name="prefix">The symbol prefix to use.</param>
+    /// <param name="symbolTransformationMethod">The expansion method for symbols.</param>
+    public NativeSymbolsAttribute(string prefix, SymbolTransformationMethod symbolTransformationMethod)
+    {
+        Prefix = prefix;
+        SymbolTransformationMethod = symbolTransformationMethod;
     }
 }

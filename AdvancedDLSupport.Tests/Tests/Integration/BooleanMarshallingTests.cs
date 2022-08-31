@@ -27,162 +27,161 @@ using Xunit;
 // ReSharper disable InconsistentNaming
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Integration
+namespace AdvancedDLSupport.Tests.Integration;
+
+public class BooleanMarshallingTests : LibraryTestBase<IBooleanMarshallingTests>
 {
-    public class BooleanMarshallingTests : LibraryTestBase<IBooleanMarshallingTests>
+    private const string LibraryName = "BooleanMarshallingTests";
+
+    public BooleanMarshallingTests()
+        : base(LibraryName)
     {
-        private const string LibraryName = "BooleanMarshallingTests";
+    }
 
-        public BooleanMarshallingTests()
-            : base(LibraryName)
-        {
-        }
+    protected override ImplementationOptions GetImplementationOptions()
+    {
+        return ImplementationOptions.UseIndirectCalls;
+    }
 
-        protected override ImplementationOptions GetImplementationOptions()
-        {
-            return ImplementationOptions.UseIndirectCalls;
-        }
+    /// <summary>
+    /// This test was introduced due to an issue that a user had with the JIT throwing a limitation exception for
+    /// void-returning functions with a boolean parameter.
+    /// </summary>
+    [Fact]
+    public void CanMarshalVoidReturnAndBooleanParameter()
+    {
+        Library.DoSomethingWithBoolean(false);
+    }
 
-        /// <summary>
-        /// This test was introduced due to an issue that a user had with the JIT throwing a limitation exception for
-        /// void-returning functions with a boolean parameter.
-        /// </summary>
-        [Fact]
-        public void CanMarshalVoidReturnAndBooleanParameter()
-        {
-            Library.DoSomethingWithBoolean(false);
-        }
+    [Fact]
+    public void CanMarshalParameterAsDefault()
+    {
+        Assert.Equal(1, Library.IsDefaultTrue(true));
+    }
 
-        [Fact]
-        public void CanMarshalParameterAsDefault()
-        {
-            Assert.Equal(1, Library.IsDefaultTrue(true));
-        }
+    [Fact]
+    public void CanMarshalParameterAsI1()
+    {
+        Assert.Equal(1, Library.IsSByteTrue(true));
+    }
 
-        [Fact]
-        public void CanMarshalParameterAsI1()
-        {
-            Assert.Equal(1, Library.IsSByteTrue(true));
-        }
+    [Fact]
+    public void CanMarshalParameterAsI2()
+    {
+        Assert.Equal(1, Library.IsShortTrue(true));
+    }
 
-        [Fact]
-        public void CanMarshalParameterAsI2()
-        {
-            Assert.Equal(1, Library.IsShortTrue(true));
-        }
+    [Fact]
+    public void CanMarshalParameterAsI4()
+    {
+        Assert.Equal(1, Library.IsIntTrue(true));
+    }
 
-        [Fact]
-        public void CanMarshalParameterAsI4()
-        {
-            Assert.Equal(1, Library.IsIntTrue(true));
-        }
+    [Fact]
+    public void CanMarshalParameterAsI8()
+    {
+        Assert.Equal(1, Library.IsLongTrue(true));
+    }
 
-        [Fact]
-        public void CanMarshalParameterAsI8()
-        {
-            Assert.Equal(1, Library.IsLongTrue(true));
-        }
+    [Fact]
+    public void CanMarshalParameterAsU1()
+    {
+        Assert.Equal(1, Library.IsByteTrue(true));
+    }
 
-        [Fact]
-        public void CanMarshalParameterAsU1()
-        {
-            Assert.Equal(1, Library.IsByteTrue(true));
-        }
+    [Fact]
+    public void CanMarshalParameterAsU2()
+    {
+        Assert.Equal(1, Library.IsUShortTrue(true));
+    }
 
-        [Fact]
-        public void CanMarshalParameterAsU2()
-        {
-            Assert.Equal(1, Library.IsUShortTrue(true));
-        }
+    [Fact]
+    public void CanMarshalParameterAsU4()
+    {
+        Assert.Equal(1, Library.IsUIntTrue(true));
+    }
 
-        [Fact]
-        public void CanMarshalParameterAsU4()
-        {
-            Assert.Equal(1, Library.IsUIntTrue(true));
-        }
+    [Fact]
+    public void CanMarshalParameterAsU8()
+    {
+        Assert.Equal(1, Library.IsULongTrue(true));
+    }
 
-        [Fact]
-        public void CanMarshalParameterAsU8()
-        {
-            Assert.Equal(1, Library.IsULongTrue(true));
-        }
+    [Fact]
+    public void CanMarshalParameterAsBOOL()
+    {
+        Assert.Equal(1, Library.IsBOOLTrue(true));
+    }
 
-        [Fact]
-        public void CanMarshalParameterAsBOOL()
-        {
-            Assert.Equal(1, Library.IsBOOLTrue(true));
-        }
+    [Fact]
+    public void CanMarshalParameterAsVariantBool()
+    {
+        Assert.Equal(1, Library.IsVariantBoolTrue(true));
+    }
 
-        [Fact]
-        public void CanMarshalParameterAsVariantBool()
-        {
-            Assert.Equal(1, Library.IsVariantBoolTrue(true));
-        }
+    [Fact]
+    public void CanMarshalReturnParameterAsDefault()
+    {
+        Assert.True(Library.GetTrueDefault());
+    }
 
-        [Fact]
-        public void CanMarshalReturnParameterAsDefault()
-        {
-            Assert.True(Library.GetTrueDefault());
-        }
+    [Fact]
+    public void CanMarshalReturnParameterAsI1()
+    {
+        Assert.True(Library.GetTrueSByte());
+    }
 
-        [Fact]
-        public void CanMarshalReturnParameterAsI1()
-        {
-            Assert.True(Library.GetTrueSByte());
-        }
+    [Fact]
+    public void CanMarshalReturnParameterAsI2()
+    {
+        Assert.True(Library.GetTrueShort());
+    }
 
-        [Fact]
-        public void CanMarshalReturnParameterAsI2()
-        {
-            Assert.True(Library.GetTrueShort());
-        }
+    [Fact]
+    public void CanMarshalReturnParameterAsI4()
+    {
+        Assert.True(Library.GetTrueInt());
+    }
 
-        [Fact]
-        public void CanMarshalReturnParameterAsI4()
-        {
-            Assert.True(Library.GetTrueInt());
-        }
+    [Fact]
+    public void CanMarshalReturnParameterAsI8()
+    {
+        Assert.True(Library.GetTrueLong());
+    }
 
-        [Fact]
-        public void CanMarshalReturnParameterAsI8()
-        {
-            Assert.True(Library.GetTrueLong());
-        }
+    [Fact]
+    public void CanMarshalReturnParameterAsU1()
+    {
+        Assert.True(Library.GetTrueByte());
+    }
 
-        [Fact]
-        public void CanMarshalReturnParameterAsU1()
-        {
-            Assert.True(Library.GetTrueByte());
-        }
+    [Fact]
+    public void CanMarshalReturnParameterAsU2()
+    {
+        Assert.True(Library.GetTrueUShort());
+    }
 
-        [Fact]
-        public void CanMarshalReturnParameterAsU2()
-        {
-            Assert.True(Library.GetTrueUShort());
-        }
+    [Fact]
+    public void CanMarshalReturnParameterAsU4()
+    {
+        Assert.True(Library.GetTrueUInt());
+    }
 
-        [Fact]
-        public void CanMarshalReturnParameterAsU4()
-        {
-            Assert.True(Library.GetTrueUInt());
-        }
+    [Fact]
+    public void CanMarshalReturnParameterAsU8()
+    {
+        Assert.True(Library.GetTrueULong());
+    }
 
-        [Fact]
-        public void CanMarshalReturnParameterAsU8()
-        {
-            Assert.True(Library.GetTrueULong());
-        }
+    [Fact]
+    public void CanMarshalReturnParameterAsBOOL()
+    {
+        Assert.True(Library.GetTrueBOOL());
+    }
 
-        [Fact]
-        public void CanMarshalReturnParameterAsBOOL()
-        {
-            Assert.True(Library.GetTrueBOOL());
-        }
-
-        [Fact]
-        public void CanMarshalReturnParameterAsVariantBool()
-        {
-            Assert.True(Library.GetTrueVariantBool());
-        }
+    [Fact]
+    public void CanMarshalReturnParameterAsVariantBool()
+    {
+        Assert.True(Library.GetTrueVariantBool());
     }
 }

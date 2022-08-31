@@ -24,22 +24,21 @@ using System;
 using System.Reflection;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Extensions
+namespace AdvancedDLSupport.Extensions;
+
+/// <summary>
+/// Extension methods for the <see cref="MemberInfo"/> class.
+/// </summary>
+internal static class MemberInfoExtensions
 {
     /// <summary>
-    /// Extension methods for the <see cref="MemberInfo"/> class.
+    /// Determines whether or not the given member has a custom attribute of the given type.
     /// </summary>
-    internal static class MemberInfoExtensions
+    /// <param name="this">The member info.</param>
+    /// <typeparam name="T">The attribute type.</typeparam>
+    /// <returns>true if it has one; otherwise, false.</returns>
+    public static bool HasCustomAttribute<T>(this MemberInfo @this) where T : Attribute
     {
-        /// <summary>
-        /// Determines whether or not the given member has a custom attribute of the given type.
-        /// </summary>
-        /// <param name="this">The member info.</param>
-        /// <typeparam name="T">The attribute type.</typeparam>
-        /// <returns>true if it has one; otherwise, false.</returns>
-        public static bool HasCustomAttribute<T>(this MemberInfo @this) where T : Attribute
-        {
-            return !(@this.GetCustomAttribute<T>() is null);
-        }
+        return !(@this.GetCustomAttribute<T>() is null);
     }
 }

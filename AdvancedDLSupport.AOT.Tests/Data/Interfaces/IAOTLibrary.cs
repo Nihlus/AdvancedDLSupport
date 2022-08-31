@@ -22,11 +22,10 @@
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.AOT.Tests.Data.Interfaces
+namespace AdvancedDLSupport.AOT.Tests.Data.Interfaces;
+
+[AOTType]
+public interface IAOTLibrary
 {
-    [AOTType]
-    public interface IAOTLibrary
-    {
-        int Multiply(int a, int b);
-    }
+    int Multiply(int a, int b);
 }

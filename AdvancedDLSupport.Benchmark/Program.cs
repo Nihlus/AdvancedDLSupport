@@ -26,24 +26,24 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Filters;
 using BenchmarkDotNet.Running;
 
-namespace AdvancedDLSupport.Benchmark
+namespace AdvancedDLSupport.Benchmark;
+
+/// <summary>
+/// The main program class.
+/// </summary>
+internal static class Program
 {
     /// <summary>
-    /// The main program class.
+    /// The name of the native library.
     /// </summary>
-    internal static class Program
-    {
-        /// <summary>
-        /// The name of the native library.
-        /// </summary>
-        internal const string LibraryName = "TestLibrary";
+    internal const string LibraryName = "TestLibrary";
 
-        /// <summary>
-        /// The main entry point.
-        /// </summary>
-        internal static void Main()
-        {
-            var config = ManualConfig.Create(DefaultConfig.Instance)
+    /// <summary>
+    /// The main entry point.
+    /// </summary>
+    internal static void Main()
+    {
+        var config = ManualConfig.Create(DefaultConfig.Instance)
             .With
             (
                 new SimpleFilter
@@ -63,15 +63,14 @@ namespace AdvancedDLSupport.Benchmark
                 )
             );
 
-            BenchmarkRunner.Run<InteropMethodsByRef>(config);
-            BenchmarkRunner.Run<InteropMethodsByValue>(config);
+        BenchmarkRunner.Run<InteropMethodsByRef>(config);
+        BenchmarkRunner.Run<InteropMethodsByValue>(config);
 
-            /*var logger = ConsoleLogger.Default;
-            MarkdownExporter.Console.ExportToLog(refSummary, logger);
-            MarkdownExporter.Console.ExportToLog(valueSummary, logger);
+        /*var logger = ConsoleLogger.Default;
+        MarkdownExporter.Console.ExportToLog(refSummary, logger);
+        MarkdownExporter.Console.ExportToLog(valueSummary, logger);
 
-            ConclusionHelper.Print(logger, config.GetCompositeAnalyser().Analyse(refSummary).ToList());
-            ConclusionHelper.Print(logger, config.GetCompositeAnalyser().Analyse(valueSummary).ToList());*/
-        }
+        ConclusionHelper.Print(logger, config.GetCompositeAnalyser().Analyse(refSummary).ToList());
+        ConclusionHelper.Print(logger, config.GetCompositeAnalyser().Analyse(valueSummary).ToList());*/
     }
 }

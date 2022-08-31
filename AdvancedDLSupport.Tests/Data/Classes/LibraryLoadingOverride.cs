@@ -26,29 +26,28 @@ using JetBrains.Annotations;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data.Classes
+namespace AdvancedDLSupport.Tests.Data.Classes;
+
+internal class LibraryLoadingOverride : ILibraryLoader
 {
-    internal class LibraryLoadingOverride : ILibraryLoader
+    private readonly ILibraryLoader _defaultLoader;
+
+    public bool LoadLibraryCalled { get; private set; }
+
+    public LibraryLoadingOverride(ILibraryLoader @default)
     {
-        private readonly ILibraryLoader _defaultLoader;
+        _defaultLoader = @default;
+    }
 
-        public bool LoadLibraryCalled { get; private set; }
+    public IntPtr LoadLibrary(string? path)
+    {
+        LoadLibraryCalled = true;
 
-        public LibraryLoadingOverride(ILibraryLoader @default)
-        {
-            _defaultLoader = @default;
-        }
+        return _defaultLoader.LoadLibrary(path);
+    }
 
-        public IntPtr LoadLibrary(string? path)
-        {
-            LoadLibraryCalled = true;
-
-            return _defaultLoader.LoadLibrary(path);
-        }
-
-        public bool CloseLibrary(IntPtr library)
-        {
-            return _defaultLoader.CloseLibrary(library);
-        }
+    public bool CloseLibrary(IntPtr library)
+    {
+        return _defaultLoader.CloseLibrary(library);
     }
 }

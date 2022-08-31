@@ -23,27 +23,26 @@
 using AdvancedDLSupport.Benchmark.Data;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Benchmark.Native
+namespace AdvancedDLSupport.Benchmark.Native;
+
+/// <summary>
+/// Represents an interface to a native library, providing <see cref="Matrix2"/> inversion math.
+/// </summary>
+[PublicAPI]
+public interface ITest
 {
     /// <summary>
-    /// Represents an interface to a native library, providing <see cref="Matrix2"/> inversion math.
+    /// Inverts a given by-reference <see cref="Matrix2"/>.
     /// </summary>
+    /// <param name="matrix">The matrix.</param>
     [PublicAPI]
-    public interface ITest
-    {
-        /// <summary>
-        /// Inverts a given by-reference <see cref="Matrix2"/>.
-        /// </summary>
-        /// <param name="matrix">The matrix.</param>
-        [PublicAPI]
-        void InvertMatrixByPtr(ref Matrix2 matrix);
+    void InvertMatrixByPtr(ref Matrix2 matrix);
 
-        /// <summary>
-        /// Inverts a given by-value <see cref="Matrix2"/>.
-        /// </summary>
-        /// <param name="matrix">The matrix.</param>
-        /// <returns>The inverted matrix.</returns>
-        [PublicAPI, Pure]
-        Matrix2 InvertMatrixByValue(Matrix2 matrix);
-    }
+    /// <summary>
+    /// Inverts a given by-value <see cref="Matrix2"/>.
+    /// </summary>
+    /// <param name="matrix">The matrix.</param>
+    /// <returns>The inverted matrix.</returns>
+    [PublicAPI, Pure]
+    Matrix2 InvertMatrixByValue(Matrix2 matrix);
 }

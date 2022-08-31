@@ -23,13 +23,12 @@
 using System;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport;
+
+/// <summary>
+/// Parameters which are marshalled into unmanaged memory with this attribute are freed by the caller after the conclusion of the call.
+/// </summary>
+[PublicAPI, AttributeUsage(AttributeTargets.Parameter | AttributeTargets.ReturnValue)]
+public class CallerFreeAttribute : Attribute
 {
-    /// <summary>
-    /// Parameters which are marshalled into unmanaged memory with this attribute are freed by the caller after the conclusion of the call.
-    /// </summary>
-    [PublicAPI, AttributeUsage(AttributeTargets.Parameter | AttributeTargets.ReturnValue)]
-    public class CallerFreeAttribute : Attribute
-    {
-    }
 }

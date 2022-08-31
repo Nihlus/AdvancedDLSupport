@@ -22,10 +22,9 @@
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
+namespace AdvancedDLSupport.Tests.Data;
+
+public interface IInterfaceWithFirstIdenticalSignature
 {
-    public interface IInterfaceWithFirstIdenticalSignature
-    {
-        int Multiply(int a, int b);
-    }
+    int Multiply(int a, int b);
 }

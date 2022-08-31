@@ -23,13 +23,12 @@
 using System;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.AOT
+namespace AdvancedDLSupport.AOT;
+
+/// <summary>
+/// Tags an interface as being eligible for native binding ahead-of-time compilation.
+/// </summary>
+[PublicAPI, AttributeUsage(AttributeTargets.Interface)]
+public class AOTTypeAttribute : Attribute
 {
-    /// <summary>
-    /// Tags an interface as being eligible for native binding ahead-of-time compilation.
-    /// </summary>
-    [PublicAPI, AttributeUsage(AttributeTargets.Interface)]
-    public class AOTTypeAttribute : Attribute
-    {
-    }
 }

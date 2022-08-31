@@ -20,31 +20,30 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-namespace AdvancedDLSupport.AOT
+namespace AdvancedDLSupport.AOT;
+
+/// <summary>
+/// Holds exit codes for the application.
+/// </summary>
+public enum ExitCodes
 {
     /// <summary>
-    /// Holds exit codes for the application.
+    /// No error, all is fine.
     /// </summary>
-    public enum ExitCodes
-    {
-        /// <summary>
-        /// No error, all is fine.
-        /// </summary>
-        Success = 0,
+    Success = 0,
 
-        /// <summary>
-        /// Could not find one or more of the input assemblies.
-        /// </summary>
-        InputAssemblyNotFound = 1,
+    /// <summary>
+    /// Could not find one or more of the input assemblies.
+    /// </summary>
+    InputAssemblyNotFound = 1,
 
-        /// <summary>
-        /// Failed to load a given assembly.
-        /// </summary>
-        FailedToLoadAssembly = 2,
+    /// <summary>
+    /// Failed to load a given assembly.
+    /// </summary>
+    FailedToLoadAssembly = 2,
 
-        /// <summary>
-        /// Input arguments could not be parsed.
-        /// </summary>
-        InvalidArguments = 3
-    }
+    /// <summary>
+    /// Input arguments could not be parsed.
+    /// </summary>
+    InvalidArguments = 3
 }

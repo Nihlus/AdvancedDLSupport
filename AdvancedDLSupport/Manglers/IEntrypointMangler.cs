@@ -24,37 +24,36 @@ using System.Reflection;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport;
+
+/// <summary>
+/// Represents a class that can mangle entrypoint names according to an implementation-specific pattern.
+/// </summary>
+[PublicAPI, UsedImplicitly]
+public interface IEntrypointMangler
 {
     /// <summary>
-    /// Represents a class that can mangle entrypoint names according to an implementation-specific pattern.
+    /// Determines whether or not the mangler is applicable to the given member.
     /// </summary>
-    [PublicAPI, UsedImplicitly]
-    public interface IEntrypointMangler
-    {
-        /// <summary>
-        /// Determines whether or not the mangler is applicable to the given member.
-        /// </summary>
-        /// <param name="member">The member to check.</param>
-        /// <returns>true if the mangler is applicable; otherwise, false.</returns>
-        [PublicAPI]
-        bool IsManglerApplicable(MemberInfo member);
+    /// <param name="member">The member to check.</param>
+    /// <returns>true if the mangler is applicable; otherwise, false.</returns>
+    [PublicAPI]
+    bool IsManglerApplicable(MemberInfo member);
 
-        /// <summary>
-        /// Mangles the given member.
-        /// </summary>
-        /// <typeparam name="T">The type of the member to mangle.</typeparam>
-        /// <param name="member">The member to mangle.</param>
-        /// <returns>The mangled entrypoint.</returns>
-        [PublicAPI]
-        string Mangle<T>(T member) where T : IIntrospectiveMember;
+    /// <summary>
+    /// Mangles the given member.
+    /// </summary>
+    /// <typeparam name="T">The type of the member to mangle.</typeparam>
+    /// <param name="member">The member to mangle.</param>
+    /// <returns>The mangled entrypoint.</returns>
+    [PublicAPI]
+    string Mangle<T>(T member) where T : IIntrospectiveMember;
 
-        /// <summary>
-        /// Demangles a mangled entrypoint name, returning it to its original state.
-        /// </summary>
-        /// <param name="mangledEntrypoint">A mangled entrypoint name.</param>
-        /// <returns>The demangled entrypoint.</returns>
-        [PublicAPI]
-        string Demangle(string mangledEntrypoint);
-    }
+    /// <summary>
+    /// Demangles a mangled entrypoint name, returning it to its original state.
+    /// </summary>
+    /// <param name="mangledEntrypoint">A mangled entrypoint name.</param>
+    /// <returns>The demangled entrypoint.</returns>
+    [PublicAPI]
+    string Demangle(string mangledEntrypoint);
 }

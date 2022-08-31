@@ -24,30 +24,29 @@ using System;
 using System.Collections;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Extensions
+namespace AdvancedDLSupport.Extensions;
+
+/// <summary>
+/// Extension methods for the <see cref="BitArray"/> class.
+/// </summary>
+internal static class BitArrayExtensions
 {
     /// <summary>
-    /// Extension methods for the <see cref="BitArray"/> class.
+    /// Converts the <see cref="BitArray"/> into its equivalent integer representation.
     /// </summary>
-    internal static class BitArrayExtensions
+    /// <param name="this">The array.</param>
+    /// <returns>An equivalent integer.</returns>
+    [PublicAPI, Pure]
+    public static int ToInt32(this BitArray @this)
     {
-        /// <summary>
-        /// Converts the <see cref="BitArray"/> into its equivalent integer representation.
-        /// </summary>
-        /// <param name="this">The array.</param>
-        /// <returns>An equivalent integer.</returns>
-        [PublicAPI, Pure]
-        public static int ToInt32(this BitArray @this)
+        if (@this.Count > 32)
         {
-            if (@this.Count > 32)
-            {
-                throw new ArgumentOutOfRangeException(nameof(@this), "The bit array contained more than 32 bits.");
-            }
-
-            var result = new int[1];
-            @this.CopyTo(result, 0);
-
-            return result[0];
+            throw new ArgumentOutOfRangeException(nameof(@this), "The bit array contained more than 32 bits.");
         }
+
+        var result = new int[1];
+        @this.CopyTo(result, 0);
+
+        return result[0];
     }
 }

@@ -30,62 +30,61 @@ using JetBrains.Annotations;
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
 #pragma warning disable CS1591, SA1600
 
-namespace AdvancedDLSupport.Benchmark.Benchmarks
+namespace AdvancedDLSupport.Benchmark.Benchmarks;
+
+[UsedImplicitly]
+[ClrJob, CoreJob, MonoJob]
+[RPlotExporter, CsvMeasurementsExporter]
+public class InteropMethodsByValue : BenchmarkBase
 {
-    [UsedImplicitly]
-    [ClrJob, CoreJob, MonoJob]
-    [RPlotExporter, CsvMeasurementsExporter]
-    public class InteropMethodsByValue : BenchmarkBase
+    [Benchmark]
+    public override Matrix2 DllImport()
     {
-        [Benchmark]
-        public override Matrix2 DllImport()
-        {
-            var matrixCopy = Source;
-            return DllImportTest.InvertMatrixByValue(matrixCopy);
-        }
+        var matrixCopy = Source;
+        return DllImportTest.InvertMatrixByValue(matrixCopy);
+    }
 
-        [Benchmark]
-        public override Matrix2 DllImportSuppressedSecurity()
-        {
-            var matrixCopy = Source;
-            return DllImportTestSuppressedSecurity.InvertMatrixByValue(matrixCopy);
-        }
+    [Benchmark]
+    public override Matrix2 DllImportSuppressedSecurity()
+    {
+        var matrixCopy = Source;
+        return DllImportTestSuppressedSecurity.InvertMatrixByValue(matrixCopy);
+    }
 
-        [Benchmark]
-        public override Matrix2 Delegates()
-        {
-            var matrixCopy = Source;
-            return ADLLibrary.InvertMatrixByValue(matrixCopy);
-        }
+    [Benchmark]
+    public override Matrix2 Delegates()
+    {
+        var matrixCopy = Source;
+        return ADLLibrary.InvertMatrixByValue(matrixCopy);
+    }
 
-        [Benchmark]
-        public override Matrix2 DelegatesNoDispose()
-        {
-            var matrixCopy = Source;
-            return ADLLibraryWithoutDisposeChecks.InvertMatrixByValue(matrixCopy);
-        }
+    [Benchmark]
+    public override Matrix2 DelegatesNoDispose()
+    {
+        var matrixCopy = Source;
+        return ADLLibraryWithoutDisposeChecks.InvertMatrixByValue(matrixCopy);
+    }
 
-        [Benchmark]
-        public override Matrix2 DelegatesSuppressedSecurity()
-        {
-            var matrixCopy = Source;
-            ADLLibraryWithSuppressedSecurity.InvertMatrixByPtr(ref matrixCopy);
+    [Benchmark]
+    public override Matrix2 DelegatesSuppressedSecurity()
+    {
+        var matrixCopy = Source;
+        ADLLibraryWithSuppressedSecurity.InvertMatrixByPtr(ref matrixCopy);
 
-            return matrixCopy;
-        }
+        return matrixCopy;
+    }
 
-        [Benchmark]
-        public override Matrix2 Calli()
-        {
-            var matrixCopy = Source;
-            return ADLLibraryWithCalli.InvertMatrixByValue(matrixCopy);
-        }
+    [Benchmark]
+    public override Matrix2 Calli()
+    {
+        var matrixCopy = Source;
+        return ADLLibraryWithCalli.InvertMatrixByValue(matrixCopy);
+    }
 
-        [Benchmark]
-        public override Matrix2 Managed()
-        {
-            var matrixCopy = Source;
-            return Matrix2.Invert(matrixCopy);
-        }
+    [Benchmark]
+    public override Matrix2 Managed()
+    {
+        var matrixCopy = Source;
+        return Matrix2.Invert(matrixCopy);
     }
 }

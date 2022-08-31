@@ -26,56 +26,55 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Extensions
+namespace AdvancedDLSupport.Extensions;
+
+/// <summary>
+/// Extensions to the <see cref="MarshalAsAttribute"/> class.
+/// </summary>
+internal static class MarshalAsAttributeExtensions
 {
     /// <summary>
-    /// Extensions to the <see cref="MarshalAsAttribute"/> class.
+    /// Gets a <see cref="CustomAttributeData"/> object that sufficiently describes a <see cref="MarshalAsAttribute"/>
+    /// instance.
     /// </summary>
-    internal static class MarshalAsAttributeExtensions
+    /// <param name="this">The instance.</param>
+    /// <returns>The data.</returns>
+    [Pure]
+    public static CustomAttributeData GetAttributeData(this MarshalAsAttribute @this)
     {
-        /// <summary>
-        /// Gets a <see cref="CustomAttributeData"/> object that sufficiently describes a <see cref="MarshalAsAttribute"/>
-        /// instance.
-        /// </summary>
-        /// <param name="this">The instance.</param>
-        /// <returns>The data.</returns>
-        [Pure]
-        public static CustomAttributeData GetAttributeData(this MarshalAsAttribute @this)
-        {
-            var unmanagedType = @this.Value;
+        var unmanagedType = @this.Value;
 
-            var instance = (CustomAttributeData)Activator.CreateInstance(typeof(CustomAttributeData), true);
+        var instance = (CustomAttributeData)Activator.CreateInstance(typeof(CustomAttributeData), true);
 
-            var constructorBackingField = instance.GetType()
+        var constructorBackingField = instance.GetType()
             .GetField
             (
                 "ctorInfo",
                 BindingFlags.Instance | BindingFlags.NonPublic
             );
 
-            var constructor = typeof(MarshalAsAttribute).GetConstructor(new[] { typeof(UnmanagedType) });
+        var constructor = typeof(MarshalAsAttribute).GetConstructor(new[] { typeof(UnmanagedType) });
 
-            // ReSharper disable once PossibleNullReferenceException
-            constructorBackingField.SetValue(instance, constructor);
+        // ReSharper disable once PossibleNullReferenceException
+        constructorBackingField.SetValue(instance, constructor);
 
-            var constructorArgListBackingField = instance.GetType()
+        var constructorArgListBackingField = instance.GetType()
             .GetField
             (
                 $"ctorArgs",
                 BindingFlags.Instance | BindingFlags.NonPublic
             );
-            var constructorArgList = new List<CustomAttributeTypedArgument>
-            (
-                new[]
-                {
-                    new CustomAttributeTypedArgument(typeof(UnmanagedType), unmanagedType)
-                }
-            );
+        var constructorArgList = new List<CustomAttributeTypedArgument>
+        (
+            new[]
+            {
+                new CustomAttributeTypedArgument(typeof(UnmanagedType), unmanagedType)
+            }
+        );
 
-            // ReSharper disable once PossibleNullReferenceException
-            constructorArgListBackingField.SetValue(instance, constructorArgList);
+        // ReSharper disable once PossibleNullReferenceException
+        constructorArgListBackingField.SetValue(instance, constructorArgList);
 
-            return instance;
-        }
+        return instance;
     }
 }

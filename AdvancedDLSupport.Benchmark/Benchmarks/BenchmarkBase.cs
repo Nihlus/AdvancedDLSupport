@@ -28,98 +28,97 @@ using AdvancedDLSupport.Benchmark.Native;
 using BenchmarkDotNet.Attributes;
 using static AdvancedDLSupport.ImplementationOptions;
 
-namespace AdvancedDLSupport.Benchmark.Benchmarks
+namespace AdvancedDLSupport.Benchmark.Benchmarks;
+
+/// <summary>
+/// Acts as the base for library benchmarks.
+/// </summary>
+public abstract class BenchmarkBase
 {
     /// <summary>
-    /// Acts as the base for library benchmarks.
+    /// Gets a source matrix that can be inverted.
     /// </summary>
-    public abstract class BenchmarkBase
+    protected static readonly Matrix2 Source = new Matrix2 { Row0 = { X = 4, Y = 7 }, Row1 = { X = 2, Y = 6 } };
+
+    /// <summary>
+    /// Gets a delegate-based implementation.
+    /// </summary>
+    protected static ITest ADLLibrary { get; private set; }
+
+    /// <summary>
+    /// Gets a delegate-based implementation without disposal checks.
+    /// </summary>
+    protected static ITest ADLLibraryWithoutDisposeChecks { get; private set; }
+
+    /// <summary>
+    /// Gets a delegate-based implementation with suppressed unmanaged code security.
+    /// </summary>
+    protected static ITest ADLLibraryWithSuppressedSecurity { get; private set; }
+
+    /// <summary>
+    /// Gets a calli-based implementation.
+    /// </summary>
+    protected static ITest ADLLibraryWithCalli { get; private set; }
+
+    /// <summary>
+    /// Initializes the local data neccesary to run tests.
+    /// </summary>
+    [GlobalSetup]
+    public void Setup()
     {
-        /// <summary>
-        /// Gets a source matrix that can be inverted.
-        /// </summary>
-        protected static readonly Matrix2 Source = new Matrix2 { Row0 = { X = 4, Y = 7 }, Row1 = { X = 2, Y = 6 } };
-
-        /// <summary>
-        /// Gets a delegate-based implementation.
-        /// </summary>
-        protected static ITest ADLLibrary { get; private set; }
-
-        /// <summary>
-        /// Gets a delegate-based implementation without disposal checks.
-        /// </summary>
-        protected static ITest ADLLibraryWithoutDisposeChecks { get; private set; }
-
-        /// <summary>
-        /// Gets a delegate-based implementation with suppressed unmanaged code security.
-        /// </summary>
-        protected static ITest ADLLibraryWithSuppressedSecurity { get; private set; }
-
-        /// <summary>
-        /// Gets a calli-based implementation.
-        /// </summary>
-        protected static ITest ADLLibraryWithCalli { get; private set; }
-
-        /// <summary>
-        /// Initializes the local data neccesary to run tests.
-        /// </summary>
-        [GlobalSetup]
-        public void Setup()
-        {
-            ADLLibrary = new NativeLibraryBuilder(GenerateDisposalChecks).ActivateInterface<ITest>(Program.LibraryName);
-            ADLLibraryWithoutDisposeChecks = new NativeLibraryBuilder().ActivateInterface<ITest>(Program.LibraryName);
-            ADLLibraryWithSuppressedSecurity = new NativeLibraryBuilder(SuppressSecurity).ActivateInterface<ITest>(Program.LibraryName);
-            ADLLibraryWithCalli = new NativeLibraryBuilder(UseIndirectCalls).ActivateInterface<ITest>(Program.LibraryName);
-        }
-
-        /// <summary>
-        /// Benchmarks a matrix inversion using traditional <see cref="DllImportAttribute"/>s.
-        /// </summary>
-        /// <returns>An inverted matrix.</returns>
-        [Benchmark]
-        public abstract Matrix2 DllImport();
-
-        /// <summary>
-        /// Benchmarks a matrix inversion using traditional <see cref="DllImportAttribute"/>s with suppressed unmanaged
-        /// code security.
-        /// </summary>
-        /// <returns>An inverted matrix.</returns>
-        [Benchmark]
-        public abstract Matrix2 DllImportSuppressedSecurity();
-
-        /// <summary>
-        /// Benchmarks a matrix inversion using <see cref="MulticastDelegate"/>s.
-        /// </summary>
-        /// <returns>An inverted matrix.</returns>
-        [Benchmark]
-        public abstract Matrix2 Delegates();
-
-        /// <summary>
-        /// Benchmarks a matrix inversion using <see cref="MulticastDelegate"/>s, omitting disposal checks.
-        /// </summary>
-        /// <returns>An inverted matrix.</returns>
-        [Benchmark]
-        public abstract Matrix2 DelegatesNoDispose();
-
-        /// <summary>
-        /// Benchmarks a matrix inversion using <see cref="MulticastDelegate"/>s, suppressing unmanaged code security.
-        /// </summary>
-        /// <returns>An inverted matrix.</returns>
-        [Benchmark]
-        public abstract Matrix2 DelegatesSuppressedSecurity();
-
-        /// <summary>
-        /// Benchmarks a matrix inversion using <see cref="OpCodes.Calli"/>.
-        /// </summary>
-        /// <returns>An inverted matrix.</returns>
-        [Benchmark]
-        public abstract Matrix2 Calli();
-
-        /// <summary>
-        /// Benchmarks a matrix inversion using a managed implementation.
-        /// </summary>
-        /// <returns>An inverted matrix.</returns>
-        [Benchmark]
-        public abstract Matrix2 Managed();
+        ADLLibrary = new NativeLibraryBuilder(GenerateDisposalChecks).ActivateInterface<ITest>(Program.LibraryName);
+        ADLLibraryWithoutDisposeChecks = new NativeLibraryBuilder().ActivateInterface<ITest>(Program.LibraryName);
+        ADLLibraryWithSuppressedSecurity = new NativeLibraryBuilder(SuppressSecurity).ActivateInterface<ITest>(Program.LibraryName);
+        ADLLibraryWithCalli = new NativeLibraryBuilder(UseIndirectCalls).ActivateInterface<ITest>(Program.LibraryName);
     }
+
+    /// <summary>
+    /// Benchmarks a matrix inversion using traditional <see cref="DllImportAttribute"/>s.
+    /// </summary>
+    /// <returns>An inverted matrix.</returns>
+    [Benchmark]
+    public abstract Matrix2 DllImport();
+
+    /// <summary>
+    /// Benchmarks a matrix inversion using traditional <see cref="DllImportAttribute"/>s with suppressed unmanaged
+    /// code security.
+    /// </summary>
+    /// <returns>An inverted matrix.</returns>
+    [Benchmark]
+    public abstract Matrix2 DllImportSuppressedSecurity();
+
+    /// <summary>
+    /// Benchmarks a matrix inversion using <see cref="MulticastDelegate"/>s.
+    /// </summary>
+    /// <returns>An inverted matrix.</returns>
+    [Benchmark]
+    public abstract Matrix2 Delegates();
+
+    /// <summary>
+    /// Benchmarks a matrix inversion using <see cref="MulticastDelegate"/>s, omitting disposal checks.
+    /// </summary>
+    /// <returns>An inverted matrix.</returns>
+    [Benchmark]
+    public abstract Matrix2 DelegatesNoDispose();
+
+    /// <summary>
+    /// Benchmarks a matrix inversion using <see cref="MulticastDelegate"/>s, suppressing unmanaged code security.
+    /// </summary>
+    /// <returns>An inverted matrix.</returns>
+    [Benchmark]
+    public abstract Matrix2 DelegatesSuppressedSecurity();
+
+    /// <summary>
+    /// Benchmarks a matrix inversion using <see cref="OpCodes.Calli"/>.
+    /// </summary>
+    /// <returns>An inverted matrix.</returns>
+    [Benchmark]
+    public abstract Matrix2 Calli();
+
+    /// <summary>
+    /// Benchmarks a matrix inversion using a managed implementation.
+    /// </summary>
+    /// <returns>An inverted matrix.</returns>
+    [Benchmark]
+    public abstract Matrix2 Managed();
 }

@@ -30,60 +30,59 @@ using static Mono.DllMap.Tests.Data.TestEnum;
 
 #pragma warning disable SA1600, CS1591
 
-namespace Mono.DllMap.Tests.Unit
+namespace Mono.DllMap.Tests.Unit;
+
+public class AttributeParserTests
 {
-    public class AttributeParserTests
+    private const string NonNegatedAttributeList = "foo,bar";
+    private const string NegatedAttributeList = "!foo,bar";
+
+    [Fact]
+    public void CanParseNonNegatedAttributeList()
     {
-        private const string NonNegatedAttributeList = "foo,bar";
-        private const string NegatedAttributeList = "!foo,bar";
+        var actual = DllMapAttributeParser.Parse<TestEnum>(NonNegatedAttributeList);
 
-        [Fact]
-        public void CanParseNonNegatedAttributeList()
-        {
-            var actual = DllMapAttributeParser.Parse<TestEnum>(NonNegatedAttributeList);
+        Assert.True(actual.HasFlagFast(Foo));
+        Assert.True(actual.HasFlagFast(Bar));
+        Assert.False(actual.HasFlagFast(Baz));
+    }
 
-            Assert.True(actual.HasFlagFast(Foo));
-            Assert.True(actual.HasFlagFast(Bar));
-            Assert.False(actual.HasFlagFast(Baz));
-        }
+    [Fact]
+    public void CanParseNegatedAttributeList()
+    {
+        var actual = DllMapAttributeParser.Parse<TestEnum>(NegatedAttributeList);
 
-        [Fact]
-        public void CanParseNegatedAttributeList()
-        {
-            var actual = DllMapAttributeParser.Parse<TestEnum>(NegatedAttributeList);
+        Assert.False(actual.HasFlagFast(Foo));
+        Assert.False(actual.HasFlagFast(Bar));
+        Assert.True(actual.HasFlagFast(Baz));
+    }
 
-            Assert.False(actual.HasFlagFast(Foo));
-            Assert.False(actual.HasFlagFast(Bar));
-            Assert.True(actual.HasFlagFast(Baz));
-        }
+    [Fact]
+    public void AttributeParserThrowsIfPassedNonEnumType()
+    {
+        Assert.Throws<ArgumentException>
+        (
+            () =>
+                DllMapAttributeParser.Parse<int>(NonNegatedAttributeList)
+        );
+    }
 
-        [Fact]
-        public void AttributeParserThrowsIfPassedNonEnumType()
-        {
-            Assert.Throws<ArgumentException>
-            (
-                () =>
-                    DllMapAttributeParser.Parse<int>(NonNegatedAttributeList)
-            );
-        }
+    [Fact]
+    public void AttributeParserThrowsIfPassedEnumTypeWithoutFlagAttribute()
+    {
+        Assert.Throws<ArgumentException>
+        (
+            () =>
+                DllMapAttributeParser.Parse<TestEnumWithoutFlagAttribute>(NonNegatedAttributeList)
+        );
+    }
 
-        [Fact]
-        public void AttributeParserThrowsIfPassedEnumTypeWithoutFlagAttribute()
-        {
-            Assert.Throws<ArgumentException>
-            (
-                () =>
-                    DllMapAttributeParser.Parse<TestEnumWithoutFlagAttribute>(NonNegatedAttributeList)
-            );
-        }
+    [Fact]
+    public void AttributeParserReturnsAllPossibleValuesForNullInput()
+    {
+        var expected = Enum.GetValues(typeof(TestEnum)).Cast<TestEnum>().Aggregate((a, b) => a | b);
+        var actual = DllMapAttributeParser.Parse<TestEnum>(null);
 
-        [Fact]
-        public void AttributeParserReturnsAllPossibleValuesForNullInput()
-        {
-            var expected = Enum.GetValues(typeof(TestEnum)).Cast<TestEnum>().Aggregate((a, b) => a | b);
-            var actual = DllMapAttributeParser.Parse<TestEnum>(null);
-
-            Assert.Equal(expected, actual);
-        }
+        Assert.Equal(expected, actual);
     }
 }

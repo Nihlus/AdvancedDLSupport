@@ -23,26 +23,25 @@
 using System.Reflection.Emit;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.DynamicAssemblyProviders
+namespace AdvancedDLSupport.DynamicAssemblyProviders;
+
+/// <summary>
+/// Provides and constructs a dynamic assembly for consumption.
+/// </summary>
+[PublicAPI]
+public interface IDynamicAssemblyProvider
 {
     /// <summary>
-    /// Provides and constructs a dynamic assembly for consumption.
+    /// Gets the dynamic assembly provided by this instance.
     /// </summary>
-    [PublicAPI]
-    public interface IDynamicAssemblyProvider
-    {
-        /// <summary>
-        /// Gets the dynamic assembly provided by this instance.
-        /// </summary>
-        /// <returns>The assembly.</returns>
-        [PublicAPI, Pure]
-        AssemblyBuilder GetDynamicAssembly();
+    /// <returns>The assembly.</returns>
+    [PublicAPI, Pure]
+    AssemblyBuilder GetDynamicAssembly();
 
-        /// <summary>
-        /// Gets the dynamic module from the assembly, creating one if it doesn't exist.
-        /// </summary>
-        /// <returns>The module.</returns>
-        [PublicAPI]
-        ModuleBuilder GetDynamicModule();
-    }
+    /// <summary>
+    /// Gets the dynamic module from the assembly, creating one if it doesn't exist.
+    /// </summary>
+    /// <returns>The module.</returns>
+    [PublicAPI]
+    ModuleBuilder GetDynamicModule();
 }

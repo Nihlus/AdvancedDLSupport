@@ -20,14 +20,13 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-namespace AdvancedDLSupport.Loaders
+namespace AdvancedDLSupport.Loaders;
+
+/// <summary>
+/// Loads libraries on the Linux platform.
+/// </summary>
+internal sealed class LinuxPlatformLoader : UnixPlatformLoader
 {
-    /// <summary>
-    /// Loads libraries on the Linux platform.
-    /// </summary>
-    internal sealed class LinuxPlatformLoader : UnixPlatformLoader
-    {
-        /// <inheritdoc />
-        protected override bool UseCLibrary => false;
-    }
+    /// <inheritdoc />
+    protected override bool UseCLibrary => false;
 }

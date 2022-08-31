@@ -24,41 +24,40 @@ using System.Runtime.InteropServices;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
+namespace AdvancedDLSupport.Tests.Data;
+
+public interface INullableLibrary
 {
-    public interface INullableLibrary
-    {
-        TestStruct? GetAllocatedTestStruct();
+    TestStruct? GetAllocatedTestStruct();
 
-        [NativeSymbol(nameof(GetAllocatedTestStruct))]
-        [return: CallerFree]
-        TestStruct? GetAllocatedTestStructAndFree();
+    [NativeSymbol(nameof(GetAllocatedTestStruct))]
+    [return: CallerFree]
+    TestStruct? GetAllocatedTestStructAndFree();
 
-        TestStruct? GetNullTestStruct();
+    TestStruct? GetNullTestStruct();
 
-        [NativeSymbol(nameof(GetNullTestStruct))]
-        [return: CallerFree]
-        TestStruct? GetNullTestStructAndFree();
+    [NativeSymbol(nameof(GetNullTestStruct))]
+    [return: CallerFree]
+    TestStruct? GetNullTestStructAndFree();
 
-        [return: MarshalAs(UnmanagedType.I1)]
-        bool CheckIfStructIsNull(TestStruct? testStruct);
+    [return: MarshalAs(UnmanagedType.I1)]
+    bool CheckIfStructIsNull(TestStruct? testStruct);
 
-        [NativeSymbol(nameof(CheckIfStructIsNull))]
-        [return: MarshalAs(UnmanagedType.I1)]
-        bool CheckIfStructIsNullAndFree([CallerFree] TestStruct? testStruct);
+    [NativeSymbol(nameof(CheckIfStructIsNull))]
+    [return: MarshalAs(UnmanagedType.I1)]
+    bool CheckIfStructIsNullAndFree([CallerFree] TestStruct? testStruct);
 
-        long GetStructPtrValue(ref TestStruct? testStruct);
+    long GetStructPtrValue(ref TestStruct? testStruct);
 
-        [return: MarshalAs(UnmanagedType.I1)]
-        [NativeSymbol(nameof(CheckIfStructIsNull))]
-        bool CheckIfRefStructIsNull(ref TestStruct? testStruct);
+    [return: MarshalAs(UnmanagedType.I1)]
+    [NativeSymbol(nameof(CheckIfStructIsNull))]
+    bool CheckIfRefStructIsNull(ref TestStruct? testStruct);
 
-        int GetValueInNullableRefStruct(ref TestStruct? testStruct);
+    int GetValueInNullableRefStruct(ref TestStruct? testStruct);
 
-        void SetValueInNullableRefStruct(ref TestStruct? testStruct);
+    void SetValueInNullableRefStruct(ref TestStruct? testStruct);
 
-        string GetAFromStructAsString(ref TestStruct? testStruct);
+    string GetAFromStructAsString(ref TestStruct? testStruct);
 
-        int GetAFromStructMultipliedByParameter(ref TestStruct? testStruct, int multiplier);
-    }
+    int GetAFromStructMultipliedByParameter(ref TestStruct? testStruct, int multiplier);
 }

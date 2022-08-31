@@ -24,26 +24,25 @@ using System.Runtime.InteropServices;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
+namespace AdvancedDLSupport.Tests.Data;
+
+public interface IIndirectCallLibrary
 {
-    public interface IIndirectCallLibrary
-    {
-        int Multiply(int a, int b);
+    int Multiply(int a, int b);
 
-        int GetStructAValueByRef(ref TestStruct strct);
+    int GetStructAValueByRef(ref TestStruct strct);
 
-        [NativeSymbol(nameof(GetStructAValueByRef))]
-        int GetStructAValueByIn(in TestStruct strct);
+    [NativeSymbol(nameof(GetStructAValueByRef))]
+    int GetStructAValueByIn(in TestStruct strct);
 
-        int GetStructAValueByValue(TestStruct strct);
+    int GetStructAValueByValue(TestStruct strct);
 
-        ref TestStruct GetInitializedStructByRef(int a, int b);
+    ref TestStruct GetInitializedStructByRef(int a, int b);
 
-        TestStruct GetInitializedStructByValue(int a, int b);
+    TestStruct GetInitializedStructByValue(int a, int b);
 
-        TestStruct? GetNullTestStruct();
+    TestStruct? GetNullTestStruct();
 
-        [return: MarshalAs(UnmanagedType.U1)]
-        bool IsTestStructNull(TestStruct? strct);
-    }
+    [return: MarshalAs(UnmanagedType.U1)]
+    bool IsTestStructNull(TestStruct? strct);
 }

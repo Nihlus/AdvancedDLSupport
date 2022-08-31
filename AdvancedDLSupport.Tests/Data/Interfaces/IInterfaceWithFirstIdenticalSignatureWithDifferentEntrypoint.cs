@@ -22,12 +22,11 @@
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
+namespace AdvancedDLSupport.Tests.Data;
+
+public interface IInterfaceWithFirstIdenticalSignatureWithDifferentEntrypoint
 {
-    public interface IInterfaceWithFirstIdenticalSignatureWithDifferentEntrypoint
-    {
-        // ReSharper disable once ExplicitCallerInfoArgument
-        [NativeSymbol("Multiply")]
-        int DoMath(int a, int b);
-    }
+    // ReSharper disable once ExplicitCallerInfoArgument
+    [NativeSymbol("Multiply")]
+    int DoMath(int a, int b);
 }

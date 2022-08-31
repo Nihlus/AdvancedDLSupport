@@ -24,11 +24,10 @@ using static AdvancedDLSupport.SymbolTransformationMethod;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
+namespace AdvancedDLSupport.Tests.Data;
+
+[NativeSymbols(Prefix = "sym_trans_", SymbolTransformationMethod = Underscore)]
+public interface ISymbolTransformationTests
 {
-    [NativeSymbols(Prefix = "sym_trans_", SymbolTransformationMethod = Underscore)]
-    public interface ISymbolTransformationTests
-    {
-        int DoThing(int a, int b);
-    }
+    int DoThing(int a, int b);
 }

@@ -26,147 +26,146 @@ using Xunit;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Integration
+namespace AdvancedDLSupport.Tests.Integration;
+
+public class GenericDelegateTests
 {
-    public class GenericDelegateTests
+    private const string LibraryName = "GenericDelegateTests";
+
+    public class FromManagedToNative : LibraryTestBase<IGenericDelegateLibrary>
     {
-        private const string LibraryName = "GenericDelegateTests";
-
-        public class FromManagedToNative : LibraryTestBase<IGenericDelegateLibrary>
+        public FromManagedToNative()
+            : base(LibraryName)
         {
-            public FromManagedToNative()
-                : base(LibraryName)
-            {
-            }
-
-            [Fact]
-            public void NativeCanCallAction()
-            {
-                bool ranAction = false;
-                Library.ExecuteAction(() => ranAction = true);
-
-                Assert.True(ranAction);
-            }
-
-            [Fact]
-            public void NativeCanCallActionWithParameter()
-            {
-                bool ranAction = false;
-                int result = 0;
-                Library.ExecuteActionT1(x =>
-                {
-                    ranAction = true;
-                    result = x;
-                });
-
-                Assert.True(ranAction);
-                Assert.Equal(5, result);
-            }
-
-            [Fact]
-            public void NativeCanCallFunc()
-            {
-                var result = Library.ExecuteFuncT1(() => 5);
-
-                Assert.Equal(5, result);
-            }
-
-            [Fact]
-            public void NativeCanCallFuncWithParameter()
-            {
-                var result = Library.ExecuteFuncT1T2(x => 5 * x);
-
-                Assert.Equal(25, result);
-            }
-
-            [Fact(Skip = "Not working due to CLR limitations.")]
-            public void NativeCanCallNestedAction()
-            {
-                bool ranAction = false;
-                Library.ExecuteActionT1Nested
-                (
-                    action =>
-                    {
-                        ranAction = true;
-                        action(5);
-                    }
-                );
-
-                Assert.True(ranAction);
-            }
-
-            [Fact(Skip = "Not working due to CLR limitations.")]
-            public void NativeCanCallNestedFunc()
-            {
-                var result = Library.ExecuteFuncT1T2Nested
-                (
-                    func => func(5)
-                );
-
-                Assert.Equal(25, result);
-            }
         }
 
-        public class FromNativeToManaged : LibraryTestBase<IGenericDelegateLibrary>
+        [Fact]
+        public void NativeCanCallAction()
         {
-            public FromNativeToManaged()
-                : base(LibraryName)
+            bool ranAction = false;
+            Library.ExecuteAction(() => ranAction = true);
+
+            Assert.True(ranAction);
+        }
+
+        [Fact]
+        public void NativeCanCallActionWithParameter()
+        {
+            bool ranAction = false;
+            int result = 0;
+            Library.ExecuteActionT1(x =>
             {
-            }
+                ranAction = true;
+                result = x;
+            });
 
-            [Fact]
-            public void ManagedCanCallAction()
-            {
-                var action = Library.GetNativeAction();
-                action();
-            }
+            Assert.True(ranAction);
+            Assert.Equal(5, result);
+        }
 
-            [Fact]
-            public void ManagedCanCallActionWithParameter()
-            {
-                var action = Library.GetNativeActionT1();
-                action(5);
-            }
+        [Fact]
+        public void NativeCanCallFunc()
+        {
+            var result = Library.ExecuteFuncT1(() => 5);
 
-            [Fact]
-            public void ManagedCanCallFunc()
-            {
-                var func = Library.GetNativeFuncT1();
-                var result = func();
+            Assert.Equal(5, result);
+        }
 
-                Assert.Equal(5, result);
-            }
+        [Fact]
+        public void NativeCanCallFuncWithParameter()
+        {
+            var result = Library.ExecuteFuncT1T2(x => 5 * x);
 
-            [Fact]
-            public void ManagedCanCallFuncWithParameter()
-            {
-                var func = Library.GetNativeFuncT1T2();
-                var result = func(5);
+            Assert.Equal(25, result);
+        }
 
-                Assert.Equal(25, result);
-            }
+        [Fact(Skip = "Not working due to CLR limitations.")]
+        public void NativeCanCallNestedAction()
+        {
+            bool ranAction = false;
+            Library.ExecuteActionT1Nested
+            (
+                action =>
+                {
+                    ranAction = true;
+                    action(5);
+                }
+            );
 
-            [Fact(Skip = "Not working due to CLR limitations.")]
-            public void ManagedCanCallNestedAction()
-            {
-                var action = Library.GetNativeActionT1Nested();
+            Assert.True(ranAction);
+        }
 
-                int result = 0;
-                action(i => result = i);
+        [Fact(Skip = "Not working due to CLR limitations.")]
+        public void NativeCanCallNestedFunc()
+        {
+            var result = Library.ExecuteFuncT1T2Nested
+            (
+                func => func(5)
+            );
 
-                Assert.Equal(5, result);
-            }
+            Assert.Equal(25, result);
+        }
+    }
 
-            [Fact(Skip = "Not working due to CLR limitations.")]
-            public void ManagedCanCallNestedFunc()
-            {
-                var func = Library.GetNativeFuncT1T2Nested();
+    public class FromNativeToManaged : LibraryTestBase<IGenericDelegateLibrary>
+    {
+        public FromNativeToManaged()
+            : base(LibraryName)
+        {
+        }
 
-                int result = 0;
-                func(i => result = i * 5);
+        [Fact]
+        public void ManagedCanCallAction()
+        {
+            var action = Library.GetNativeAction();
+            action();
+        }
 
-                Assert.Equal(25, result);
-            }
+        [Fact]
+        public void ManagedCanCallActionWithParameter()
+        {
+            var action = Library.GetNativeActionT1();
+            action(5);
+        }
+
+        [Fact]
+        public void ManagedCanCallFunc()
+        {
+            var func = Library.GetNativeFuncT1();
+            var result = func();
+
+            Assert.Equal(5, result);
+        }
+
+        [Fact]
+        public void ManagedCanCallFuncWithParameter()
+        {
+            var func = Library.GetNativeFuncT1T2();
+            var result = func(5);
+
+            Assert.Equal(25, result);
+        }
+
+        [Fact(Skip = "Not working due to CLR limitations.")]
+        public void ManagedCanCallNestedAction()
+        {
+            var action = Library.GetNativeActionT1Nested();
+
+            int result = 0;
+            action(i => result = i);
+
+            Assert.Equal(5, result);
+        }
+
+        [Fact(Skip = "Not working due to CLR limitations.")]
+        public void ManagedCanCallNestedFunc()
+        {
+            var func = Library.GetNativeFuncT1T2Nested();
+
+            int result = 0;
+            func(i => result = i * 5);
+
+            Assert.Equal(25, result);
         }
     }
 }

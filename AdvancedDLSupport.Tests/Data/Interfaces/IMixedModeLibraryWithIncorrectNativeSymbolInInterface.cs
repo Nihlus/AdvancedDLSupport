@@ -22,11 +22,10 @@
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
+namespace AdvancedDLSupport.Tests.Data;
+
+public interface IMixedModeLibraryWithIncorrectNativeSymbolInInterface
 {
-    public interface IMixedModeLibraryWithIncorrectNativeSymbolInInterface
-    {
-        [NativeSymbol(Entrypoint = "BADSYMBOL")]
-        int SubtractWithRemappedName(int a, int b);
-    }
+    [NativeSymbol(Entrypoint = "BADSYMBOL")]
+    int SubtractWithRemappedName(int a, int b);
 }

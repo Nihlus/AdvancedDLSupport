@@ -24,61 +24,60 @@ using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Extensions
+namespace AdvancedDLSupport.Extensions;
+
+/// <summary>
+/// Extension methods for <see cref="string"/>.
+/// </summary>
+internal static class StringExtensions
 {
     /// <summary>
-    /// Extension methods for <see cref="string"/>.
+    /// Determines whether or not the given string is a valid path. This does not neccesarily indicate that
+    /// the path exists.
     /// </summary>
-    internal static class StringExtensions
+    /// <param name="this">The string to inspect.</param>
+    /// <returns>true if the string is a valid path; otherwise, false.</returns>
+    [ContractAnnotation("this:null => false"), Pure]
+    public static bool IsValidPath(this string? @this)
     {
-        /// <summary>
-        /// Determines whether or not the given string is a valid path. This does not neccesarily indicate that
-        /// the path exists.
-        /// </summary>
-        /// <param name="this">The string to inspect.</param>
-        /// <returns>true if the string is a valid path; otherwise, false.</returns>
-        [ContractAnnotation("this:null => false"), Pure]
-        public static bool IsValidPath(this string? @this)
+        if (@this.IsNullOrWhiteSpace())
         {
-            if (@this.IsNullOrWhiteSpace())
-            {
-                return false;
-            }
-
-            if (@this.Any(c => Path.GetInvalidPathChars().Contains(c)))
-            {
-                return false;
-            }
-
-            var parentDirectory = Path.GetDirectoryName(@this);
-            if (parentDirectory.IsNullOrWhiteSpace())
-            {
-                return false;
-            }
-
-            return true;
+            return false;
         }
 
-        /// <summary>
-        /// Determines whether or not a string is null or consists entirely of whitespace characters.
-        /// </summary>
-        /// <param name="this">The string to check.</param>
-        /// <returns>true if the string is null or whitespace; otherwise, false.</returns>
-        [ContractAnnotation("this:null => true"), Pure]
-        public static bool IsNullOrWhiteSpace(this string? @this)
+        if (@this.Any(c => Path.GetInvalidPathChars().Contains(c)))
         {
-            return string.IsNullOrWhiteSpace(@this);
+            return false;
         }
 
-        /// <summary>
-        /// Determines whether or not a string is null or has no characters.
-        /// </summary>
-        /// <param name="this">The string to check.</param>
-        /// <returns>true if the string is null or empty; otherwise, false.</returns>
-        [ContractAnnotation("this:null => true"), Pure]
-        public static bool IsNullOrEmpty(this string? @this)
+        var parentDirectory = Path.GetDirectoryName(@this);
+        if (parentDirectory.IsNullOrWhiteSpace())
         {
-            return string.IsNullOrEmpty(@this);
+            return false;
         }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Determines whether or not a string is null or consists entirely of whitespace characters.
+    /// </summary>
+    /// <param name="this">The string to check.</param>
+    /// <returns>true if the string is null or whitespace; otherwise, false.</returns>
+    [ContractAnnotation("this:null => true"), Pure]
+    public static bool IsNullOrWhiteSpace(this string? @this)
+    {
+        return string.IsNullOrWhiteSpace(@this);
+    }
+
+    /// <summary>
+    /// Determines whether or not a string is null or has no characters.
+    /// </summary>
+    /// <param name="this">The string to check.</param>
+    /// <returns>true if the string is null or empty; otherwise, false.</returns>
+    [ContractAnnotation("this:null => true"), Pure]
+    public static bool IsNullOrEmpty(this string? @this)
+    {
+        return string.IsNullOrEmpty(@this);
     }
 }

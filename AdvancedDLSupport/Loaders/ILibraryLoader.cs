@@ -23,29 +23,28 @@
 using System;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Loaders
+namespace AdvancedDLSupport.Loaders;
+
+/// <summary>
+/// Represents a class which can load libraries on a specific platform.
+/// </summary>
+public interface ILibraryLoader
 {
     /// <summary>
-    /// Represents a class which can load libraries on a specific platform.
+    /// Load the given library. A null path signifies intent to load the main executable instead of an external
+    /// library.
     /// </summary>
-    public interface ILibraryLoader
-    {
-        /// <summary>
-        /// Load the given library. A null path signifies intent to load the main executable instead of an external
-        /// library.
-        /// </summary>
-        /// <param name="path">The path to the library.</param>
-        /// <returns>A handle to the library. This value carries no intrinsic meaning.</returns>
-        /// <exception cref="LibraryLoadingException">Thrown if the library could not be loaded.</exception>
-        [PublicAPI]
-        IntPtr LoadLibrary(string? path);
+    /// <param name="path">The path to the library.</param>
+    /// <returns>A handle to the library. This value carries no intrinsic meaning.</returns>
+    /// <exception cref="LibraryLoadingException">Thrown if the library could not be loaded.</exception>
+    [PublicAPI]
+    IntPtr LoadLibrary(string? path);
 
-        /// <summary>
-        /// Closes the open handle to the given library.
-        /// </summary>
-        /// <param name="library">The handle to the library to close.</param>
-        /// <returns>true if the library was closed successfully; otherwise, false.</returns>
-        [PublicAPI]
-        bool CloseLibrary(IntPtr library);
-    }
+    /// <summary>
+    /// Closes the open handle to the given library.
+    /// </summary>
+    /// <param name="library">The handle to the library to close.</param>
+    /// <returns>true if the library was closed successfully; otherwise, false.</returns>
+    [PublicAPI]
+    bool CloseLibrary(IntPtr library);
 }

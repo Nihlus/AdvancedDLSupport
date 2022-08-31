@@ -29,105 +29,104 @@ using System.Runtime.InteropServices;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Extensions
+namespace AdvancedDLSupport.Extensions;
+
+/// <summary>
+/// Extension methods for the <see cref="MethodBuilder"/> class.
+/// </summary>
+internal static class MethodBuilderExtensions
 {
     /// <summary>
-    /// Extension methods for the <see cref="MethodBuilder"/> class.
+    /// Holds blacklisted attributes which will not be copied to their respective types.
     /// </summary>
-    internal static class MethodBuilderExtensions
+    private static readonly IReadOnlyDictionary<Type, IReadOnlyList<Type>> AttributeBlacklist = new Dictionary<Type, IReadOnlyList<Type>>
     {
-        /// <summary>
-        /// Holds blacklisted attributes which will not be copied to their respective types.
-        /// </summary>
-        private static readonly IReadOnlyDictionary<Type, IReadOnlyList<Type>> AttributeBlacklist = new Dictionary<Type, IReadOnlyList<Type>>
+        { typeof(IntPtr), new[] { typeof(MarshalAsAttribute) } }
+    };
+
+    /// <summary>
+    /// Copies all custom attributes from the given <see cref="IntrospectiveMethodInfo"/> instance. This method will redefine the
+    /// return value and method parameters in order to apply the required custom attributes.
+    /// </summary>
+    /// <param name="this">The builder to copy the attributes to.</param>
+    /// <param name="source">The method to copy the attributes from.</param>
+    /// <param name="newReturnParameterType">
+    /// The return type of the target method. Defaults to the source return type.
+    /// </param>
+    /// <param name="newParameterTypes">
+    /// The parameter types of the target method. Defaults to the source parameter types.
+    /// </param>
+    /// <param name="returnParameterAttributeFilter">
+    /// A filter predicate for the attributes being copied to the return parameter. If the predicate returns true,
+    /// the attribute is not copied.
+    /// </param>
+    /// <param name="parameterAttributeFilter">
+    /// A filter predicate for the attributes being copied to the method parameters. The predicate receives the
+    /// zero-based index of the parameter. If the predicate returns true, the attribute is not copied.
+    /// </param>
+    public static void ApplyCustomAttributesFrom
+    (
+        this MethodBuilder @this,
+        IntrospectiveMethodInfo source,
+        Type? newReturnParameterType = null,
+        IReadOnlyList<Type>? newParameterTypes = null,
+        Func<CustomAttributeData, bool>? returnParameterAttributeFilter = null,
+        Func<CustomAttributeData, int, bool>? parameterAttributeFilter = null
+    )
+    {
+        newReturnParameterType = newReturnParameterType ?? source.ReturnType;
+        newParameterTypes = newParameterTypes ?? source.ParameterTypes;
+
+        returnParameterAttributeFilter = returnParameterAttributeFilter ?? (attribute => false);
+        parameterAttributeFilter = parameterAttributeFilter ?? ((attribute, parameterIndex) => false);
+
+        // Pass through all applied attributes
+        var returnValueBuilder = @this.DefineParameter(0, source.ReturnParameterAttributes, null);
+        foreach (var attribute in source.ReturnParameterCustomAttributes)
         {
-            { typeof(IntPtr), new[] { typeof(MarshalAsAttribute) } }
-        };
-
-        /// <summary>
-        /// Copies all custom attributes from the given <see cref="IntrospectiveMethodInfo"/> instance. This method will redefine the
-        /// return value and method parameters in order to apply the required custom attributes.
-        /// </summary>
-        /// <param name="this">The builder to copy the attributes to.</param>
-        /// <param name="source">The method to copy the attributes from.</param>
-        /// <param name="newReturnParameterType">
-        /// The return type of the target method. Defaults to the source return type.
-        /// </param>
-        /// <param name="newParameterTypes">
-        /// The parameter types of the target method. Defaults to the source parameter types.
-        /// </param>
-        /// <param name="returnParameterAttributeFilter">
-        /// A filter predicate for the attributes being copied to the return parameter. If the predicate returns true,
-        /// the attribute is not copied.
-        /// </param>
-        /// <param name="parameterAttributeFilter">
-        /// A filter predicate for the attributes being copied to the method parameters. The predicate receives the
-        /// zero-based index of the parameter. If the predicate returns true, the attribute is not copied.
-        /// </param>
-        public static void ApplyCustomAttributesFrom
-        (
-            this MethodBuilder @this,
-            IntrospectiveMethodInfo source,
-            Type? newReturnParameterType = null,
-            IReadOnlyList<Type>? newParameterTypes = null,
-            Func<CustomAttributeData, bool>? returnParameterAttributeFilter = null,
-            Func<CustomAttributeData, int, bool>? parameterAttributeFilter = null
-        )
-        {
-            newReturnParameterType = newReturnParameterType ?? source.ReturnType;
-            newParameterTypes = newParameterTypes ?? source.ParameterTypes;
-
-            returnParameterAttributeFilter = returnParameterAttributeFilter ?? (attribute => false);
-            parameterAttributeFilter = parameterAttributeFilter ?? ((attribute, parameterIndex) => false);
-
-            // Pass through all applied attributes
-            var returnValueBuilder = @this.DefineParameter(0, source.ReturnParameterAttributes, null);
-            foreach (var attribute in source.ReturnParameterCustomAttributes)
+            if (AttributeBlacklist.ContainsKey(newReturnParameterType) && AttributeBlacklist[newReturnParameterType].Contains(attribute.AttributeType))
             {
-                if (AttributeBlacklist.ContainsKey(newReturnParameterType) && AttributeBlacklist[newReturnParameterType].Contains(attribute.AttributeType))
-                {
-                    continue;
-                }
-
-                if (returnParameterAttributeFilter(attribute))
-                {
-                    continue;
-                }
-
-                returnValueBuilder.SetCustomAttribute(attribute.GetAttributeBuilder());
+                continue;
             }
 
-            if (source.ParameterTypes.Any())
+            if (returnParameterAttributeFilter(attribute))
             {
-                for (var i = 0; i < source.ParameterTypes.Count; ++i)
-                {
-                    var targetParameterType = newParameterTypes[i];
-                    var methodParameterCustomAttributes = source.ParameterCustomAttributes[i];
-                    var methodParameterAttributes = source.ParameterAttributes[i];
-                    var methodParameterName = source.ParameterNames[i];
+                continue;
+            }
 
-                    var parameterBuilder = @this.DefineParameter(i + 1, methodParameterAttributes, methodParameterName);
-                    foreach (var attribute in methodParameterCustomAttributes)
+            returnValueBuilder.SetCustomAttribute(attribute.GetAttributeBuilder());
+        }
+
+        if (source.ParameterTypes.Any())
+        {
+            for (var i = 0; i < source.ParameterTypes.Count; ++i)
+            {
+                var targetParameterType = newParameterTypes[i];
+                var methodParameterCustomAttributes = source.ParameterCustomAttributes[i];
+                var methodParameterAttributes = source.ParameterAttributes[i];
+                var methodParameterName = source.ParameterNames[i];
+
+                var parameterBuilder = @this.DefineParameter(i + 1, methodParameterAttributes, methodParameterName);
+                foreach (var attribute in methodParameterCustomAttributes)
+                {
+                    if (AttributeBlacklist.ContainsKey(targetParameterType) && AttributeBlacklist[targetParameterType].Contains(attribute.AttributeType))
                     {
-                        if (AttributeBlacklist.ContainsKey(targetParameterType) && AttributeBlacklist[targetParameterType].Contains(attribute.AttributeType))
-                        {
-                            continue;
-                        }
-
-                        if (parameterAttributeFilter(attribute, i))
-                        {
-                            continue;
-                        }
-
-                        parameterBuilder.SetCustomAttribute(attribute.GetAttributeBuilder());
+                        continue;
                     }
+
+                    if (parameterAttributeFilter(attribute, i))
+                    {
+                        continue;
+                    }
+
+                    parameterBuilder.SetCustomAttribute(attribute.GetAttributeBuilder());
                 }
             }
+        }
 
-            foreach (var attribute in source.CustomAttributes)
-            {
-                @this.SetCustomAttribute(attribute.GetAttributeBuilder());
-            }
+        foreach (var attribute in source.CustomAttributes)
+        {
+            @this.SetCustomAttribute(attribute.GetAttributeBuilder());
         }
     }
 }

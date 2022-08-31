@@ -22,13 +22,12 @@
 
 using System;
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport;
+
+/// <summary>
+/// Tags a constructor as the anonymous constructor defined in the base class for generated types.
+/// </summary>
+[AttributeUsage(AttributeTargets.Constructor)]
+internal class AnonymousConstructorAttribute : Attribute
 {
-    /// <summary>
-    /// Tags a constructor as the anonymous constructor defined in the base class for generated types.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Constructor)]
-    internal class AnonymousConstructorAttribute : Attribute
-    {
-    }
 }

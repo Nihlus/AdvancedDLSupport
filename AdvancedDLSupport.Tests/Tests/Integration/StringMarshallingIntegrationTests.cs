@@ -26,110 +26,110 @@ using Xunit;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Integration
+namespace AdvancedDLSupport.Tests.Integration;
+
+public class StringMarshallingIntegrationTests : LibraryTestBase<IStringLibrary>
 {
-    public class StringMarshallingIntegrationTests : LibraryTestBase<IStringLibrary>
+    private const string LibraryName = "StringTests";
+
+    public StringMarshallingIntegrationTests()
+        : base(LibraryName)
     {
-        private const string LibraryName = "StringTests";
+    }
 
-        public StringMarshallingIntegrationTests()
-            : base(LibraryName)
-        {
-        }
+    [Fact]
+    public void CanCallFunctionWithStringReturnValue()
+    {
+        var actual = Library.GetString();
+        Assert.Equal("Hello from C!", actual);
+    }
 
-        [Fact]
-        public void CanCallFunctionWithStringReturnValue()
-        {
-            var actual = Library.GetString();
-            Assert.Equal("Hello from C!", actual);
-        }
+    [Fact]
+    public void CanCallFunctionWithStringReturnValueWhereResultIsNull()
+    {
+        Assert.Null(Library.GetNullString());
+    }
 
-        [Fact]
-        public void CanCallFunctionWithStringReturnValueWhereResultIsNull()
-        {
-            Assert.Null(Library.GetNullString());
-        }
+    [Fact]
+    public void CanCallFunctionWithStringParameter()
+    {
+        const string testString = "I once knew a polish audio engineer";
+        var expected = testString.Length;
 
-        [Fact]
-        public void CanCallFunctionWithStringParameter()
-        {
-            const string testString = "I once knew a polish audio engineer";
-            var expected = testString.Length;
+        Assert.Equal(expected, (long)Library.StringLength(testString).ToUInt64());
+    }
 
-            Assert.Equal(expected, (long)Library.StringLength(testString).ToUInt64());
-        }
+    [Fact]
+    public void CanCallFunctionWithStringParameterWhereParameterIsNull()
+    {
+        Assert.True(Library.CheckIfStringIsNull(null));
+    }
 
-        [Fact]
-        public void CanCallFunctionWithStringParameterWhereParameterIsNull()
-        {
-            Assert.True(Library.CheckIfStringIsNull(null));
-        }
+    [Fact]
+    public void CanCallFunctionWithBStrReturnValue()
+    {
+        var actual = Library.EchoBStr("Hello from C!");
+        Assert.Equal("Hello from C!", actual);
+    }
 
-        [Fact]
-        public void CanCallFunctionWithBStrReturnValue()
-        {
-            var actual = Library.EchoBStr("Hello from C!");
-            Assert.Equal("Hello from C!", actual);
-        }
+    [Fact]
+    public void CanCallFunctionWithLPTStrReturnValue()
+    {
+        var actual = Library.GetLPTString();
+        Assert.Equal("Hello from C!", actual);
+    }
 
-        [Fact]
-        public void CanCallFunctionWithLPTStrReturnValue()
-        {
-            var actual = Library.GetLPTString();
-            Assert.Equal("Hello from C!", actual);
-        }
+    [Fact]
+    public void CanCallFunctionWithLPWStrReturnValue()
+    {
+        var actual = Library.GetLPWString();
+        Assert.Equal("Hello from C!", actual);
+    }
 
-        [Fact]
-        public void CanCallFunctionWithLPWStrReturnValue()
-        {
-            var actual = Library.GetLPWString();
-            Assert.Equal("Hello from C!", actual);
-        }
+    [Fact]
+    public void CanCallFunctionWithBStrParameter()
+    {
+        const string testString = "I once knew a polish audio engineer";
+        var expected = testString.Length;
 
-        [Fact]
-        public void CanCallFunctionWithBStrParameter()
-        {
-            const string testString = "I once knew a polish audio engineer";
-            var expected = testString.Length;
+        Assert.Equal(expected, (long)Library.BStringLength(testString).ToUInt64());
+    }
 
-            Assert.Equal(expected, (long)Library.BStringLength(testString).ToUInt64());
-        }
+    [Fact]
+    public void CanCallFunctionWithLPTStrParameter()
+    {
+        const string testString = "I once knew a polish audio engineer";
+        var expected = testString.Length;
 
-        [Fact]
-        public void CanCallFunctionWithLPTStrParameter()
-        {
-            const string testString = "I once knew a polish audio engineer";
-            var expected = testString.Length;
+        Assert.Equal(expected, (long)Library.LPTStringLength(testString).ToUInt64());
+    }
 
-            Assert.Equal(expected, (long)Library.LPTStringLength(testString).ToUInt64());
-        }
+    [Fact]
+    public void CanCallFunctionWithLPWStrParameter()
+    {
+        const string testString = "I once knew a polish audio engineer";
+        var expected = testString.Length;
 
-        [Fact]
-        public void CanCallFunctionWithLPWStrParameter()
-        {
-            const string testString = "I once knew a polish audio engineer";
-            var expected = testString.Length;
+        Assert.Equal(expected, (long)Library.LPWStringLength(testString).ToUInt64());
+    }
 
-            Assert.Equal(expected, (long)Library.LPWStringLength(testString).ToUInt64());
-        }
+    #if NETCOREAPP || NETSTANDARD2_1
+    [Fact]
+    public void CanCallFunctionWithLPUTF8StrReturnValue()
+    {
+        var actual = Library.GetLPUTF8String();
+        Assert.Equal("Hello, 🦈!", actual);
+    }
 
-#if NETCOREAPP || NETSTANDARD2_1
-        [Fact]
-        public void CanCallFunctionWithLPUTF8StrReturnValue()
-        {
-            var actual = Library.GetLPUTF8String();
-            Assert.Equal("Hello, 🦈!", actual);
-        }
+    [Fact]
+    public void CanCallFunctionWithLPUTF8StrParameter()
+    {
+        const string testString = "Växeln, hallå, hallå, hallå";
+        var expected = testString.Length;
 
-        [Fact]
-        public void CanCallFunctionWithLPUTF8StrParameter()
-        {
-            const string testString = "Växeln, hallå, hallå, hallå";
-            var expected = testString.Length;
-
-            Assert.Equal(expected, (long)Library.LPUTF8StringLength(testString).ToUInt64());
-        }
-#else
+        Assert.Equal(expected, (long)Library.LPUTF8StringLength(testString).ToUInt64());
+    }
+    #else
         [Fact(Skip = "Unsupported on this runtime.")]
         public void CanCallFunctionWithLPUTF8StrReturnValue()
         {
@@ -139,23 +139,22 @@ namespace AdvancedDLSupport.Tests.Integration
         public void CanCallFunctionWithLPUTF8StrParameter()
         {
         }
-#endif
+    #endif
 
-        [Fact]
-        public void CanCallFunctionWithCallerFreeReturnParameter()
-        {
-            var actual = Library.GetStringAndFree();
+    [Fact]
+    public void CanCallFunctionWithCallerFreeReturnParameter()
+    {
+        var actual = Library.GetStringAndFree();
 
-            Assert.Equal("Hello from C!", actual);
-        }
+        Assert.Equal("Hello from C!", actual);
+    }
 
-        [Fact]
-        public void CanCallFunctionWithCallerFreeParameter()
-        {
-            const string testString = "I once knew a polish audio engineer";
-            var expected = testString.Length;
+    [Fact]
+    public void CanCallFunctionWithCallerFreeParameter()
+    {
+        const string testString = "I once knew a polish audio engineer";
+        var expected = testString.Length;
 
-            Assert.Equal(expected, (long)Library.GetStringLengthAndFree(testString).ToUInt64());
-        }
+        Assert.Equal(expected, (long)Library.GetStringLengthAndFree(testString).ToUInt64());
     }
 }

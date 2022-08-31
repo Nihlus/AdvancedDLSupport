@@ -28,31 +28,30 @@ using Xunit;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
+namespace AdvancedDLSupport.AOT.Tests.Tests.Integration;
+
+public class PregeneratedAssemblyBuilderTests
 {
-    public class PregeneratedAssemblyBuilderTests
+    public class Build : PregeneratedAssemblyBuilderTestBase
     {
-        public class Build : PregeneratedAssemblyBuilderTestBase
+        [Fact]
+        public void GeneratesAnOutputFileForASourceAssembly()
         {
-            [Fact]
-            public void GeneratesAnOutputFileForASourceAssembly()
-            {
-                Builder.WithSourceAssembly(SourceAssembly);
-                var result = Builder.Build(OutputDirectory);
+            Builder.WithSourceAssembly(SourceAssembly);
+            var result = Builder.Build(OutputDirectory);
 
-                var outputFile = Path.Combine(OutputDirectory, result);
-                Assert.True(File.Exists(outputFile));
-            }
+            var outputFile = Path.Combine(OutputDirectory, result);
+            Assert.True(File.Exists(outputFile));
+        }
 
-            [Fact]
-            public void GeneratesAnOutputFileForASourceExplicitCombination()
-            {
-                Builder.WithSourceExplicitTypeCombination<AOTMixedModeClass, IAOTLibrary>();
-                var result = Builder.Build(OutputDirectory);
+        [Fact]
+        public void GeneratesAnOutputFileForASourceExplicitCombination()
+        {
+            Builder.WithSourceExplicitTypeCombination<AOTMixedModeClass, IAOTLibrary>();
+            var result = Builder.Build(OutputDirectory);
 
-                var outputFile = Path.Combine(OutputDirectory, result);
-                Assert.True(File.Exists(outputFile));
-            }
+            var outputFile = Path.Combine(OutputDirectory, result);
+            Assert.True(File.Exists(outputFile));
         }
     }
 }

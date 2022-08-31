@@ -25,91 +25,90 @@ using System.Runtime.Serialization;
 using System.Security.Permissions;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport;
+
+/// <summary>
+/// Represents a failure to load a native library.
+/// </summary>
+[PublicAPI, Serializable]
+public class SymbolLoadingException : Exception
 {
     /// <summary>
-    /// Represents a failure to load a native library.
+    /// Gets the name of the symbol that failed to load.
     /// </summary>
-    [PublicAPI, Serializable]
-    public class SymbolLoadingException : Exception
+    [PublicAPI]
+    public string SymbolName { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+    /// </summary>
+    [PublicAPI]
+    public SymbolLoadingException()
     {
-        /// <summary>
-        /// Gets the name of the symbol that failed to load.
-        /// </summary>
-        [PublicAPI]
-        public string SymbolName { get; }
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
-        /// </summary>
-        [PublicAPI]
-        public SymbolLoadingException()
-        {
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+    /// </summary>
+    /// <param name="message">The message of the exception.</param>
+    [PublicAPI]
+    public SymbolLoadingException(string message)
+        : base(message)
+    {
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
-        /// </summary>
-        /// <param name="message">The message of the exception.</param>
-        [PublicAPI]
-        public SymbolLoadingException(string message)
-            : base(message)
-        {
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+    /// </summary>
+    /// <param name="message">The message of the exception.</param>
+    /// <param name="inner">The exception which caused this exception.</param>
+    [PublicAPI]
+    public SymbolLoadingException(string? message, Exception inner)
+        : base(message, inner)
+    {
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
-        /// </summary>
-        /// <param name="message">The message of the exception.</param>
-        /// <param name="inner">The exception which caused this exception.</param>
-        [PublicAPI]
-        public SymbolLoadingException(string? message, Exception inner)
-            : base(message, inner)
-        {
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+    /// </summary>
+    /// <param name="message">The message of the exception.</param>
+    /// <param name="symbolName">The name of the symbol that failed to load.</param>
+    [PublicAPI]
+    public SymbolLoadingException(string message, string symbolName)
+        : base(message)
+    {
+        SymbolName = symbolName;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
-        /// </summary>
-        /// <param name="message">The message of the exception.</param>
-        /// <param name="symbolName">The name of the symbol that failed to load.</param>
-        [PublicAPI]
-        public SymbolLoadingException(string message, string symbolName)
-            : base(message)
-        {
-            SymbolName = symbolName;
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+    /// </summary>
+    /// <param name="message">The message of the exception.</param>
+    /// <param name="symbolName">The name of the symbol that failed to load.</param>
+    /// <param name="inner">The exception which caused this exception.</param>
+    [PublicAPI]
+    public SymbolLoadingException(string message, string symbolName, Exception inner)
+        : base(message, inner)
+    {
+        SymbolName = symbolName;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
-        /// </summary>
-        /// <param name="message">The message of the exception.</param>
-        /// <param name="symbolName">The name of the symbol that failed to load.</param>
-        /// <param name="inner">The exception which caused this exception.</param>
-        [PublicAPI]
-        public SymbolLoadingException(string message, string symbolName, Exception inner)
-            : base(message, inner)
-        {
-            SymbolName = symbolName;
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
+    /// </summary>
+    /// <param name="info">The serialized information.</param>
+    /// <param name="context">The streaming context.</param>
+    protected SymbolLoadingException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
+        SymbolName = info.GetString(nameof(SymbolName));
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SymbolLoadingException"/> class.
-        /// </summary>
-        /// <param name="info">The serialized information.</param>
-        /// <param name="context">The streaming context.</param>
-        protected SymbolLoadingException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            SymbolName = info.GetString(nameof(SymbolName));
-        }
-
-        /// <inheritdoc />
-        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue(nameof(SymbolName), SymbolName);
-            base.GetObjectData(info, context);
-        }
+    /// <inheritdoc />
+    [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+    public override void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+        info.AddValue(nameof(SymbolName), SymbolName);
+        base.GetObjectData(info, context);
     }
 }

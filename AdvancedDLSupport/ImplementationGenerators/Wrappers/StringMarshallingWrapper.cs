@@ -37,511 +37,510 @@ using static System.Runtime.InteropServices.UnmanagedType;
 
 #pragma warning disable SA1513
 
-namespace AdvancedDLSupport.ImplementationGenerators
+namespace AdvancedDLSupport.ImplementationGenerators;
+
+/// <summary>
+/// Generates wrapper instructions for marshalling string parameters, with an optional attribute-controlled
+/// cleanup step to free the marshalled memory afterwards.
+/// </summary>
+internal sealed class StringMarshallingWrapper : CallWrapperBase
 {
+    /// <inheritdoc/>
+    public override GeneratorComplexity Complexity => MemberDependent | TransformsParameters;
+
     /// <summary>
-    /// Generates wrapper instructions for marshalling string parameters, with an optional attribute-controlled
-    /// cleanup step to free the marshalled memory afterwards.
+    /// Holds local variables defined for a given work unit. The nested dictionary contains the 0-based input
+    /// parameter index matched with the local variable containing an unmanaged pointer.
     /// </summary>
-    internal sealed class StringMarshallingWrapper : CallWrapperBase
+    private Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>> _workUnitLocals
+        = new Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>>();
+
+    private static Dictionary<UnmanagedType, MethodInfo> _stringToPtrMethods;
+
+    private static Dictionary<UnmanagedType, MethodInfo> _ptrToStringMethods;
+
+    private static MethodInfo _freeBStrMethod;
+
+    private static MethodInfo _freeHGlobalMethod;
+
+    private static MethodInfo _freeCoTaskMemMethod;
+
+    private static UnmanagedType? _utf8UnmanagedType;
+
+    static StringMarshallingWrapper()
     {
-        /// <inheritdoc/>
-        public override GeneratorComplexity Complexity => MemberDependent | TransformsParameters;
+        _stringToPtrMethods = new Dictionary<UnmanagedType, MethodInfo>();
+        _ptrToStringMethods = new Dictionary<UnmanagedType, MethodInfo>();
 
-        /// <summary>
-        /// Holds local variables defined for a given work unit. The nested dictionary contains the 0-based input
-        /// parameter index matched with the local variable containing an unmanaged pointer.
-        /// </summary>
-        private Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>> _workUnitLocals
-            = new Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>>();
-
-        private static Dictionary<UnmanagedType, MethodInfo> _stringToPtrMethods;
-
-        private static Dictionary<UnmanagedType, MethodInfo> _ptrToStringMethods;
-
-        private static MethodInfo _freeBStrMethod;
-
-        private static MethodInfo _freeHGlobalMethod;
-
-        private static MethodInfo _freeCoTaskMemMethod;
-
-        private static UnmanagedType? _utf8UnmanagedType;
-
-        static StringMarshallingWrapper()
-        {
-            _stringToPtrMethods = new Dictionary<UnmanagedType, MethodInfo>();
-            _ptrToStringMethods = new Dictionary<UnmanagedType, MethodInfo>();
-
-            // Managed-to-unmanaged methods
-            _stringToPtrMethods.Add
+        // Managed-to-unmanaged methods
+        _stringToPtrMethods.Add
+        (
+            BStr,
+            typeof(Marshal).GetMethod
             (
-                BStr,
-                typeof(Marshal).GetMethod
-                (
-                    nameof(Marshal.StringToBSTR),
-                    new[] { typeof(string) }
-                )
-            );
+                nameof(Marshal.StringToBSTR),
+                new[] { typeof(string) }
+            )
+        );
 
-            _stringToPtrMethods.Add
+        _stringToPtrMethods.Add
+        (
+            LPWStr,
+            typeof(Marshal).GetMethod
             (
-                LPWStr,
-                typeof(Marshal).GetMethod
-                (
-                    nameof(Marshal.StringToHGlobalUni),
-                    new[] { typeof(string) }
-                )
-            );
+                nameof(Marshal.StringToHGlobalUni),
+                new[] { typeof(string) }
+            )
+        );
 
-            _stringToPtrMethods.Add
+        _stringToPtrMethods.Add
+        (
+            LPStr,
+            typeof(Marshal).GetMethod
             (
-                LPStr,
-                typeof(Marshal).GetMethod
-                (
-                    nameof(Marshal.StringToHGlobalAnsi),
-                    new[] { typeof(string) }
-                )
-            );
+                nameof(Marshal.StringToHGlobalAnsi),
+                new[] { typeof(string) }
+            )
+        );
 
-            _stringToPtrMethods.Add
+        _stringToPtrMethods.Add
+        (
+            LPTStr,
+            typeof(Marshal).GetMethod
             (
-                LPTStr,
-                typeof(Marshal).GetMethod
-                (
-                    nameof(Marshal.StringToHGlobalAuto),
-                    new[] { typeof(string) }
-                )
-            );
+                nameof(Marshal.StringToHGlobalAuto),
+                new[] { typeof(string) }
+            )
+        );
 
-            // Unmanaged-to-managed methods
-            _ptrToStringMethods.Add
+        // Unmanaged-to-managed methods
+        _ptrToStringMethods.Add
+        (
+            BStr,
+            typeof(Marshal).GetMethod
             (
-                BStr,
-                typeof(Marshal).GetMethod
-                (
-                    nameof(Marshal.PtrToStringBSTR),
-                    new[] { typeof(IntPtr) }
-                )
-            );
-
-            _ptrToStringMethods.Add
-            (
-                LPWStr,
-                typeof(Marshal).GetMethod
-                (
-                    nameof(Marshal.PtrToStringUni),
-                    new[] { typeof(IntPtr) }
-                )
-            );
-
-            _ptrToStringMethods.Add
-            (
-                LPStr,
-                typeof(Marshal).GetMethod
-                (
-                    nameof(Marshal.PtrToStringAnsi),
-                    new[] { typeof(IntPtr) }
-                )
-            );
-
-            _ptrToStringMethods.Add
-            (
-                LPTStr,
-                typeof(Marshal).GetMethod
-                (
-                    nameof(Marshal.PtrToStringAuto),
-                    new[] { typeof(IntPtr) }
-                )
-            );
-
-            // Add UTF8 string support, if available.
-            var utf8UnmanagedTypeField = typeof(UnmanagedType).GetField("LPUTF8Str");
-            if (!(utf8UnmanagedTypeField is null))
-            {
-                _utf8UnmanagedType = (UnmanagedType)utf8UnmanagedTypeField.GetValue(null);
-                var utf8PtrToStringMethod = typeof(Marshal).GetMethod
-                (
-                    "PtrToStringUTF8",
-                    new[] { typeof(IntPtr) }
-                );
-
-                _ptrToStringMethods.Add
-                (
-                    _utf8UnmanagedType.Value,
-                    utf8PtrToStringMethod
-                );
-
-                var utf8StringToPtrMethod = typeof(Marshal).GetMethod
-                (
-                    "StringToCoTaskMemUTF8",
-                    new[] { typeof(string) }
-                );
-
-                _stringToPtrMethods.Add
-                (
-                    _utf8UnmanagedType.Value,
-                    utf8StringToPtrMethod
-                );
-            }
-
-            // Memory freeing methods
-            _freeBStrMethod = typeof(Marshal).GetMethod
-            (
-                nameof(Marshal.FreeBSTR),
+                nameof(Marshal.PtrToStringBSTR),
                 new[] { typeof(IntPtr) }
             )
-            ?? throw new MethodNotFoundException(nameof(Marshal.FreeBSTR));
+        );
 
-            _freeHGlobalMethod = typeof(Marshal).GetMethod
+        _ptrToStringMethods.Add
+        (
+            LPWStr,
+            typeof(Marshal).GetMethod
             (
-                nameof(Marshal.FreeHGlobal),
+                nameof(Marshal.PtrToStringUni),
                 new[] { typeof(IntPtr) }
             )
-            ?? throw new MethodNotFoundException(nameof(Marshal.FreeHGlobal));
+        );
 
-            _freeCoTaskMemMethod = typeof(Marshal).GetMethod
+        _ptrToStringMethods.Add
+        (
+            LPStr,
+            typeof(Marshal).GetMethod
             (
-                nameof(Marshal.FreeCoTaskMem),
+                nameof(Marshal.PtrToStringAnsi),
                 new[] { typeof(IntPtr) }
             )
-            ?? throw new MethodNotFoundException(nameof(Marshal.FreeCoTaskMem));
-        }
+        );
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StringMarshallingWrapper"/> class.
-        /// </summary>
-        /// <param name="targetModule">The module where the implementation should be generated.</param>
-        /// <param name="targetType">The type in which the implementation should be generated.</param>
-        /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
-        /// <param name="options">The configuration object to use.</param>
-        public StringMarshallingWrapper
+        _ptrToStringMethods.Add
         (
-            ModuleBuilder targetModule,
-            TypeBuilder targetType,
-            ILGenerator targetTypeConstructorIL,
-            ImplementationOptions options
-        )
-            : base
+            LPTStr,
+            typeof(Marshal).GetMethod
             (
-                targetModule,
-                targetType,
-                targetTypeConstructorIL,
-                options
+                nameof(Marshal.PtrToStringAuto),
+                new[] { typeof(IntPtr) }
             )
+        );
+
+        // Add UTF8 string support, if available.
+        var utf8UnmanagedTypeField = typeof(UnmanagedType).GetField("LPUTF8Str");
+        if (!(utf8UnmanagedTypeField is null))
         {
-        }
-
-        /// <inheritdoc />
-        public override bool IsApplicable(IntrospectiveMethodInfo method)
-        {
-            var hasAnyStringParameters = method.ReturnType == typeof(string) ||
-                                         method.ParameterTypes.Any(t => t == typeof(string));
-
-            return hasAnyStringParameters;
-        }
-
-        /// <inheritdoc />
-        public override void EmitPrologue
-        (
-            ILGenerator il,
-            PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
-        )
-        {
-            var definition = workUnit.Definition;
-
-            var locals = new Dictionary<int, LocalBuilder>();
-            _workUnitLocals.Add(workUnit, locals);
-
-            // Load the "this" reference
-            il.EmitLoadArgument(0);
-
-            for (short i = 1; i <= definition.ParameterTypes.Count; ++i)
-            {
-                il.EmitLoadArgument(i);
-
-                var parameterType = definition.ParameterTypes[i - 1];
-                if (parameterType != typeof(string))
-                {
-                    continue;
-                }
-
-                var unmanagedStringType = GetParameterUnmanagedType(definition.ParameterCustomAttributes[i - 1]);
-                il.EmitCallDirect(SelectManagedToUnmanagedTransformationMethod(unmanagedStringType));
-
-                if (definition.ParameterHasCustomAttribute<CallerFreeAttribute>(i - 1))
-                {
-                    var parameterLocal = il.DeclareLocal(typeof(IntPtr));
-                    il.EmitSetLocalVariable(parameterLocal);
-                    il.EmitLoadLocalVariable(parameterLocal);
-
-                    locals.Add(i - 1, parameterLocal);
-                }
-            }
-        }
-
-        /// <inheritdoc />
-        public override void EmitEpilogue
-        (
-            ILGenerator il,
-            PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
-        )
-        {
-            var definition = workUnit.Definition;
-
-            var locals = _workUnitLocals[workUnit];
-            if (locals.Any())
-            {
-                // We have cleanup to do (freeing unmanaged string memory)
-                foreach (var localCombo in locals)
-                {
-                    var parameterIndex = localCombo.Key;
-                    var local = localCombo.Value;
-
-                    var unmanagedStringType = GetParameterUnmanagedType
-                    (
-                        definition.ParameterCustomAttributes[parameterIndex]
-                    );
-
-                    il.EmitLoadLocalVariable(local);
-                    il.EmitCallDirect(SelectUnmanagedFreeMethod(unmanagedStringType));
-                }
-
-                _workUnitLocals.Remove(workUnit);
-            }
-
-            if (definition.ReturnType != typeof(string))
-            {
-                return;
-            }
-
-            var unmanagedReturnStringType = GetParameterUnmanagedType(definition.ReturnParameterCustomAttributes);
-            if (definition.ReturnParameterHasCustomAttribute<CallerFreeAttribute>())
-            {
-                var ptrLocal = il.DeclareLocal(typeof(IntPtr));
-                var returnLocal = il.DeclareLocal(typeof(string));
-
-                // Store the pointer returned from native code
-                il.EmitSetLocalVariable(ptrLocal);
-
-                // Marshal the string from the pointer, and store it
-                il.EmitLoadLocalVariable(ptrLocal);
-                il.EmitCallDirect(SelectUnmanagedToManagedTransformationMethod(unmanagedReturnStringType));
-                il.EmitSetLocalVariable(returnLocal);
-
-                // Free the pointer
-                il.EmitLoadLocalVariable(ptrLocal);
-                il.EmitCallDirect(SelectUnmanagedFreeMethod(unmanagedReturnStringType));
-
-                // Load the string
-                il.EmitLoadLocalVariable(returnLocal);
-            }
-            else
-            {
-                il.EmitCallDirect(SelectUnmanagedToManagedTransformationMethod(unmanagedReturnStringType));
-            }
-        }
-
-        /// <inheritdoc />
-        public override IntrospectiveMethodInfo GeneratePassthroughDefinition
-        (
-            PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
-        )
-        {
-            var definition = workUnit.Definition;
-
-            var newParameterTypes = definition.ParameterTypes.Select
+            _utf8UnmanagedType = (UnmanagedType)utf8UnmanagedTypeField.GetValue(null);
+            var utf8PtrToStringMethod = typeof(Marshal).GetMethod
             (
-                t => t == typeof(string)
-                    ? typeof(IntPtr)
-                    : t
-            ).ToArray();
-
-            var newReturnType = definition.ReturnType == typeof(string) ? typeof(IntPtr) : definition.ReturnType;
-
-            var passthroughMethod = TargetType.DefineMethod
-            (
-                $"{workUnit.GetUniqueBaseMemberName()}_wrapped",
-                MethodAttributes.Private | MethodAttributes.Virtual | MethodAttributes.HideBySig,
-                newReturnType,
-                newParameterTypes
+                "PtrToStringUTF8",
+                new[] { typeof(IntPtr) }
             );
 
-            // Copy over all the attributes, except MarshalAsAttributes to IntPtr parameters
-            passthroughMethod.ApplyCustomAttributesFrom
+            _ptrToStringMethods.Add
             (
-                definition,
-                newReturnType,
-                newParameterTypes
+                _utf8UnmanagedType.Value,
+                utf8PtrToStringMethod
             );
 
-            return new IntrospectiveMethodInfo
+            var utf8StringToPtrMethod = typeof(Marshal).GetMethod
             (
-                passthroughMethod,
-                newReturnType,
-                newParameterTypes,
-                definition.MetadataType,
-                definition
+                "StringToCoTaskMemUTF8",
+                new[] { typeof(string) }
+            );
+
+            _stringToPtrMethods.Add
+            (
+                _utf8UnmanagedType.Value,
+                utf8StringToPtrMethod
             );
         }
 
-        /// <summary>
-        /// Selects the appropriate method to transforme a string value on the evaluation stack to an
-        /// <see cref="IntPtr"/> of the given unmanaged type.
-        /// </summary>
-        /// <param name="unmanagedType">The unmanaged string type.</param>
-        /// <returns>The method.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// Thrown if the given unmanaged type is not a string type.
-        /// </exception>
-        [Pure]
-        private MethodInfo SelectManagedToUnmanagedTransformationMethod(UnmanagedType unmanagedType)
-        {
-            switch (unmanagedType)
-            {
-                case BStr:
-                case LPStr:
-                case LPWStr:
-                {
-                    return _stringToPtrMethods[unmanagedType];
-                }
-                case LPTStr:
-                {
-                    if (RuntimeInformation.FrameworkDescription.Contains("Mono"))
-                    {
-                        // Mono uses ANSI for Auto, but ANSI is no longer a supported charset. Use Unicode.
-                        return _stringToPtrMethods[LPWStr];
-                    }
+        // Memory freeing methods
+        _freeBStrMethod = typeof(Marshal).GetMethod
+                          (
+                              nameof(Marshal.FreeBSTR),
+                              new[] { typeof(IntPtr) }
+                          )
+                          ?? throw new MethodNotFoundException(nameof(Marshal.FreeBSTR));
 
-                    // Use automatic selection
-                    return _stringToPtrMethods[LPTStr];
-                }
-                default:
-                {
-                    if (!(_utf8UnmanagedType is null) && unmanagedType == _utf8UnmanagedType)
-                    {
-                        return _stringToPtrMethods[_utf8UnmanagedType.Value];
-                    }
+        _freeHGlobalMethod = typeof(Marshal).GetMethod
+                             (
+                                 nameof(Marshal.FreeHGlobal),
+                                 new[] { typeof(IntPtr) }
+                             )
+                             ?? throw new MethodNotFoundException(nameof(Marshal.FreeHGlobal));
 
-                    throw new ArgumentOutOfRangeException
-                    (
-                        nameof(unmanagedType),
-                        "The unmanaged type wasn't a recognized string type."
-                    );
-                }
-            }
-        }
+        _freeCoTaskMemMethod = typeof(Marshal).GetMethod
+                               (
+                                   nameof(Marshal.FreeCoTaskMem),
+                                   new[] { typeof(IntPtr) }
+                               )
+                               ?? throw new MethodNotFoundException(nameof(Marshal.FreeCoTaskMem));
+    }
 
-        /// <summary>
-        /// Selects the appropriate method to transform a <see cref="IntPtr"/> value of the given unmanaged type on the
-        /// evaluation stack to a managed string.
-        /// </summary>
-        /// <param name="unmanagedType">The unmanaged string type.</param>
-        /// <returns>The method.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// Thrown if the given unmanaged type is not a string type.
-        /// </exception>
-        [Pure]
-        private MethodInfo SelectUnmanagedToManagedTransformationMethod(UnmanagedType unmanagedType)
-        {
-            switch (unmanagedType)
-            {
-                case BStr:
-                case LPStr:
-                case LPWStr:
-                {
-                    return _ptrToStringMethods[unmanagedType];
-                }
-                case LPTStr:
-                {
-                    if (RuntimeInformation.FrameworkDescription.Contains("Mono"))
-                    {
-                        // Mono uses ANSI for Auto, but ANSI is no longer a supported charset. Use Unicode.
-                        return _ptrToStringMethods[LPWStr];
-                    }
-
-                    // Use automatic selection
-                    return _ptrToStringMethods[LPTStr];
-                }
-                default:
-                {
-                    if (!(_utf8UnmanagedType is null) && unmanagedType == _utf8UnmanagedType)
-                    {
-                        return _ptrToStringMethods[_utf8UnmanagedType.Value];
-                    }
-
-                    throw new ArgumentOutOfRangeException
-                    (
-                        nameof(unmanagedType),
-                        "The unmanaged type wasn't a recognized string type."
-                    );
-                }
-            }
-        }
-
-        /// <summary>
-        /// Selects the appropriate method to free an <see cref="IntPtr"/> to an unmanaged string on the evaluation
-        /// stack.
-        /// </summary>
-        /// <param name="unmanagedType">The unmanaged string type.</param>
-        /// <returns>The method.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// Thrown if the given unmanaged type is not a string type.
-        /// </exception>
-        [Pure]
-        private MethodInfo SelectUnmanagedFreeMethod(UnmanagedType unmanagedType)
-        {
-            switch (unmanagedType)
-            {
-                case BStr:
-                {
-                    return _freeBStrMethod;
-                }
-                case LPStr:
-                case LPTStr:
-                case LPWStr:
-                {
-                    return _freeHGlobalMethod;
-                }
-                default:
-                {
-                    if (!(_utf8UnmanagedType is null) && unmanagedType == _utf8UnmanagedType)
-                    {
-                        return _freeCoTaskMemMethod;
-                    }
-
-                    throw new ArgumentOutOfRangeException
-                    (
-                        nameof(unmanagedType),
-                        "The unmanaged type wasn't a recognized string type."
-                    );
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the unmanaged type that the parameter with the given attributes should be marshalled as. The return
-        /// type is guaranteed to be one of the string types. If no type is specified, a LPTStr is assumed.
-        /// </summary>
-        /// <param name="customAttributes">The custom attributes applied to the parameter.</param>
-        /// <returns>The parameter type.</returns>
-        private UnmanagedType GetParameterUnmanagedType
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StringMarshallingWrapper"/> class.
+    /// </summary>
+    /// <param name="targetModule">The module where the implementation should be generated.</param>
+    /// <param name="targetType">The type in which the implementation should be generated.</param>
+    /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
+    /// <param name="options">The configuration object to use.</param>
+    public StringMarshallingWrapper
+    (
+        ModuleBuilder targetModule,
+        TypeBuilder targetType,
+        ILGenerator targetTypeConstructorIL,
+        ImplementationOptions options
+    )
+        : base
         (
-            IEnumerable<CustomAttributeData> customAttributes
+            targetModule,
+            targetType,
+            targetTypeConstructorIL,
+            options
         )
-        {
-            var marshalAsAttribute = customAttributes.FirstOrDefault
-            (
-                a =>
-                    a.AttributeType == typeof(MarshalAsAttribute)
-            );
+    {
+    }
 
-            if (marshalAsAttribute is null)
+    /// <inheritdoc />
+    public override bool IsApplicable(IntrospectiveMethodInfo method)
+    {
+        var hasAnyStringParameters = method.ReturnType == typeof(string) ||
+                                     method.ParameterTypes.Any(t => t == typeof(string));
+
+        return hasAnyStringParameters;
+    }
+
+    /// <inheritdoc />
+    public override void EmitPrologue
+    (
+        ILGenerator il,
+        PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
+    )
+    {
+        var definition = workUnit.Definition;
+
+        var locals = new Dictionary<int, LocalBuilder>();
+        _workUnitLocals.Add(workUnit, locals);
+
+        // Load the "this" reference
+        il.EmitLoadArgument(0);
+
+        for (short i = 1; i <= definition.ParameterTypes.Count; ++i)
+        {
+            il.EmitLoadArgument(i);
+
+            var parameterType = definition.ParameterTypes[i - 1];
+            if (parameterType != typeof(string))
             {
-                // Default to marshalling strings as ansi strings
-                return LPStr;
+                continue;
             }
 
-            return marshalAsAttribute.ToInstance<MarshalAsAttribute>().Value;
+            var unmanagedStringType = GetParameterUnmanagedType(definition.ParameterCustomAttributes[i - 1]);
+            il.EmitCallDirect(SelectManagedToUnmanagedTransformationMethod(unmanagedStringType));
+
+            if (definition.ParameterHasCustomAttribute<CallerFreeAttribute>(i - 1))
+            {
+                var parameterLocal = il.DeclareLocal(typeof(IntPtr));
+                il.EmitSetLocalVariable(parameterLocal);
+                il.EmitLoadLocalVariable(parameterLocal);
+
+                locals.Add(i - 1, parameterLocal);
+            }
         }
+    }
+
+    /// <inheritdoc />
+    public override void EmitEpilogue
+    (
+        ILGenerator il,
+        PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
+    )
+    {
+        var definition = workUnit.Definition;
+
+        var locals = _workUnitLocals[workUnit];
+        if (locals.Any())
+        {
+            // We have cleanup to do (freeing unmanaged string memory)
+            foreach (var localCombo in locals)
+            {
+                var parameterIndex = localCombo.Key;
+                var local = localCombo.Value;
+
+                var unmanagedStringType = GetParameterUnmanagedType
+                (
+                    definition.ParameterCustomAttributes[parameterIndex]
+                );
+
+                il.EmitLoadLocalVariable(local);
+                il.EmitCallDirect(SelectUnmanagedFreeMethod(unmanagedStringType));
+            }
+
+            _workUnitLocals.Remove(workUnit);
+        }
+
+        if (definition.ReturnType != typeof(string))
+        {
+            return;
+        }
+
+        var unmanagedReturnStringType = GetParameterUnmanagedType(definition.ReturnParameterCustomAttributes);
+        if (definition.ReturnParameterHasCustomAttribute<CallerFreeAttribute>())
+        {
+            var ptrLocal = il.DeclareLocal(typeof(IntPtr));
+            var returnLocal = il.DeclareLocal(typeof(string));
+
+            // Store the pointer returned from native code
+            il.EmitSetLocalVariable(ptrLocal);
+
+            // Marshal the string from the pointer, and store it
+            il.EmitLoadLocalVariable(ptrLocal);
+            il.EmitCallDirect(SelectUnmanagedToManagedTransformationMethod(unmanagedReturnStringType));
+            il.EmitSetLocalVariable(returnLocal);
+
+            // Free the pointer
+            il.EmitLoadLocalVariable(ptrLocal);
+            il.EmitCallDirect(SelectUnmanagedFreeMethod(unmanagedReturnStringType));
+
+            // Load the string
+            il.EmitLoadLocalVariable(returnLocal);
+        }
+        else
+        {
+            il.EmitCallDirect(SelectUnmanagedToManagedTransformationMethod(unmanagedReturnStringType));
+        }
+    }
+
+    /// <inheritdoc />
+    public override IntrospectiveMethodInfo GeneratePassthroughDefinition
+    (
+        PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
+    )
+    {
+        var definition = workUnit.Definition;
+
+        var newParameterTypes = definition.ParameterTypes.Select
+        (
+            t => t == typeof(string)
+                ? typeof(IntPtr)
+                : t
+        ).ToArray();
+
+        var newReturnType = definition.ReturnType == typeof(string) ? typeof(IntPtr) : definition.ReturnType;
+
+        var passthroughMethod = TargetType.DefineMethod
+        (
+            $"{workUnit.GetUniqueBaseMemberName()}_wrapped",
+            MethodAttributes.Private | MethodAttributes.Virtual | MethodAttributes.HideBySig,
+            newReturnType,
+            newParameterTypes
+        );
+
+        // Copy over all the attributes, except MarshalAsAttributes to IntPtr parameters
+        passthroughMethod.ApplyCustomAttributesFrom
+        (
+            definition,
+            newReturnType,
+            newParameterTypes
+        );
+
+        return new IntrospectiveMethodInfo
+        (
+            passthroughMethod,
+            newReturnType,
+            newParameterTypes,
+            definition.MetadataType,
+            definition
+        );
+    }
+
+    /// <summary>
+    /// Selects the appropriate method to transforme a string value on the evaluation stack to an
+    /// <see cref="IntPtr"/> of the given unmanaged type.
+    /// </summary>
+    /// <param name="unmanagedType">The unmanaged string type.</param>
+    /// <returns>The method.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown if the given unmanaged type is not a string type.
+    /// </exception>
+    [Pure]
+    private MethodInfo SelectManagedToUnmanagedTransformationMethod(UnmanagedType unmanagedType)
+    {
+        switch (unmanagedType)
+        {
+            case BStr:
+            case LPStr:
+            case LPWStr:
+            {
+                return _stringToPtrMethods[unmanagedType];
+            }
+            case LPTStr:
+            {
+                if (RuntimeInformation.FrameworkDescription.Contains("Mono"))
+                {
+                    // Mono uses ANSI for Auto, but ANSI is no longer a supported charset. Use Unicode.
+                    return _stringToPtrMethods[LPWStr];
+                }
+
+                // Use automatic selection
+                return _stringToPtrMethods[LPTStr];
+            }
+            default:
+            {
+                if (!(_utf8UnmanagedType is null) && unmanagedType == _utf8UnmanagedType)
+                {
+                    return _stringToPtrMethods[_utf8UnmanagedType.Value];
+                }
+
+                throw new ArgumentOutOfRangeException
+                (
+                    nameof(unmanagedType),
+                    "The unmanaged type wasn't a recognized string type."
+                );
+            }
+        }
+    }
+
+    /// <summary>
+    /// Selects the appropriate method to transform a <see cref="IntPtr"/> value of the given unmanaged type on the
+    /// evaluation stack to a managed string.
+    /// </summary>
+    /// <param name="unmanagedType">The unmanaged string type.</param>
+    /// <returns>The method.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown if the given unmanaged type is not a string type.
+    /// </exception>
+    [Pure]
+    private MethodInfo SelectUnmanagedToManagedTransformationMethod(UnmanagedType unmanagedType)
+    {
+        switch (unmanagedType)
+        {
+            case BStr:
+            case LPStr:
+            case LPWStr:
+            {
+                return _ptrToStringMethods[unmanagedType];
+            }
+            case LPTStr:
+            {
+                if (RuntimeInformation.FrameworkDescription.Contains("Mono"))
+                {
+                    // Mono uses ANSI for Auto, but ANSI is no longer a supported charset. Use Unicode.
+                    return _ptrToStringMethods[LPWStr];
+                }
+
+                // Use automatic selection
+                return _ptrToStringMethods[LPTStr];
+            }
+            default:
+            {
+                if (!(_utf8UnmanagedType is null) && unmanagedType == _utf8UnmanagedType)
+                {
+                    return _ptrToStringMethods[_utf8UnmanagedType.Value];
+                }
+
+                throw new ArgumentOutOfRangeException
+                (
+                    nameof(unmanagedType),
+                    "The unmanaged type wasn't a recognized string type."
+                );
+            }
+        }
+    }
+
+    /// <summary>
+    /// Selects the appropriate method to free an <see cref="IntPtr"/> to an unmanaged string on the evaluation
+    /// stack.
+    /// </summary>
+    /// <param name="unmanagedType">The unmanaged string type.</param>
+    /// <returns>The method.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown if the given unmanaged type is not a string type.
+    /// </exception>
+    [Pure]
+    private MethodInfo SelectUnmanagedFreeMethod(UnmanagedType unmanagedType)
+    {
+        switch (unmanagedType)
+        {
+            case BStr:
+            {
+                return _freeBStrMethod;
+            }
+            case LPStr:
+            case LPTStr:
+            case LPWStr:
+            {
+                return _freeHGlobalMethod;
+            }
+            default:
+            {
+                if (!(_utf8UnmanagedType is null) && unmanagedType == _utf8UnmanagedType)
+                {
+                    return _freeCoTaskMemMethod;
+                }
+
+                throw new ArgumentOutOfRangeException
+                (
+                    nameof(unmanagedType),
+                    "The unmanaged type wasn't a recognized string type."
+                );
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the unmanaged type that the parameter with the given attributes should be marshalled as. The return
+    /// type is guaranteed to be one of the string types. If no type is specified, a LPTStr is assumed.
+    /// </summary>
+    /// <param name="customAttributes">The custom attributes applied to the parameter.</param>
+    /// <returns>The parameter type.</returns>
+    private UnmanagedType GetParameterUnmanagedType
+    (
+        IEnumerable<CustomAttributeData> customAttributes
+    )
+    {
+        var marshalAsAttribute = customAttributes.FirstOrDefault
+        (
+            a =>
+                a.AttributeType == typeof(MarshalAsAttribute)
+        );
+
+        if (marshalAsAttribute is null)
+        {
+            // Default to marshalling strings as ansi strings
+            return LPStr;
+        }
+
+        return marshalAsAttribute.ToInstance<MarshalAsAttribute>().Value;
     }
 }

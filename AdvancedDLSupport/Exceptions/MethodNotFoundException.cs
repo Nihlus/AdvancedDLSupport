@@ -25,94 +25,93 @@ using System.Runtime.Serialization;
 using System.Security.Permissions;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport;
+
+/// <summary>
+/// Represents a failure to find a required method.
+/// </summary>
+[PublicAPI, Serializable]
+public class MethodNotFoundException : Exception
 {
     /// <summary>
-    /// Represents a failure to find a required method.
+    /// Gets the name of the method that was not found.
     /// </summary>
-    [PublicAPI, Serializable]
-    public class MethodNotFoundException : Exception
+    [PublicAPI]
+    public string MethodName { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MethodNotFoundException"/> class.
+    /// </summary>
+    [PublicAPI]
+    public MethodNotFoundException()
     {
-        /// <summary>
-        /// Gets the name of the method that was not found.
-        /// </summary>
-        [PublicAPI]
-        public string MethodName { get; }
+        MethodName = string.Empty;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MethodNotFoundException"/> class.
-        /// </summary>
-        [PublicAPI]
-        public MethodNotFoundException()
-        {
-            MethodName = string.Empty;
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MethodNotFoundException"/> class.
+    /// </summary>
+    /// <param name="methodName">The name of the method that was not found.</param>
+    [PublicAPI]
+    public MethodNotFoundException(string methodName)
+        : base($"Could not find the field \"{methodName}\".")
+    {
+        MethodName = methodName;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MethodNotFoundException"/> class.
-        /// </summary>
-        /// <param name="methodName">The name of the method that was not found.</param>
-        [PublicAPI]
-        public MethodNotFoundException(string methodName)
-            : base($"Could not find the field \"{methodName}\".")
-        {
-            MethodName = methodName;
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MethodNotFoundException"/> class.
+    /// </summary>
+    /// <param name="methodName">The name of the method that was not found.</param>
+    /// <param name="inner">The exception which caused this exception.</param>
+    [PublicAPI]
+    public MethodNotFoundException(string methodName, Exception? inner)
+        : base($"Could not find the field \"{methodName}\".", inner)
+    {
+        MethodName = methodName;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MethodNotFoundException"/> class.
-        /// </summary>
-        /// <param name="methodName">The name of the method that was not found.</param>
-        /// <param name="inner">The exception which caused this exception.</param>
-        [PublicAPI]
-        public MethodNotFoundException(string methodName, Exception? inner)
-            : base($"Could not find the field \"{methodName}\".", inner)
-        {
-            MethodName = methodName;
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MethodNotFoundException"/> class.
+    /// </summary>
+    /// <param name="message">The message of the exception.</param>
+    /// <param name="methodName">The name of the method that was not found.</param>
+    [PublicAPI]
+    public MethodNotFoundException(string message, string methodName)
+        : base(message)
+    {
+        MethodName = methodName;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MethodNotFoundException"/> class.
-        /// </summary>
-        /// <param name="message">The message of the exception.</param>
-        /// <param name="methodName">The name of the method that was not found.</param>
-        [PublicAPI]
-        public MethodNotFoundException(string message, string methodName)
-            : base(message)
-        {
-            MethodName = methodName;
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MethodNotFoundException"/> class.
+    /// </summary>
+    /// <param name="message">The message of the exception.</param>
+    /// <param name="methodName">The name of the method that was not found.</param>
+    /// <param name="inner">The exception which caused this exception.</param>
+    [PublicAPI]
+    public MethodNotFoundException(string message, string methodName, Exception inner)
+        : base(message, inner)
+    {
+        MethodName = methodName;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MethodNotFoundException"/> class.
-        /// </summary>
-        /// <param name="message">The message of the exception.</param>
-        /// <param name="methodName">The name of the method that was not found.</param>
-        /// <param name="inner">The exception which caused this exception.</param>
-        [PublicAPI]
-        public MethodNotFoundException(string message, string methodName, Exception inner)
-            : base(message, inner)
-        {
-            MethodName = methodName;
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MethodNotFoundException"/> class.
+    /// </summary>
+    /// <param name="info">The serialized information.</param>
+    /// <param name="context">The streaming context.</param>
+    protected MethodNotFoundException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
+        MethodName = info.GetString(nameof(MethodName)) ?? string.Empty;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MethodNotFoundException"/> class.
-        /// </summary>
-        /// <param name="info">The serialized information.</param>
-        /// <param name="context">The streaming context.</param>
-        protected MethodNotFoundException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            MethodName = info.GetString(nameof(MethodName)) ?? string.Empty;
-        }
-
-        /// <inheritdoc />
-        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue(nameof(MethodName), MethodName);
-            base.GetObjectData(info, context);
-        }
+    /// <inheritdoc />
+    [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+    public override void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+        info.AddValue(nameof(MethodName), MethodName);
+        base.GetObjectData(info, context);
     }
 }

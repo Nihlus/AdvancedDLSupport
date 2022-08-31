@@ -23,13 +23,12 @@
 using System;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.AOT
+namespace AdvancedDLSupport.AOT;
+
+/// <summary>
+/// Tags a type as containing precompiled type metadata.
+/// </summary>
+[PublicAPI, AttributeUsage(AttributeTargets.Class)]
+public class AOTMetadataAttribute : Attribute
 {
-    /// <summary>
-    /// Tags a type as containing precompiled type metadata.
-    /// </summary>
-    [PublicAPI, AttributeUsage(AttributeTargets.Class)]
-    public class AOTMetadataAttribute : Attribute
-    {
-    }
 }

@@ -22,9 +22,8 @@
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data.Classes
+namespace AdvancedDLSupport.Tests.Data.Classes;
+
+public class SimpleClass
 {
-    public class SimpleClass
-    {
-    }
 }

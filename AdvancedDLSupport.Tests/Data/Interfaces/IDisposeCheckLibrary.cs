@@ -24,10 +24,9 @@ using System;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
+namespace AdvancedDLSupport.Tests.Data;
+
+public interface IDisposeCheckLibrary : IDisposable
 {
-    public interface IDisposeCheckLibrary : IDisposable
-    {
-        int Multiply(int a, int b);
-    }
+    int Multiply(int a, int b);
 }

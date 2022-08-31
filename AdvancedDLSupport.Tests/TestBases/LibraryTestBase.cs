@@ -26,37 +26,36 @@ using JetBrains.Annotations;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.TestBases
+namespace AdvancedDLSupport.Tests.TestBases;
+
+public abstract class LibraryTestBase<T> : IDisposable where T : class
 {
-    public abstract class LibraryTestBase<T> : IDisposable where T : class
+    protected ImplementationOptions Config { get; }
+
+    [NotNull]
+    protected T Library { get; }
+
+    [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor", Justification = "Used to set implementation options in derived classes")]
+    protected LibraryTestBase([NotNull] string libraryLocation)
     {
-        protected ImplementationOptions Config { get; }
+        Config = GetImplementationOptions();
+        Library = GetImplementationBuilder().ActivateInterface<T>(libraryLocation);
+    }
 
-        [NotNull]
-        protected T Library { get; }
+    protected virtual ImplementationOptions GetImplementationOptions()
+    {
+        return ImplementationOptions.GenerateDisposalChecks;
+    }
 
-        [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor", Justification = "Used to set implementation options in derived classes")]
-        protected LibraryTestBase([NotNull] string libraryLocation)
-        {
-            Config = GetImplementationOptions();
-            Library = GetImplementationBuilder().ActivateInterface<T>(libraryLocation);
-        }
+    [NotNull]
+    protected virtual NativeLibraryBuilder GetImplementationBuilder()
+    {
+        return new NativeLibraryBuilder(Config);
+    }
 
-        protected virtual ImplementationOptions GetImplementationOptions()
-        {
-            return ImplementationOptions.GenerateDisposalChecks;
-        }
-
-        [NotNull]
-        protected virtual NativeLibraryBuilder GetImplementationBuilder()
-        {
-            return new NativeLibraryBuilder(Config);
-        }
-
-        public void Dispose()
-        {
-            var libraryBase = Library as NativeLibraryBase;
-            libraryBase?.Dispose();
-        }
+    public void Dispose()
+    {
+        var libraryBase = Library as NativeLibraryBase;
+        libraryBase?.Dispose();
     }
 }

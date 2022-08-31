@@ -24,9 +24,8 @@ using System;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
+namespace AdvancedDLSupport.Tests.Data;
+
+public interface IDisposableIndirectCallLibrary : IIndirectCallLibrary, IDisposable
 {
-    public interface IDisposableIndirectCallLibrary : IIndirectCallLibrary, IDisposable
-    {
-    }
 }

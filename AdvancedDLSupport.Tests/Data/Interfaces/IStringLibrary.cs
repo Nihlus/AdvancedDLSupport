@@ -25,48 +25,47 @@ using System.Runtime.InteropServices;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
+namespace AdvancedDLSupport.Tests.Data;
+
+public interface IStringLibrary
 {
-    public interface IStringLibrary
-    {
-        string GetString();
+    string GetString();
 
-        string GetNullString();
+    string GetNullString();
 
-        [return: MarshalAs(UnmanagedType.BStr)]
-        string EchoBStr([MarshalAs(UnmanagedType.BStr)] string value);
+    [return: MarshalAs(UnmanagedType.BStr)]
+    string EchoBStr([MarshalAs(UnmanagedType.BStr)] string value);
 
-        [return: MarshalAs(UnmanagedType.LPTStr)]
-        string GetLPTString();
+    [return: MarshalAs(UnmanagedType.LPTStr)]
+    string GetLPTString();
 
-        [return: MarshalAs(UnmanagedType.LPWStr)]
-        string GetLPWString();
+    [return: MarshalAs(UnmanagedType.LPWStr)]
+    string GetLPWString();
 
-        [return: MarshalAs(UnmanagedType.I1)]
-        bool CheckIfStringIsNull(string value);
+    [return: MarshalAs(UnmanagedType.I1)]
+    bool CheckIfStringIsNull(string value);
 
-        // ReSharper disable once ExplicitCallerInfoArgument
-        [NativeSymbol("GetAllocatedString")]
-        [return: CallerFree]
-        string GetStringAndFree();
+    // ReSharper disable once ExplicitCallerInfoArgument
+    [NativeSymbol("GetAllocatedString")]
+    [return: CallerFree]
+    string GetStringAndFree();
 
-        [NativeSymbol(nameof(StringLength))]
-        UIntPtr GetStringLengthAndFree([CallerFree] string value);
+    [NativeSymbol(nameof(StringLength))]
+    UIntPtr GetStringLengthAndFree([CallerFree] string value);
 
-        UIntPtr StringLength(string value);
+    UIntPtr StringLength(string value);
 
-        UIntPtr BStringLength([MarshalAs(UnmanagedType.BStr)] string value);
+    UIntPtr BStringLength([MarshalAs(UnmanagedType.BStr)] string value);
 
-        UIntPtr LPTStringLength([MarshalAs(UnmanagedType.LPTStr)] string value);
+    UIntPtr LPTStringLength([MarshalAs(UnmanagedType.LPTStr)] string value);
 
-        UIntPtr LPWStringLength([MarshalAs(UnmanagedType.LPWStr)] string value);
+    UIntPtr LPWStringLength([MarshalAs(UnmanagedType.LPWStr)] string value);
 
-#if NETCOREAPP || NETSTANDARD2_1
-        [return: MarshalAs(UnmanagedType.LPUTF8Str)]
-        string GetLPUTF8String();
+    #if NETCOREAPP || NETSTANDARD2_1
+    [return: MarshalAs(UnmanagedType.LPUTF8Str)]
+    string GetLPUTF8String();
 
-        UIntPtr LPUTF8StringLength([MarshalAs(UnmanagedType.LPUTF8Str)] string value);
-#endif
+    UIntPtr LPUTF8StringLength([MarshalAs(UnmanagedType.LPUTF8Str)] string value);
+    #endif
 
-    }
 }

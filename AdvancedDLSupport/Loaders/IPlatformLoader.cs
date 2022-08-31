@@ -22,13 +22,12 @@
 
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Loaders
+namespace AdvancedDLSupport.Loaders;
+
+/// <summary>
+/// Represents a class which can load libraries and symbols on a specific platform.
+/// </summary>
+[PublicAPI]
+public interface IPlatformLoader : ISymbolLoader, ILibraryLoader
 {
-    /// <summary>
-    /// Represents a class which can load libraries and symbols on a specific platform.
-    /// </summary>
-    [PublicAPI]
-    public interface IPlatformLoader : ISymbolLoader, ILibraryLoader
-    {
-    }
 }

@@ -24,13 +24,12 @@ using System;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
-{
-    public interface ISpanMarshallingTests
-    {
-        [return: NativeCollectionLength(10)]
-        Span<int> GetInt32ArrayZeroToNine();
+namespace AdvancedDLSupport.Tests.Data;
 
-        void WriteToInt32Array(Span<int> span, int arrLen);
-    }
+public interface ISpanMarshallingTests
+{
+    [return: NativeCollectionLength(10)]
+    Span<int> GetInt32ArrayZeroToNine();
+
+    void WriteToInt32Array(Span<int> span, int arrLen);
 }

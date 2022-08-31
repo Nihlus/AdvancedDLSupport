@@ -24,28 +24,27 @@ using System;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
+namespace AdvancedDLSupport.Tests.Data;
+
+public unsafe interface IPropertyLibrary : IDisposable
 {
-    public unsafe interface IPropertyLibrary : IDisposable
-    {
-        void InitializeGlobalPointerVariable();
+    void InitializeGlobalPointerVariable();
 
-        void ResetData();
+    void ResetData();
 
-        [NativeSymbol(nameof(GlobalVariable))]
-        int GlobalVariableSetOnly { set; }
+    [NativeSymbol(nameof(GlobalVariable))]
+    int GlobalVariableSetOnly { set; }
 
-        [NativeSymbol(nameof(GlobalVariable))]
-        int GlobalVariableGetOnly { get; }
+    [NativeSymbol(nameof(GlobalVariable))]
+    int GlobalVariableGetOnly { get; }
 
-        int GlobalVariable { get; set; }
+    int GlobalVariable { get; set; }
 
-        [NativeSymbol(nameof(GlobalPointerVariable))]
-        int* GlobalPointerVariableSetOnly { set; }
+    [NativeSymbol(nameof(GlobalPointerVariable))]
+    int* GlobalPointerVariableSetOnly { set; }
 
-        [NativeSymbol(nameof(GlobalPointerVariable))]
-        int* GlobalPointerVariableGetOnly { get; }
+    [NativeSymbol(nameof(GlobalPointerVariable))]
+    int* GlobalPointerVariableGetOnly { get; }
 
-        int* GlobalPointerVariable { get; set; }
-    }
+    int* GlobalPointerVariable { get; set; }
 }

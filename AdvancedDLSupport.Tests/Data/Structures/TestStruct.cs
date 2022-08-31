@@ -22,11 +22,10 @@
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
+namespace AdvancedDLSupport.Tests.Data;
+
+public struct TestStruct
 {
-    public struct TestStruct
-    {
-        public int A;
-        public int B;
-    }
+    public int A;
+    public int B;
 }

@@ -23,26 +23,25 @@
 using System.Runtime.InteropServices;
 using AdvancedDLSupport.Benchmark.Data;
 
-namespace AdvancedDLSupport.Benchmark.Native
+namespace AdvancedDLSupport.Benchmark.Native;
+
+/// <summary>
+/// <see cref="DllImportAttribute"/> interop methods.
+/// </summary>
+internal static class DllImportTest
 {
     /// <summary>
-    /// <see cref="DllImportAttribute"/> interop methods.
+    /// Inverts a given by-reference <see cref="Matrix2"/>.
     /// </summary>
-    internal static class DllImportTest
-    {
-        /// <summary>
-        /// Inverts a given by-reference <see cref="Matrix2"/>.
-        /// </summary>
-        /// <param name="matrix">The matrix.</param>
-        [DllImport(Program.LibraryName)]
-        public static extern void InvertMatrixByPtr(ref Matrix2 matrix);
+    /// <param name="matrix">The matrix.</param>
+    [DllImport(Program.LibraryName)]
+    public static extern void InvertMatrixByPtr(ref Matrix2 matrix);
 
-        /// <summary>
-        /// Inverts a given by-value <see cref="Matrix2"/>.
-        /// </summary>
-        /// <param name="matrix">The matrix.</param>
-        /// <returns>The inverted matrix.</returns>
-        [DllImport(Program.LibraryName)]
-        public static extern Matrix2 InvertMatrixByValue(Matrix2 matrix);
-    }
+    /// <summary>
+    /// Inverts a given by-value <see cref="Matrix2"/>.
+    /// </summary>
+    /// <param name="matrix">The matrix.</param>
+    /// <returns>The inverted matrix.</returns>
+    [DllImport(Program.LibraryName)]
+    public static extern Matrix2 InvertMatrixByValue(Matrix2 matrix);
 }

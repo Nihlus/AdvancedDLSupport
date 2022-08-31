@@ -24,32 +24,31 @@ using System;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
+namespace AdvancedDLSupport.Tests.Data;
+
+public interface IGenericDelegateLibrary
 {
-    public interface IGenericDelegateLibrary
-    {
-        void ExecuteAction(Action action);
+    void ExecuteAction(Action action);
 
-        void ExecuteActionT1(Action<int> action);
+    void ExecuteActionT1(Action<int> action);
 
-        void ExecuteActionT1Nested(Action<Action<int>> action);
+    void ExecuteActionT1Nested(Action<Action<int>> action);
 
-        int ExecuteFuncT1(Func<int> func);
+    int ExecuteFuncT1(Func<int> func);
 
-        int ExecuteFuncT1T2(Func<int, int> func);
+    int ExecuteFuncT1T2(Func<int, int> func);
 
-        int ExecuteFuncT1T2Nested(Func<Func<int, int>, int> func);
+    int ExecuteFuncT1T2Nested(Func<Func<int, int>, int> func);
 
-        Action GetNativeAction();
+    Action GetNativeAction();
 
-        Action<int> GetNativeActionT1();
+    Action<int> GetNativeActionT1();
 
-        Action<Action<int>> GetNativeActionT1Nested();
+    Action<Action<int>> GetNativeActionT1Nested();
 
-        Func<int> GetNativeFuncT1();
+    Func<int> GetNativeFuncT1();
 
-        Func<int, int> GetNativeFuncT1T2();
+    Func<int, int> GetNativeFuncT1T2();
 
-        Func<Func<int, int>, int> GetNativeFuncT1T2Nested();
-    }
+    Func<Func<int, int>, int> GetNativeFuncT1T2Nested();
 }

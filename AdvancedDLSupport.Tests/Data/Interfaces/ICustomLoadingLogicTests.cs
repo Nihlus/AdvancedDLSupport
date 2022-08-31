@@ -22,12 +22,11 @@
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
-{
-    public interface ICustomLoadingLogicTests
-    {
-        int ReturnsOne();
+namespace AdvancedDLSupport.Tests.Data;
 
-        int ReturnsTwo();
-    }
+public interface ICustomLoadingLogicTests
+{
+    int ReturnsOne();
+
+    int ReturnsTwo();
 }

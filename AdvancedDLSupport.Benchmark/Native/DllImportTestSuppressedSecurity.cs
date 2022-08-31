@@ -24,26 +24,25 @@ using System.Runtime.InteropServices;
 using System.Security;
 using AdvancedDLSupport.Benchmark.Data;
 
-namespace AdvancedDLSupport.Benchmark.Native
+namespace AdvancedDLSupport.Benchmark.Native;
+
+/// <summary>
+/// <see cref="DllImportAttribute"/> interop methods with suppressed unmanaged code security.
+/// </summary>
+internal static class DllImportTestSuppressedSecurity
 {
     /// <summary>
-    /// <see cref="DllImportAttribute"/> interop methods with suppressed unmanaged code security.
+    /// Inverts a given by-reference <see cref="Matrix2"/>.
     /// </summary>
-    internal static class DllImportTestSuppressedSecurity
-    {
-        /// <summary>
-        /// Inverts a given by-reference <see cref="Matrix2"/>.
-        /// </summary>
-        /// <param name="matrix">The matrix.</param>
-        [DllImport(Program.LibraryName), SuppressUnmanagedCodeSecurity]
-        public static extern void InvertMatrixByPtr(ref Matrix2 matrix);
+    /// <param name="matrix">The matrix.</param>
+    [DllImport(Program.LibraryName), SuppressUnmanagedCodeSecurity]
+    public static extern void InvertMatrixByPtr(ref Matrix2 matrix);
 
-        /// <summary>
-        /// Inverts a given by-value <see cref="Matrix2"/>.
-        /// </summary>
-        /// <param name="matrix">The matrix.</param>
-        /// <returns>The inverted matrix.</returns>
-        [DllImport(Program.LibraryName), SuppressUnmanagedCodeSecurity]
-        public static extern Matrix2 InvertMatrixByValue(Matrix2 matrix);
-    }
+    /// <summary>
+    /// Inverts a given by-value <see cref="Matrix2"/>.
+    /// </summary>
+    /// <param name="matrix">The matrix.</param>
+    /// <returns>The inverted matrix.</returns>
+    [DllImport(Program.LibraryName), SuppressUnmanagedCodeSecurity]
+    public static extern Matrix2 InvertMatrixByValue(Matrix2 matrix);
 }

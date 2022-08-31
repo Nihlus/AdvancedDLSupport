@@ -22,12 +22,11 @@
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
-{
-    public interface IMixedModeLibraryProperties
-    {
-        int NativeProperty { get; set; }
+namespace AdvancedDLSupport.Tests.Data;
 
-        int OtherNativeProperty { get; set; }
-    }
+public interface IMixedModeLibraryProperties
+{
+    int NativeProperty { get; set; }
+
+    int OtherNativeProperty { get; set; }
 }

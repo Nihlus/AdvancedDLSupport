@@ -22,12 +22,11 @@
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
+namespace AdvancedDLSupport.Tests.Data;
+
+// ReSharper disable once PossibleInterfaceMemberAmbiguity
+public interface IInterfaceWithCombinedIdenticalSignaturesWithDifferentEntrypoints
+    : IInterfaceWithFirstIdenticalSignatureWithDifferentEntrypoint,
+        IInterfaceWithSecondIdenticalSignatureWithDifferentEntrypoint
 {
-    // ReSharper disable once PossibleInterfaceMemberAmbiguity
-    public interface IInterfaceWithCombinedIdenticalSignaturesWithDifferentEntrypoints
-        : IInterfaceWithFirstIdenticalSignatureWithDifferentEntrypoint,
-          IInterfaceWithSecondIdenticalSignatureWithDifferentEntrypoint
-    {
-    }
 }

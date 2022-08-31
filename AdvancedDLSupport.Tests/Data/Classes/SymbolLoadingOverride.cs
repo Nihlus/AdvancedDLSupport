@@ -26,24 +26,23 @@ using JetBrains.Annotations;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data.Classes
+namespace AdvancedDLSupport.Tests.Data.Classes;
+
+internal class SymbolLoadingOverride : ISymbolLoader
 {
-    internal class SymbolLoadingOverride : ISymbolLoader
+    private readonly ISymbolLoader _defaultLoader;
+
+    public bool LoadSymbolCalled { get; private set; }
+
+    public SymbolLoadingOverride(ISymbolLoader @default)
     {
-        private readonly ISymbolLoader _defaultLoader;
+        _defaultLoader = @default;
+    }
 
-        public bool LoadSymbolCalled { get; private set; }
+    public IntPtr LoadSymbol(IntPtr library, string symbolName)
+    {
+        LoadSymbolCalled = true;
 
-        public SymbolLoadingOverride(ISymbolLoader @default)
-        {
-            _defaultLoader = @default;
-        }
-
-        public IntPtr LoadSymbol(IntPtr library, string symbolName)
-        {
-            LoadSymbolCalled = true;
-
-            return _defaultLoader.LoadSymbol(library, symbolName == "GetString" ? "GetNullString" : symbolName);
-        }
+        return _defaultLoader.LoadSymbol(library, symbolName == "GetString" ? "GetNullString" : symbolName);
     }
 }

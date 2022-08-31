@@ -26,133 +26,132 @@ using Xunit;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Integration
+namespace AdvancedDLSupport.Tests.Integration;
+
+public class NullableStructTests : LibraryTestBase<INullableLibrary>
 {
-    public class NullableStructTests : LibraryTestBase<INullableLibrary>
+    private const string LibraryName = "NullableTests";
+
+    public NullableStructTests()
+        : base(LibraryName)
     {
-        private const string LibraryName = "NullableTests";
+    }
 
-        public NullableStructTests()
-            : base(LibraryName)
-        {
-        }
+    [Fact]
+    public void CanCallFunctionWithNullableReturnValue()
+    {
+        var result = Library.GetAllocatedTestStruct();
+        Assert.NotNull(result);
+        Assert.Equal(10, result.Value.A);
+        Assert.Equal(20, result.Value.B);
+    }
 
-        [Fact]
-        public void CanCallFunctionWithNullableReturnValue()
-        {
-            var result = Library.GetAllocatedTestStruct();
-            Assert.NotNull(result);
-            Assert.Equal(10, result.Value.A);
-            Assert.Equal(20, result.Value.B);
-        }
+    [Fact]
+    public void CanCallFunctionWithNullableReturnValueWhereResultIsNull()
+    {
+        var result = Library.GetNullTestStruct();
+        Assert.Null(result);
+    }
 
-        [Fact]
-        public void CanCallFunctionWithNullableReturnValueWhereResultIsNull()
-        {
-            var result = Library.GetNullTestStruct();
-            Assert.Null(result);
-        }
+    [Fact]
+    public void CanCallFunctionWithNullableParameter()
+    {
+        Assert.False(Library.CheckIfStructIsNull(new TestStruct { A = 10, B = 20 }));
+    }
 
-        [Fact]
-        public void CanCallFunctionWithNullableParameter()
-        {
-            Assert.False(Library.CheckIfStructIsNull(new TestStruct { A = 10, B = 20 }));
-        }
+    [Fact]
+    public void CanCallFunctionWithNullableParameterWhereParameterIsNull()
+    {
+        Assert.True(Library.CheckIfStructIsNull(null));
+    }
 
-        [Fact]
-        public void CanCallFunctionWithNullableParameterWhereParameterIsNull()
-        {
-            Assert.True(Library.CheckIfStructIsNull(null));
-        }
+    [Fact]
+    public void CanCallFunctionWithRefNullableParameter()
+    {
+        TestStruct? testStruct = new TestStruct { A = 10, B = 20 };
 
-        [Fact]
-        public void CanCallFunctionWithRefNullableParameter()
-        {
-            TestStruct? testStruct = new TestStruct { A = 10, B = 20 };
+        var result = Library.CheckIfRefStructIsNull(ref testStruct);
+        Assert.False(result);
+    }
 
-            var result = Library.CheckIfRefStructIsNull(ref testStruct);
-            Assert.False(result);
-        }
+    [Fact]
+    public void CanCallFunctionWithRefNullableParameterWhereParameterIsNull()
+    {
+        TestStruct? testStruct = null;
 
-        [Fact]
-        public void CanCallFunctionWithRefNullableParameterWhereParameterIsNull()
-        {
-            TestStruct? testStruct = null;
+        var result = Library.CheckIfRefStructIsNull(ref testStruct);
+        Assert.True(result);
+    }
 
-            var result = Library.CheckIfRefStructIsNull(ref testStruct);
-            Assert.True(result);
-        }
+    [Fact]
+    public void RefNullableParameterPropagatesResultsBack()
+    {
+        TestStruct? testStruct = new TestStruct { A = 10, B = 20 };
 
-        [Fact]
-        public void RefNullableParameterPropagatesResultsBack()
-        {
-            TestStruct? testStruct = new TestStruct { A = 10, B = 20 };
+        Library.SetValueInNullableRefStruct(ref testStruct);
 
-            Library.SetValueInNullableRefStruct(ref testStruct);
+        Assert.True(testStruct.HasValue);
+        Assert.Equal(15, testStruct.Value.A);
+    }
 
-            Assert.True(testStruct.HasValue);
-            Assert.Equal(15, testStruct.Value.A);
-        }
+    [Fact]
+    public void NativeCodeCanAccessRefNullableValues()
+    {
+        TestStruct? testStruct = new TestStruct { A = 10, B = 20 };
 
-        [Fact]
-        public void NativeCodeCanAccessRefNullableValues()
-        {
-            TestStruct? testStruct = new TestStruct { A = 10, B = 20 };
+        var result = Library.GetValueInNullableRefStruct(ref testStruct);
 
-            var result = Library.GetValueInNullableRefStruct(ref testStruct);
+        Assert.Equal(10, result);
+    }
 
-            Assert.Equal(10, result);
-        }
+    [Fact]
+    public void CanCallFunctionWithRefNullableParameterThatRequiresLowering()
+    {
+        TestStruct? testStruct = new TestStruct { A = 10, B = 20 };
 
-        [Fact]
-        public void CanCallFunctionWithRefNullableParameterThatRequiresLowering()
-        {
-            TestStruct? testStruct = new TestStruct { A = 10, B = 20 };
+        var result = Library.GetAFromStructAsString(ref testStruct);
 
-            var result = Library.GetAFromStructAsString(ref testStruct);
+        Assert.Equal("10", result);
+    }
 
-            Assert.Equal("10", result);
-        }
+    [Fact]
+    public void CanCallFunctionWithRefNullableParameterAndNormalParameters()
+    {
+        const int multiplier = 5;
+        TestStruct? testStruct = new TestStruct { A = 10, B = 20 };
 
-        [Fact]
-        public void CanCallFunctionWithRefNullableParameterAndNormalParameters()
-        {
-            const int multiplier = 5;
-            TestStruct? testStruct = new TestStruct { A = 10, B = 20 };
+        var result = Library.GetAFromStructMultipliedByParameter(ref testStruct, multiplier);
 
-            var result = Library.GetAFromStructMultipliedByParameter(ref testStruct, multiplier);
+        Assert.Equal(10 * multiplier, result);
+    }
 
-            Assert.Equal(10 * multiplier, result);
-        }
+    [Fact]
+    public void CanCallFunctionWithNullableReturnReturnValueAndCallerFreeReturnValue()
+    {
+        var result = Library.GetAllocatedTestStructAndFree();
 
-        [Fact]
-        public void CanCallFunctionWithNullableReturnReturnValueAndCallerFreeReturnValue()
-        {
-            var result = Library.GetAllocatedTestStructAndFree();
+        Assert.NotNull(result);
+        Assert.Equal(10, result.Value.A);
+        Assert.Equal(20, result.Value.B);
+    }
 
-            Assert.NotNull(result);
-            Assert.Equal(10, result.Value.A);
-            Assert.Equal(20, result.Value.B);
-        }
+    [Fact]
+    public void CanCallFunctionWithNullableReturnReturnValueAndCallerFreeReturnValueWhereResultIsNull()
+    {
+        var result = Library.GetNullTestStructAndFree();
 
-        [Fact]
-        public void CanCallFunctionWithNullableReturnReturnValueAndCallerFreeReturnValueWhereResultIsNull()
-        {
-            var result = Library.GetNullTestStructAndFree();
+        Assert.Null(result);
+    }
 
-            Assert.Null(result);
-        }
+    [Fact]
+    public void CanCallFunctionWithNullableParameterAndCallerFree()
+    {
+        Assert.False(Library.CheckIfStructIsNullAndFree(new TestStruct { A = 10, B = 20 }));
+    }
 
-        [Fact]
-        public void CanCallFunctionWithNullableParameterAndCallerFree()
-        {
-            Assert.False(Library.CheckIfStructIsNullAndFree(new TestStruct { A = 10, B = 20 }));
-        }
-
-        [Fact]
-        public void CanCallFunctionWithNullableParameterAndCallerFreeWhereParameterIsNull()
-        {
-            Assert.True(Library.CheckIfStructIsNullAndFree(null));
-        }
+    [Fact]
+    public void CanCallFunctionWithNullableParameterAndCallerFreeWhereParameterIsNull()
+    {
+        Assert.True(Library.CheckIfStructIsNullAndFree(null));
     }
 }

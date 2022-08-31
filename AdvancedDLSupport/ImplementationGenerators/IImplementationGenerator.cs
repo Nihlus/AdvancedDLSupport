@@ -25,41 +25,40 @@ using System.Reflection;
 using AdvancedDLSupport.Pipeline;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.ImplementationGenerators
+namespace AdvancedDLSupport.ImplementationGenerators;
+
+/// <summary>
+/// Interface for classes that generate anonymous implementations for members.
+/// </summary>
+/// <typeparam name="TAccepted">The type of member that the class will generate for.</typeparam>
+[PublicAPI]
+public interface IImplementationGenerator<TAccepted> where TAccepted : MemberInfo
 {
     /// <summary>
-    /// Interface for classes that generate anonymous implementations for members.
+    /// Gets the implementation configuration object to use.
     /// </summary>
-    /// <typeparam name="TAccepted">The type of member that the class will generate for.</typeparam>
     [PublicAPI]
-    public interface IImplementationGenerator<TAccepted> where TAccepted : MemberInfo
-    {
-        /// <summary>
-        /// Gets the implementation configuration object to use.
-        /// </summary>
-        [PublicAPI]
-        ImplementationOptions Options { get; }
+    ImplementationOptions Options { get; }
 
-        /// <summary>
-        /// Gets the complexity levels of the implementation generator.
-        /// </summary>
-        [PublicAPI]
-        GeneratorComplexity Complexity { get; }
+    /// <summary>
+    /// Gets the complexity levels of the implementation generator.
+    /// </summary>
+    [PublicAPI]
+    GeneratorComplexity Complexity { get; }
 
-        /// <summary>
-        /// Determines whether or not the implementation generator is applicable for the given member definition.
-        /// </summary>
-        /// <param name="member">The member definition.</param>
-        /// <returns>true if the generator is applicable; otherwise, false.</returns>
-        [PublicAPI, Pure]
-        bool IsApplicable(TAccepted member);
+    /// <summary>
+    /// Determines whether or not the implementation generator is applicable for the given member definition.
+    /// </summary>
+    /// <param name="member">The member definition.</param>
+    /// <returns>true if the generator is applicable; otherwise, false.</returns>
+    [PublicAPI, Pure]
+    bool IsApplicable(TAccepted member);
 
-        /// <summary>
-        /// Generates an implementation for the given member, optionally producing more definitions for processing.
-        /// </summary>
-        /// <param name="workUnit">The member to generate the implementation for.</param>
-        /// <returns>An optional set of more definitions to be processed.</returns>
-        [PublicAPI]
-        IEnumerable<PipelineWorkUnit<TAccepted>> GenerateImplementation(PipelineWorkUnit<TAccepted> workUnit);
-    }
+    /// <summary>
+    /// Generates an implementation for the given member, optionally producing more definitions for processing.
+    /// </summary>
+    /// <param name="workUnit">The member to generate the implementation for.</param>
+    /// <returns>An optional set of more definitions to be processed.</returns>
+    [PublicAPI]
+    IEnumerable<PipelineWorkUnit<TAccepted>> GenerateImplementation(PipelineWorkUnit<TAccepted> workUnit);
 }

@@ -25,65 +25,64 @@ using CommandLine;
 using JetBrains.Annotations;
 using static AdvancedDLSupport.ImplementationOptions;
 
-namespace AdvancedDLSupport.AOT.Arguments
+namespace AdvancedDLSupport.AOT.Arguments;
+
+/// <summary>
+/// Hosts command-line arguments given to the tool.
+/// </summary>
+[UsedImplicitly]
+public class CommandLineArguments
 {
     /// <summary>
-    /// Hosts command-line arguments given to the tool.
+    /// Gets or sets a list of input assemblies to process.
     /// </summary>
-    [UsedImplicitly]
-    public class CommandLineArguments
-    {
-        /// <summary>
-        /// Gets or sets a list of input assemblies to process.
-        /// </summary>
-        [Option
-        (
-            'i',
-            "input-assemblies",
-            Required = true,
-            HelpText = "Input assemblies to process."
-        )]
-        [PublicAPI]
-        public IEnumerable<string> InputAssemblies { get; set; } = new List<string>();
+    [Option
+    (
+        'i',
+        "input-assemblies",
+        Required = true,
+        HelpText = "Input assemblies to process."
+    )]
+    [PublicAPI]
+    public IEnumerable<string> InputAssemblies { get; set; } = new List<string>();
 
-        /// <summary>
-        /// Gets or sets the implementation options to use when generating.
-        /// </summary>
-        [Option
-        (
-            'f',
-            "implementation-options",
-            Required = false,
-            HelpText = "The implementation options to use when generating.",
-            Default = EnableDllMapSupport | GenerateDisposalChecks
-        )]
-        [PublicAPI]
-        public ImplementationOptions ImplementationOptions { get; set; }
+    /// <summary>
+    /// Gets or sets the implementation options to use when generating.
+    /// </summary>
+    [Option
+    (
+        'f',
+        "implementation-options",
+        Required = false,
+        HelpText = "The implementation options to use when generating.",
+        Default = EnableDllMapSupport | GenerateDisposalChecks
+    )]
+    [PublicAPI]
+    public ImplementationOptions ImplementationOptions { get; set; }
 
-        /// <summary>
-        /// Gets or sets the output path where the generated assemblies should be stored.
-        /// </summary>
-        [Option
-        (
-            'o',
-            "output-path",
-            Required = false,
-            HelpText = "The output path where the generated assemblies should be stored. Defaults to the current directory."
-        )]
-        [PublicAPI]
-        public string OutputPath { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets or sets the output path where the generated assemblies should be stored.
+    /// </summary>
+    [Option
+    (
+        'o',
+        "output-path",
+        Required = false,
+        HelpText = "The output path where the generated assemblies should be stored. Defaults to the current directory."
+    )]
+    [PublicAPI]
+    public string OutputPath { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Gets or sets a value indicating whether or not verbose logging should be enabled.
-        /// </summary>
-        [Option
-        (
-            'v',
-            "verbose",
-            Required = false,
-            HelpText = "Enable verbose logging.",
-            Default = false
-        )]
-        public bool Verbose { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets a value indicating whether or not verbose logging should be enabled.
+    /// </summary>
+    [Option
+    (
+        'v',
+        "verbose",
+        Required = false,
+        HelpText = "Enable verbose logging.",
+        Default = false
+    )]
+    public bool Verbose { get; set; }
 }

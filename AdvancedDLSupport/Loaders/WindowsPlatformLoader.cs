@@ -24,46 +24,45 @@ using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
-namespace AdvancedDLSupport.Loaders
+namespace AdvancedDLSupport.Loaders;
+
+/// <summary>
+/// Loads libraries on the Windows platform.
+/// </summary>
+internal sealed class WindowsPlatformLoader : PlatformLoaderBase
 {
-    /// <summary>
-    /// Loads libraries on the Windows platform.
-    /// </summary>
-    internal sealed class WindowsPlatformLoader : PlatformLoaderBase
+    /// <inheritdoc />
+    protected override IntPtr LoadLibraryInternal(string path)
     {
-        /// <inheritdoc />
-        protected override IntPtr LoadLibraryInternal(string path)
+        if (path is null)
         {
-            if (path is null)
-            {
-                throw new ArgumentNullException(nameof(path), "null library names or paths are not supported on Windows.");
-            }
-
-            var libraryHandle = kernel32.LoadLibrary(path);
-            if (libraryHandle == IntPtr.Zero)
-            {
-                throw new LibraryLoadingException("Library loading failed.", path, new Win32Exception(Marshal.GetLastWin32Error()));
-            }
-
-            return libraryHandle;
+            throw new ArgumentNullException(nameof(path), "null library names or paths are not supported on Windows.");
         }
 
-        /// <inheritdoc />
-        public override IntPtr LoadSymbol(IntPtr library, string symbolName)
+        var libraryHandle = kernel32.LoadLibrary(path);
+        if (libraryHandle == IntPtr.Zero)
         {
-            var symbolHandle = kernel32.GetProcAddress(library, symbolName);
-            if (symbolHandle == IntPtr.Zero)
-            {
-                throw new SymbolLoadingException($"Symbol loading failed. Symbol name: {symbolName}", symbolName, new Win32Exception(Marshal.GetLastWin32Error()));
-            }
-
-            return symbolHandle;
+            throw new LibraryLoadingException("Library loading failed.", path, new Win32Exception(Marshal.GetLastWin32Error()));
         }
 
-        /// <inheritdoc />
-        public override bool CloseLibrary(IntPtr library)
+        return libraryHandle;
+    }
+
+    /// <inheritdoc />
+    public override IntPtr LoadSymbol(IntPtr library, string symbolName)
+    {
+        var symbolHandle = kernel32.GetProcAddress(library, symbolName);
+        if (symbolHandle == IntPtr.Zero)
         {
-            return kernel32.FreeLibrary(library) > 0;
+            throw new SymbolLoadingException($"Symbol loading failed. Symbol name: {symbolName}", symbolName, new Win32Exception(Marshal.GetLastWin32Error()));
         }
+
+        return symbolHandle;
+    }
+
+    /// <inheritdoc />
+    public override bool CloseLibrary(IntPtr library)
+    {
+        return kernel32.FreeLibrary(library) > 0;
     }
 }

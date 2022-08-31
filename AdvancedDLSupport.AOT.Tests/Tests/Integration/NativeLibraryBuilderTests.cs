@@ -31,101 +31,100 @@ using Xunit;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.AOT.Tests.Tests.Integration
+namespace AdvancedDLSupport.AOT.Tests.Tests.Integration;
+
+public class NativeLibraryBuilderTests
 {
-    public class NativeLibraryBuilderTests
+    public class DiscoverCompiledTypes : NativeLibraryBuilderTestBase
     {
-        public class DiscoverCompiledTypes : NativeLibraryBuilderTestBase
+        private static readonly Action ClearCache;
+
+        static DiscoverCompiledTypes()
         {
-            private static readonly Action ClearCache;
+            var clearMethod = typeof(IDictionary).GetMethod(
+                nameof(IDictionary.Clear),
+                BindingFlags.Public | BindingFlags.Instance);
+            var typeCacheField = typeof(NativeLibraryBuilder).GetField(
+                "TypeCache", BindingFlags.NonPublic | BindingFlags.Static);
 
-            static DiscoverCompiledTypes()
+            if (typeCacheField == null || clearMethod == null)
             {
-                var clearMethod = typeof(IDictionary).GetMethod(
-                    nameof(IDictionary.Clear),
-                    BindingFlags.Public | BindingFlags.Instance);
-                var typeCacheField = typeof(NativeLibraryBuilder).GetField(
-                    "TypeCache", BindingFlags.NonPublic | BindingFlags.Static);
-
-                if (typeCacheField == null || clearMethod == null)
-                {
-                    Assert.True(false, "ClearCache discovery needs to be fixed!");
-                    return;
-                }
-
-                ClearCache = Expression.Lambda<Action>(Expression.Call(Expression.Field(null, typeCacheField), clearMethod)).Compile();
+                Assert.True(false, "ClearCache discovery needs to be fixed!");
+                return;
             }
 
-            public DiscoverCompiledTypes()
+            ClearCache = Expression.Lambda<Action>(Expression.Call(Expression.Field(null, typeCacheField), clearMethod)).Compile();
+        }
+
+        public DiscoverCompiledTypes()
+        {
+            ClearCache();
+        }
+
+        [Fact]
+        public void CanDiscoverPrecompiledTypes()
+        {
+            // Pregenerate the types
+            Builder.WithSourceAssembly(GetType().Assembly);
+            var result = Builder.Build(OutputDirectory);
+
+            var searchPattern = $"*{Path.GetFileNameWithoutExtension(result)}*.dll";
+
+            searchPattern = Path.Combine(Path.GetDirectoryName(result), searchPattern);
+
+            NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
+        }
+
+        [Fact]
+        public void CanDiscoverPrecompiledTypesFromStream()
+        {
+            // Pregenerate the types
+            Builder.WithSourceAssembly(GetType().Assembly);
+            var result = Builder.Build(OutputDirectory);
+            var searchPattern = $"*{Path.GetFileNameWithoutExtension(result)}*.dll";
+            searchPattern = Path.Combine(Path.GetDirectoryName(result), searchPattern);
+
+            foreach (var asm in Directory.GetFiles(OutputDirectory, searchPattern))
             {
-                ClearCache();
+                NativeLibraryBuilder.DiscoverCompiledTypes(File.OpenRead(asm));
+            }
+        }
+
+        [Fact]
+        public void UsesPrecompiledTypesIfDiscovered()
+        {
+            // Pregenerate the types
+            Builder.WithSourceAssembly(GetType().Assembly);
+            var result = Builder.Build(OutputDirectory);
+            var searchPattern = $"*{Path.GetFileNameWithoutExtension(result)}*.dll";
+            searchPattern = Path.Combine(Path.GetDirectoryName(result), searchPattern);
+            NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
+
+            var library = LibraryBuilder.ActivateInterface<IAOTLibrary>("AOTTests");
+
+            var libraryAssembly = library.GetType().Assembly;
+
+            Assert.False(libraryAssembly.GetCustomAttribute<AOTAssemblyAttribute>() is null);
+        }
+
+        [Fact]
+        public void UsesPrecompiledTypesIfDiscoveredFromStream()
+        {
+            // Pregenerate the types
+            Builder.WithSourceAssembly(GetType().Assembly);
+            var result = Builder.Build(OutputDirectory);
+            var searchPattern = $"*{Path.GetFileNameWithoutExtension(result)}*.dll";
+            searchPattern = Path.Combine(Path.GetDirectoryName(result), searchPattern);
+            foreach (var asm in Directory.GetFiles(OutputDirectory, searchPattern))
+            {
+                NativeLibraryBuilder.DiscoverCompiledTypes(File.OpenRead(asm));
             }
 
-            [Fact]
-            public void CanDiscoverPrecompiledTypes()
-            {
-                // Pregenerate the types
-                Builder.WithSourceAssembly(GetType().Assembly);
-                var result = Builder.Build(OutputDirectory);
+            var library = LibraryBuilder.ActivateInterface<IAOTLibrary>("AOTTests");
 
-                var searchPattern = $"*{Path.GetFileNameWithoutExtension(result)}*.dll";
+            var libraryAssembly = library.GetType().Assembly;
 
-                searchPattern = Path.Combine(Path.GetDirectoryName(result), searchPattern);
-
-                NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
-            }
-
-            [Fact]
-            public void CanDiscoverPrecompiledTypesFromStream()
-            {
-                // Pregenerate the types
-                Builder.WithSourceAssembly(GetType().Assembly);
-                var result = Builder.Build(OutputDirectory);
-                var searchPattern = $"*{Path.GetFileNameWithoutExtension(result)}*.dll";
-                searchPattern = Path.Combine(Path.GetDirectoryName(result), searchPattern);
-
-                foreach (var asm in Directory.GetFiles(OutputDirectory, searchPattern))
-                {
-                    NativeLibraryBuilder.DiscoverCompiledTypes(File.OpenRead(asm));
-                }
-            }
-
-            [Fact]
-            public void UsesPrecompiledTypesIfDiscovered()
-            {
-                // Pregenerate the types
-                Builder.WithSourceAssembly(GetType().Assembly);
-                var result = Builder.Build(OutputDirectory);
-                var searchPattern = $"*{Path.GetFileNameWithoutExtension(result)}*.dll";
-                searchPattern = Path.Combine(Path.GetDirectoryName(result), searchPattern);
-                NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
-
-                var library = LibraryBuilder.ActivateInterface<IAOTLibrary>("AOTTests");
-
-                var libraryAssembly = library.GetType().Assembly;
-
-                Assert.False(libraryAssembly.GetCustomAttribute<AOTAssemblyAttribute>() is null);
-            }
-
-            [Fact]
-            public void UsesPrecompiledTypesIfDiscoveredFromStream()
-            {
-                // Pregenerate the types
-                Builder.WithSourceAssembly(GetType().Assembly);
-                var result = Builder.Build(OutputDirectory);
-                var searchPattern = $"*{Path.GetFileNameWithoutExtension(result)}*.dll";
-                searchPattern = Path.Combine(Path.GetDirectoryName(result), searchPattern);
-                foreach (var asm in Directory.GetFiles(OutputDirectory, searchPattern))
-                {
-                    NativeLibraryBuilder.DiscoverCompiledTypes(File.OpenRead(asm));
-                }
-
-                var library = LibraryBuilder.ActivateInterface<IAOTLibrary>("AOTTests");
-
-                var libraryAssembly = library.GetType().Assembly;
-
-                Assert.False(libraryAssembly.GetCustomAttribute<AOTAssemblyAttribute>() is null);
-            }
+            Assert.False(libraryAssembly.GetCustomAttribute<AOTAssemblyAttribute>() is null);
         }
     }
 }

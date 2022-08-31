@@ -23,80 +23,79 @@
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Benchmark.Data
+namespace AdvancedDLSupport.Benchmark.Data;
+
+/// <summary>
+/// A 2-element vector of 32-bit floating-point values.
+/// </summary>
+[PublicAPI]
+public struct Vector2
 {
     /// <summary>
-    /// A 2-element vector of 32-bit floating-point values.
+    /// The X-component of the vector.
     /// </summary>
     [PublicAPI]
-    public struct Vector2
+    public float X;
+
+    /// <summary>
+    /// The Y-component of the vector.
+    /// </summary>
+    [PublicAPI]
+    public float Y;
+
+    /// <summary>
+    /// Determines componentwise equality for two vectors.
+    /// </summary>
+    /// <param name="a">The first vector.</param>
+    /// <param name="b">The second vector.</param>
+    /// <returns>true if the vectors are equal, otherwise, false.</returns>
+    [PublicAPI, SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator", Justification = "Direct comparison is required.")]
+    public static bool operator ==(Vector2 a, Vector2 b)
     {
-        /// <summary>
-        /// The X-component of the vector.
-        /// </summary>
-        [PublicAPI]
-        public float X;
+        return a.X == b.X && a.Y == b.Y;
+    }
 
-        /// <summary>
-        /// The Y-component of the vector.
-        /// </summary>
-        [PublicAPI]
-        public float Y;
+    /// <summary>
+    /// Determines componentwise inequality for two vectors.
+    /// </summary>
+    /// <param name="a">The first vector.</param>
+    /// <param name="b">The second vector.</param>
+    /// <returns>true if the vectors are not equal, otherwise, false.</returns>
+    [PublicAPI]
+    public static bool operator !=(Vector2 a, Vector2 b)
+    {
+        return !(a == b);
+    }
 
-        /// <summary>
-        /// Determines componentwise equality for two vectors.
-        /// </summary>
-        /// <param name="a">The first vector.</param>
-        /// <param name="b">The second vector.</param>
-        /// <returns>true if the vectors are equal, otherwise, false.</returns>
-        [PublicAPI, SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator", Justification = "Direct comparison is required.")]
-        public static bool operator ==(Vector2 a, Vector2 b)
+    /// <summary>
+    /// Determines componentwise equality for the current and another matrix.
+    /// </summary>
+    /// <param name="other">The other matrix.</param>
+    /// <returns>true if the vectors are equal, otherwise, false.</returns>
+    [PublicAPI]
+    public bool Equals(Vector2 other)
+    {
+        return X.Equals(other.X) && Y.Equals(other.Y);
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object obj)
+    {
+        if (ReferenceEquals(null, obj))
         {
-            return a.X == b.X && a.Y == b.Y;
+            return false;
         }
 
-        /// <summary>
-        /// Determines componentwise inequality for two vectors.
-        /// </summary>
-        /// <param name="a">The first vector.</param>
-        /// <param name="b">The second vector.</param>
-        /// <returns>true if the vectors are not equal, otherwise, false.</returns>
-        [PublicAPI]
-        public static bool operator !=(Vector2 a, Vector2 b)
-        {
-            return !(a == b);
-        }
+        return obj is Vector2 vector2 && Equals(vector2);
+    }
 
-        /// <summary>
-        /// Determines componentwise equality for the current and another matrix.
-        /// </summary>
-        /// <param name="other">The other matrix.</param>
-        /// <returns>true if the vectors are equal, otherwise, false.</returns>
-        [PublicAPI]
-        public bool Equals(Vector2 other)
+    /// <inheritdoc />
+    [SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode", Justification = "Struct is used for native interop.")]
+    public override int GetHashCode()
+    {
+        unchecked
         {
-            return X.Equals(other.X) && Y.Equals(other.Y);
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            return obj is Vector2 vector2 && Equals(vector2);
-        }
-
-        /// <inheritdoc />
-        [SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode", Justification = "Struct is used for native interop.")]
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (X.GetHashCode() * 397) ^ Y.GetHashCode();
-            }
+            return (X.GetHashCode() * 397) ^ Y.GetHashCode();
         }
     }
 }

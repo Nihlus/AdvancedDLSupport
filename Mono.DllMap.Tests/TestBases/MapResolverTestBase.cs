@@ -22,19 +22,18 @@
 
 #pragma warning disable SA1600, CS1591
 
-namespace Mono.DllMap.Tests.TestBases
+namespace Mono.DllMap.Tests.TestBases;
+
+public class MapResolverTestBase
 {
-    public class MapResolverTestBase
+    protected const string OriginalLibraryName = "cygwin1.dll";
+    protected const string RemappedLibraryName = "libc.so.6";
+    protected const string UnmappedLibraryName = "libunmapped.so";
+
+    protected DllMapResolver Resolver { get; }
+
+    protected MapResolverTestBase()
     {
-        protected const string OriginalLibraryName = "cygwin1.dll";
-        protected const string RemappedLibraryName = "libc.so.6";
-        protected const string UnmappedLibraryName = "libunmapped.so";
-
-        protected DllMapResolver Resolver { get; }
-
-        protected MapResolverTestBase()
-        {
-            Resolver = new DllMapResolver();
-        }
+        Resolver = new DllMapResolver();
     }
 }

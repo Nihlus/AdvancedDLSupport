@@ -25,20 +25,19 @@ using AdvancedDLSupport.AOT.Tests.Data.Interfaces;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.AOT.Tests.Data.Classes
+namespace AdvancedDLSupport.AOT.Tests.Data.Classes;
+
+public abstract class AOTMixedModeClass : NativeLibraryBase, IAOTLibrary
 {
-    public abstract class AOTMixedModeClass : NativeLibraryBase, IAOTLibrary
+    public AOTMixedModeClass(string path, Type interfaceType, ImplementationOptions options)
+        : base(path, options)
     {
-        public AOTMixedModeClass(string path, Type interfaceType, ImplementationOptions options)
-            : base(path, options)
-        {
-        }
+    }
 
-        public abstract int Multiply(int a, int b);
+    public abstract int Multiply(int a, int b);
 
-        public int Add(int a, int b)
-        {
-            return a + b;
-        }
+    public int Add(int a, int b)
+    {
+        return a + b;
     }
 }

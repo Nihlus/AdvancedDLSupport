@@ -24,13 +24,12 @@ using System;
 
 #pragma warning disable SA1600, SA1602, CS1591
 
-namespace Mono.DllMap.Tests.Data
+namespace Mono.DllMap.Tests.Data;
+
+[Flags]
+public enum TestEnum
 {
-    [Flags]
-    public enum TestEnum
-    {
-        Foo = 1 << 0,
-        Bar = 1 << 1,
-        Baz = 1 << 2
-    }
+    Foo = 1 << 0,
+    Bar = 1 << 1,
+    Baz = 1 << 2
 }

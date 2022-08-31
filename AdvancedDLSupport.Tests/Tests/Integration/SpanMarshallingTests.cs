@@ -30,57 +30,56 @@ using Xunit;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Integration
+namespace AdvancedDLSupport.Tests.Integration;
+
+public class SpanMarshallingTests : LibraryTestBase<ISpanMarshallingTests>
 {
-    public class SpanMarshallingTests : LibraryTestBase<ISpanMarshallingTests>
+    private const string LibraryName = "SpanMarshallingTests";
+
+    public SpanMarshallingTests()
+        : base(LibraryName)
     {
-        private const string LibraryName = "SpanMarshallingTests";
+    }
 
-        public SpanMarshallingTests()
-            : base(LibraryName)
+    [Fact]
+    public void CanMarshalCollectionWithConstLength()
+    {
+        var span = Library.GetInt32ArrayZeroToNine();
+
+        Assert.True(span.Length == 10);
+
+        for (var i = 0; i < 10; i++)
         {
+            Assert.True(span[i] == i);
         }
+    }
 
-        [Fact]
-        public void CanMarshalCollectionWithConstLength()
+    [Fact]
+    public void CanMarshalSpanAsPointer()
+    {
+        Span<int> span = stackalloc int[10];
+
+        Library.WriteToInt32Array(span, 10);
+
+        for (var i = 0; i < 10; i++)
         {
-            var span = Library.GetInt32ArrayZeroToNine();
-
-            Assert.True(span.Length == 10);
-
-            for (var i = 0; i < 10; i++)
-            {
-                Assert.True(span[i] == i);
-            }
+            Assert.True(span[i] == i);
         }
+    }
 
-        [Fact]
-        public void CanMarshalSpanAsPointer()
-        {
-            Span<int> span = stackalloc int[10];
+    [Fact]
+    public void ThrowsWhenSpanTypeIsReferenceType()
+    {
+        var activator = GetImplementationBuilder();
 
-            Library.WriteToInt32Array(span, 10);
+        Assert.Throws<NotSupportedException>(() => activator.ActivateInterface<IFailsReturnsSpanInvalid>(LibraryName));
+    }
 
-            for (var i = 0; i < 10; i++)
-            {
-                Assert.True(span[i] == i);
-            }
-        }
+    [Fact]
+    public void ThrowsWhenReturnParameterHasNoLengthAttribute()
+    {
+        var activator = GetImplementationBuilder();
 
-        [Fact]
-        public void ThrowsWhenSpanTypeIsReferenceType()
-        {
-            var activator = GetImplementationBuilder();
-
-            Assert.Throws<NotSupportedException>(() => activator.ActivateInterface<IFailsReturnsSpanInvalid>(LibraryName));
-        }
-
-        [Fact]
-        public void ThrowsWhenReturnParameterHasNoLengthAttribute()
-        {
-            var activator = GetImplementationBuilder();
-
-            Assert.Throws<InvalidOperationException>(() => activator.ActivateInterface<IFailsReturnsSpanNoAttr>(LibraryName));
-        }
+        Assert.Throws<InvalidOperationException>(() => activator.ActivateInterface<IFailsReturnsSpanNoAttr>(LibraryName));
     }
 }

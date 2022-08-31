@@ -27,50 +27,49 @@ using Xunit;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Integration
+namespace AdvancedDLSupport.Tests.Integration;
+
+public class CustomLoadingLogicTests : LibraryTestBase<IStringLibrary>
 {
-    public class CustomLoadingLogicTests : LibraryTestBase<IStringLibrary>
+    private const string LibraryName = "StringTests";
+
+    private LibraryLoadingOverride _libraryLogicOverride;
+    private SymbolLoadingOverride _symbolLogicOverride;
+
+    public CustomLoadingLogicTests()
+        : base(LibraryName)
     {
-        private const string LibraryName = "StringTests";
+    }
 
-        private LibraryLoadingOverride _libraryLogicOverride;
-        private SymbolLoadingOverride _symbolLogicOverride;
+    protected override ImplementationOptions GetImplementationOptions()
+    {
+        return base.GetImplementationOptions() | ImplementationOptions.UseLazyBinding;
+    }
 
-        public CustomLoadingLogicTests()
-            : base(LibraryName)
+    protected override NativeLibraryBuilder GetImplementationBuilder()
+    {
+        return base.GetImplementationBuilder().WithLibraryLoader(@default =>
         {
-        }
-
-        protected override ImplementationOptions GetImplementationOptions()
+            _libraryLogicOverride = new LibraryLoadingOverride(@default);
+            return _libraryLogicOverride;
+        }).WithSymbolLoader(@default =>
         {
-            return base.GetImplementationOptions() | ImplementationOptions.UseLazyBinding;
-        }
+            _symbolLogicOverride = new SymbolLoadingOverride(@default);
+            return _symbolLogicOverride;
+        });
+    }
 
-        protected override NativeLibraryBuilder GetImplementationBuilder()
-        {
-            return base.GetImplementationBuilder().WithLibraryLoader(@default =>
-            {
-                _libraryLogicOverride = new LibraryLoadingOverride(@default);
-                return _libraryLogicOverride;
-            }).WithSymbolLoader(@default =>
-            {
-                _symbolLogicOverride = new SymbolLoadingOverride(@default);
-                return _symbolLogicOverride;
-            });
-        }
+    [Fact]
+    public void CustomLogicCalled()
+    {
+        Library.GetString();
+        Assert.True(_libraryLogicOverride.LoadLibraryCalled);
+        Assert.True(_symbolLogicOverride.LoadSymbolCalled);
+    }
 
-        [Fact]
-        public void CustomLogicCalled()
-        {
-            Library.GetString();
-            Assert.True(_libraryLogicOverride.LoadLibraryCalled);
-            Assert.True(_symbolLogicOverride.LoadSymbolCalled);
-        }
-
-        [Fact]
-        public void CustomLogicSuccessful()
-        {
-            Assert.Equal(Library.GetString(), Library.GetNullString());
-        }
+    [Fact]
+    public void CustomLogicSuccessful()
+    {
+        Assert.Equal(Library.GetString(), Library.GetNullString());
     }
 }

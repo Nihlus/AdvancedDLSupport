@@ -28,87 +28,86 @@ using AdvancedDLSupport.Extensions;
 using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport;
+
+/// <summary>
+/// Helper class for generating parameter permutations for methods with <see cref="Nullable{T}"/> parameters that
+/// are passed by reference.
+/// </summary>
+internal class PermutationGenerator
 {
     /// <summary>
-    /// Helper class for generating parameter permutations for methods with <see cref="Nullable{T}"/> parameters that
-    /// are passed by reference.
+    /// Generates all possible permutations of either a raw struct passed by reference, or an IntPtr, given a
+    /// method containing <see cref="Nullable{T}"/>s, passed by reference.
     /// </summary>
-    internal class PermutationGenerator
+    /// <param name="baseMethod">The method to generate permutatations of.</param>
+    /// <returns>The permutations.</returns>
+    [Pure]
+    public IReadOnlyList<IReadOnlyList<Type>> Generate(IntrospectiveMethodInfo baseMethod)
     {
-        /// <summary>
-        /// Generates all possible permutations of either a raw struct passed by reference, or an IntPtr, given a
-        /// method containing <see cref="Nullable{T}"/>s, passed by reference.
-        /// </summary>
-        /// <param name="baseMethod">The method to generate permutatations of.</param>
-        /// <returns>The permutations.</returns>
-        [Pure]
-        public IReadOnlyList<IReadOnlyList<Type>> Generate(IntrospectiveMethodInfo baseMethod)
+        var parameters = baseMethod.ParameterTypes;
+
+        // First, we calculate the total number of possible combinations, given that we can have either a
+        // concrete type or an IntPtr, and refNullableParameterCount instances thereof.
+        var refNullableParameterCount = parameters.Count(p => p.IsRefNullable());
+        var permutationCount = Math.Pow
+        (
+            2,
+            refNullableParameterCount
+        );
+
+        // Then, we take the types used in the base method and generate combinations from it.
+        var permutations = new List<IReadOnlyList<Type>>();
+        for (int i = 0; i < permutationCount; ++i)
         {
-            var parameters = baseMethod.ParameterTypes;
-
-            // First, we calculate the total number of possible combinations, given that we can have either a
-            // concrete type or an IntPtr, and refNullableParameterCount instances thereof.
-            var refNullableParameterCount = parameters.Count(p => p.IsRefNullable());
-            var permutationCount = Math.Pow
-            (
-                2,
-                refNullableParameterCount
-            );
-
-            // Then, we take the types used in the base method and generate combinations from it.
-            var permutations = new List<IReadOnlyList<Type>>();
-            for (int i = 0; i < permutationCount; ++i)
-            {
-                // Due to the fact that we only need to flip between two states for each instance of a nullable
-                // parameter, we can piggyback on the permutation count and use it as a bitmask which determines
-                // what to flip each parameter to.
-                var mask = new BitArray(new[] { i });
-                permutations.Add(GeneratePermutation(parameters, mask));
-            }
-
-            return permutations;
+            // Due to the fact that we only need to flip between two states for each instance of a nullable
+            // parameter, we can piggyback on the permutation count and use it as a bitmask which determines
+            // what to flip each parameter to.
+            var mask = new BitArray(new[] { i });
+            permutations.Add(GeneratePermutation(parameters, mask));
         }
 
-        /// <summary>
-        /// Generates a permutation of the given original parameter types, using the given <see cref="BitArray"/> to
-        /// mutate the parameters that is a <see cref="Nullable{T}"/> passed by reference.
-        /// </summary>
-        /// <param name="basePermutation">The base set of parameter types.</param>
-        /// <param name="mask">The bit mask to use for mutation.</param>
-        /// <returns>The permutation.</returns>
-        [Pure]
-        private IReadOnlyList<Type> GeneratePermutation(IReadOnlyList<Type> basePermutation, BitArray mask)
+        return permutations;
+    }
+
+    /// <summary>
+    /// Generates a permutation of the given original parameter types, using the given <see cref="BitArray"/> to
+    /// mutate the parameters that is a <see cref="Nullable{T}"/> passed by reference.
+    /// </summary>
+    /// <param name="basePermutation">The base set of parameter types.</param>
+    /// <param name="mask">The bit mask to use for mutation.</param>
+    /// <returns>The permutation.</returns>
+    [Pure]
+    private IReadOnlyList<Type> GeneratePermutation(IReadOnlyList<Type> basePermutation, BitArray mask)
+    {
+        // For each type in the base permutation (containing nullable refs), we inspect the type
+        var skipped = 0;
+        var newPermutation = new Type[basePermutation.Count];
+        for (int i = 0; i < basePermutation.Count; ++i)
         {
-            // For each type in the base permutation (containing nullable refs), we inspect the type
-            var skipped = 0;
-            var newPermutation = new Type[basePermutation.Count];
-            for (int i = 0; i < basePermutation.Count; ++i)
+            var type = basePermutation[i];
+            if (!type.IsRefNullable())
             {
-                var type = basePermutation[i];
-                if (!type.IsRefNullable())
-                {
-                    // If it's not a nullable passed by reference, we'll just pass it through as normal.
-                    // Furthermore, in order to maintain alignment with the bitmask, we add to the negative offset
-                    // of "skipped" types.
-                    newPermutation[i] = type;
-                    ++skipped;
-                    continue;
-                }
-
-                // Then, we pick out the mask value, offset by the number of irrelevant types we've skipped
-                var maskValue = mask[i - skipped];
-
-                // ReSharper disable once PossibleNullReferenceException
-                var newPermutationType = maskValue
-                    ? type.GetElementType().GetGenericArguments().First().MakeByRefType()
-                    : typeof(IntPtr);
-
-                // And assign the result to the correct position
-                newPermutation[i] = newPermutationType;
+                // If it's not a nullable passed by reference, we'll just pass it through as normal.
+                // Furthermore, in order to maintain alignment with the bitmask, we add to the negative offset
+                // of "skipped" types.
+                newPermutation[i] = type;
+                ++skipped;
+                continue;
             }
 
-            return newPermutation;
+            // Then, we pick out the mask value, offset by the number of irrelevant types we've skipped
+            var maskValue = mask[i - skipped];
+
+            // ReSharper disable once PossibleNullReferenceException
+            var newPermutationType = maskValue
+                ? type.GetElementType().GetGenericArguments().First().MakeByRefType()
+                : typeof(IntPtr);
+
+            // And assign the result to the correct position
+            newPermutation[i] = newPermutationType;
         }
+
+        return newPermutation;
     }
 }

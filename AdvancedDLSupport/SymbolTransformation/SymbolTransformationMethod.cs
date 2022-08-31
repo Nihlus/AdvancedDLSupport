@@ -20,41 +20,40 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport;
+
+/// <summary>
+/// The symbol expansion method to use. This maps directly to methods from the Humanizer library.
+/// </summary>
+public enum SymbolTransformationMethod
 {
     /// <summary>
-    /// The symbol expansion method to use. This maps directly to methods from the Humanizer library.
+    /// No transformation is applied.
     /// </summary>
-    public enum SymbolTransformationMethod
-    {
-        /// <summary>
-        /// No transformation is applied.
-        /// </summary>
-        None,
+    None,
 
-        /// <summary>
-        /// Converts the input words to UpperCamelCase, also removing underscores.
-        /// </summary>
-        Pascalize,
+    /// <summary>
+    /// Converts the input words to UpperCamelCase, also removing underscores.
+    /// </summary>
+    Pascalize,
 
-        /// <summary>
-        /// Converts the input words to lowerCamelCase, also removing underscores.
-        /// </summary>
-        Camelize,
+    /// <summary>
+    /// Converts the input words to lowerCamelCase, also removing underscores.
+    /// </summary>
+    Camelize,
 
-        /// <summary>
-        /// Separates the input words with underscores, and converts all words to lowercase.
-        /// </summary>
-        Underscore,
+    /// <summary>
+    /// Separates the input words with underscores, and converts all words to lowercase.
+    /// </summary>
+    Underscore,
 
-        /// <summary>
-        /// Separates the input words with dashes.
-        /// </summary>
-        Dasherize,
+    /// <summary>
+    /// Separates the input words with dashes.
+    /// </summary>
+    Dasherize,
 
-        /// <summary>
-        /// Separates the input words with dashes, and converts all words to lowercase.
-        /// </summary>
-        Kebaberize
-    }
+    /// <summary>
+    /// Separates the input words with dashes, and converts all words to lowercase.
+    /// </summary>
+    Kebaberize
 }

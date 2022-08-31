@@ -28,54 +28,53 @@ using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
 using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 
-namespace AdvancedDLSupport.ImplementationGenerators
+namespace AdvancedDLSupport.ImplementationGenerators;
+
+/// <summary>
+/// Sorts a set of input generators based on their complexity.
+/// </summary>
+internal class ImplementationGeneratorSorter
 {
     /// <summary>
-    /// Sorts a set of input generators based on their complexity.
+    /// Sorts the input generators based on their complexity.
     /// </summary>
-    internal class ImplementationGeneratorSorter
+    /// <param name="generators">The input generators.</param>
+    /// <typeparam name="T">The member that the generators accept.</typeparam>
+    /// <returns>The sorted generators.</returns>
+    public IEnumerable<IImplementationGenerator<T>> SortGenerators<T>
+    (
+        IEnumerable<IImplementationGenerator<T>> generators
+    )
+        where T : MemberInfo
     {
-        /// <summary>
-        /// Sorts the input generators based on their complexity.
-        /// </summary>
-        /// <param name="generators">The input generators.</param>
-        /// <typeparam name="T">The member that the generators accept.</typeparam>
-        /// <returns>The sorted generators.</returns>
-        public IEnumerable<IImplementationGenerator<T>> SortGenerators<T>
-        (
-            IEnumerable<IImplementationGenerator<T>> generators
-        )
-            where T : MemberInfo
+        var generatorGroups = generators
+            .OrderByDescending(c => CalculateComplexityScore(c.Complexity))
+            .GroupBy
+            (
+                c =>
+                    c.Complexity.HasFlagFast(Terminating)
+            ).OrderBy(c => c.Key);
+
+        return generatorGroups.SelectMany(g => g);
+    }
+
+    /// <summary>
+    /// Calculates a generator's complexity score. A higher score means a more complex generator.
+    /// </summary>
+    /// <param name="complexity">The complexity flags.</param>
+    /// <returns>An integer value that represents the complexity of the flags.</returns>
+    private int CalculateComplexityScore(GeneratorComplexity complexity)
+    {
+        var score = 0;
+
+        foreach (var value in Enum.GetValues(typeof(GeneratorComplexity)).Cast<GeneratorComplexity>().Except(new[] { Terminating }))
         {
-            var generatorGroups = generators
-                .OrderByDescending(c => CalculateComplexityScore(c.Complexity))
-                .GroupBy
-                (
-                    c =>
-                        c.Complexity.HasFlagFast(Terminating)
-                ).OrderBy(c => c.Key);
-
-            return generatorGroups.SelectMany(g => g);
-        }
-
-        /// <summary>
-        /// Calculates a generator's complexity score. A higher score means a more complex generator.
-        /// </summary>
-        /// <param name="complexity">The complexity flags.</param>
-        /// <returns>An integer value that represents the complexity of the flags.</returns>
-        private int CalculateComplexityScore(GeneratorComplexity complexity)
-        {
-            var score = 0;
-
-            foreach (var value in Enum.GetValues(typeof(GeneratorComplexity)).Cast<GeneratorComplexity>().Except(new[] { Terminating }))
+            if (complexity.HasFlagFast(value))
             {
-                if (complexity.HasFlagFast(value))
-                {
-                    ++score;
-                }
+                ++score;
             }
-
-            return score;
         }
+
+        return score;
     }
 }

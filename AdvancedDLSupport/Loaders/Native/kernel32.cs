@@ -29,17 +29,16 @@ using HMODULE = System.IntPtr;
 #pragma warning disable SA1300 // Elements should begin with an uppercase letter
 #pragma warning disable SA1600, CS1591 // Elements should be documented
 
-namespace AdvancedDLSupport.Loaders
+namespace AdvancedDLSupport.Loaders;
+
+internal static class kernel32
 {
-    internal static class kernel32
-    {
-        [DllImport("kernel32", SetLastError = true)]
-        public static extern HMODULE LoadLibrary(string fileName);
+    [DllImport("kernel32", SetLastError = true)]
+    public static extern HMODULE LoadLibrary(string fileName);
 
-        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Ansi, ExactSpelling = true), Pure]
-        public static extern FARPROC GetProcAddress(HMODULE module, string procName);
+    [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Ansi, ExactSpelling = true), Pure]
+    public static extern FARPROC GetProcAddress(HMODULE module, string procName);
 
-        [DllImport("kernel32", SetLastError = true)]
-        public static extern int FreeLibrary(HMODULE module);
-    }
+    [DllImport("kernel32", SetLastError = true)]
+    public static extern int FreeLibrary(HMODULE module);
 }

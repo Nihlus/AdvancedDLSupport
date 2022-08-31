@@ -28,113 +28,112 @@ using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
 using static AdvancedDLSupport.ImplementationOptions;
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport;
+
+/// <summary>
+/// Internal base class for library implementations.
+/// </summary>
+[PublicAPI]
+public abstract class NativeLibraryBase : IDisposable
 {
     /// <summary>
-    /// Internal base class for library implementations.
+    /// Delegate cache storage to keep delegates alive.
+    /// </summary>
+    private HashSet<Delegate> _delegateStorage = new HashSet<Delegate>();
+
+    /// <summary>
+    /// Gets a value indicating whether or not the library has been disposed.
     /// </summary>
     [PublicAPI]
-    public abstract class NativeLibraryBase : IDisposable
+    public bool IsDisposed { get; private set; }
+
+    /// <summary>
+    /// Gets or sets the set of options that were used to construct the type.
+    /// </summary>
+    internal ImplementationOptions Options { get; set; }
+
+    private readonly ILibraryLoader _libraryLoader;
+    private readonly ISymbolLoader _symbolLoader;
+
+    /// <summary>
+    /// Gets an opaque native handle to the library.
+    /// </summary>
+    private IntPtr _libraryHandle;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NativeLibraryBase"/> class.
+    /// </summary>
+    /// <param name="path">The path to the library.</param>
+    /// <param name="options">Whether or not this library can be disposed.</param>
+    /// <param name="libLoader">Overriding library loader.</param>
+    /// <param name="symLoader">Overriding symbol loader.</param>
+    [PublicAPI, AnonymousConstructor]
+    protected NativeLibraryBase
+    (
+        string? path,
+        ImplementationOptions options,
+        ILibraryLoader? libLoader = null,
+        ISymbolLoader? symLoader = null
+    )
     {
-        /// <summary>
-        /// Delegate cache storage to keep delegates alive.
-        /// </summary>
-        private HashSet<Delegate> _delegateStorage = new HashSet<Delegate>();
+        _libraryLoader = libLoader ?? PlatformLoaderBase.PlatformLoader;
+        _symbolLoader = symLoader ?? PlatformLoaderBase.PlatformLoader;
+        Options = options;
+        _libraryHandle = _libraryLoader.LoadLibrary(path);
+    }
 
-        /// <summary>
-        /// Gets a value indicating whether or not the library has been disposed.
-        /// </summary>
-        [PublicAPI]
-        public bool IsDisposed { get; private set; }
+    /// <summary>
+    /// Forwards the symbol loading call to the wrapped platform loader.
+    /// </summary>
+    /// <param name="sym">The symbol name.</param>
+    /// <returns>A handle to the symbol.</returns>
+    internal IntPtr LoadSymbol(string sym) => _symbolLoader.LoadSymbol(_libraryHandle, sym);
 
-        /// <summary>
-        /// Gets or sets the set of options that were used to construct the type.
-        /// </summary>
-        internal ImplementationOptions Options { get; set; }
+    /// <summary>
+    /// Forwards the function loading call to the wrapped platform loader.
+    /// </summary>
+    /// <param name="sym">The symbol name.</param>
+    /// <typeparam name="T">The delegate to load the symbol as.</typeparam>
+    /// <returns>A function delegate.</returns>
+    [NotNull]
+    internal T LoadFunction<T>(string sym) => Marshal.GetDelegateForFunctionPointer<T>(LoadSymbol(sym));
 
-        private readonly ILibraryLoader _libraryLoader;
-        private readonly ISymbolLoader _symbolLoader;
-
-        /// <summary>
-        /// Gets an opaque native handle to the library.
-        /// </summary>
-        private IntPtr _libraryHandle;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NativeLibraryBase"/> class.
-        /// </summary>
-        /// <param name="path">The path to the library.</param>
-        /// <param name="options">Whether or not this library can be disposed.</param>
-        /// <param name="libLoader">Overriding library loader.</param>
-        /// <param name="symLoader">Overriding symbol loader.</param>
-        [PublicAPI, AnonymousConstructor]
-        protected NativeLibraryBase
-        (
-            string? path,
-            ImplementationOptions options,
-            ILibraryLoader? libLoader = null,
-            ISymbolLoader? symLoader = null
-        )
+    /// <summary>
+    /// Throws if the library has been disposed.
+    /// </summary>
+    /// <exception cref="ObjectDisposedException">Thrown if the library has been disposed.</exception>
+    [PublicAPI]
+    protected void ThrowIfDisposed()
+    {
+        if (IsDisposed)
         {
-            _libraryLoader = libLoader ?? PlatformLoaderBase.PlatformLoader;
-            _symbolLoader = symLoader ?? PlatformLoaderBase.PlatformLoader;
-            Options = options;
-            _libraryHandle = _libraryLoader.LoadLibrary(path);
+            throw new ObjectDisposedException(GetType().Name, "The library has been disposed.");
+        }
+    }
+
+    /// <summary>
+    /// Adds a delegate to keep its lifetime until this library gets disposed.
+    /// </summary>
+    /// <param name="del">The delegate to keep alive.</param>
+    protected void AddLifetimeDelegate(Delegate del)
+    {
+        _delegateStorage.Add(del);
+    }
+
+    /// <inheritdoc />
+    [PublicAPI]
+    public void Dispose()
+    {
+        if (IsDisposed || !Options.HasFlagFast(GenerateDisposalChecks))
+        {
+            return;
         }
 
-        /// <summary>
-        /// Forwards the symbol loading call to the wrapped platform loader.
-        /// </summary>
-        /// <param name="sym">The symbol name.</param>
-        /// <returns>A handle to the symbol.</returns>
-        internal IntPtr LoadSymbol(string sym) => _symbolLoader.LoadSymbol(_libraryHandle, sym);
+        IsDisposed = true;
 
-        /// <summary>
-        /// Forwards the function loading call to the wrapped platform loader.
-        /// </summary>
-        /// <param name="sym">The symbol name.</param>
-        /// <typeparam name="T">The delegate to load the symbol as.</typeparam>
-        /// <returns>A function delegate.</returns>
-        [NotNull]
-        internal T LoadFunction<T>(string sym) => Marshal.GetDelegateForFunctionPointer<T>(LoadSymbol(sym));
+        _delegateStorage.Clear();
 
-        /// <summary>
-        /// Throws if the library has been disposed.
-        /// </summary>
-        /// <exception cref="ObjectDisposedException">Thrown if the library has been disposed.</exception>
-        [PublicAPI]
-        protected void ThrowIfDisposed()
-        {
-            if (IsDisposed)
-            {
-                throw new ObjectDisposedException(GetType().Name, "The library has been disposed.");
-            }
-        }
-
-        /// <summary>
-        /// Adds a delegate to keep its lifetime until this library gets disposed.
-        /// </summary>
-        /// <param name="del">The delegate to keep alive.</param>
-        protected void AddLifetimeDelegate(Delegate del)
-        {
-            _delegateStorage.Add(del);
-        }
-
-        /// <inheritdoc />
-        [PublicAPI]
-        public void Dispose()
-        {
-            if (IsDisposed || !Options.HasFlagFast(GenerateDisposalChecks))
-            {
-                return;
-            }
-
-            IsDisposed = true;
-
-            _delegateStorage.Clear();
-
-            _libraryLoader.CloseLibrary(_libraryHandle);
-            _libraryHandle = IntPtr.Zero;
-        }
+        _libraryLoader.CloseLibrary(_libraryHandle);
+        _libraryHandle = IntPtr.Zero;
     }
 }

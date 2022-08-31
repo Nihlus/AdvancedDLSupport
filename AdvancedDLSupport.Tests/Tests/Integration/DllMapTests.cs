@@ -26,26 +26,25 @@ using Xunit;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Integration
+namespace AdvancedDLSupport.Tests.Integration;
+
+public class DllMapTests : LibraryTestBase<IRemappedLibrary>
 {
-    public class DllMapTests : LibraryTestBase<IRemappedLibrary>
+    private const string LibraryName = "OriginalLibraryName";
+
+    public DllMapTests()
+        : base(LibraryName)
     {
-        private const string LibraryName = "OriginalLibraryName";
+    }
 
-        public DllMapTests()
-            : base(LibraryName)
-        {
-        }
+    protected override ImplementationOptions GetImplementationOptions()
+    {
+        return ImplementationOptions.EnableDllMapSupport;
+    }
 
-        protected override ImplementationOptions GetImplementationOptions()
-        {
-            return ImplementationOptions.EnableDllMapSupport;
-        }
-
-        [Fact]
-        public void RemappedLibraryMapsToCorrectLibrary()
-        {
-            Assert.Equal(25, Library.Multiply(5, 5));
-        }
+    [Fact]
+    public void RemappedLibraryMapsToCorrectLibrary()
+    {
+        Assert.Equal(25, Library.Multiply(5, 5));
     }
 }

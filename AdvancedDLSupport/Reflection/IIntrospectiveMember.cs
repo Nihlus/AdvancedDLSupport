@@ -24,57 +24,56 @@ using System;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Reflection
+namespace AdvancedDLSupport.Reflection;
+
+/// <summary>
+/// Introspective member interface.
+/// </summary>
+[PublicAPI]
+public interface IIntrospectiveMember
 {
     /// <summary>
-    /// Introspective member interface.
+    /// Gets the name of the member.
     /// </summary>
     [PublicAPI]
-    public interface IIntrospectiveMember
-    {
-        /// <summary>
-        /// Gets the name of the member.
-        /// </summary>
-        [PublicAPI]
-        string Name { get; }
+    string Name { get; }
 
-        /// <summary>
-        /// Gets a custom attribute of <typeparamref name="TAttribute"/>, or null if none can be found.
-        /// </summary>
-        /// <typeparam name="TAttribute">The type of attribute to get.</typeparam>
-        /// <returns>The attribute, or null.</returns>
-        [PublicAPI]
-        TAttribute? GetCustomAttribute<TAttribute>() where TAttribute : Attribute;
+    /// <summary>
+    /// Gets a custom attribute of <typeparamref name="TAttribute"/>, or null if none can be found.
+    /// </summary>
+    /// <typeparam name="TAttribute">The type of attribute to get.</typeparam>
+    /// <returns>The attribute, or null.</returns>
+    [PublicAPI]
+    TAttribute? GetCustomAttribute<TAttribute>() where TAttribute : Attribute;
 
-        /// <summary>
-        /// Gets the full native entrypoint of the member. This is the configured native entrypoint, with any
-        /// transformations applied.
-        /// </summary>
-        /// <returns>The native entrypoint.</returns>
-        [PublicAPI, Pure]
-        string GetFullNativeEntrypoint();
+    /// <summary>
+    /// Gets the full native entrypoint of the member. This is the configured native entrypoint, with any
+    /// transformations applied.
+    /// </summary>
+    /// <returns>The native entrypoint.</returns>
+    [PublicAPI, Pure]
+    string GetFullNativeEntrypoint();
 
-        /// <summary>
-        /// Gets the full unmangled native entrypoint of the member. This is the configured native entrypoint, with any
-        /// transformations except name mangling applied.
-        /// </summary>
-        /// <returns>The native entrypoint.</returns>
-        [PublicAPI, Pure]
-        string GetFullUnmangledNativeEntrypoint();
+    /// <summary>
+    /// Gets the full unmangled native entrypoint of the member. This is the configured native entrypoint, with any
+    /// transformations except name mangling applied.
+    /// </summary>
+    /// <returns>The native entrypoint.</returns>
+    [PublicAPI, Pure]
+    string GetFullUnmangledNativeEntrypoint();
 
-        /// <summary>
-        /// Gets the native entrypoint of the member. This is just the configured native entrypoint, without any
-        /// transformations applied.
-        /// </summary>
-        /// <returns>The native entrypoint.</returns>
-        [PublicAPI, Pure]
-        string GetNativeEntrypoint();
+    /// <summary>
+    /// Gets the native entrypoint of the member. This is just the configured native entrypoint, without any
+    /// transformations applied.
+    /// </summary>
+    /// <returns>The native entrypoint.</returns>
+    [PublicAPI, Pure]
+    string GetNativeEntrypoint();
 
-        /// <summary>
-        /// Gets the native calling convention of the member.
-        /// </summary>
-        /// <returns>The calling convention.</returns>
-        [PublicAPI, Pure]
-        CallingConvention GetNativeCallingConvention();
-    }
+    /// <summary>
+    /// Gets the native calling convention of the member.
+    /// </summary>
+    /// <returns>The calling convention.</returns>
+    [PublicAPI, Pure]
+    CallingConvention GetNativeCallingConvention();
 }

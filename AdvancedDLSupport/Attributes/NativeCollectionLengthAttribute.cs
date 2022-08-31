@@ -23,24 +23,23 @@
 using System;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport;
+
+/// <summary>
+/// Provides metadata about the size of a collection returned from a native function.
+/// </summary>
+[PublicAPI, AttributeUsage(AttributeTargets.ReturnValue, AllowMultiple = false, Inherited = false)]
+public class NativeCollectionLengthAttribute : Attribute
 {
     /// <summary>
-    /// Provides metadata about the size of a collection returned from a native function.
+    /// Gets the number of elements in the collection.
     /// </summary>
-    [PublicAPI, AttributeUsage(AttributeTargets.ReturnValue, AllowMultiple = false, Inherited = false)]
-    public class NativeCollectionLengthAttribute : Attribute
-    {
-        /// <summary>
-        /// Gets the number of elements in the collection.
-        /// </summary>
-        public int Length { get; }
+    public int Length { get; }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NativeCollectionLengthAttribute"/> class.
-        /// </summary>
-        /// <param name="length">The number of elements in the collection returned. </param>
-        public NativeCollectionLengthAttribute(int length)
-            => Length = length;
-    }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NativeCollectionLengthAttribute"/> class.
+    /// </summary>
+    /// <param name="length">The number of elements in the collection returned. </param>
+    public NativeCollectionLengthAttribute(int length)
+        => Length = length;
 }

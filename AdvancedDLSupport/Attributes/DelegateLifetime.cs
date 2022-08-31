@@ -20,27 +20,26 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport;
+
+/// <summary>
+/// Depicts the delegate lifetime.
+/// </summary>
+public enum DelegateLifetime
 {
     /// <summary>
-    /// Depicts the delegate lifetime.
+    /// Delegate lifetime needs to be managed by user.
     /// </summary>
-    public enum DelegateLifetime
-    {
-        /// <summary>
-        /// Delegate lifetime needs to be managed by user.
-        /// </summary>
-        UserManaged,
+    UserManaged,
 
-        /// <summary>
-        /// Delegate is kept alive till unloading of the instance that the call is made on is disposed.
-        /// This is the default lifetime management.
-        /// </summary>
-        Persistent,
+    /// <summary>
+    /// Delegate is kept alive till unloading of the instance that the call is made on is disposed.
+    /// This is the default lifetime management.
+    /// </summary>
+    Persistent,
 
-        /// <summary>
-        /// Delegate is alive only for this call.
-        /// </summary>
-        CallOnly,
-    }
+    /// <summary>
+    /// Delegate is alive only for this call.
+    /// </summary>
+    CallOnly,
 }

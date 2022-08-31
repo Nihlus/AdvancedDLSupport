@@ -22,10 +22,9 @@
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
+namespace AdvancedDLSupport.Tests.Data;
+
+public interface ILazyLoadedIndirectCallLibrary : IIndirectCallLibrary
 {
-    public interface ILazyLoadedIndirectCallLibrary : IIndirectCallLibrary
-    {
-        int MissingMethod();
-    }
+    int MissingMethod();
 }

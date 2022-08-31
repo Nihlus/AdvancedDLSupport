@@ -37,48 +37,48 @@ using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 using static AdvancedDLSupport.ImplementationOptions;
 
 // ReSharper disable BitwiseOperatorOnEnumWithoutFlags
-namespace AdvancedDLSupport.ImplementationGenerators
+namespace AdvancedDLSupport.ImplementationGenerators;
+
+/// <summary>
+/// Generates <see cref="OpCodes.Calli"/>-based implementations for methods.
+/// </summary>
+internal sealed class IndirectCallMethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
 {
+    /// <inheritdoc/>
+    public override GeneratorComplexity Complexity => OptionDependent | Terminating;
+
     /// <summary>
-    /// Generates <see cref="OpCodes.Calli"/>-based implementations for methods.
+    /// Initializes a new instance of the <see cref="IndirectCallMethodImplementationGenerator"/> class.
     /// </summary>
-    internal sealed class IndirectCallMethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
+    /// <param name="targetModule">The module in which the method implementation should be generated.</param>
+    /// <param name="targetType">The type in which the method implementation should be generated.</param>
+    /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
+    /// <param name="options">The configuration object to use.</param>
+    public IndirectCallMethodImplementationGenerator
+    (
+        ModuleBuilder targetModule,
+        TypeBuilder targetType,
+        ILGenerator targetTypeConstructorIL,
+        ImplementationOptions options
+    )
+        : base(targetModule, targetType, targetTypeConstructorIL, options)
     {
-        /// <inheritdoc/>
-        public override GeneratorComplexity Complexity => OptionDependent | Terminating;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IndirectCallMethodImplementationGenerator"/> class.
-        /// </summary>
-        /// <param name="targetModule">The module in which the method implementation should be generated.</param>
-        /// <param name="targetType">The type in which the method implementation should be generated.</param>
-        /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
-        /// <param name="options">The configuration object to use.</param>
-        public IndirectCallMethodImplementationGenerator
-        (
-            ModuleBuilder targetModule,
-            TypeBuilder targetType,
-            ILGenerator targetTypeConstructorIL,
-            ImplementationOptions options
-        )
-            : base(targetModule, targetType, targetTypeConstructorIL, options)
-        {
-        }
+    /// <inheritdoc/>
+    public override bool IsApplicable(IntrospectiveMethodInfo member)
+    {
+        return Options.HasFlagFast(UseIndirectCalls);
+    }
 
-        /// <inheritdoc/>
-        public override bool IsApplicable(IntrospectiveMethodInfo member)
-        {
-            return Options.HasFlagFast(UseIndirectCalls);
-        }
+    /// <inheritdoc />
+    public override IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> GenerateImplementation(PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
+    {
+        var definition = workUnit.Definition;
 
-        /// <inheritdoc />
-        public override IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> GenerateImplementation(PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
-        {
-            var definition = workUnit.Definition;
+        var backingFieldType = typeof(IntPtr);
 
-            var backingFieldType = typeof(IntPtr);
-
-            var backingField = Options.HasFlagFast(UseLazyBinding)
+        var backingField = Options.HasFlagFast(UseLazyBinding)
             ? TargetType.DefineField
             (
                 $"{workUnit.GetUniqueBaseMemberName()}_ptr_lazy",
@@ -92,78 +92,77 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 FieldAttributes.Private | FieldAttributes.InitOnly
             );
 
-            AugmentHostingTypeConstructorWithNativeInitialization(workUnit.SymbolName, backingFieldType, backingField);
-            GenerateNativeInvokerBody(definition, definition.GetNativeCallingConvention(), backingField);
+        AugmentHostingTypeConstructorWithNativeInitialization(workUnit.SymbolName, backingFieldType, backingField);
+        GenerateNativeInvokerBody(definition, definition.GetNativeCallingConvention(), backingField);
 
-            yield break;
-        }
+        yield break;
+    }
 
-        /// <summary>
-        /// Augments the hosting type constructor with the logic required to initialize the backing pointer field.
-        /// </summary>
-        /// <param name="entrypointName">The name of the entry point.</param>
-        /// <param name="backingFieldType">The type of the backing field.</param>
-        /// <param name="backingField">The backing pointer field.</param>
-        private void AugmentHostingTypeConstructorWithNativeInitialization
-        (
-            string entrypointName,
-            Type backingFieldType,
-            FieldInfo backingField
-        )
+    /// <summary>
+    /// Augments the hosting type constructor with the logic required to initialize the backing pointer field.
+    /// </summary>
+    /// <param name="entrypointName">The name of the entry point.</param>
+    /// <param name="backingFieldType">The type of the backing field.</param>
+    /// <param name="backingField">The backing pointer field.</param>
+    private void AugmentHostingTypeConstructorWithNativeInitialization
+    (
+        string entrypointName,
+        Type backingFieldType,
+        FieldInfo backingField
+    )
+    {
+        TargetTypeConstructorIL.EmitLoadArgument(0);
+        TargetTypeConstructorIL.EmitLoadArgument(0);
+
+        if (Options.HasFlagFast(UseLazyBinding))
         {
-            TargetTypeConstructorIL.EmitLoadArgument(0);
-            TargetTypeConstructorIL.EmitLoadArgument(0);
-
-            if (Options.HasFlagFast(UseLazyBinding))
-            {
-                var lambdaBuilder = GenerateSymbolLoadingLambda(entrypointName);
-                GenerateLazyLoadedObject(lambdaBuilder, backingFieldType);
-            }
-            else
-            {
-                var loadPointerMethod = typeof(NativeLibraryBase).GetMethod
-                (
-                    nameof(NativeLibraryBase.LoadSymbol),
-                    BindingFlags.NonPublic | BindingFlags.Instance
-                );
-
-                TargetTypeConstructorIL.EmitConstantString(entrypointName);
-                TargetTypeConstructorIL.EmitCallDirect(loadPointerMethod);
-            }
-
-            TargetTypeConstructorIL.EmitSetField(backingField);
+            var lambdaBuilder = GenerateSymbolLoadingLambda(entrypointName);
+            GenerateLazyLoadedObject(lambdaBuilder, backingFieldType);
         }
-
-        /// <summary>
-        /// Generates the method body for a native calli invocation.
-        /// </summary>
-        /// <param name="method">The method to generate the body for.</param>
-        /// <param name="callingConvention">The unmanaged calling convention to use.</param>
-        /// <param name="backingField">The backing field.</param>
-        private void GenerateNativeInvokerBody
-        (
-            IntrospectiveMethodInfo method,
-            CallingConvention callingConvention,
-            FieldInfo backingField
-        )
+        else
         {
-            if (!(method.GetWrappedMember() is MethodBuilder builder))
-            {
-                throw new ArgumentNullException(nameof(method), "Could not unwrap introspective method to method builder.");
-            }
+            var loadPointerMethod = typeof(NativeLibraryBase).GetMethod
+            (
+                nameof(NativeLibraryBase.LoadSymbol),
+                BindingFlags.NonPublic | BindingFlags.Instance
+            );
 
-            // Let's create a method that simply invoke the delegate
-            var methodIL = builder.GetILGenerator();
-
-            for (short p = 1; p <= method.ParameterTypes.Count; p++)
-            {
-                methodIL.EmitLoadArgument(p);
-            }
-
-            GenerateSymbolPush(methodIL, backingField);
-
-            methodIL.EmitCalli(callingConvention, method.ReturnType, method.ParameterTypes.ToArray());
-            methodIL.EmitReturn();
+            TargetTypeConstructorIL.EmitConstantString(entrypointName);
+            TargetTypeConstructorIL.EmitCallDirect(loadPointerMethod);
         }
+
+        TargetTypeConstructorIL.EmitSetField(backingField);
+    }
+
+    /// <summary>
+    /// Generates the method body for a native calli invocation.
+    /// </summary>
+    /// <param name="method">The method to generate the body for.</param>
+    /// <param name="callingConvention">The unmanaged calling convention to use.</param>
+    /// <param name="backingField">The backing field.</param>
+    private void GenerateNativeInvokerBody
+    (
+        IntrospectiveMethodInfo method,
+        CallingConvention callingConvention,
+        FieldInfo backingField
+    )
+    {
+        if (!(method.GetWrappedMember() is MethodBuilder builder))
+        {
+            throw new ArgumentNullException(nameof(method), "Could not unwrap introspective method to method builder.");
+        }
+
+        // Let's create a method that simply invoke the delegate
+        var methodIL = builder.GetILGenerator();
+
+        for (short p = 1; p <= method.ParameterTypes.Count; p++)
+        {
+            methodIL.EmitLoadArgument(p);
+        }
+
+        GenerateSymbolPush(methodIL, backingField);
+
+        methodIL.EmitCalli(callingConvention, method.ReturnType, method.ParameterTypes.ToArray());
+        methodIL.EmitReturn();
     }
 }

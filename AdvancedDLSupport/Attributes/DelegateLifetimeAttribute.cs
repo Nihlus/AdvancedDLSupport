@@ -23,26 +23,25 @@
 using System;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport;
+
+/// <summary>
+/// The delegate lifetime attribute.
+/// </summary>
+[PublicAPI, AttributeUsage(AttributeTargets.Parameter | AttributeTargets.ReturnValue)]
+public class DelegateLifetimeAttribute : Attribute
 {
     /// <summary>
-    /// The delegate lifetime attribute.
+    /// Initializes a new instance of the <see cref="DelegateLifetimeAttribute"/> class.
     /// </summary>
-    [PublicAPI, AttributeUsage(AttributeTargets.Parameter | AttributeTargets.ReturnValue)]
-    public class DelegateLifetimeAttribute : Attribute
+    /// <param name="lifetime">The delegate lifetime.</param>
+    public DelegateLifetimeAttribute(DelegateLifetime lifetime)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DelegateLifetimeAttribute"/> class.
-        /// </summary>
-        /// <param name="lifetime">The delegate lifetime.</param>
-        public DelegateLifetimeAttribute(DelegateLifetime lifetime)
-        {
-            Lifetime = lifetime;
-        }
-
-        /// <summary>
-        /// Gets the delegate lifetime.
-        /// </summary>
-        public DelegateLifetime Lifetime { get; }
+        Lifetime = lifetime;
     }
+
+    /// <summary>
+    /// Gets the delegate lifetime.
+    /// </summary>
+    public DelegateLifetime Lifetime { get; }
 }

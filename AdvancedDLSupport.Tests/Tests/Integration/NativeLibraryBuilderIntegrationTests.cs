@@ -30,93 +30,92 @@ using Xunit;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Integration
+namespace AdvancedDLSupport.Tests.Integration;
+
+public class NativeLibraryBuilderIntegrationTests
 {
-    public class NativeLibraryBuilderIntegrationTests
+    public class ActivateInterface : LibraryTestBase<IBaseLibrary>
     {
-        public class ActivateInterface : LibraryTestBase<IBaseLibrary>
+        private const string LibraryName = "BaseTests";
+
+        public ActivateInterface()
+            : base(LibraryName)
         {
-            private const string LibraryName = "BaseTests";
+        }
 
-            public ActivateInterface()
-                : base(LibraryName)
-            {
-            }
+        [Fact]
+        public void CanLoadLibrary()
+        {
+            Assert.NotNull(Library);
+        }
 
-            [Fact]
-            public void CanLoadLibrary()
-            {
-                Assert.NotNull(Library);
-            }
+        [Fact]
+        public void LoadingLibraryWithMismatchedBitnessThrows()
+        {
+            var incorrectBitness = RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x32" : "x64";
 
-            [Fact]
-            public void LoadingLibraryWithMismatchedBitnessThrows()
-            {
-                var incorrectBitness = RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x32" : "x64";
+            var libraryName = $"{LibraryName}-{incorrectBitness}";
+            var libraryPath = Path.Combine("lib", incorrectBitness, libraryName);
 
-                var libraryName = $"{LibraryName}-{incorrectBitness}";
-                var libraryPath = Path.Combine("lib", incorrectBitness, libraryName);
+            Assert.Throws<LibraryLoadingException>
+            (
+                () => NativeLibraryBuilder.Default.ActivateInterface<IBaseLibrary>(libraryPath)
+            );
+        }
 
-                Assert.Throws<LibraryLoadingException>
-                (
-                    () => NativeLibraryBuilder.Default.ActivateInterface<IBaseLibrary>(libraryPath)
-                );
-            }
+        [Fact]
+        public void LoadingSameInterfaceAndSameFileTwiceProducesDifferentReferences()
+        {
+            var secondLoad = new NativeLibraryBuilder().ActivateInterface<IBaseLibrary>(LibraryName);
 
-            [Fact]
-            public void LoadingSameInterfaceAndSameFileTwiceProducesDifferentReferences()
-            {
-                var secondLoad = new NativeLibraryBuilder().ActivateInterface<IBaseLibrary>(LibraryName);
+            Assert.NotSame(Library, secondLoad);
+        }
 
-                Assert.NotSame(Library, secondLoad);
-            }
+        [Fact]
+        public void LoadingSameInterfaceWithSameOptionsAndSameFileTwiceUsesSameGeneratedType()
+        {
+            var secondLoad = new NativeLibraryBuilder(ImplementationOptions.GenerateDisposalChecks)
+                .ActivateInterface<IBaseLibrary>(LibraryName);
 
-            [Fact]
-            public void LoadingSameInterfaceWithSameOptionsAndSameFileTwiceUsesSameGeneratedType()
-            {
-                var secondLoad = new NativeLibraryBuilder(ImplementationOptions.GenerateDisposalChecks)
-                    .ActivateInterface<IBaseLibrary>(LibraryName);
+            Assert.IsType(Library.GetType(), secondLoad);
+        }
 
-                Assert.IsType(Library.GetType(), secondLoad);
-            }
+        [Fact]
+        public void LoadingSameInterfaceAndSameFileButWithDifferentOptionsDoesNotUseSameGeneratedType()
+        {
+            var options = ImplementationOptions.UseLazyBinding;
 
-            [Fact]
-            public void LoadingSameInterfaceAndSameFileButWithDifferentOptionsDoesNotUseSameGeneratedType()
-            {
-                var options = ImplementationOptions.UseLazyBinding;
+            var secondLoad = new NativeLibraryBuilder(options).ActivateInterface<IBaseLibrary>(LibraryName);
 
-                var secondLoad = new NativeLibraryBuilder(options).ActivateInterface<IBaseLibrary>(LibraryName);
+            Assert.IsNotType(Library.GetType(), secondLoad);
+        }
 
-                Assert.IsNotType(Library.GetType(), secondLoad);
-            }
+        [Fact]
+        public void LoadingSameInterfaceAndSameFileButWithDifferentOptionsProducesDifferentReferences()
+        {
+            var options = ImplementationOptions.UseLazyBinding;
 
-            [Fact]
-            public void LoadingSameInterfaceAndSameFileButWithDifferentOptionsProducesDifferentReferences()
-            {
-                var options = ImplementationOptions.UseLazyBinding;
+            var secondLoad = new NativeLibraryBuilder(options).ActivateInterface<IBaseLibrary>(LibraryName);
 
-                var secondLoad = new NativeLibraryBuilder(options).ActivateInterface<IBaseLibrary>(LibraryName);
+            Assert.NotSame(Library, secondLoad);
+        }
 
-                Assert.NotSame(Library, secondLoad);
-            }
+        [Fact]
+        public void ActivatingANonInterfaceThrowsArgumentException()
+        {
+            Assert.Throws<ArgumentException>
+            (
+                () => NativeLibraryBuilder.Default.ActivateInterface<SimpleClass>(LibraryName)
+            );
+        }
 
-            [Fact]
-            public void ActivatingANonInterfaceThrowsArgumentException()
-            {
-                Assert.Throws<ArgumentException>
-                (
-                    () => NativeLibraryBuilder.Default.ActivateInterface<SimpleClass>(LibraryName)
-                );
-            }
-
-            [Fact]
-            public void ActivatingAnInterfaceWithAnInvalidPathThrowsFileNotFoundException()
-            {
-                Assert.Throws<FileNotFoundException>
-                (
-                    () => NativeLibraryBuilder.Default.ActivateInterface<IBaseLibrary>("not a path")
-                );
-            }
+        [Fact]
+        public void ActivatingAnInterfaceWithAnInvalidPathThrowsFileNotFoundException()
+        {
+            Assert.Throws<FileNotFoundException>
+            (
+                () => NativeLibraryBuilder.Default.ActivateInterface<IBaseLibrary>("not a path")
+            );
         }
     }
 }

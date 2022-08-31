@@ -26,79 +26,78 @@ using Xunit;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Integration
+namespace AdvancedDLSupport.Tests.Integration;
+
+public class FunctionIntegrationTests : LibraryTestBase<IFunctionLibrary>
 {
-    public class FunctionIntegrationTests : LibraryTestBase<IFunctionLibrary>
+    private const string LibraryName = "FunctionTests";
+
+    public FunctionIntegrationTests()
+        : base(LibraryName)
     {
-        private const string LibraryName = "FunctionTests";
+    }
 
-        public FunctionIntegrationTests()
-            : base(LibraryName)
-        {
-        }
+    [Fact]
+    public void CanCallFunctionWithStructParameter()
+    {
+        var value = 5;
+        var multiplier = 15;
 
-        [Fact]
-        public void CanCallFunctionWithStructParameter()
-        {
-            var value = 5;
-            var multiplier = 15;
+        var strct = new TestStruct { A = value };
 
-            var strct = new TestStruct { A = value };
+        var expected = value * multiplier;
+        var actual = Library.DoStructMath(ref strct, multiplier);
 
-            var expected = value * multiplier;
-            var actual = Library.DoStructMath(ref strct, multiplier);
+        Assert.Equal(expected, actual);
+    }
 
-            Assert.Equal(expected, actual);
-        }
+    [Fact]
+    public void CanCallFunctionWithSimpleParameter()
+    {
+        var value = 5;
+        var multiplier = 15;
 
-        [Fact]
-        public void CanCallFunctionWithSimpleParameter()
-        {
-            var value = 5;
-            var multiplier = 15;
+        var expected = value * multiplier;
+        var actual = Library.Multiply(value, multiplier);
 
-            var expected = value * multiplier;
-            var actual = Library.Multiply(value, multiplier);
+        Assert.Equal(expected, actual);
+    }
 
-            Assert.Equal(expected, actual);
-        }
+    [Fact]
+    public void CanCallFunctionWithDifferentEntryPoint()
+    {
+        var value = 5;
+        var multiplier = 15;
 
-        [Fact]
-        public void CanCallFunctionWithDifferentEntryPoint()
-        {
-            var value = 5;
-            var multiplier = 15;
+        var strct = new TestStruct { A = value };
 
-            var strct = new TestStruct { A = value };
+        var expected = value * multiplier;
+        var actual = Library.Multiply(ref strct, multiplier);
 
-            var expected = value * multiplier;
-            var actual = Library.Multiply(ref strct, multiplier);
+        Assert.Equal(expected, actual);
+    }
 
-            Assert.Equal(expected, actual);
-        }
+    [Fact]
+    public void CanCallFunctionWithDifferentCallingConvention()
+    {
+        var value = 5;
+        var other = 15;
 
-        [Fact]
-        public void CanCallFunctionWithDifferentCallingConvention()
-        {
-            var value = 5;
-            var other = 15;
+        var expected = value - other;
+        var actual = Library.STDCALLSubtract(value, other);
 
-            var expected = value - other;
-            var actual = Library.STDCALLSubtract(value, other);
+        Assert.Equal(expected, actual);
+    }
 
-            Assert.Equal(expected, actual);
-        }
+    [Fact]
+    public void CanCallDuplicateFunction()
+    {
+        var value = 5;
+        var other = 15;
 
-        [Fact]
-        public void CanCallDuplicateFunction()
-        {
-            var value = 5;
-            var other = 15;
+        var expected = value - other;
+        var actual = Library.DuplicateSubtract(value, other);
 
-            var expected = value - other;
-            var actual = Library.DuplicateSubtract(value, other);
-
-            Assert.Equal(expected, actual);
-        }
+        Assert.Equal(expected, actual);
     }
 }

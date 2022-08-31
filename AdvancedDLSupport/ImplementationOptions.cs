@@ -23,48 +23,47 @@
 using System;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport;
+
+/// <summary>
+/// Holds generated implementation flag options.
+/// </summary>
+[PublicAPI, Flags]
+public enum ImplementationOptions
 {
     /// <summary>
-    /// Holds generated implementation flag options.
+    /// Generate the bindings with lazy loaded symbol resolution.
     /// </summary>
-    [PublicAPI, Flags]
-    public enum ImplementationOptions
-    {
-        /// <summary>
-        /// Generate the bindings with lazy loaded symbol resolution.
-        /// </summary>
-        [PublicAPI]
-        UseLazyBinding = 1 << 0,
+    [PublicAPI]
+    UseLazyBinding = 1 << 0,
 
-        /// <summary>
-        /// Generate disposal checks for all binder methods.
-        /// </summary>
-        [PublicAPI]
-        GenerateDisposalChecks = 1 << 1,
+    /// <summary>
+    /// Generate disposal checks for all binder methods.
+    /// </summary>
+    [PublicAPI]
+    GenerateDisposalChecks = 1 << 1,
 
-        /// <summary>
-        /// Enable Mono dllmap support for library scanning.
-        /// </summary>
-        [PublicAPI]
-        EnableDllMapSupport = 1 << 2,
+    /// <summary>
+    /// Enable Mono dllmap support for library scanning.
+    /// </summary>
+    [PublicAPI]
+    EnableDllMapSupport = 1 << 2,
 
-        /// <summary>
-        /// Enables use of the `calli` opcode.
-        /// </summary>
-        [PublicAPI]
-        UseIndirectCalls = 1 << 3,
+    /// <summary>
+    /// Enables use of the `calli` opcode.
+    /// </summary>
+    [PublicAPI]
+    UseIndirectCalls = 1 << 3,
 
-        /// <summary>
-        /// Enables code optimizations for the generated assembly.
-        /// </summary>
-        [PublicAPI]
-        EnableOptimizations = 1 << 4,
+    /// <summary>
+    /// Enables code optimizations for the generated assembly.
+    /// </summary>
+    [PublicAPI]
+    EnableOptimizations = 1 << 4,
 
-        /// <summary>
-        /// Suppresses code security whenever possible.
-        /// </summary>
-        [PublicAPI]
-        SuppressSecurity = 1 << 5
-    }
+    /// <summary>
+    /// Suppresses code security whenever possible.
+    /// </summary>
+    [PublicAPI]
+    SuppressSecurity = 1 << 5
 }

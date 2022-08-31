@@ -22,12 +22,11 @@
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data
-{
-    public interface IMixedModeLibraryFunctions
-    {
-        int Multiply(int a, int b);
+namespace AdvancedDLSupport.Tests.Data;
 
-        int Subtract(int a, int b);
-    }
+public interface IMixedModeLibraryFunctions
+{
+    int Multiply(int a, int b);
+
+    int Subtract(int a, int b);
 }

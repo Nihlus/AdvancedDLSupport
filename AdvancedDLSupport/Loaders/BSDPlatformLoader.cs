@@ -20,14 +20,13 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-namespace AdvancedDLSupport.Loaders
+namespace AdvancedDLSupport.Loaders;
+
+/// <summary>
+/// Loads libraries on BSD-based platform.
+/// </summary>
+internal sealed class BSDPlatformLoader : UnixPlatformLoader
 {
-    /// <summary>
-    /// Loads libraries on BSD-based platform.
-    /// </summary>
-    internal sealed class BSDPlatformLoader : UnixPlatformLoader
-    {
-        /// <inheritdoc />
-        protected override bool UseCLibrary => true;
-    }
+    /// <inheritdoc />
+    protected override bool UseCLibrary => true;
 }

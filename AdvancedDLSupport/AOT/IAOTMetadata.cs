@@ -24,17 +24,16 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.AOT
+namespace AdvancedDLSupport.AOT;
+
+/// <summary>
+/// Interface for metadata classes in AOT assemblies.
+/// </summary>
+internal interface IAOTMetadata
 {
     /// <summary>
-    /// Interface for metadata classes in AOT assemblies.
+    /// Gets the ahead-of-time-generated types in the assembly.
     /// </summary>
-    internal interface IAOTMetadata
-    {
-        /// <summary>
-        /// Gets the ahead-of-time-generated types in the assembly.
-        /// </summary>
-        [UsedImplicitly]
-        IReadOnlyDictionary<GeneratedImplementationTypeIdentifier, Type> GeneratedTypes { get; }
-    }
+    [UsedImplicitly]
+    IReadOnlyDictionary<GeneratedImplementationTypeIdentifier, Type> GeneratedTypes { get; }
 }

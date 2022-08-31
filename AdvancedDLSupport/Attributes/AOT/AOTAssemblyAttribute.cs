@@ -23,13 +23,12 @@
 using System;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.AOT
+namespace AdvancedDLSupport.AOT;
+
+/// <summary>
+/// Tags an assembly as containing precompiled types.
+/// </summary>
+[PublicAPI, AttributeUsage(AttributeTargets.Assembly)]
+public class AOTAssemblyAttribute : Attribute
 {
-    /// <summary>
-    /// Tags an assembly as containing precompiled types.
-    /// </summary>
-    [PublicAPI, AttributeUsage(AttributeTargets.Assembly)]
-    public class AOTAssemblyAttribute : Attribute
-    {
-    }
 }

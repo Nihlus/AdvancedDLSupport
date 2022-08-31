@@ -28,28 +28,27 @@ using Xunit;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.AOT.Tests.TestBases
+namespace AdvancedDLSupport.AOT.Tests.TestBases;
+
+public class PregeneratedAssemblyBuilderTestBase : IClassFixture<InitialCleanupFixture>
 {
-    public class PregeneratedAssemblyBuilderTestBase : IClassFixture<InitialCleanupFixture>
+    protected string OutputDirectory { get; }
+
+    protected Assembly SourceAssembly { get; }
+
+    protected PregeneratedAssemblyBuilder Builder { get; }
+
+    [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor", Justification = "Used to set implementation options in derived classes")]
+    protected PregeneratedAssemblyBuilderTestBase()
     {
-        protected string OutputDirectory { get; }
+        SourceAssembly = Assembly.GetAssembly(typeof(PregeneratedAssemblyBuilderTestBase));
+        Builder = new PregeneratedAssemblyBuilder(GetImplementationOptions());
 
-        protected Assembly SourceAssembly { get; }
+        OutputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "aot-test");
+    }
 
-        protected PregeneratedAssemblyBuilder Builder { get; }
-
-        [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor", Justification = "Used to set implementation options in derived classes")]
-        protected PregeneratedAssemblyBuilderTestBase()
-        {
-            SourceAssembly = Assembly.GetAssembly(typeof(PregeneratedAssemblyBuilderTestBase));
-            Builder = new PregeneratedAssemblyBuilder(GetImplementationOptions());
-
-            OutputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "aot-test");
-        }
-
-        protected virtual ImplementationOptions GetImplementationOptions()
-        {
-            return 0;
-        }
+    protected virtual ImplementationOptions GetImplementationOptions()
+    {
+        return 0;
     }
 }

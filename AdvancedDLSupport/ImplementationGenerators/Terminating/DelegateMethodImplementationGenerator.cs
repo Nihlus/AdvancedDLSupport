@@ -35,51 +35,51 @@ using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 
 using static AdvancedDLSupport.ImplementationOptions;
 
-namespace AdvancedDLSupport.ImplementationGenerators
+namespace AdvancedDLSupport.ImplementationGenerators;
+
+/// <summary>
+/// Generates <see cref="MulticastDelegate"/>-based implementations for methods.
+/// </summary>
+internal sealed class DelegateMethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
 {
+    /// <inheritdoc/>
+    public override GeneratorComplexity Complexity => Terminating;
+
     /// <summary>
-    /// Generates <see cref="MulticastDelegate"/>-based implementations for methods.
+    /// Initializes a new instance of the <see cref="DelegateMethodImplementationGenerator"/> class.
     /// </summary>
-    internal sealed class DelegateMethodImplementationGenerator : ImplementationGeneratorBase<IntrospectiveMethodInfo>
+    /// <param name="targetModule">The module in which the method implementation should be generated.</param>
+    /// <param name="targetType">The type in which the method implementation should be generated.</param>
+    /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
+    /// <param name="options">The configuration object to use.</param>
+    public DelegateMethodImplementationGenerator
+    (
+        ModuleBuilder targetModule,
+        TypeBuilder targetType,
+        ILGenerator targetTypeConstructorIL,
+        ImplementationOptions options
+    )
+        : base(targetModule, targetType, targetTypeConstructorIL, options)
     {
-        /// <inheritdoc/>
-        public override GeneratorComplexity Complexity => Terminating;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DelegateMethodImplementationGenerator"/> class.
-        /// </summary>
-        /// <param name="targetModule">The module in which the method implementation should be generated.</param>
-        /// <param name="targetType">The type in which the method implementation should be generated.</param>
-        /// <param name="targetTypeConstructorIL">The IL generator for the target type's constructor.</param>
-        /// <param name="options">The configuration object to use.</param>
-        public DelegateMethodImplementationGenerator
-        (
-            ModuleBuilder targetModule,
-            TypeBuilder targetType,
-            ILGenerator targetTypeConstructorIL,
-            ImplementationOptions options
-        )
-            : base(targetModule, targetType, targetTypeConstructorIL, options)
-        {
-        }
+    /// <inheritdoc/>
+    public override bool IsApplicable(IntrospectiveMethodInfo member)
+    {
+        return true;
+    }
 
-        /// <inheritdoc/>
-        public override bool IsApplicable(IntrospectiveMethodInfo member)
-        {
-            return true;
-        }
+    /// <inheritdoc />
+    public override IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> GenerateImplementation(PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
+    {
+        var definition = workUnit.Definition;
 
-        /// <inheritdoc />
-        public override IEnumerable<PipelineWorkUnit<IntrospectiveMethodInfo>> GenerateImplementation(PipelineWorkUnit<IntrospectiveMethodInfo> workUnit)
-        {
-            var definition = workUnit.Definition;
+        var delegateBuilder = GenerateDelegateType(workUnit);
 
-            var delegateBuilder = GenerateDelegateType(workUnit);
+        // Create a delegate field
+        var backingFieldType = delegateBuilder.CreateTypeInfo();
 
-            // Create a delegate field
-            var backingFieldType = delegateBuilder.CreateTypeInfo();
-
-            var backingField = Options.HasFlagFast(UseLazyBinding)
+        var backingField = Options.HasFlagFast(UseLazyBinding)
             ? TargetType.DefineField
             (
                 $"{workUnit.GetUniqueBaseMemberName()}_delegate_lazy",
@@ -93,101 +93,100 @@ namespace AdvancedDLSupport.ImplementationGenerators
                 FieldAttributes.Private | FieldAttributes.InitOnly
             );
 
-            AugmentHostingTypeConstructorWithDelegateInitialization(workUnit.SymbolName, backingFieldType, backingField);
-            GenerateDelegateInvokerBody(definition, backingFieldType, backingField);
+        AugmentHostingTypeConstructorWithDelegateInitialization(workUnit.SymbolName, backingFieldType, backingField);
+        GenerateDelegateInvokerBody(definition, backingFieldType, backingField);
 
-            yield break;
-        }
+        yield break;
+    }
 
-        /// <summary>
-        /// Augments the hosting type constructor with the logic required to initialize the backing delegate field.
-        /// </summary>
-        /// <param name="entrypointName">The name of the entry point.</param>
-        /// <param name="backingFieldType">The type of the backing field.</param>
-        /// <param name="backingField">The backing delegate field.</param>
-        private void AugmentHostingTypeConstructorWithDelegateInitialization
+    /// <summary>
+    /// Augments the hosting type constructor with the logic required to initialize the backing delegate field.
+    /// </summary>
+    /// <param name="entrypointName">The name of the entry point.</param>
+    /// <param name="backingFieldType">The type of the backing field.</param>
+    /// <param name="backingField">The backing delegate field.</param>
+    private void AugmentHostingTypeConstructorWithDelegateInitialization
+    (
+        string entrypointName,
+        Type backingFieldType,
+        FieldInfo backingField
+    )
+    {
+        var loadFunctionMethod = typeof(NativeLibraryBase).GetMethod
         (
-            string entrypointName,
-            Type backingFieldType,
-            FieldInfo backingField
-        )
+            nameof(NativeLibraryBase.LoadFunction),
+            BindingFlags.NonPublic | BindingFlags.Instance
+        ).MakeGenericMethod(backingFieldType);
+
+        TargetTypeConstructorIL.EmitLoadArgument(0);
+        TargetTypeConstructorIL.EmitLoadArgument(0);
+
+        if (Options.HasFlagFast(UseLazyBinding))
         {
-            var loadFunctionMethod = typeof(NativeLibraryBase).GetMethod
-            (
-                nameof(NativeLibraryBase.LoadFunction),
-                BindingFlags.NonPublic | BindingFlags.Instance
-            ).MakeGenericMethod(backingFieldType);
-
-            TargetTypeConstructorIL.EmitLoadArgument(0);
-            TargetTypeConstructorIL.EmitLoadArgument(0);
-
-            if (Options.HasFlagFast(UseLazyBinding))
-            {
-                var lambdaBuilder = GenerateFunctionLoadingLambda(backingFieldType, entrypointName);
-                GenerateLazyLoadedObject(lambdaBuilder, backingFieldType);
-            }
-            else
-            {
-                TargetTypeConstructorIL.EmitConstantString(entrypointName);
-                TargetTypeConstructorIL.EmitCallDirect(loadFunctionMethod);
-            }
-
-            TargetTypeConstructorIL.EmitSetField(backingField);
+            var lambdaBuilder = GenerateFunctionLoadingLambda(backingFieldType, entrypointName);
+            GenerateLazyLoadedObject(lambdaBuilder, backingFieldType);
+        }
+        else
+        {
+            TargetTypeConstructorIL.EmitConstantString(entrypointName);
+            TargetTypeConstructorIL.EmitCallDirect(loadFunctionMethod);
         }
 
-        /// <summary>
-        /// Generates the method body for a delegate invoker.
-        /// </summary>
-        /// <param name="method">The method to generate the body for.</param>
-        /// <param name="delegateBuilderType">The type of the method delegate.</param>
-        /// <param name="delegateField">The delegate field.</param>
-        private void GenerateDelegateInvokerBody
+        TargetTypeConstructorIL.EmitSetField(backingField);
+    }
+
+    /// <summary>
+    /// Generates the method body for a delegate invoker.
+    /// </summary>
+    /// <param name="method">The method to generate the body for.</param>
+    /// <param name="delegateBuilderType">The type of the method delegate.</param>
+    /// <param name="delegateField">The delegate field.</param>
+    private void GenerateDelegateInvokerBody
+    (
+        IntrospectiveMethodInfo method,
+        Type delegateBuilderType,
+        FieldInfo delegateField
+    )
+    {
+        if (!(method.GetWrappedMember() is MethodBuilder builder))
+        {
+            throw new ArgumentNullException(nameof(method), "Could not unwrap introspective method to method builder.");
+        }
+
+        // Let's create a method that simply invoke the delegate
+        var methodIL = builder.GetILGenerator();
+
+        GenerateSymbolPush(methodIL, delegateField);
+
+        for (short p = 1; p <= method.ParameterTypes.Count; p++)
+        {
+            methodIL.EmitLoadArgument(p);
+        }
+
+        methodIL.EmitCallDirect(delegateBuilderType.GetMethod("Invoke"));
+        methodIL.EmitReturn();
+    }
+
+    /// <summary>
+    /// Generates a delegate type for the given method.
+    /// </summary>
+    /// <param name="workUnit">The method to generate a delegate type for.</param>
+    /// <returns>A delegate type.</returns>
+    private TypeBuilder GenerateDelegateType
+    (
+        PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
+    )
+    {
+        var definition = workUnit.Definition;
+
+        // Declare a delegate type
+        var delegateBuilder = TargetModule.DefineDelegate
         (
-            IntrospectiveMethodInfo method,
-            Type delegateBuilderType,
-            FieldInfo delegateField
-        )
-        {
-            if (!(method.GetWrappedMember() is MethodBuilder builder))
-            {
-                throw new ArgumentNullException(nameof(method), "Could not unwrap introspective method to method builder.");
-            }
+            $"{workUnit.GetUniqueBaseMemberName()}_delegate",
+            definition,
+            Options.HasFlagFast(SuppressSecurity)
+        );
 
-            // Let's create a method that simply invoke the delegate
-            var methodIL = builder.GetILGenerator();
-
-            GenerateSymbolPush(methodIL, delegateField);
-
-            for (short p = 1; p <= method.ParameterTypes.Count; p++)
-            {
-                methodIL.EmitLoadArgument(p);
-            }
-
-            methodIL.EmitCallDirect(delegateBuilderType.GetMethod("Invoke"));
-            methodIL.EmitReturn();
-        }
-
-        /// <summary>
-        /// Generates a delegate type for the given method.
-        /// </summary>
-        /// <param name="workUnit">The method to generate a delegate type for.</param>
-        /// <returns>A delegate type.</returns>
-        private TypeBuilder GenerateDelegateType
-        (
-            PipelineWorkUnit<IntrospectiveMethodInfo> workUnit
-        )
-        {
-            var definition = workUnit.Definition;
-
-            // Declare a delegate type
-            var delegateBuilder = TargetModule.DefineDelegate
-            (
-                $"{workUnit.GetUniqueBaseMemberName()}_delegate",
-                definition,
-                Options.HasFlagFast(SuppressSecurity)
-            );
-
-            return delegateBuilder;
-        }
+        return delegateBuilder;
     }
 }

@@ -24,35 +24,34 @@ using System;
 
 #pragma warning disable SA1600, CS1591
 
-namespace AdvancedDLSupport.Tests.Data.Classes
+namespace AdvancedDLSupport.Tests.Data.Classes;
+
+public class MixedModeClassThatIsNotAbstract : NativeLibraryBase, IMixedModeLibrary
 {
-    public class MixedModeClassThatIsNotAbstract : NativeLibraryBase, IMixedModeLibrary
+    public MixedModeClassThatIsNotAbstract(string path, Type interfaceType, ImplementationOptions options)
+        : base(path, options)
     {
-        public MixedModeClassThatIsNotAbstract(string path, Type interfaceType, ImplementationOptions options)
-            : base(path, options)
-        {
-        }
+    }
 
-        public bool RanManagedSubtract { get; private set; }
+    public bool RanManagedSubtract { get; private set; }
 
-        public int ManagedAdd(int a, int b)
-        {
-            return a + b;
-        }
+    public int ManagedAdd(int a, int b)
+    {
+        return a + b;
+    }
 
-        public int NativeProperty { get; set; }
+    public int NativeProperty { get; set; }
 
-        public int OtherNativeProperty { get; set; }
+    public int OtherNativeProperty { get; set; }
 
-        public int Multiply(int value, int multiplier)
-        {
-            return value * multiplier;
-        }
+    public int Multiply(int value, int multiplier)
+    {
+        return value * multiplier;
+    }
 
-        public int Subtract(int value, int other)
-        {
-            RanManagedSubtract = true;
-            return value - other;
-        }
+    public int Subtract(int value, int other)
+    {
+        RanManagedSubtract = true;
+        return value - other;
     }
 }

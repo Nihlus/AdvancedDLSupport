@@ -26,45 +26,44 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using AdvancedDLSupport.Reflection;
 
-namespace AdvancedDLSupport
+namespace AdvancedDLSupport;
+
+/// <summary>
+/// Mangles C-style functions decorated with the MSVC __stdcall attribute.
+/// </summary>
+internal class StdCallEntrypointMangler : IEntrypointMangler
 {
-    /// <summary>
-    /// Mangles C-style functions decorated with the MSVC __stdcall attribute.
-    /// </summary>
-    internal class StdCallEntrypointMangler : IEntrypointMangler
+    /// <inheritdoc />
+    public string Mangle<T>(T member) where T : IIntrospectiveMember
     {
-        /// <inheritdoc />
-        public string Mangle<T>(T member) where T : IIntrospectiveMember
+        if (!(member is IntrospectiveMethodInfo method))
         {
-            if (!(member is IntrospectiveMethodInfo method))
-            {
-                throw new NotSupportedException("The given member cannot be mangled by this mangler.");
-            }
-
-            var argumentListSize = method.ParameterTypes.Sum(a => a.IsByRef ? IntPtr.Size : Marshal.SizeOf(a));
-            return $"_{method.GetFullUnmangledNativeEntrypoint()}@{argumentListSize}";
+            throw new NotSupportedException("The given member cannot be mangled by this mangler.");
         }
 
-        /// <inheritdoc />
-        public string Demangle(string mangledEntrypoint)
+        var argumentListSize = method.ParameterTypes.Sum(a => a.IsByRef ? IntPtr.Size : Marshal.SizeOf(a));
+        return $"_{method.GetFullUnmangledNativeEntrypoint()}@{argumentListSize}";
+    }
+
+    /// <inheritdoc />
+    public string Demangle(string mangledEntrypoint)
+    {
+        return new string(mangledEntrypoint.Skip(1).TakeWhile(c => c != '@').ToArray());
+    }
+
+    /// <inheritdoc />
+    public bool IsManglerApplicable(MemberInfo member)
+    {
+        if (!(member is IntrospectiveMethodInfo method))
         {
-            return new string(mangledEntrypoint.Skip(1).TakeWhile(c => c != '@').ToArray());
+            return false;
         }
 
-        /// <inheritdoc />
-        public bool IsManglerApplicable(MemberInfo member)
-        {
-            if (!(member is IntrospectiveMethodInfo method))
-            {
-                return false;
-            }
+        var isApplicable =
+            method.GetNativeCallingConvention() == CallingConvention.StdCall &&
+            IntPtr.Size == 4 && // 32-bit system
+            RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-            var isApplicable =
-                method.GetNativeCallingConvention() == CallingConvention.StdCall &&
-                IntPtr.Size == 4 && // 32-bit system
-                RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-
-            return isApplicable;
-        }
+        return isApplicable;
     }
 }

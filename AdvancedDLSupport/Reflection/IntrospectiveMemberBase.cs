@@ -27,199 +27,198 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
-namespace AdvancedDLSupport.Reflection
+namespace AdvancedDLSupport.Reflection;
+
+/// <summary>
+/// Abstract base wrapper class for introspective member informations.
+/// </summary>
+/// <typeparam name="TMemberInfo">The member info to wrap.</typeparam>
+[PublicAPI]
+public abstract class IntrospectiveMemberBase<TMemberInfo> : MemberInfo, IIntrospectiveMember
+    where TMemberInfo : MemberInfo
 {
-    /// <summary>
-    /// Abstract base wrapper class for introspective member informations.
-    /// </summary>
-    /// <typeparam name="TMemberInfo">The member info to wrap.</typeparam>
+    /// <inheritdoc cref="MemberInfo.Name" />
     [PublicAPI]
-    public abstract class IntrospectiveMemberBase<TMemberInfo> : MemberInfo, IIntrospectiveMember
-        where TMemberInfo : MemberInfo
+    public override string Name { get; }
+
+    /// <summary>
+    /// Gets the custom attributes applies to this member.
+    /// </summary>
+    [PublicAPI]
+    public override IEnumerable<CustomAttributeData> CustomAttributes { get; }
+
+    /// <inheritdoc />
+    [PublicAPI]
+    public override Type DeclaringType { get; }
+
+    /// <inheritdoc />
+    [PublicAPI]
+    public override MemberTypes MemberType { get; }
+
+    /// <inheritdoc />
+    [PublicAPI]
+    public override Type ReflectedType { get; }
+
+    /// <summary>
+    /// Gets the wrapped member.
+    /// </summary>
+    [PublicAPI]
+    protected TMemberInfo Member { get; }
+
+    /// <summary>
+    /// Gets the type that the member gets native metadata from (typically an interface or a mixed-mode class).
+    /// </summary>
+    [PublicAPI]
+    public Type MetadataType { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IntrospectiveMemberBase{TMemberInfo}"/> class.
+    /// </summary>
+    /// <param name="memberInfo">The member info object to wrap.</param>
+    /// <param name="metadataType">The type that the member gets native metadata from.</param>
+    [PublicAPI]
+    protected IntrospectiveMemberBase(TMemberInfo memberInfo, Type metadataType)
+        : this(memberInfo, metadataType, memberInfo.CustomAttributes)
     {
-        /// <inheritdoc cref="MemberInfo.Name" />
-        [PublicAPI]
-        public override string Name { get; }
+    }
 
-        /// <summary>
-        /// Gets the custom attributes applies to this member.
-        /// </summary>
-        [PublicAPI]
-        public override IEnumerable<CustomAttributeData> CustomAttributes { get; }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IntrospectiveMemberBase{TMemberInfo}"/> class.
+    /// </summary>
+    /// <param name="memberInfo">The member info to wrap.</param>
+    /// <param name="metadataType">The type that the member gets native metadata from.</param>
+    /// <param name="customAttributes">The custom attributes associated with the member.</param>
+    [PublicAPI]
+    protected IntrospectiveMemberBase
+    (
+        TMemberInfo memberInfo,
+        Type metadataType,
+        IEnumerable<CustomAttributeData>? customAttributes = default
+    )
+    {
+        Member = memberInfo;
+        Name = memberInfo.Name;
+        DeclaringType = memberInfo.DeclaringType;
+        MemberType = memberInfo.MemberType;
+        ReflectedType = memberInfo.ReflectedType;
 
-        /// <inheritdoc />
-        [PublicAPI]
-        public override Type DeclaringType { get; }
+        MetadataType = metadataType;
 
-        /// <inheritdoc />
-        [PublicAPI]
-        public override MemberTypes MemberType { get; }
+        CustomAttributes = customAttributes?.ToList() ?? new List<CustomAttributeData>();
+    }
 
-        /// <inheritdoc />
-        [PublicAPI]
-        public override Type ReflectedType { get; }
+    /// <summary>
+    /// Determines if the member has the same native entrypoint as another given member.
+    /// </summary>
+    /// <param name="other">The other member.</param>
+    /// <returns>true if the members have the same native entrypoint; otherwise, false.</returns>
+    [PublicAPI, Pure]
+    public bool HasSameNativeEntrypointAs(IntrospectiveMethodInfo other)
+    {
+        return GetFullNativeEntrypoint() == other.GetFullNativeEntrypoint();
+    }
 
-        /// <summary>
-        /// Gets the wrapped member.
-        /// </summary>
-        [PublicAPI]
-        protected TMemberInfo Member { get; }
+    /// <inheritdoc />
+    public string GetFullNativeEntrypoint()
+    {
+        var transformer = SymbolTransformer.Default;
+        return transformer.GetTransformedSymbol(MetadataType, this);
+    }
 
-        /// <summary>
-        /// Gets the type that the member gets native metadata from (typically an interface or a mixed-mode class).
-        /// </summary>
-        [PublicAPI]
-        public Type MetadataType { get; }
+    /// <inheritdoc />
+    public string GetFullUnmangledNativeEntrypoint()
+    {
+        var transformer = SymbolTransformer.Default;
+        return transformer.GetTransformedUnmangledSymbol(MetadataType, this);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IntrospectiveMemberBase{TMemberInfo}"/> class.
-        /// </summary>
-        /// <param name="memberInfo">The member info object to wrap.</param>
-        /// <param name="metadataType">The type that the member gets native metadata from.</param>
-        [PublicAPI]
-        protected IntrospectiveMemberBase(TMemberInfo memberInfo, Type metadataType)
-            : this(memberInfo, metadataType, memberInfo.CustomAttributes)
+    /// <inheritdoc />
+    public string GetNativeEntrypoint()
+    {
+        var metadataAttribute = GetCustomAttribute<NativeSymbolAttribute>()
+                                ?? new NativeSymbolAttribute(Name);
+
+        return metadataAttribute.Entrypoint;
+    }
+
+    /// <inheritdoc />
+    public CallingConvention GetNativeCallingConvention()
+    {
+        var metadataAttribute = GetCustomAttribute<NativeSymbolAttribute>() ??
+                                new NativeSymbolAttribute(Name);
+
+        return metadataAttribute.CallingConvention;
+    }
+
+    /// <summary>
+    /// Gets the wrapped member information. No guarantees can be made about its introspective capabilities.
+    /// </summary>
+    /// <returns>The wrapped method.</returns>
+    [PublicAPI]
+    public TMemberInfo GetWrappedMember() => Member;
+
+    /// <inheritdoc />
+    [PublicAPI]
+    public override object[] GetCustomAttributes(bool inherit)
+    {
+        // TODO: Wrap properly
+        return Member.GetCustomAttributes(inherit);
+    }
+
+    /// <inheritdoc />
+    [PublicAPI]
+    public override object[] GetCustomAttributes(Type attributeType, bool inherit)
+    {
+        // TODO: Wrap properly
+        return Member.GetCustomAttributes(attributeType, inherit);
+    }
+
+    /// <inheritdoc />
+    [PublicAPI]
+    public override bool IsDefined(Type attributeType, bool inherit)
+    {
+        // TODO: Wrap properly
+        return Member.IsDefined(attributeType, inherit);
+    }
+
+    /// <inheritdoc />
+    [PublicAPI]
+    public TAttribute GetCustomAttribute<TAttribute>() where TAttribute : Attribute
+    {
+        var matchingData = CustomAttributes.FirstOrDefault(a => a.AttributeType == typeof(TAttribute));
+
+        if (matchingData is null)
         {
+            return null;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IntrospectiveMemberBase{TMemberInfo}"/> class.
-        /// </summary>
-        /// <param name="memberInfo">The member info to wrap.</param>
-        /// <param name="metadataType">The type that the member gets native metadata from.</param>
-        /// <param name="customAttributes">The custom attributes associated with the member.</param>
-        [PublicAPI]
-        protected IntrospectiveMemberBase
-        (
-            TMemberInfo memberInfo,
-            Type metadataType,
-            IEnumerable<CustomAttributeData>? customAttributes = default
-        )
+        var type = matchingData.AttributeType;
+        var instance = Activator.CreateInstance(type, matchingData.ConstructorArguments.Select(a => a.Value).ToArray());
+
+        foreach (var namedArgument in matchingData.NamedArguments ?? new List<CustomAttributeNamedArgument>())
         {
-            Member = memberInfo;
-            Name = memberInfo.Name;
-            DeclaringType = memberInfo.DeclaringType;
-            MemberType = memberInfo.MemberType;
-            ReflectedType = memberInfo.ReflectedType;
-
-            MetadataType = metadataType;
-
-            CustomAttributes = customAttributes?.ToList() ?? new List<CustomAttributeData>();
-        }
-
-        /// <summary>
-        /// Determines if the member has the same native entrypoint as another given member.
-        /// </summary>
-        /// <param name="other">The other member.</param>
-        /// <returns>true if the members have the same native entrypoint; otherwise, false.</returns>
-        [PublicAPI, Pure]
-        public bool HasSameNativeEntrypointAs(IntrospectiveMethodInfo other)
-        {
-            return GetFullNativeEntrypoint() == other.GetFullNativeEntrypoint();
-        }
-
-        /// <inheritdoc />
-        public string GetFullNativeEntrypoint()
-        {
-            var transformer = SymbolTransformer.Default;
-            return transformer.GetTransformedSymbol(MetadataType, this);
-        }
-
-        /// <inheritdoc />
-        public string GetFullUnmangledNativeEntrypoint()
-        {
-            var transformer = SymbolTransformer.Default;
-            return transformer.GetTransformedUnmangledSymbol(MetadataType, this);
-        }
-
-        /// <inheritdoc />
-        public string GetNativeEntrypoint()
-        {
-            var metadataAttribute = GetCustomAttribute<NativeSymbolAttribute>()
-                                    ?? new NativeSymbolAttribute(Name);
-
-            return metadataAttribute.Entrypoint;
-        }
-
-        /// <inheritdoc />
-        public CallingConvention GetNativeCallingConvention()
-        {
-            var metadataAttribute = GetCustomAttribute<NativeSymbolAttribute>() ??
-                                    new NativeSymbolAttribute(Name);
-
-            return metadataAttribute.CallingConvention;
-        }
-
-        /// <summary>
-        /// Gets the wrapped member information. No guarantees can be made about its introspective capabilities.
-        /// </summary>
-        /// <returns>The wrapped method.</returns>
-        [PublicAPI]
-        public TMemberInfo GetWrappedMember() => Member;
-
-        /// <inheritdoc />
-        [PublicAPI]
-        public override object[] GetCustomAttributes(bool inherit)
-        {
-            // TODO: Wrap properly
-            return Member.GetCustomAttributes(inherit);
-        }
-
-        /// <inheritdoc />
-        [PublicAPI]
-        public override object[] GetCustomAttributes(Type attributeType, bool inherit)
-        {
-            // TODO: Wrap properly
-            return Member.GetCustomAttributes(attributeType, inherit);
-        }
-
-        /// <inheritdoc />
-        [PublicAPI]
-        public override bool IsDefined(Type attributeType, bool inherit)
-        {
-            // TODO: Wrap properly
-            return Member.IsDefined(attributeType, inherit);
-        }
-
-        /// <inheritdoc />
-        [PublicAPI]
-        public TAttribute GetCustomAttribute<TAttribute>() where TAttribute : Attribute
-        {
-            var matchingData = CustomAttributes.FirstOrDefault(a => a.AttributeType == typeof(TAttribute));
-
-            if (matchingData is null)
+            if (namedArgument.MemberInfo is FieldInfo field)
             {
-                return null;
+                field.SetValue(instance, namedArgument.TypedValue.Value);
             }
 
-            var type = matchingData.AttributeType;
-            var instance = Activator.CreateInstance(type, matchingData.ConstructorArguments.Select(a => a.Value).ToArray());
-
-            foreach (var namedArgument in matchingData.NamedArguments ?? new List<CustomAttributeNamedArgument>())
+            if (namedArgument.MemberInfo is PropertyInfo property)
             {
-                if (namedArgument.MemberInfo is FieldInfo field)
-                {
-                    field.SetValue(instance, namedArgument.TypedValue.Value);
-                }
-
-                if (namedArgument.MemberInfo is PropertyInfo property)
-                {
-                    property.SetValue(instance, namedArgument.TypedValue.Value);
-                }
+                property.SetValue(instance, namedArgument.TypedValue.Value);
             }
-
-            return instance as TAttribute;
         }
 
-        /// <summary>
-        /// Explicitly casts to and accesses the wrapped member.
-        /// </summary>
-        /// <param name="introspectiveInfo">The introspective info.</param>
-        /// <returns>The wrapped member.</returns>
-        [PublicAPI]
-        public static explicit operator TMemberInfo?(IntrospectiveMemberBase<TMemberInfo>? introspectiveInfo)
-        {
-            return introspectiveInfo?.Member;
-        }
+        return instance as TAttribute;
+    }
+
+    /// <summary>
+    /// Explicitly casts to and accesses the wrapped member.
+    /// </summary>
+    /// <param name="introspectiveInfo">The introspective info.</param>
+    /// <returns>The wrapped member.</returns>
+    [PublicAPI]
+    public static explicit operator TMemberInfo?(IntrospectiveMemberBase<TMemberInfo>? introspectiveInfo)
+    {
+        return introspectiveInfo?.Member;
     }
 }
