@@ -70,8 +70,7 @@ public static class DllMapAttributeParser
 
         bool isInverse = false;
 
-        // ReSharper disable once PossibleNullReferenceException
-        var parsingString = content.Replace('-', '_');
+        var parsingString = content!.Replace('-', '_');
         if (parsingString.First() == '!')
         {
             parsingString = new string(parsingString.Skip(1).ToArray());

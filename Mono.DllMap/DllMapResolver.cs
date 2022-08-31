@@ -164,7 +164,8 @@ public class DllMapResolver
     private string GetDllMapPath(Assembly assembly)
     {
         var assemblyName = assembly.GetName().Name;
-        var assemblyDirectory = Directory.GetParent(assembly.Location).FullName;
+        var parentLocation = Directory.GetParent(assembly.Location);
+        var assemblyDirectory = parentLocation?.FullName ?? Directory.GetDirectoryRoot(assembly.Location);
         var assemblyExtension = Path.GetExtension(assembly.Location);
 
         var mapPath = Path.Combine(assemblyDirectory, $"{assemblyName}{assemblyExtension}.config");

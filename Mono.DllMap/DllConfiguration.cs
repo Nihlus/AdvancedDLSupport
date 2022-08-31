@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -52,6 +53,11 @@ public class DllConfiguration
         var currentPlatform = DllConfigurationPlatformHelper.GetCurrentPlatform();
         var currentArch = DllConfigurationPlatformHelper.GetCurrentRuntimeArchitecture();
         var currentWordSize = DllConfigurationPlatformHelper.GetRuntimeWordSize();
+
+        if (Maps is null)
+        {
+            return Array.Empty<DllMap>();
+        }
 
         return Maps.Where
         (
@@ -99,7 +105,7 @@ public class DllConfiguration
     public static DllConfiguration Parse(TextReader tr)
     {
         var deserializer = new XmlSerializer(typeof(DllConfiguration));
-        var config = (DllConfiguration)deserializer.Deserialize(tr);
+        var config = (DllConfiguration)(deserializer.Deserialize(tr) ?? throw new InvalidOperationException());
 
         // Apply constraint inheritance
         foreach (var map in config.Maps ?? new List<DllMap>())
