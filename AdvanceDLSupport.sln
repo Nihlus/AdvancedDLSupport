@@ -6,8 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "metadata", "metadata", "{F1A57014-71CE-4032-A652-01B7E35E14DB}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		.travis.yml = .travis.yml
-		appveyor.yml = appveyor.yml
 		CONTRIBUTING.md = CONTRIBUTING.md
 		.github\ISSUE_TEMPLATE.md = .github\ISSUE_TEMPLATE.md
 		.github\PULL_REQUEST_TEMPLATE.md = .github\PULL_REQUEST_TEMPLATE.md
@@ -29,14 +27,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{96E3AE84-1
 		docs\quickstart.md = docs\quickstart.md
 		docs\supported_constructs.md = docs\supported_constructs.md
 		docs\symbol-transformation.md = docs\symbol-transformation.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{BB134437-F15D-42F6-B88C-46C7BA8FEFEB}"
-	ProjectSection(SolutionItems) = preProject
-		scripts\appveyor-coverage.ps1 = scripts\appveyor-coverage.ps1
-		scripts\appveyor-install-dotnet-32.ps1 = scripts\appveyor-install-dotnet-32.ps1
-		scripts\travis-build.sh = scripts\travis-build.sh
-		scripts\travis-coverage.sh = scripts\travis-coverage.sh
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedDLSupport", "AdvancedDLSupport\AdvancedDLSupport.csproj", "{7EDC8F84-DF28-4C3C-AF56-F283B694218A}"
