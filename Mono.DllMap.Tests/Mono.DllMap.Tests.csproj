@@ -1,14 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
-    <Configurations>Debug;Release</Configurations>
-    <Platforms>AnyCPU;x86;x64</Platforms>
-    <Prefer32bit>false</Prefer32bit>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
+﻿<Project Sdk="Remora.Tests.Sdk/1.0.0">
   <ItemGroup>
     <Content Include="Data\*.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -17,18 +7,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="altcover" Version="6.2.714" />
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
-    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
-  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Mono.DllMap\Mono.DllMap.csproj" />
   </ItemGroup>
-
-  <!-- Common properties -->
-  <Import Project="..\props\common.props" />
-  <Import Project="$(SolutionRoot)\props\netfx-mono.props" />
-  <Import Project="$(SolutionRoot)\props\stylecop.props" />
 </Project>

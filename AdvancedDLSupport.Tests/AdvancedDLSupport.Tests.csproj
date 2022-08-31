@@ -1,39 +1,19 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Remora.Tests.Sdk/1.0.0">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
-    <IsPackable>false</IsPackable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Configurations>Debug;Release</Configurations>
-    <Platforms>AnyCPU;x86;x64</Platforms>
-    <Prefer32bit>false</Prefer32bit>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
-  <PropertyGroup>
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="altcover" Version="6.2.714" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
-    <PackageReference Include="JetBrains.Annotations" Version="11.1.0" PrivateAssets="all" />
-    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
-  </ItemGroup>
+
   <ItemGroup>
     <Content Include="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\AdvancedDLSupport\AdvancedDLSupport.csproj" />
   </ItemGroup>
+
   <!-- Common CMake build steps -->
   <Import Project="targets\CMake-Unix.targets" Condition="'$(OS)' == 'Unix'" />
   <Import Project="targets\CMake-Win.targets" Condition="'$(OS)' == 'Windows_NT'" />
-
-  <!-- Common properties -->
-  <Import Project="..\props\common.props" />
-  <Import Project="$(SolutionRoot)\props\netfx-mono.props" />
-  <Import Project="$(SolutionRoot)\props\stylecop.props" />
 </Project>

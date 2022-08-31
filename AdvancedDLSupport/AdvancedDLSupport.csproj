@@ -1,28 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Remora.Sdk/1.0.0">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <DefineConstants>$(DefineConstants);JETBRAINS_ANNOTATIONS</DefineConstants>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>7.3</LangVersion>
-    <Configurations>Debug;Release</Configurations>
-    <Platforms>AnyCPU;x86;x64</Platforms>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
+
   <PropertyGroup>
-    <Title>AdvancedDLSupport</Title>
     <Version>3.2.0</Version>
+    <Description>An alternative approach to your typical P/Invoke.</Description>
   </PropertyGroup>
+
   <PropertyGroup>
-    <PackageId>AdvancedDLSupport</PackageId>
     <PackageReleaseNotes>LPUTF8 support for runtimes that support it.</PackageReleaseNotes>
   </PropertyGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="AdvancedDLSupport.ExternalAnnotations.xml">
-      <InProject>false</InProject>
-      <CopyToOutputDirectory>CopyIfNewer</CopyToOutputDirectory>
-    </AdditionalFiles>
-  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="System.Memory" Version="4.5.2" />
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
@@ -30,18 +20,13 @@
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.2" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Humanizer.Core" Version="2.5.16" PrivateAssets="Compile;Build;Analyzers;ContentFiles" />
     <PackageReference Include="StrictEmit" Version="2.4.2" PrivateAssets="Compile;Build;Analyzers;ContentFiles" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="11.1.0" PrivateAssets="all" />
-  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Mono.DllMap\Mono.DllMap.csproj" />
   </ItemGroup>
-  <Import Project="..\props\common.props" />
-  <Import Project="$(SolutionRoot)\props\nuget-common.props" />
-  <Import Project="$(SolutionRoot)\props\netfx-mono.props" />
-  <Import Project="$(SolutionRoot)\props\stylecop.props" />
 </Project>

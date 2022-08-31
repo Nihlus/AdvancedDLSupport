@@ -1,30 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Remora.Sdk/1.0.0">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <DefineConstants>$(DefineConstants);JETBRAINS_ANNOTATIONS</DefineConstants>
-    <CodeAnalysisRuleSet>..\stylecop.ruleset</CodeAnalysisRuleSet>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <LangVersion>7.1</LangVersion>
-    <Configurations>Debug;Release</Configurations>
-    <Platforms>AnyCPU;x86;x64</Platforms>
-  </PropertyGroup>
-  <PropertyGroup>
-    <Title>Mono.DllMap</Title>
     <Version>1.0.1</Version>
     <Description>Parsing library for Mono DllMaps</Description>
   </PropertyGroup>
+
   <PropertyGroup>
-    <PackageId>Mono.DllMap</PackageId>
     <PackageReleaseNotes>Relicense under LGPLv3.</PackageReleaseNotes>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
-    <PackageReference Include="JetBrains.Annotations" Version="11.1.0" PrivateAssets="all" />
   </ItemGroup>
-
-  <!-- Common properties -->
-  <Import Project="..\props\common.props" />
-  <Import Project="$(SolutionRoot)\props\nuget-common.props" />
-  <Import Project="$(SolutionRoot)\props\netfx-mono.props" />
-  <Import Project="$(SolutionRoot)\props\stylecop.props" />
 </Project>

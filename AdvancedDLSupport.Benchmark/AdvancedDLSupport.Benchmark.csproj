@@ -1,35 +1,21 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Remora.Sdk/1.0.0">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
-    <LangVersion>latest</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>$(DefineConstants);JETBRAINS_ANNOTATIONS</DefineConstants>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
+
   <PropertyGroup>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-  <ItemGroup>
-    <Content Include="AdvancedDLSupport.Benchmark.ExternalAnnotations.xml">
-      <InProject>false</InProject>
-      <CopyToOutputDirectory>CopyIfNewer</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.10.14" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta006" PrivateAssets="all" />
-    <PackageReference Include="JetBrains.Annotations" Version="11.1.0" PrivateAssets="all" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\AdvancedDLSupport\AdvancedDLSupport.csproj" />
   </ItemGroup>
+
   <!-- Common CMake build steps -->
   <Import Project="targets\CMake-Unix.targets" Condition="'$(OS)' == 'Unix'" />
   <Import Project="targets\CMake-Win.targets" Condition="'$(OS)' == 'Windows_NT'" />
-
-  <!-- Common properties -->
-  <Import Project="..\props\common.props" />
-  <Import Project="$(SolutionRoot)\props\netfx-mono.props" />
-  <Import Project="$(SolutionRoot)\props\stylecop.props" />
 </Project>

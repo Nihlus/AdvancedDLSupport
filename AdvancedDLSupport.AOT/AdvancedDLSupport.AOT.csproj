@@ -1,45 +1,31 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Remora.Sdk/1.0.0">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net461</TargetFramework>
-    <DefineConstants>$(DefineConstants);JETBRAINS_ANNOTATIONS</DefineConstants>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>7.1</LangVersion>
-    <Configurations>Debug;Release</Configurations>
-    <Platforms>AnyCPU;x86;x64</Platforms>
-    <Prefer32bit>false</Prefer32bit>
   </PropertyGroup>
+
   <PropertyGroup>
-    <Title>AdvancedDLSupport.AOT</Title>
     <Version>2.0.0</Version>
   </PropertyGroup>
+
   <PropertyGroup>
-    <PackageId>AdvancedDLSupport.AOT</PackageId>
     <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="netstandard" />
-    <Reference Include="System.Reflection.Emit" />
-  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.2.1" />
     <PackageReference Include="NLog" Version="4.5.3" />
     <PackageReference Include="StrictEmit" Version="2.4.2" PrivateAssets="Compile;Build;Analyzers;ContentFiles"/>
-    <PackageReference Include="JetBrains.Annotations" Version="11.1.0" PrivateAssets="all" />
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\AdvancedDLSupport\AdvancedDLSupport.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <None Remove="NLog.config" />
     <Content Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <Import Project="..\props\common.props" />
-  <Import Project="$(SolutionRoot)\props\nuget-common.props" />
-  <Import Project="$(SolutionRoot)\props\netfx-mono.props" />
-  <Import Project="$(SolutionRoot)\props\stylecop.props" />
 </Project>

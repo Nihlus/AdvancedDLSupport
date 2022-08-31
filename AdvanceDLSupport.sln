@@ -12,8 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "metadata", "metadata", "{F1
 		.github\ISSUE_TEMPLATE.md = .github\ISSUE_TEMPLATE.md
 		.github\PULL_REQUEST_TEMPLATE.md = .github\PULL_REQUEST_TEMPLATE.md
 		README.md = README.md
-		stylecop.json = stylecop.json
-		stylecop.ruleset = stylecop.ruleset
+		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{96E3AE84-1774-4086-8E07-3B9F842D16DC}"
@@ -38,14 +37,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{BB13
 		scripts\appveyor-install-dotnet-32.ps1 = scripts\appveyor-install-dotnet-32.ps1
 		scripts\travis-build.sh = scripts\travis-build.sh
 		scripts\travis-coverage.sh = scripts\travis-coverage.sh
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "props", "props", "{47E747E8-1D9C-447A-BBA8-EFA5E38E948C}"
-	ProjectSection(SolutionItems) = preProject
-		props\common.props = props\common.props
-		props\netfx-mono.props = props\netfx-mono.props
-		props\nuget-common.props = props\nuget-common.props
-		props\stylecop.props = props\stylecop.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedDLSupport", "AdvancedDLSupport\AdvancedDLSupport.csproj", "{7EDC8F84-DF28-4C3C-AF56-F283B694218A}"

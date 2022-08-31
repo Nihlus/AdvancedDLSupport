@@ -1,37 +1,15 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
-    <IsPackable>false</IsPackable>
-    <Configurations>Debug;Release</Configurations>
-    <Platforms>AnyCPU;x86;x64</Platforms>
-    <Prefer32bit>false</Prefer32bit>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="netstandard" />
-    <Reference Include="System.Reflection.Emit" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="altcover" Version="6.2.714" />
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
-    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
-  </ItemGroup>
+﻿<Project Sdk="Remora.Tests.Sdk/1.0.0">
   <ItemGroup>
     <Content Include="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\AdvancedDLSupport.AOT\AdvancedDLSupport.AOT.csproj" />
   </ItemGroup>
+
   <!-- Common CMake build steps -->
   <Import Project="targets\CMake-Unix.targets" Condition="'$(OS)' == 'Unix'" />
   <Import Project="targets\CMake-Win.targets" Condition="'$(OS)' == 'Windows_NT'" />
-
-  <!-- Common properties -->
-  <Import Project="..\props\common.props" />
-  <Import Project="$(SolutionRoot)\props\nuget-common.props" />
-  <Import Project="$(SolutionRoot)\props\netfx-mono.props" />
-  <Import Project="$(SolutionRoot)\props\stylecop.props" />
 </Project>
