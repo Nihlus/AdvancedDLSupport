@@ -23,12 +23,11 @@
 using System.Reflection.Emit;
 using AdvancedDLSupport.Pipeline;
 using AdvancedDLSupport.Reflection;
-using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
 
+using static System.Reflection.BindingFlags;
 using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 using static AdvancedDLSupport.ImplementationOptions;
-using static System.Reflection.BindingFlags;
 
 namespace AdvancedDLSupport.ImplementationGenerators;
 

@@ -33,9 +33,9 @@ using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
 using StrictEmit;
 
+using static System.Runtime.InteropServices.UnmanagedType;
 using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 using static AdvancedDLSupport.ImplementationOptions;
-using static System.Runtime.InteropServices.UnmanagedType;
 
 #pragma warning disable SA1513
 

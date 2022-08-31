@@ -32,8 +32,8 @@ using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using StrictEmit;
 
-using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 using static System.Runtime.InteropServices.UnmanagedType;
+using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 
 #pragma warning disable SA1513
 
@@ -73,6 +73,7 @@ internal sealed class StringMarshallingWrapper : CallWrapperBase
         _ptrToStringMethods = new Dictionary<UnmanagedType, MethodInfo>();
 
         // Managed-to-unmanaged methods
+        #pragma warning disable SA1118
         _stringToPtrMethods.Add
         (
             BStr,
@@ -153,6 +154,8 @@ internal sealed class StringMarshallingWrapper : CallWrapperBase
                 new[] { typeof(IntPtr) }
             )!
         );
+
+        #pragma warning restore
 
         // Add UTF8 string support, if available.
         var utf8UnmanagedTypeField = typeof(UnmanagedType).GetField("LPUTF8Str");

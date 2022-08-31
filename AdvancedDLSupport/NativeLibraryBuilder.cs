@@ -36,9 +36,10 @@ using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap;
 using Mono.DllMap.Extensions;
-using static AdvancedDLSupport.ImplementationOptions;
+
 using static System.Reflection.CallingConventions;
 using static System.Reflection.MethodAttributes;
+using static AdvancedDLSupport.ImplementationOptions;
 using Assembly = System.Reflection.Assembly;
 
 namespace AdvancedDLSupport;

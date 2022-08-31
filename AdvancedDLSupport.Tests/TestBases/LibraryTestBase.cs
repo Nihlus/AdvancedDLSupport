@@ -22,7 +22,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using JetBrains.Annotations;
 
 #pragma warning disable SA1600, CS1591
 

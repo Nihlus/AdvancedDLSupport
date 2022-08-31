@@ -31,9 +31,10 @@ using AdvancedDLSupport.Reflection;
 using JetBrains.Annotations;
 using Mono.DllMap.Extensions;
 using StrictEmit;
+
+using static System.Reflection.MethodAttributes;
 using static AdvancedDLSupport.ImplementationGenerators.GeneratorComplexity;
 using static AdvancedDLSupport.ImplementationOptions;
-using static System.Reflection.MethodAttributes;
 
 namespace AdvancedDLSupport.ImplementationGenerators;
 

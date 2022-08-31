@@ -21,11 +21,8 @@
 //
 
 using System;
-using System.Data;
-using System.Runtime.InteropServices;
 using AdvancedDLSupport.Tests.Data;
 using AdvancedDLSupport.Tests.TestBases;
-using JetBrains.Annotations;
 using Xunit;
 
 #pragma warning disable SA1600, CS1591

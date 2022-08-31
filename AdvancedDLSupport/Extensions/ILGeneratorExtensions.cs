@@ -21,10 +21,8 @@
 //
 
 using System;
-using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
-using JetBrains.Annotations;
 
 namespace AdvancedDLSupport.Extensions;
 
@@ -45,9 +43,9 @@ internal static class ILGeneratorExtensions
 
     static ILGeneratorExtensions()
     {
-        var ilGeneratorType = typeof(ILGenerator);
+        var generatorType = typeof(ILGenerator);
 
-        var realEmitCalli = ilGeneratorType.GetMethod
+        var realEmitCalli = generatorType.GetMethod
         (
             nameof(ILGenerator.EmitCalli),
             new[] { typeof(OpCode), typeof(CallingConvention), typeof(Type), typeof(Type[]) }
