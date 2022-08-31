@@ -52,7 +52,7 @@ namespace AdvancedDLSupport
         /// </summary>
         /// <param name="message">The message of the exception.</param>
         [PublicAPI]
-        public LibraryLoadingException([CanBeNull] string message)
+        public LibraryLoadingException(string? message)
             : base(message)
         {
         }
@@ -63,7 +63,7 @@ namespace AdvancedDLSupport
         /// <param name="message">The message of the exception.</param>
         /// <param name="inner">The exception which caused this exception.</param>
         [PublicAPI]
-        public LibraryLoadingException([CanBeNull] string message, [NotNull] Exception inner)
+        public LibraryLoadingException(string? message, [NotNull] Exception inner)
             : base(message, inner)
         {
         }
@@ -74,7 +74,7 @@ namespace AdvancedDLSupport
         /// <param name="message">The message of the exception.</param>
         /// <param name="libraryName">The name of the library that failed to load.</param>
         [PublicAPI]
-        public LibraryLoadingException([NotNull] string message, [CanBeNull] string libraryName)
+        public LibraryLoadingException([NotNull] string message, string? libraryName)
             : base(message)
         {
             LibraryName = libraryName;
@@ -87,7 +87,7 @@ namespace AdvancedDLSupport
         /// <param name="libraryName">The name of the library that failed to load.</param>
         /// <param name="inner">The exception which caused this exception.</param>
         [PublicAPI]
-        public LibraryLoadingException([NotNull] string message, [CanBeNull] string libraryName, [NotNull] Exception inner)
+        public LibraryLoadingException([NotNull] string message, string? libraryName, [NotNull] Exception inner)
             : base(message, inner)
         {
             LibraryName = libraryName;

@@ -41,7 +41,7 @@ namespace AdvancedDLSupport.Loaders
         private const string LibraryNameUnix = "dl";
         private const string LibraryNameBSD = "c";
 
-        public static IntPtr open([CanBeNull] string fileName, SymbolFlag flags = SymbolFlag.RTLD_DEFAULT, bool useCLibrary = false)
+        public static IntPtr open(string? fileName, SymbolFlag flags = SymbolFlag.RTLD_DEFAULT, bool useCLibrary = false)
         {
             return useCLibrary ? BSD.dlopen(fileName, flags) : Unix.dlopen(fileName, flags);
         }

@@ -70,7 +70,7 @@ namespace AdvancedDLSupport.Loaders
         /// <param name="flags">The loading flags to use.</param>
         /// <returns>A handle to the library. This value carries no intrinsic meaning.</returns>
         /// <exception cref="LibraryLoadingException">Thrown if the library could not be loaded.</exception>
-        private IntPtr LoadLibrary([CanBeNull] string path, SymbolFlag flags)
+        private IntPtr LoadLibrary(string? path, SymbolFlag flags)
         {
             _resetErrorAction();
 

@@ -112,8 +112,8 @@ namespace AdvancedDLSupport
         public NativeLibraryBuilder
         (
             ImplementationOptions options = default,
-            [CanBeNull] ILibraryPathResolver pathResolver = default,
-            [CanBeNull] IDynamicAssemblyProvider assemblyProvider = default
+            ILibraryPathResolver? pathResolver = default,
+            IDynamicAssemblyProvider? assemblyProvider = default
         )
         {
             _assemblyProvider = assemblyProvider ?? new TransientDynamicAssemblyProvider(DynamicAssemblyName, !options.HasFlagFast(EnableOptimizations));
@@ -613,7 +613,7 @@ namespace AdvancedDLSupport
         private object CreateAnonymousImplementationInstance
         (
             [NotNull] Type finalType,
-            [CanBeNull] string library,
+            string? library,
             ImplementationOptions options,
             ILibraryLoader libLoader = null,
             ISymbolLoader symLoader = null

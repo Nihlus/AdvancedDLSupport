@@ -48,7 +48,7 @@ namespace Mono.DllMap.Utility
         /// Thrown if the type parameter is not an enum decorated with a flag attribute.
         /// </exception>
         [PublicAPI, Pure]
-        public static TEnum Parse<TEnum>([CanBeNull] string content) where TEnum : struct
+        public static TEnum Parse<TEnum>(string? content) where TEnum : struct
         {
             if (!typeof(TEnum).IsEnum)
             {

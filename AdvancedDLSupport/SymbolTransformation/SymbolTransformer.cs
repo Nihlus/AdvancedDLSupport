@@ -108,7 +108,7 @@ namespace AdvancedDLSupport
         private string Transform
         (
             [NotNull] string symbol,
-            [CanBeNull] string prefix = null,
+            string? prefix = null,
             SymbolTransformationMethod method = None
         )
         {

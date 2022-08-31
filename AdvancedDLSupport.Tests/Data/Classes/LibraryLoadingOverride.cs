@@ -39,7 +39,7 @@ namespace AdvancedDLSupport.Tests.Data.Classes
             _defaultLoader = @default;
         }
 
-        public IntPtr LoadLibrary([CanBeNull] string path)
+        public IntPtr LoadLibrary(string? path)
         {
             LoadLibraryCalled = true;
 

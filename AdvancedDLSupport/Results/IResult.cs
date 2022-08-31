@@ -33,8 +33,7 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Gets a human-readable reason for the error.
         /// </summary>
-        [CanBeNull]
-        string ErrorReason { get; }
+        string? ErrorReason { get; }
 
         /// <summary>
         /// Gets a value indicating whether or not the result is a successful result.
@@ -44,7 +43,6 @@ namespace AdvancedDLSupport
         /// <summary>
         /// Gets the exception which caused the error (if any).
         /// </summary>
-        [CanBeNull]
-        Exception Exception { get; }
+        Exception? Exception { get; }
     }
 }

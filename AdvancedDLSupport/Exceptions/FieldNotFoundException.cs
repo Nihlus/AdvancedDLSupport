@@ -65,7 +65,7 @@ namespace AdvancedDLSupport
         /// <param name="fieldName">The name of the field that was not found.</param>
         /// <param name="inner">The exception which caused this exception.</param>
         [PublicAPI]
-        public FieldNotFoundException([NotNull] string fieldName, [CanBeNull] Exception inner)
+        public FieldNotFoundException([NotNull] string fieldName, Exception? inner)
             : base($"Could not find the field \"{fieldName}\".", inner)
         {
             FieldName = fieldName;

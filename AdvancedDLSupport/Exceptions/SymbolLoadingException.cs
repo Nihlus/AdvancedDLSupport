@@ -63,7 +63,7 @@ namespace AdvancedDLSupport
         /// <param name="message">The message of the exception.</param>
         /// <param name="inner">The exception which caused this exception.</param>
         [PublicAPI]
-        public SymbolLoadingException([CanBeNull] string message, [NotNull] Exception inner)
+        public SymbolLoadingException(string? message, [NotNull] Exception inner)
             : base(message, inner)
         {
         }

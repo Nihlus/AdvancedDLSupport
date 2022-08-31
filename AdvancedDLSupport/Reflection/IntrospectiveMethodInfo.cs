@@ -250,7 +250,7 @@ namespace AdvancedDLSupport.Reflection
             [NotNull] Type returnType,
             [NotNull, ItemNotNull] IEnumerable<Type> parameterTypes,
             [NotNull] Type metadataType,
-            [CanBeNull] IntrospectiveMethodInfo definitionToCopyAttributesFrom = null
+            IntrospectiveMethodInfo? definitionToCopyAttributesFrom = null
         )
             : base(builder, metadataType, definitionToCopyAttributesFrom?.CustomAttributes ?? new List<CustomAttributeData>())
         {

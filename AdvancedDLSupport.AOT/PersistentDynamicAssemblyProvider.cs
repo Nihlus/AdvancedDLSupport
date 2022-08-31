@@ -56,8 +56,7 @@ namespace AdvancedDLSupport.AOT
         [NotNull]
         private AssemblyBuilder _dynamicAssembly;
 
-        [CanBeNull]
-        private ModuleBuilder _dynamicModule;
+        private ModuleBuilder? _dynamicModule;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PersistentDynamicAssemblyProvider"/> class.

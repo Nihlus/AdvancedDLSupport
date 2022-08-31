@@ -36,8 +36,7 @@ namespace AdvancedDLSupport.Extensions
         /// <summary>
         /// Holds the real EmitCalli overload, if it exists on this runtime.
         /// </summary>
-        [CanBeNull]
-        private static readonly Action<ILGenerator, OpCode, CallingConvention, Type, Type[]> RealEmitCalli;
+        private static readonly Action<ILGenerator, OpCode, CallingConvention, Type, Type[]>? RealEmitCalli;
 
         /// <summary>
         /// Holds a delegate wrapping an action to retrieve an unmanaged signature helper.

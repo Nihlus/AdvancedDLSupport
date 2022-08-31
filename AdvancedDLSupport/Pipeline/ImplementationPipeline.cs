@@ -224,8 +224,8 @@ namespace AdvancedDLSupport.Pipeline
         internal IntrospectiveMethodInfo GenerateDefinitionFromSignature
         (
             [NotNull] IntrospectiveMethodInfo interfaceDefinition,
-            [CanBeNull] IntrospectiveMethodInfo abstractImplementation,
-            [CanBeNull] string nameOverride = null
+            IntrospectiveMethodInfo? abstractImplementation,
+            string? nameOverride = null
         )
         {
             var methodBuilder = TargetType.DefineMethod

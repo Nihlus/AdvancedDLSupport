@@ -183,8 +183,8 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="name">The name of the method.</param>
         /// <param name="parameterTypes">The parameter types of the method.</param>
         /// <returns>The method.</returns>
-        [Pure, CanBeNull]
-        public static IntrospectiveMethodInfo GetIntrospectiveMethod
+        [Pure]
+        public static IntrospectiveMethodInfo? GetIntrospectiveMethod
         (
             [NotNull] this Type @this,
             [NotNull] string name,

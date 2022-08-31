@@ -38,7 +38,7 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="this">The string to inspect.</param>
         /// <returns>true if the string is a valid path; otherwise, false.</returns>
         [ContractAnnotation("this:null => false"), Pure]
-        public static bool IsValidPath([CanBeNull] this string @this)
+        public static bool IsValidPath(this string? @this)
         {
             if (@this.IsNullOrWhiteSpace())
             {
@@ -65,7 +65,7 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="this">The string to check.</param>
         /// <returns>true if the string is null or whitespace; otherwise, false.</returns>
         [ContractAnnotation("this:null => true"), Pure]
-        public static bool IsNullOrWhiteSpace([CanBeNull] this string @this)
+        public static bool IsNullOrWhiteSpace(this string? @this)
         {
             return string.IsNullOrWhiteSpace(@this);
         }
@@ -76,7 +76,7 @@ namespace AdvancedDLSupport.Extensions
         /// <param name="this">The string to check.</param>
         /// <returns>true if the string is null or empty; otherwise, false.</returns>
         [ContractAnnotation("this:null => true"), Pure]
-        public static bool IsNullOrEmpty([CanBeNull] this string @this)
+        public static bool IsNullOrEmpty(this string? @this)
         {
             return string.IsNullOrEmpty(@this);
         }

@@ -68,10 +68,10 @@ namespace AdvancedDLSupport.Extensions
         (
             [NotNull] this MethodBuilder @this,
             [NotNull] IntrospectiveMethodInfo source,
-            [CanBeNull] Type newReturnParameterType = null,
-            [CanBeNull, ItemNotNull] IReadOnlyList<Type> newParameterTypes = null,
-            [CanBeNull] Func<CustomAttributeData, bool> returnParameterAttributeFilter = null,
-            [CanBeNull] Func<CustomAttributeData, int, bool> parameterAttributeFilter = null
+            Type? newReturnParameterType = null,
+            [ItemNotNull] IReadOnlyList<Type>? newParameterTypes = null,
+            Func<CustomAttributeData, bool>? returnParameterAttributeFilter = null,
+            Func<CustomAttributeData, int, bool>? parameterAttributeFilter = null
         )
         {
             newReturnParameterType = newReturnParameterType ?? source.ReturnType;

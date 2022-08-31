@@ -39,8 +39,8 @@ namespace Mono.DllMap
         /// <summary>
         /// Gets or sets the mapping entries.
         /// </summary>
-        [PublicAPI, CanBeNull, ItemNotNull, XmlElement("dllmap")]
-        public List<DllMap> Maps { get; set; }
+        [PublicAPI, ItemNotNull, XmlElement("dllmap")]
+        public List<DllMap>? Maps { get; set; }
 
         /// <summary>
         /// Gets the map entries that are relevant for the current platform.
@@ -133,7 +133,7 @@ namespace Mono.DllMap
         /// <param name="result">The resulting <see cref="DllConfiguration"/> object.</param>
         /// <returns>true if the parsing succeeded; otherwise, false.</returns>
         [PublicAPI, Pure, ContractAnnotation("false <= result:null; true <= result:notnull")]
-        public static bool TryParse([NotNull] Stream s, [CanBeNull] out DllConfiguration result)
+        public static bool TryParse([NotNull] Stream s, out DllConfiguration? result)
         {
             try
             {
@@ -154,7 +154,7 @@ namespace Mono.DllMap
         /// <param name="result">The resulting <see cref="DllConfiguration"/> object.</param>
         /// <returns>true if the parsing succeeded; otherwise, false.</returns>
         [PublicAPI, Pure, ContractAnnotation("false <= result:null; true <= result:notnull")]
-        public static bool TryParse([NotNull] TextReader tr, [CanBeNull] out DllConfiguration result)
+        public static bool TryParse([NotNull] TextReader tr, out DllConfiguration? result)
         {
             try
             {
@@ -175,7 +175,7 @@ namespace Mono.DllMap
         /// <param name="result">The resulting <see cref="DllConfiguration"/> object.</param>
         /// <returns>true if the parsing succeeded; otherwise, false.</returns>
         [PublicAPI, Pure, ContractAnnotation("false <= result:null; true <= result:notnull")]
-        public static bool TryParse([NotNull] string xml, [CanBeNull] out DllConfiguration result)
+        public static bool TryParse([NotNull] string xml, out DllConfiguration? result)
         {
             try
             {

@@ -38,7 +38,7 @@ namespace AdvancedDLSupport.Loaders
         /// <returns>A handle to the library. This value carries no intrinsic meaning.</returns>
         /// <exception cref="LibraryLoadingException">Thrown if the library could not be loaded.</exception>
         [PublicAPI]
-        IntPtr LoadLibrary([CanBeNull] string path);
+        IntPtr LoadLibrary(string? path);
 
         /// <summary>
         /// Closes the open handle to the given library.

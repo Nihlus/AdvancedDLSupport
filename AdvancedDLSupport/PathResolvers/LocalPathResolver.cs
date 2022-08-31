@@ -32,14 +32,11 @@ namespace AdvancedDLSupport
     /// </summary>
     internal sealed class LocalPathResolver : ILibraryPathResolver
     {
-        [CanBeNull]
-        private readonly string _entryAssemblyDirectory;
+        private readonly string? _entryAssemblyDirectory;
 
-        [CanBeNull]
-        private readonly string _executingAssemblyDirectory;
+        private readonly string? _executingAssemblyDirectory;
 
-        [CanBeNull]
-        private readonly string _currentDirectory;
+        private readonly string? _currentDirectory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalPathResolver"/> class.

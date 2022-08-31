@@ -42,8 +42,8 @@ namespace AdvancedDLSupport.Pipeline
         /// <summary>
         /// Gets the name of the original member that the unit of work stems from.
         /// </summary>
-        [PublicAPI, CanBeNull]
-        public string BaseMemberName { get; }
+        [PublicAPI]
+        public string? BaseMemberName { get; }
 
         /// <summary>
         /// Gets a unique identifier that can be used in generated definition names.

@@ -278,8 +278,7 @@ namespace AdvancedDLSupport.ImplementationGenerators
         /// </summary>
         /// <param name="originalType">The generic type.</param>
         /// <returns>The explicitly implemented type.</returns>
-        [CanBeNull]
-        private Type GetCreatedExplicitDelegateType([NotNull] Type originalType)
+        private Type? GetCreatedExplicitDelegateType([NotNull] Type originalType)
         {
             var signature = GetSignatureTypesFromGenericDelegate(originalType);
             var delegateName = GetDelegateTypeName(signature.ReturnType, signature.ParameterTypes);

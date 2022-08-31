@@ -43,8 +43,8 @@ namespace AdvancedDLSupport.Reflection
         /// </summary>
         /// <typeparam name="TAttribute">The type of attribute to get.</typeparam>
         /// <returns>The attribute, or null.</returns>
-        [PublicAPI, CanBeNull]
-        TAttribute GetCustomAttribute<TAttribute>() where TAttribute : Attribute;
+        [PublicAPI]
+        TAttribute? GetCustomAttribute<TAttribute>() where TAttribute : Attribute;
 
         /// <summary>
         /// Gets the full native entrypoint of the member. This is the configured native entrypoint, with any

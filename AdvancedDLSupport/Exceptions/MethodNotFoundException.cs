@@ -65,7 +65,7 @@ namespace AdvancedDLSupport
         /// <param name="methodName">The name of the method that was not found.</param>
         /// <param name="inner">The exception which caused this exception.</param>
         [PublicAPI]
-        public MethodNotFoundException([NotNull] string methodName, [CanBeNull] Exception inner)
+        public MethodNotFoundException([NotNull] string methodName, Exception? inner)
             : base($"Could not find the field \"{methodName}\".", inner)
         {
             MethodName = methodName;

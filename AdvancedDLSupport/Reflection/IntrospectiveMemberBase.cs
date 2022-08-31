@@ -93,7 +93,7 @@ namespace AdvancedDLSupport.Reflection
         (
             [NotNull] TMemberInfo memberInfo,
             [NotNull] Type metadataType,
-            [CanBeNull, ItemNotNull] IEnumerable<CustomAttributeData> customAttributes = default
+            [ItemNotNull] IEnumerable<CustomAttributeData>? customAttributes = default
         )
         {
             Member = memberInfo;
@@ -216,8 +216,8 @@ namespace AdvancedDLSupport.Reflection
         /// </summary>
         /// <param name="introspectiveInfo">The introspective info.</param>
         /// <returns>The wrapped member.</returns>
-        [PublicAPI, CanBeNull]
-        public static explicit operator TMemberInfo([CanBeNull] IntrospectiveMemberBase<TMemberInfo> introspectiveInfo)
+        [PublicAPI]
+        public static explicit operator TMemberInfo?(IntrospectiveMemberBase<TMemberInfo>? introspectiveInfo)
         {
             return introspectiveInfo?.Member;
         }

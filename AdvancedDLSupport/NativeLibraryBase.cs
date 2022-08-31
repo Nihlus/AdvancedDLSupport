@@ -70,10 +70,10 @@ namespace AdvancedDLSupport
         [PublicAPI, AnonymousConstructor]
         protected NativeLibraryBase
         (
-            [CanBeNull] string path,
+            string? path,
             ImplementationOptions options,
-            [CanBeNull] ILibraryLoader libLoader = null,
-            [CanBeNull] ISymbolLoader symLoader = null
+            ILibraryLoader? libLoader = null,
+            ISymbolLoader? symLoader = null
         )
         {
             _libraryLoader = libLoader ?? PlatformLoaderBase.PlatformLoader;

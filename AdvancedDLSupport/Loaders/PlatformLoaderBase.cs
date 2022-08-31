@@ -46,7 +46,7 @@ namespace AdvancedDLSupport.Loaders
         /// <param name="path">The path to the library.</param>
         /// <returns>A handle to the library. This value carries no intrinsic meaning.</returns>
         /// <exception cref="LibraryLoadingException">Thrown if the library could not be loaded.</exception>
-        protected abstract IntPtr LoadLibraryInternal([CanBeNull] string path);
+        protected abstract IntPtr LoadLibraryInternal(string? path);
 
         /// <inheritdoc />
         [Pure]
