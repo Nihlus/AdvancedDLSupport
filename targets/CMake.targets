@@ -44,7 +44,7 @@
         <MakeDir Directories="$(CMakeBuildDir)" />
         <Exec Command="cmake $(CMakeGenerator) -DCMAKE_BUILD_TYPE=Debug -DTARGET_FRAMEWORKS=&quot;$(ExecutableFrameworks)&quot; -DINSTALL_PATH=&quot;$(CMakeInstallPath)&quot; $(CMakeExtraArguments) &quot;$(NativeSourceDirectory)&quot;" WorkingDirectory="$(CMakeBuildDir)" />
         <Exec Command="cmake --build ." WorkingDirectory="$(CMakeBuildDir)" />
-        <Exec Command="cmake -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDir)" />
+        <Exec Command="cmake --config Debug -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDir)" />
     </Target>
 
     <Target Name="CleanCMake" AfterTargets="AfterClean">
