@@ -1,19 +1,21 @@
 <Project>
     <PropertyGroup>
-        <CMakeGenerator>Visual Studio 16 2019</CMakeGenerator>
+        <CMakeGenerator>"Visual Studio 16 2019"</CMakeGenerator>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Platform)' == 'x86'">
-        <CMakeGenerator>Visual Studio 16 2019 -A Win32</CMakeGenerator>
+        <CMakeGenerator>"Visual Studio 16 2019"</CMakeGenerator>
+        <CMakeExtraArguments>-A Win32</CMakeExtraArguments>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Platform)' == 'x64'">
-        <CMakeGenerator>Visual Studio 16 2019 -A x64</CMakeGenerator>
+        <CMakeGenerator>"Visual Studio 16 2019" -A x64</CMakeGenerator>
+        <CMakeExtraArguments>-A x64</CMakeExtraArguments>
     </PropertyGroup>
 
     <PropertyGroup>
         <NativeOutputPrefix />
         <NativeOutputExtension>dll</NativeOutputExtension>
-        <CMakeExtraArguments>-DUNICODE=1</CMakeExtraArguments>
+        <CMakeExtraArguments>$(CMakeExtraArguments) -DUNICODE=1</CMakeExtraArguments>
     </PropertyGroup>
 </Project>
