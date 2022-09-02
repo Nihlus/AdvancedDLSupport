@@ -90,22 +90,24 @@ internal class SpanMarshallingWrapper : CallWrapperBase
         for (int i = 0; i < parametersTypes.Length; ++i)
         {
             var paramType = parametersTypes[i];
-            if (IsSpanType(paramType))
+            if (!IsSpanType(paramType))
             {
-                var genericParam = paramType.GenericTypeArguments[0];
-
-                if (genericParam.IsGenericType)
-                {
-                    throw new NotSupportedException("Generic type found as Span generic argument");
-                }
-
-                if (!genericParam.IsUnmanaged())
-                {
-                    throw new NotSupportedException("Reference or value type containing references found in Span<T> or ReadOnlySpan<T> generic parameter.");
-                }
-
-                parametersTypes[i] = genericParam.MakePointerType(); // genercParam.MakePointerType();
+                continue;
             }
+
+            var genericParam = paramType.GenericTypeArguments[0];
+
+            if (genericParam.IsGenericType)
+            {
+                throw new NotSupportedException("Generic type found as Span generic argument");
+            }
+
+            if (!genericParam.IsUnmanaged())
+            {
+                throw new NotSupportedException("Reference or value type containing references found in Span<T> or ReadOnlySpan<T> generic parameter.");
+            }
+
+            parametersTypes[i] = genericParam.MakePointerType(); // genercParam.MakePointerType();
         }
 
         MethodBuilder passthroughMethod = TargetType.DefineMethod
@@ -166,11 +168,13 @@ internal class SpanMarshallingWrapper : CallWrapperBase
     {
         var returnType = workUnit.Definition.ReturnType;
 
-        if (IsSpanType(returnType))
+        if (!IsSpanType(returnType))
         {
-            il.EmitConstantInt(GetNativeCollectionLengthMetadata(workUnit.Definition).Length);
-            il.EmitNewObject(returnType.GetConstructor(new[] { typeof(void*), typeof(int) }));
+            return;
         }
+
+        il.EmitConstantInt(GetNativeCollectionLengthMetadata(workUnit.Definition).Length);
+        il.EmitNewObject(returnType.GetConstructor(new[] { typeof(void*), typeof(int) }));
     }
 
     private NativeCollectionLengthAttribute GetNativeCollectionLengthMetadata(IntrospectiveMethodInfo info)
@@ -203,12 +207,12 @@ internal class SpanMarshallingWrapper : CallWrapperBase
     /// <param name="type">The type to check.</param>
     private static bool IsSpanType(Type type)
     {
-        if (type.IsGenericType)
+        if (!type.IsGenericType)
         {
-            var generic = type.GetGenericTypeDefinition();
-            return generic == typeof(Span<>) || generic == typeof(ReadOnlySpan<>);
+            return false;
         }
 
-        return false;
+        var generic = type.GetGenericTypeDefinition();
+        return generic == typeof(Span<>) || generic == typeof(ReadOnlySpan<>);
     }
 }

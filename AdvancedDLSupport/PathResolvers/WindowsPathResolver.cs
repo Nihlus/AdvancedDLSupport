@@ -79,19 +79,32 @@ internal sealed class WindowsPathResolver : ILibraryPathResolver
         }
 
         var pathVar = Environment.GetEnvironmentVariable("PATH");
-        if (!(pathVar is null))
+        if (pathVar is null)
         {
-            var pathDirs = pathVar.Split(';').Where(p => !p.IsNullOrWhiteSpace());
-            foreach (var path in pathDirs)
+            return ResolvePathResult.FromError
+            (
+                new FileNotFoundException
+                    ("The specified library was not found in any of the loader search paths.", library)
+            );
+        }
+
+        var pathDirs = pathVar.Split(';').Where(p => !p.IsNullOrWhiteSpace());
+        foreach (var path in pathDirs)
+        {
+            libraryLocation = Path.GetFullPath(Path.Combine(path, library));
+            if (File.Exists(libraryLocation))
             {
-                libraryLocation = Path.GetFullPath(Path.Combine(path, library));
-                if (File.Exists(libraryLocation))
-                {
-                    return ResolvePathResult.FromSuccess(libraryLocation);
-                }
+                return ResolvePathResult.FromSuccess(libraryLocation);
             }
         }
 
-        return ResolvePathResult.FromError(new FileNotFoundException("The specified library was not found in any of the loader search paths.", library));
+        return ResolvePathResult.FromError
+        (
+            new FileNotFoundException
+            (
+                "The specified library was not found in any of the loader search paths.",
+                library
+            )
+        );
     }
 }

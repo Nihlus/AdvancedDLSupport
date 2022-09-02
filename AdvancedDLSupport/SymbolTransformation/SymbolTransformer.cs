@@ -66,11 +66,13 @@ public class SymbolTransformer
             );
         }
 
-        if (applicableManglers.Any())
+        if (!applicableManglers.Any())
         {
-            var applicableMangler = applicableManglers.First();
-            symbolName = applicableMangler.Mangle(memberInfo);
+            return symbolName;
         }
+
+        var applicableMangler = applicableManglers.First();
+        symbolName = applicableMangler.Mangle(memberInfo);
 
         return symbolName;
     }

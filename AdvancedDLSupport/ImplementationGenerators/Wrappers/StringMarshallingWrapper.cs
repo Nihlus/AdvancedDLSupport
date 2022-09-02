@@ -266,14 +266,16 @@ internal sealed class StringMarshallingWrapper : CallWrapperBase
             var unmanagedStringType = GetParameterUnmanagedType(definition.ParameterCustomAttributes[i - 1]);
             il.EmitCallDirect(SelectManagedToUnmanagedTransformationMethod(unmanagedStringType));
 
-            if (definition.ParameterHasCustomAttribute<CallerFreeAttribute>(i - 1))
+            if (!definition.ParameterHasCustomAttribute<CallerFreeAttribute>(i - 1))
             {
-                var parameterLocal = il.DeclareLocal(typeof(IntPtr));
-                il.EmitSetLocalVariable(parameterLocal);
-                il.EmitLoadLocalVariable(parameterLocal);
-
-                locals.Add(i - 1, parameterLocal);
+                continue;
             }
+
+            var parameterLocal = il.DeclareLocal(typeof(IntPtr));
+            il.EmitSetLocalVariable(parameterLocal);
+            il.EmitLoadLocalVariable(parameterLocal);
+
+            locals.Add(i - 1, parameterLocal);
         }
     }
 

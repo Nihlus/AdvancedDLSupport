@@ -254,21 +254,21 @@ internal sealed class GenericDelegateWrapper : CallWrapperBase
     /// <returns>The passed-through type.</returns>
     private Type GetParameterPassthroughType(Type originalType)
     {
-        if (originalType.IsGenericDelegate())
+        if (!originalType.IsGenericDelegate())
         {
-            var explicitDelegateType = GetCreatedExplicitDelegateType(originalType);
-            if (explicitDelegateType is null)
-            {
-                throw new InvalidOperationException
-                (
-                    "Could not find the generated delegate type."
-                );
-            }
-
-            return explicitDelegateType;
+            return originalType;
         }
 
-        return originalType;
+        var explicitDelegateType = GetCreatedExplicitDelegateType(originalType);
+        if (explicitDelegateType is null)
+        {
+            throw new InvalidOperationException
+            (
+                "Could not find the generated delegate type."
+            );
+        }
+
+        return explicitDelegateType;
     }
 
     /// <summary>

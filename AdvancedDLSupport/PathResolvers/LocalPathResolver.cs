@@ -58,30 +58,33 @@ internal sealed class LocalPathResolver : ILibraryPathResolver
         // First, check next to the entry executable
         if (!(_entryAssemblyDirectory is null))
         {
-            var result = ScanPathForLibrary(_entryAssemblyDirectory, library);
-            if (result.IsSuccess)
+            var entryResult = ScanPathForLibrary(_entryAssemblyDirectory, library);
+            if (entryResult.IsSuccess)
             {
-                return result;
+                return entryResult;
             }
         }
 
         if (!(_executingAssemblyDirectory is null))
         {
-            var result = ScanPathForLibrary(_executingAssemblyDirectory, library);
-            if (result.IsSuccess)
+            var executingResult = ScanPathForLibrary(_executingAssemblyDirectory, library);
+            if (executingResult.IsSuccess)
             {
-                return result;
+                return executingResult;
             }
         }
 
         // Then, check the current directory
-        if (!(_currentDirectory is null))
+        if (_currentDirectory is null)
         {
-            var result = ScanPathForLibrary(_currentDirectory, library);
-            if (result.IsSuccess)
-            {
-                return result;
-            }
+            return ResolvePathResult.FromError
+                (new FileNotFoundException("No local copy of the given library could be found.", library));
+        }
+
+        var currentResult = ScanPathForLibrary(_currentDirectory, library);
+        if (currentResult.IsSuccess)
+        {
+            return currentResult;
         }
 
         return ResolvePathResult.FromError(new FileNotFoundException("No local copy of the given library could be found.", library));

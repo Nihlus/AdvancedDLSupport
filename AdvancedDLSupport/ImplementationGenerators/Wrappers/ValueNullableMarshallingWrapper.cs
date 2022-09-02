@@ -192,13 +192,15 @@ internal sealed class ValueNullableMarshallingWrapper : CallWrapperBase
 
             il.MarkLabel(branchEnd);
 
-            if (definition.ParameterHasCustomAttribute<CallerFreeAttribute>(i - 1))
+            if (!definition.ParameterHasCustomAttribute<CallerFreeAttribute>(i - 1))
             {
-                il.EmitSetLocalVariable(ptrLocal);
-                il.EmitLoadLocalVariable(ptrLocal);
-
-                locals.Add(i - 1, ptrLocal);
+                continue;
             }
+
+            il.EmitSetLocalVariable(ptrLocal);
+            il.EmitLoadLocalVariable(ptrLocal);
+
+            locals.Add(i - 1, ptrLocal);
         }
     }
 
