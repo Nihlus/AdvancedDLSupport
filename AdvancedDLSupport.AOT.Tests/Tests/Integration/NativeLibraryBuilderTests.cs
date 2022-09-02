@@ -70,7 +70,7 @@ public class NativeLibraryBuilderTests
 
             var searchPattern = $"*{Path.GetFileNameWithoutExtension(result)}*.dll";
 
-            searchPattern = Path.Combine(Path.GetDirectoryName(result), searchPattern);
+            searchPattern = Path.Combine(Path.GetDirectoryName(result)!, searchPattern);
 
             NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
         }
@@ -82,7 +82,7 @@ public class NativeLibraryBuilderTests
             Builder.WithSourceAssembly(GetType().Assembly);
             var result = Builder.Build(OutputDirectory);
             var searchPattern = $"*{Path.GetFileNameWithoutExtension(result)}*.dll";
-            searchPattern = Path.Combine(Path.GetDirectoryName(result), searchPattern);
+            searchPattern = Path.Combine(Path.GetDirectoryName(result)!, searchPattern);
 
             foreach (var asm in Directory.GetFiles(OutputDirectory, searchPattern))
             {
@@ -97,7 +97,7 @@ public class NativeLibraryBuilderTests
             Builder.WithSourceAssembly(GetType().Assembly);
             var result = Builder.Build(OutputDirectory);
             var searchPattern = $"*{Path.GetFileNameWithoutExtension(result)}*.dll";
-            searchPattern = Path.Combine(Path.GetDirectoryName(result), searchPattern);
+            searchPattern = Path.Combine(Path.GetDirectoryName(result)!, searchPattern);
             NativeLibraryBuilder.DiscoverCompiledTypes(OutputDirectory, searchPattern);
 
             var library = LibraryBuilder.ActivateInterface<IAOTLibrary>("AOTTests");
@@ -114,7 +114,7 @@ public class NativeLibraryBuilderTests
             Builder.WithSourceAssembly(GetType().Assembly);
             var result = Builder.Build(OutputDirectory);
             var searchPattern = $"*{Path.GetFileNameWithoutExtension(result)}*.dll";
-            searchPattern = Path.Combine(Path.GetDirectoryName(result), searchPattern);
+            searchPattern = Path.Combine(Path.GetDirectoryName(result)!, searchPattern);
             foreach (var asm in Directory.GetFiles(OutputDirectory, searchPattern))
             {
                 NativeLibraryBuilder.DiscoverCompiledTypes(File.OpenRead(asm));
