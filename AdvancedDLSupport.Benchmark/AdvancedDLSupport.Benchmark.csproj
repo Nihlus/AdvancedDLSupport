@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <NativeSourceDirectory>$(MSBuildProjectDirectory)/c</NativeSourceDirectory>
+    <NativeSourceDirectory>$(MSBuildProjectDirectory)\c</NativeSourceDirectory>
   </PropertyGroup>
 
   <ItemGroup>
