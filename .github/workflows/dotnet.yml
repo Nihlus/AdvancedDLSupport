@@ -29,14 +29,12 @@ jobs:
         run: sudo apt-get install gcc-10 g++-10 gcc-10-i686-linux-gnu g++-10-i686-linux-gnu cmake make
 
       - name: Build
-        if: matrix.platform == 'AnyCPU'
         run: |
           dotnet restore
-          dotnet build -c Release --no-restore
+          dotnet build -c Release --no-restore -p:Platform=${{ matrix.platform }}
 
       - name: Test
-        if: matrix.platform == 'AnyCPU'
-        run: dotnet test Tests/Mono.DllMap.Tests -c Release --no-restore --no-build --verbosity minimal
+        run: dotnet test Tests/Mono.DllMap.Tests -c Release --no-restore --no-build --verbosity minimal -p:Platform=${{ matrix.platform }}
 
       - name: Test (native)
         run: dotnet test Tests/AdvancedDLSupport.Tests -c Release --verbosity minimal -p:Platform=${{ matrix.platform }}
