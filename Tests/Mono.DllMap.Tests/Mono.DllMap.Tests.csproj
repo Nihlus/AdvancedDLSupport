@@ -9,6 +9,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Mono.DllMap\Mono.DllMap.csproj" />
+    <ProjectReference Include="..\..\Mono.DllMap\Mono.DllMap.csproj" />
   </ItemGroup>
 </Project>

@@ -16,17 +16,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "metadata", "metadata", "{F1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedDLSupport", "AdvancedDLSupport\AdvancedDLSupport.csproj", "{7EDC8F84-DF28-4C3C-AF56-F283B694218A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedDLSupport.Tests", "AdvancedDLSupport.Tests\AdvancedDLSupport.Tests.csproj", "{BA044617-6B99-4867-AE00-48076DEA38DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedDLSupport.Tests", "Tests\AdvancedDLSupport.Tests\AdvancedDLSupport.Tests.csproj", "{BA044617-6B99-4867-AE00-48076DEA38DC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mono.DllMap", "Mono.DllMap\Mono.DllMap.csproj", "{C2223FB5-DC68-47D8-9460-8CD05DC0CFFF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mono.DllMap.Tests", "Mono.DllMap.Tests\Mono.DllMap.Tests.csproj", "{BAAA6344-0DCF-4DC9-B422-572E8640F8EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mono.DllMap.Tests", "Tests\Mono.DllMap.Tests\Mono.DllMap.Tests.csproj", "{BAAA6344-0DCF-4DC9-B422-572E8640F8EC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedDLSupport.AOT", "AdvancedDLSupport.AOT\AdvancedDLSupport.AOT.csproj", "{89D77744-C0FB-4478-A31F-3936FEB02768}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedDLSupport.AOT.Tests", "AdvancedDLSupport.AOT.Tests\AdvancedDLSupport.AOT.Tests.csproj", "{1831033A-AA9A-43D9-BB3C-842D21DD6E80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedDLSupport.AOT.Tests", "Tests\AdvancedDLSupport.AOT.Tests\AdvancedDLSupport.AOT.Tests.csproj", "{1831033A-AA9A-43D9-BB3C-842D21DD6E80}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedDLSupport.Benchmark", "AdvancedDLSupport.Benchmark\AdvancedDLSupport.Benchmark.csproj", "{D9633011-4D7B-4285-B70C-D99EE6DA52DF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{05187F62-FEA2-4CC8-8AA5-18EB2433ACDD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -128,5 +130,10 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {42BD4AE2-55A2-4182-9EC0-D34177DF6E2B}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1831033A-AA9A-43D9-BB3C-842D21DD6E80} = {05187F62-FEA2-4CC8-8AA5-18EB2433ACDD}
+		{BA044617-6B99-4867-AE00-48076DEA38DC} = {05187F62-FEA2-4CC8-8AA5-18EB2433ACDD}
+		{BAAA6344-0DCF-4DC9-B422-572E8640F8EC} = {05187F62-FEA2-4CC8-8AA5-18EB2433ACDD}
 	EndGlobalSection
 EndGlobal

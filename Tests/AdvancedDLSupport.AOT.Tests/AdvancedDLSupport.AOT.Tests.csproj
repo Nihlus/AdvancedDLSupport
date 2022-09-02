@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Remora.Tests.Sdk/1.0.0">
   <PropertyGroup>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LibraryFrameworks>net462</LibraryFrameworks>
+    <ExcludeTestsFromCoverage>false</ExcludeTestsFromCoverage>
     <Configurations>Release;Debug</Configurations>
     <Platforms>x86;x64;AnyCPU</Platforms>
   </PropertyGroup>
@@ -16,6 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AdvancedDLSupport\AdvancedDLSupport.csproj" />
+    <ProjectReference Include="..\..\AdvancedDLSupport.AOT\AdvancedDLSupport.AOT.csproj" />
   </ItemGroup>
 </Project>
