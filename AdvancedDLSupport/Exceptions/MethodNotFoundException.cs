@@ -95,23 +95,4 @@ public class MethodNotFoundException : Exception
     {
         MethodName = methodName;
     }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MethodNotFoundException"/> class.
-    /// </summary>
-    /// <param name="info">The serialized information.</param>
-    /// <param name="context">The streaming context.</param>
-    protected MethodNotFoundException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
-    {
-        MethodName = info.GetString(nameof(MethodName)) ?? string.Empty;
-    }
-
-    /// <inheritdoc />
-    [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-    public override void GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        info.AddValue(nameof(MethodName), MethodName);
-        base.GetObjectData(info, context);
-    }
 }

@@ -95,23 +95,4 @@ public class FieldNotFoundException : Exception
     {
         FieldName = fieldName;
     }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FieldNotFoundException"/> class.
-    /// </summary>
-    /// <param name="info">The serialized information.</param>
-    /// <param name="context">The streaming context.</param>
-    protected FieldNotFoundException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
-    {
-        FieldName = info.GetString(nameof(FieldName)) ?? string.Empty;
-    }
-
-    /// <inheritdoc />
-    [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-    public override void GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        info.AddValue(nameof(FieldName), FieldName);
-        base.GetObjectData(info, context);
-    }
 }
