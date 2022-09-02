@@ -19,21 +19,7 @@ platforms and runtimes. Configurable and adaptible.
 4) [Easy to use][quickstart] - Not only is ADL simple to set up and get working, it's a breeze to maintain, and reduces 
    clutter in your codebase.
 
-
-## Build & Test status
-|                   | Travis (Linux - Mono & .NET Core)          | Travis (OSX - Mono & .NET Core)        | AppVeyor (Windows - .NET & .NET Core)    | MyGet (Development)     |
-| ----------------- |------------------------------------------- | -------------------------------------- | ---------------------------------------- | ------------------------|
-| x64 (Debug)       | [![Build Status][linux-x64-debug]][2]      | [![Build Status][mac-x64-debug]][2]    | [![Build status][win-x64-debug]][6]      |                         |
-| x64 (Release      | [![Build Status][linux-x64-release]][2]    | [![Build Status][mac-x64-release]][2]  | [![Build status][win-x64-release]][6]    |                         |
-| x86 (Debug)       | [![Build Status][build-not-found]][2]      | [![Build Status][build-not-found]][2]  | [![Build status][win-x86-debug]][6]      |                         |
-| x86 (Release)     | [![Build Status][build-not-found]][2]      | [![Build Status][build-not-found]][2]  | [![Build status][win-x86-release]][6]    |                         |
-| Any CPU (Debug)   | [![Build Status][linux-anycpu-debug]][2]   | [![Build Status][mac-anycpu-debug]][2] | [![Build status][win-anycpu-debug]][6]   | [![Build Status][7]][8] |                        |
-| Any CPU (Release) | [![Build Status][linux-anycpu-release]][2] | [![Build Status][mac-anycpu-debug]][2] | [![Build status][win-anycpu-release]][6] |                         |
-
-
-Total project coverage: [![Codecov.io][codecov-coverage]][codecov]
-
-Read the [Docs][9], or get the [MyGet][10] development packages and [get started][quickstart].
+Read the [Docs][9], or install via NuGet and [get started][quickstart].
 
 
 ## Features
@@ -84,26 +70,15 @@ Read the [Docs][9], or get the [MyGet][10] development packages and [get started
 
 See the [Quickstart][quickstart] for more information.
 
+
 ## Installation
+Get it on NuGet!
 
-Via your favourite Nuget UI, or
 
-`NuGet`
-```
-Install-Package AdvancedDLSupport -ProjectName MyProject
-```
-
-`MyGet`
-```
-nuget sources Add -Name AdvancedDLSupport-develop -Source https://www.myget.org/F/advancedlsupport/api/v3/index.json
-```
-```
-Install-Package AdvancedDLSupport -ProjectName MyProject
-```
-
-## Support us
+## Support me
 [![Become a Patron][patreon-button]][patreon]
 <a href='https://ko-fi.com/H2H176VD' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi2.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+
 
 ## License
 If the library's license doesn't fit your project or product, please [contact us][14]. Custom licensing options are 
@@ -112,37 +87,11 @@ available, and we are always open to working something out that fits you - be it
 AdvancedDLSupport's public release is licensed under the [GNU Lesser General Public License, Version 3 (LGPLv3)][12]. 
 See the [LICENSE][13] for details. Without the support of the open-source movement, it would never have existed.
 
-
-[linux-x64-debug]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvancedDLSupport/branches/master/1
-[linux-x64-release]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvancedDLSupport/branches/master/2
-[linux-anycpu-debug]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvancedDLSupport/branches/master/3
-[linux-anycpu-release]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvancedDLSupport/branches/master/4
-[mac-x64-debug]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvancedDLSupport/branches/master/5
-[mac-x64-release]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvancedDLSupport/branches/master/6
-[mac-anycpu-debug]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvancedDLSupport/branches/master/7
-[mac-anycpu-release]: https://travis-matrix-badges.herokuapp.com/repos/Firwood-Software/AdvancedDLSupport/branches/master/8
  
 [2]: https://travis-ci.org/Firwood-Software/AdvancedDLSupport
-
-[win-x86-debug]: https://appveyor-matrix-badges.herokuapp.com/repos/Nihlus/advancedlsupport-dnwes/branch/master/1
-[win-x64-debug]: https://appveyor-matrix-badges.herokuapp.com/repos/Nihlus/advancedlsupport-dnwes/branch/master/2
-[win-anycpu-debug]: https://appveyor-matrix-badges.herokuapp.com/repos/Nihlus/advancedlsupport-dnwes/branch/master/3
-[win-x86-release]: https://appveyor-matrix-badges.herokuapp.com/repos/Nihlus/advancedlsupport-dnwes/branch/master/4
-[win-x64-release]: https://appveyor-matrix-badges.herokuapp.com/repos/Nihlus/advancedlsupport-dnwes/branch/master/5
-[win-anycpu-release]: https://appveyor-matrix-badges.herokuapp.com/repos/Nihlus/advancedlsupport-dnwes/branch/master/6
-
 [6]: https://ci.appveyor.com/project/Nihlus/advancedlsupport-dnwes
 
-[build-not-found]: https://img.shields.io/badge/build-not%20found-lightgrey.svg
-
-[codecov-coverage]: https://codecov.io/gh/Firwood-Software/AdvancedDLSupport/branch/master/graph/badge.svg
-[codecov]: https://codecov.io/gh/Firwood-Software/AdvancedDLSupport
-
-[7]: https://www.myget.org/BuildSource/Badge/advancedlsupport?identifier=81802e0b-f4f6-4939-93a9-9edb54b134e6
-[8]: https://www.myget.org
-
-[9]: https://firwood-software.github.io/AdvancedDLSupport
-[10]: https://www.myget.org/gallery/advancedlsupport
+[9]: https://nihlus.github.io/AdvancedDLSupport
 
 [quickstart]: docs/quickstart.md
 [indirect-calls]: docs/indirect-calling.md
