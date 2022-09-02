@@ -29,7 +29,7 @@ namespace AdvancedDLSupport;
 /// <summary>
 /// A key struct for ConcurrentDictionary TypeCache for all generated types provided by DLSupportConstructor.
 /// </summary>
-internal struct GeneratedImplementationTypeIdentifier : IEquatable<GeneratedImplementationTypeIdentifier>
+internal readonly struct GeneratedImplementationTypeIdentifier : IEquatable<GeneratedImplementationTypeIdentifier>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="GeneratedImplementationTypeIdentifier"/> struct.
