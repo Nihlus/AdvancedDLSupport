@@ -114,7 +114,7 @@ public class SymbolTransformer
         SymbolTransformationMethod method = None
     )
     {
-        prefix = prefix ?? string.Empty;
+        prefix ??= string.Empty;
 
         var concatenated = $"{prefix}{symbol}";
 
