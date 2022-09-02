@@ -45,27 +45,22 @@ namespace AdvancedDLSupport.ImplementationGenerators;
 /// </summary>
 internal sealed class StringMarshallingWrapper : CallWrapperBase
 {
-    /// <inheritdoc/>
-    public override GeneratorComplexity Complexity => MemberDependent | TransformsParameters;
-
     /// <summary>
     /// Holds local variables defined for a given work unit. The nested dictionary contains the 0-based input
     /// parameter index matched with the local variable containing an unmanaged pointer.
     /// </summary>
-    private Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>> _workUnitLocals
+    private readonly Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>> _workUnitLocals
         = new Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>>();
 
-    private static Dictionary<UnmanagedType, MethodInfo> _stringToPtrMethods;
+    private static readonly Dictionary<UnmanagedType, MethodInfo> _stringToPtrMethods;
+    private static readonly Dictionary<UnmanagedType, MethodInfo> _ptrToStringMethods;
+    private static readonly MethodInfo _freeBStrMethod;
+    private static readonly MethodInfo _freeHGlobalMethod;
+    private static readonly MethodInfo _freeCoTaskMemMethod;
+    private static readonly UnmanagedType? _utf8UnmanagedType;
 
-    private static Dictionary<UnmanagedType, MethodInfo> _ptrToStringMethods;
-
-    private static MethodInfo _freeBStrMethod;
-
-    private static MethodInfo _freeHGlobalMethod;
-
-    private static MethodInfo _freeCoTaskMemMethod;
-
-    private static UnmanagedType? _utf8UnmanagedType;
+    /// <inheritdoc/>
+    public override GeneratorComplexity Complexity => MemberDependent | TransformsParameters;
 
     static StringMarshallingWrapper()
     {

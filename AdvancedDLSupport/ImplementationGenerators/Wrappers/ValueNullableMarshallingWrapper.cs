@@ -43,27 +43,22 @@ namespace AdvancedDLSupport.ImplementationGenerators;
 /// </summary>
 internal sealed class ValueNullableMarshallingWrapper : CallWrapperBase
 {
-    /// <inheritdoc/>
-    public override GeneratorComplexity Complexity => MemberDependent | TransformsParameters;
-
     /// <summary>
     /// Holds local variables defined for a given work unit. The nested dictionary contains the 0-based input
     /// parameter index matched with the local variable containing an unmanaged pointer.
     /// </summary>
-    private Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>> _workUnitLocals
+    private readonly Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>> _workUnitLocals
         = new Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>>();
 
-    private static FieldInfo _nullPtrField;
+    private static readonly FieldInfo _nullPtrField;
+    private static readonly MethodInfo _ptrInequalityOperator;
+    private static readonly MethodInfo _structureToPtrMethod;
+    private static readonly MethodInfo _ptrToStructureMethodBase;
+    private static readonly MethodInfo _allocHGlobalMethod;
+    private static readonly MethodInfo _freeHGlobalMethod;
 
-    private static MethodInfo _ptrInequalityOperator;
-
-    private static MethodInfo _structureToPtrMethod;
-
-    private static MethodInfo _ptrToStructureMethodBase;
-
-    private static MethodInfo _allocHGlobalMethod;
-
-    private static MethodInfo _freeHGlobalMethod;
+    /// <inheritdoc/>
+    public override GeneratorComplexity Complexity => MemberDependent | TransformsParameters;
 
     static ValueNullableMarshallingWrapper()
     {
