@@ -36,6 +36,10 @@ list(
         SpanMarshallingTests
 )
 
+if(UNICODE)
+    add_compile_definitions(UNICODE)
+endif()
+
 foreach (target ${StandardTargets})
 	add_library(${target} SHARED src/${target}.c)
     target_include_directories(${target}
