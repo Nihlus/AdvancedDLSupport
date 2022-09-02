@@ -37,6 +37,7 @@ jobs:
         run: dotnet test Tests/Mono.DllMap.Tests -c Release --no-restore --no-build --verbosity minimal
 
       - name: Test (native)
+        if: !(matrix.os == 'ubuntu-latest' && matrix.platform == 'x86')
         run: dotnet test Tests/AdvancedDLSupport.Tests -c Release --verbosity minimal -p:Platform=${{ matrix.platform }}
 
       - name: Package
