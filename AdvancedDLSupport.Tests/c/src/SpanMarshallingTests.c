@@ -17,7 +17,7 @@ void InitGlobals()
 	}
 }
 
-//Rewriten so there will not be a memory leak
+//Rewritten so there will not be a memory leak
 __declspec(dllexport) int32_t* GetInt32ArrayZeroToNine()
 {
 	InitGlobals();
