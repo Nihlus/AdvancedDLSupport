@@ -38,7 +38,7 @@ namespace AdvancedDLSupport.Loaders;
 /// </summary>
 internal static class dl
 {
-    private const string LibraryNameUnix = "dl";
+    private const string LibraryNameUnix = "libdl.so.2";
     private const string LibraryNameBSD = "c";
 
     public static IntPtr open(string? fileName, SymbolFlag flags = SymbolFlag.RTLD_DEFAULT, bool useCLibrary = false)
