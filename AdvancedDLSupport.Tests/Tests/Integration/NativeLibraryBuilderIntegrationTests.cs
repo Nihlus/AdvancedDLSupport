@@ -50,20 +50,6 @@ public class NativeLibraryBuilderIntegrationTests
         }
 
         [Fact]
-        public void LoadingLibraryWithMismatchedBitnessThrows()
-        {
-            var incorrectBitness = RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x32" : "x64";
-
-            var libraryName = $"{_libraryName}-{incorrectBitness}";
-            var libraryPath = Path.Combine("lib", incorrectBitness, libraryName);
-
-            Assert.Throws<LibraryLoadingException>
-            (
-                () => NativeLibraryBuilder.Default.ActivateInterface<IBaseLibrary>(libraryPath)
-            );
-        }
-
-        [Fact]
         public void LoadingSameInterfaceAndSameFileTwiceProducesDifferentReferences()
         {
             var secondLoad = new NativeLibraryBuilder().ActivateInterface<IBaseLibrary>(_libraryName);
