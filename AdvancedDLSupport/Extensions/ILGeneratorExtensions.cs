@@ -34,7 +34,7 @@ internal static class ILGeneratorExtensions
     /// <summary>
     /// Holds the real EmitCalli overload, if it exists on this runtime.
     /// </summary>
-    private static readonly Action<ILGenerator, OpCode, CallingConvention, Type, Type[]>? _realEmitCalli;
+    private static readonly Action<ILGenerator, OpCode, CallingConvention, Type, Type[]?>? _realEmitCalli;
 
     /// <summary>
     /// Holds a delegate wrapping an action to retrieve an unmanaged signature helper.
@@ -53,8 +53,8 @@ internal static class ILGeneratorExtensions
 
         if (realEmitCalli is not null)
         {
-            var delegateType = typeof(Action<ILGenerator, OpCode, CallingConvention, Type, Type[]>);
-            _realEmitCalli = (Action<ILGenerator, OpCode, CallingConvention, Type, Type[]>)Delegate.CreateDelegate
+            var delegateType = typeof(Action<ILGenerator, OpCode, CallingConvention, Type, Type[]?>);
+            _realEmitCalli = (Action<ILGenerator, OpCode, CallingConvention, Type, Type[]?>)Delegate.CreateDelegate
             (
                 delegateType,
                 realEmitCalli
@@ -94,7 +94,7 @@ internal static class ILGeneratorExtensions
         this ILGenerator @this,
         CallingConvention callingConvention,
         Type returnType,
-        Type[] parameterTypes
+        Type[]? parameterTypes
     )
     {
         if (_realEmitCalli is not null)

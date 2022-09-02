@@ -195,7 +195,7 @@ public abstract class IntrospectiveMemberBase<TMemberInfo> : MemberInfo, IIntros
         var type = matchingData.AttributeType;
         var instance = Activator.CreateInstance(type, matchingData.ConstructorArguments.Select(a => a.Value).ToArray());
 
-        foreach (var namedArgument in matchingData.NamedArguments ?? new List<CustomAttributeNamedArgument>())
+        foreach (var namedArgument in matchingData.NamedArguments!)
         {
             if (namedArgument.MemberInfo is FieldInfo field)
             {

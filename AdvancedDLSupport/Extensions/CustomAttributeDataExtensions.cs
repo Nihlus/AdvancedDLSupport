@@ -42,8 +42,8 @@ internal static class CustomAttributeDataExtensions
     [Pure]
     public static CustomAttributeBuilder GetAttributeBuilder(this CustomAttributeData @this)
     {
-        var namedFields = @this.NamedArguments?.Where(a => a.IsField).ToList() ?? new List<CustomAttributeNamedArgument>();
-        var namedProperties = @this.NamedArguments?.Where(a => a.MemberInfo is PropertyInfo).ToList() ?? new List<CustomAttributeNamedArgument>();
+        var namedFields = @this.NamedArguments!.Where(a => a.IsField).ToList();
+        var namedProperties = @this.NamedArguments!.Where(a => a.MemberInfo is PropertyInfo).ToList();
 
         return new CustomAttributeBuilder
         (
@@ -72,14 +72,14 @@ internal static class CustomAttributeDataExtensions
 
         var instance = @this.Constructor.Invoke(@this.ConstructorArguments.Select(a => a.Value).ToArray());
 
-        var namedFields = @this.NamedArguments?.Where(a => a.IsField).ToList();
-        foreach (var field in namedFields ?? new List<CustomAttributeNamedArgument>())
+        var namedFields = @this.NamedArguments!.Where(a => a.IsField).ToList();
+        foreach (var field in namedFields)
         {
             (field.MemberInfo as FieldInfo)?.SetValue(instance, field.TypedValue.Value);
         }
 
-        var namedProperties = @this.NamedArguments?.Where(a => a.MemberInfo is PropertyInfo).ToList();
-        foreach (var property in namedProperties ?? new List<CustomAttributeNamedArgument>())
+        var namedProperties = @this.NamedArguments!.Where(a => a.MemberInfo is PropertyInfo).ToList();
+        foreach (var property in namedProperties)
         {
             (property.MemberInfo as PropertyInfo)?.SetValue(instance, property.TypedValue.Value);
         }

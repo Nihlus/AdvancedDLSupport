@@ -156,7 +156,7 @@ internal sealed class StringMarshallingWrapper : CallWrapperBase
         var utf8UnmanagedTypeField = typeof(UnmanagedType).GetField("LPUTF8Str");
         if (utf8UnmanagedTypeField is not null)
         {
-            _utf8UnmanagedType = (UnmanagedType)utf8UnmanagedTypeField.GetValue(null);
+            _utf8UnmanagedType = (UnmanagedType)utf8UnmanagedTypeField.GetValue(null)!;
             var utf8PtrToStringMethod = typeof(Marshal).GetMethod
             (
                 "PtrToStringUTF8",

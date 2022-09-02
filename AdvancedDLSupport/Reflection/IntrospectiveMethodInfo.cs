@@ -137,8 +137,8 @@ public class IntrospectiveMethodInfo : IntrospectiveMemberBase<MethodInfo>
         }
 
         ReturnType = methodInfo.ReturnType;
-        ReturnParameterRequiredModifiers = methodInfo.ReturnParameter.GetRequiredCustomModifiers();
-        ReturnParameterOptionalModifiers = methodInfo.ReturnParameter.GetOptionalCustomModifiers();
+        ReturnParameterRequiredModifiers = methodInfo.ReturnParameter!.GetRequiredCustomModifiers();
+        ReturnParameterOptionalModifiers = methodInfo.ReturnParameter!.GetOptionalCustomModifiers();
 
         IsSpecialName = methodInfo.IsSpecialName;
         IsAbstract = methodInfo.IsAbstract;
@@ -192,13 +192,6 @@ public class IntrospectiveMethodInfo : IntrospectiveMemberBase<MethodInfo>
         ParameterOptionalModifiers = parameterOptionalModifiers;
         ParameterAttributes = parameterAttributes;
         ParameterCustomAttributes = parameterCustomAttributes.Select(pl => pl.ToList()).ToList();
-
-        if (methodInfo.ReturnParameter is null)
-        {
-            ReturnParameterCustomAttributes = new List<CustomAttributeData>();
-
-            return;
-        }
 
         ReturnParameterAttributes = methodInfo.ReturnParameter.Attributes;
 
