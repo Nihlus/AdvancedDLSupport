@@ -10,7 +10,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <CMakeExtraArguments>-DCMAKE_C_COMPILER=$(CMakeCCompiler) -DCMAKE_CXX_COMPILER=$(CMakeCXXCompiler)</CMakeExtraArguments>
+        <CMakeExtraArguments>-DCMAKE_C_COMPILER="$(CMakeCCompiler)" -DCMAKE_CXX_COMPILER="$(CMakeCXXCompiler)"</CMakeExtraArguments>
     </PropertyGroup>
 
     <PropertyGroup>
