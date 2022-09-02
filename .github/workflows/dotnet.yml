@@ -26,7 +26,7 @@ jobs:
 
       - name: Install Dependencies
         if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get install gcc-10 g++-10 gcc-10-i686-linux-gnu g++-10-i686-linux-gnu cmake make
+        run: sudo apt-get install gcc g++ gcc-multilib-i686-linux-gnu g++-multilib-i686-linux-gnu cmake make
 
       - name: Build
         run: |
