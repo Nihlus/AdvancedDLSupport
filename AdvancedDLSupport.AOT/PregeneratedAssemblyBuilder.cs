@@ -44,7 +44,7 @@ public class PregeneratedAssemblyBuilder
 {
     private static ILogger _log = LogManager.GetCurrentClassLogger();
 
-    private static object _fileCopyLock = new object();
+    private static object _fileCopyLock = new();
 
     private List<Assembly> SourceAssemblies { get; }
 

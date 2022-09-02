@@ -39,7 +39,7 @@ public abstract class NativeLibraryBase : IDisposable
     /// <summary>
     /// Delegate cache storage to keep delegates alive.
     /// </summary>
-    private HashSet<Delegate> _delegateStorage = new HashSet<Delegate>();
+    private HashSet<Delegate> _delegateStorage = new();
 
     /// <summary>
     /// Gets a value indicating whether or not the library has been disposed.

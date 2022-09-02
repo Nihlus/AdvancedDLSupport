@@ -50,7 +50,7 @@ internal sealed class StringMarshallingWrapper : CallWrapperBase
     /// parameter index matched with the local variable containing an unmanaged pointer.
     /// </summary>
     private readonly Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>> _workUnitLocals
-        = new Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>>();
+        = new();
 
     private static readonly Dictionary<UnmanagedType, MethodInfo> _stringToPtrMethods;
     private static readonly Dictionary<UnmanagedType, MethodInfo> _ptrToStringMethods;

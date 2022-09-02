@@ -48,7 +48,7 @@ internal sealed class ValueNullableMarshallingWrapper : CallWrapperBase
     /// parameter index matched with the local variable containing an unmanaged pointer.
     /// </summary>
     private readonly Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>> _workUnitLocals
-        = new Dictionary<PipelineWorkUnit<IntrospectiveMethodInfo>, Dictionary<int, LocalBuilder>>();
+        = new();
 
     private static readonly FieldInfo _nullPtrField;
     private static readonly MethodInfo _ptrInequalityOperator;
