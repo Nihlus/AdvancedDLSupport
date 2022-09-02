@@ -42,7 +42,7 @@
     <!-- Common targets -->
     <Target Name="NativeBuild" BeforeTargets="Compile" Inputs="@(NativeSource)" Outputs="@(NativeSource->'$(NativeOutputPrefix)%(filename).$(NativeOutputExtension)')">
         <MakeDir Directories="$(CMakeBuildDir)" />
-        <Exec Command="cmake $(CMakeGenerator) -DTARGET_FRAMEWORKS='$(ExecutableFrameworks)' -DINSTALL_PATH='$(CMakeInstallPath)' $(CMakeExtraArguments) '$(NativeSourceDirectory)'" WorkingDirectory="$(CMakeBuildDir)" />
+        <Exec Command="cmake $(CMakeGenerator) -DCMAKE_BUILD_TYPE=Debug -DTARGET_FRAMEWORKS='$(ExecutableFrameworks)' -DINSTALL_PATH='$(CMakeInstallPath)' $(CMakeExtraArguments) '$(NativeSourceDirectory)'" WorkingDirectory="$(CMakeBuildDir)" />
         <Exec Command="cmake --build ." WorkingDirectory="$(CMakeBuildDir)" />
         <Exec Command="cmake -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDir)" />
     </Target>
