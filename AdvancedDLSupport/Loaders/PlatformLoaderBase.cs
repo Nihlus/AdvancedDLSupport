@@ -38,7 +38,7 @@ public abstract class PlatformLoaderBase : IPlatformLoader
     public static IPlatformLoader PlatformLoader { get; } = SelectPlatformLoader();
 
     /// <inheritdoc />
-    public IntPtr LoadLibrary(string path) => LoadLibraryInternal(path);
+    public IntPtr LoadLibrary(string? path) => LoadLibraryInternal(path);
 
     /// <summary>
     /// Load the given library.
