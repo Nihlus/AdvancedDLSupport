@@ -1,46 +1,42 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.7)
 project(c)
-
-include(CMake/install-functions.cmake)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 11)
 
-set(BUILD_PLATFORM "x64" CACHE STRING "The target build platform.")
-set(TARGET_FRAMEWORKS "net461" CACHE STRING "The target frameworks")
-set(BASE_INSTALL_PATH "${CMAKE_BINARY_DIR}/lib" CACHE STRING "The base path (not including the framework where the output binaries should be installed.")
-set(PROJECT_PATH "${CMAKE_BINARY_DIR}/lib" CACHE STRING "The base path of the project.")
+set(TARGET_FRAMEWORKS "net6.0" "net461" CACHE STRING "The target frameworks")
+set(INSTALL_PATH "${CMAKE_BINARY_DIR}/lib" CACHE STRING "The installation path")
 
 if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID MATCHES "Clang")
-    set(IS_UNIX_COMPILER true)
-endif()
-
-if (IS_UNIX_COMPILER)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-long-long -pedantic")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-long-long -pedantic")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic")
-elseif ( MSVC )
-	set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /W4")
+elseif (MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /W4")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 endif()
 
+list(
+    APPEND StandardTargets
+    AOTTests
+)
 
-include_directories(${CMAKE_SOURCE_DIR})
+# Uncomment if testing on a non-unicode platform
+add_definitions(-DUNICODE)
 
-set(SHARED_HEADERS src/comp.h)
+foreach (target ${StandardTargets})
+    add_library(${target} SHARED src/${target}.c)
+    target_include_directories(${target}
+        PRIVATE
+            ${CMAKE_SOURCE_DIR}
+    )
+endforeach(target)
 
-add_library(AOTTests SHARED src/AOTTests.c ${SHARED_HEADERS})
+get_filename_component(INSTALL_PATH_ABSOLUTE "${INSTALL_PATH}" ABSOLUTE)
 
-if (IS_UNIX_COMPILER)
-    # Any CPU is assumed to be 64-bit
-    if (BUILD_PLATFORM STREQUAL "x64" OR BUILD_PLATFORM STREQUAL "AnyCPU")
-        set_target_properties(AOTTests PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
-    elseif (BUILD_PLATFORM STREQUAL "x86")
-        set_target_properties(AOTTests PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-    endif()
-elseif (MSVC)
-    # Handled in MSBuild
-endif()
-
-get_filename_component(INSTALL_PATH_ABSOLUTE "${PROJECT_PATH}/${BASE_INSTALL_PATH}" ABSOLUTE)
-
-install_for_frameworks("${TARGET_FRAMEWORKS}")
+foreach(framework ${TARGET_FRAMEWORKS})
+    install(TARGETS
+            ${StandardTargets}
+        DESTINATION
+            ${INSTALL_PATH_ABSOLUTE}/${framework}
+    )
+endforeach()

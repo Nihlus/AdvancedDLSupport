@@ -1,0 +1,53 @@
+﻿<Project>
+    <Import Project="$(MSBuildThisFileDirectory)\CMake-Unix.targets" Condition="'$(OS)' == 'Unix'" />
+    <Import Project="$(MSBuildThisFileDirectory)\CMake-Win.targets" Condition="'$(OS)' == 'Windows_NT'" />
+
+    <!-- Common properties -->
+    <Choose>
+        <When Condition="'$(Platform)' == 'AnyCPU'">
+            <PropertyGroup>
+                <PlatformDirectoryName/>
+            </PropertyGroup>
+        </When>
+        <Otherwise>
+            <PropertyGroup>
+                <PlatformDirectoryName>$(Platform)</PlatformDirectoryName>
+            </PropertyGroup>
+        </Otherwise>
+    </Choose>
+
+    <PropertyGroup>
+        <CMakeBuildDir>$(BaseIntermediateOutputPath)/$(PlatformDirectoryName)/$(Configuration)/native-build</CMakeBuildDir>
+        <CMakeInstallPath>$(MSBuildProjectDirectory)/$([System.IO.Path]::GetDirectoryName($(OutputPath.TrimEnd('/').TrimEnd('\\'))))</CMakeInstallPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(CMakeGenerator)' != ''">
+        <CMakeGenerator>-DCMAKE_GENERATOR='$(CMakeGenerator)'</CMakeGenerator>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <NativeSource Include="$(NativeSourceDirectory)/**/*.c" />
+        <NativeSource Include="$(NativeSourceDirectory)/**/*.cpp" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <NativeHeaders Include="$(NativeSourceDirectory)/**/*.h" />
+        <NativeHeaders Include="$(NativeSourceDirectory)/**/*.hpp" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <CMakeFiles Include="$(NativeSourceDirectory)/CMakeLists.txt" />
+    </ItemGroup>
+
+    <!-- Common targets -->
+    <Target Name="NativeBuild" BeforeTargets="Compile" Inputs="@(NativeSource)" Outputs="@(NativeSource->'$(NativeOutputPrefix)%(filename).$(NativeOutputExtension)')">
+        <MakeDir Directories="$(CMakeBuildDir)" />
+        <Exec Command="cmake $(CMakeGenerator) -DTARGET_FRAMEWORKS='$(ExecutableFrameworks)' -DINSTALL_PATH='$(CMakeInstallPath)' $(CMakeExtraArguments) '$(NativeSourceDirectory)'" WorkingDirectory="$(CMakeBuildDir)" />
+        <Exec Command="cmake --build ." WorkingDirectory="$(CMakeBuildDir)" />
+        <Exec Command="cmake -P cmake_install.cmake" WorkingDirectory="$(CMakeBuildDir)" />
+    </Target>
+
+    <Target Name="CleanCMake" AfterTargets="AfterClean">
+        <RemoveDir Directories="$(CMakeBuildDir)" ContinueOnError="True" />
+    </Target>
+</Project>

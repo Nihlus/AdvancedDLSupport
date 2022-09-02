@@ -1,0 +1,20 @@
+﻿<Project>
+    <PropertyGroup Condition="'$(CMakeCCompiler)' == ''">
+        <CMakeCCompiler>gcc</CMakeCCompiler>
+        <CMakeCCompiler Condition="'$(Platform)' == 'x86'">i686-linux-gnu-gcc</CMakeCCompiler>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(CMakeCCXXompiler)' == ''">
+        <CMakeCXXCompiler>g++</CMakeCXXCompiler>
+        <CMakeCXXCompiler Condition="'$(Platform)' == 'x86'">i686-linux-gnu-g++</CMakeCXXCompiler>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <CMakeExtraArguments>-DCMAKE_C_COMPILER=$(CMakeCCompiler) -DCMAKE_CXX_COMPILER=$(CMakeCXXCompiler)</CMakeExtraArguments>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <NativeOutputPrefix>lib</NativeOutputPrefix>
+        <NativeOutputExtension>so</NativeOutputExtension>
+    </PropertyGroup>
+</Project>

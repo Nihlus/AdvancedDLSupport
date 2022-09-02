@@ -1,0 +1,18 @@
+<Project>
+    <PropertyGroup>
+        <CMakeGenerator>Visual Studio 16 2019</CMakeGenerator>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Platform)' == 'x86'">
+        <CMakeGenerator>Visual Studio 16 2019 -A Win32</CMakeGenerator>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Platform)' == 'x64'">
+        <CMakeGenerator>Visual Studio 16 2019 -A x64</CMakeGenerator>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <NativeOutputPrefix />
+        <NativeOutputExtension>dll</NativeOutputExtension>
+    </PropertyGroup>
+</Project>

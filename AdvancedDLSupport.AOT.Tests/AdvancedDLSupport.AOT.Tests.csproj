@@ -2,6 +2,12 @@
   <PropertyGroup>
     <LibraryFrameworks>net462</LibraryFrameworks>
     <ExcludeTestsFromCoverage>false</ExcludeTestsFromCoverage>
+    <Configurations>Release;Debug</Configurations>
+    <Platforms>x86;x64;AnyCPU</Platforms>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <NativeSourceDirectory>$(MSBuildProjectDirectory)/c</NativeSourceDirectory>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,8 +19,4 @@
   <ItemGroup>
     <ProjectReference Include="..\AdvancedDLSupport.AOT\AdvancedDLSupport.AOT.csproj" />
   </ItemGroup>
-
-  <!-- Common CMake build steps -->
-  <Import Project="targets\CMake-Unix.targets" Condition="'$(OS)' == 'Unix'" />
-  <Import Project="targets\CMake-Win.targets" Condition="'$(OS)' == 'Windows_NT'" />
 </Project>

@@ -1,6 +1,12 @@
 ﻿<Project Sdk="Remora.Tests.Sdk/1.0.0">
   <PropertyGroup>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Configurations>Release;Debug</Configurations>
+    <Platforms>x86;x64;AnyCPU</Platforms>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <NativeSourceDirectory>$(MSBuildProjectDirectory)/c</NativeSourceDirectory>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,8 +18,4 @@
   <ItemGroup>
     <ProjectReference Include="..\AdvancedDLSupport\AdvancedDLSupport.csproj" />
   </ItemGroup>
-
-  <!-- Common CMake build steps -->
-  <Import Project="targets\CMake-Unix.targets" Condition="'$(OS)' == 'Unix'" />
-  <Import Project="targets\CMake-Win.targets" Condition="'$(OS)' == 'Windows_NT'" />
 </Project>

@@ -1,0 +1,3 @@
+<Project>
+    <Import Project="$(MSBuildThisFileDirectory)/targets/CMake.targets" Condition="'$(NativeSourceDirectory)' != '' And Exists('$(NativeSourceDirectory)')" />
+</Project>
