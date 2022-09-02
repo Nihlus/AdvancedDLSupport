@@ -14,7 +14,10 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest ]
-        platform: [ AnyCPU, x64, x86 ]
+        platform: [ AnyCPU, x64 ]
+        include:
+          - os: windows-latest
+            platform: x86
 
     runs-on: ${{ matrix.os }}
 
@@ -37,7 +40,6 @@ jobs:
         run: dotnet test Tests/Mono.DllMap.Tests -c Release --no-restore --no-build --verbosity minimal
 
       - name: Test (native)
-        if: matrix.os != 'ubuntu-latest' || matrix.platform != 'x86'
         run: dotnet test Tests/AdvancedDLSupport.Tests -c Release --verbosity minimal -p:Platform=${{ matrix.platform }}
 
       - name: Package
