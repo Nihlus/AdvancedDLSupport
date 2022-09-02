@@ -107,14 +107,11 @@ public class PersistentDynamicAssemblyProvider : IDynamicAssemblyProvider
     /// <inheritdoc/>
     public ModuleBuilder GetDynamicModule()
     {
-        return _dynamicModule ??
-       (
-           _dynamicModule = _dynamicAssembly.DefineDynamicModule
-           (
-               "DLSupportDynamicModule",
-               OutputFilename,
-               IsDebuggable
-           )
-       );
+        return _dynamicModule ??= _dynamicAssembly.DefineDynamicModule
+        (
+            "DLSupportDynamicModule",
+            OutputFilename,
+            IsDebuggable
+        );
     }
 }

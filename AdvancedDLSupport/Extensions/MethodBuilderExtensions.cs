@@ -73,11 +73,11 @@ internal static class MethodBuilderExtensions
         Func<CustomAttributeData, int, bool>? parameterAttributeFilter = null
     )
     {
-        newReturnParameterType = newReturnParameterType ?? source.ReturnType;
-        newParameterTypes = newParameterTypes ?? source.ParameterTypes;
+        newReturnParameterType ??= source.ReturnType;
+        newParameterTypes ??= source.ParameterTypes;
 
-        returnParameterAttributeFilter = returnParameterAttributeFilter ?? (attribute => false);
-        parameterAttributeFilter = parameterAttributeFilter ?? ((attribute, parameterIndex) => false);
+        returnParameterAttributeFilter ??= _ => false;
+        parameterAttributeFilter ??= (_, _) => false;
 
         // Pass through all applied attributes
         var returnValueBuilder = @this.DefineParameter(0, source.ReturnParameterAttributes, null);
