@@ -29,6 +29,7 @@ namespace AdvancedDLSupport.Benchmark.Data;
 /// A 2-element vector of 32-bit floating-point values.
 /// </summary>
 [PublicAPI]
+[SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Public fields in structs should have property-like names")]
 public struct Vector2
 {
     /// <summary>
@@ -44,7 +45,7 @@ public struct Vector2
     public float Y;
 
     /// <summary>
-    /// Determines componentwise equality for two vectors.
+    /// Determines component-wise equality for two vectors.
     /// </summary>
     /// <param name="a">The first vector.</param>
     /// <param name="b">The second vector.</param>
@@ -56,7 +57,7 @@ public struct Vector2
     }
 
     /// <summary>
-    /// Determines componentwise inequality for two vectors.
+    /// Determines component-wise inequality for two vectors.
     /// </summary>
     /// <param name="a">The first vector.</param>
     /// <param name="b">The second vector.</param>
@@ -68,7 +69,7 @@ public struct Vector2
     }
 
     /// <summary>
-    /// Determines componentwise equality for the current and another matrix.
+    /// Determines component-wise equality for the current and another matrix.
     /// </summary>
     /// <param name="other">The other matrix.</param>
     /// <returns>true if the vectors are equal, otherwise, false.</returns>

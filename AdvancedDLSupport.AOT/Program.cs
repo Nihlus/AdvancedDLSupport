@@ -36,7 +36,7 @@ namespace AdvancedDLSupport.AOT;
 /// </summary>
 public static class Program
 {
-    private static ILogger _log = LogManager.GetCurrentClassLogger();
+    private static readonly ILogger _log = LogManager.GetCurrentClassLogger();
 
     /// <summary>
     /// Gets the command-line arguments to the program.
@@ -52,7 +52,7 @@ public static class Program
     {
         Parser.Default.ParseArguments<CommandLineArguments>(args)
             .WithParsed(o => Arguments = o)
-            .WithNotParsed(e => Arguments = null);
+            .WithNotParsed(_ => Arguments = null);
 
         if (Arguments is null)
         {

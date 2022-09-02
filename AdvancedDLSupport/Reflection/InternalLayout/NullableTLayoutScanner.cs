@@ -40,7 +40,7 @@ internal static class NullableTLayoutScanner<TStructure> where TStructure : stru
     /// <summary>
     /// Holds the initial signature value which is used to identify the structure.
     /// </summary>
-    private const byte InitialSignatureValue = 3;
+    private const byte _initialSignatureValue = 3;
 
     /// <summary>
     /// Holds the payload offset for the structure type provided as a generic argument.
@@ -79,7 +79,7 @@ internal static class NullableTLayoutScanner<TStructure> where TStructure : stru
             var ptr = (byte*)Unsafe.AsPointer(ref payload);
             for (var i = 0; i < structureSize; ++i)
             {
-                *ptr = unchecked((byte)(InitialSignatureValue + i));
+                *ptr = unchecked((byte)(_initialSignatureValue + i));
                 ++ptr;
             }
         }
@@ -114,7 +114,7 @@ internal static class NullableTLayoutScanner<TStructure> where TStructure : stru
             while (true)
             {
                 var value = *ptr;
-                if (value != InitialSignatureValue)
+                if (value != _initialSignatureValue)
                 {
                     ptr++;
                     offset++;
@@ -134,7 +134,7 @@ internal static class NullableTLayoutScanner<TStructure> where TStructure : stru
                 var scanPtr = ptr;
                 for (var i = 0; i < structureSize; ++i)
                 {
-                    if (*scanPtr == unchecked((byte)(InitialSignatureValue + i)))
+                    if (*scanPtr == unchecked((byte)(_initialSignatureValue + i)))
                     {
                         scanPtr++;
                         continue;

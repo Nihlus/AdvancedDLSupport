@@ -42,7 +42,7 @@ public class SymbolTransformer
     /// Gets the default instance of the <see cref="SymbolTransformer"/> class.
     /// </summary>
     [PublicAPI]
-    public static readonly SymbolTransformer Default = new SymbolTransformer();
+    public static SymbolTransformer Default { get; } = new();
 
     /// <summary>
     /// Gets the transformed symbol name of the given member.

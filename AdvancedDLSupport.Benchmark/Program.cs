@@ -36,6 +36,7 @@ internal static class Program
     /// <summary>
     /// The name of the native library.
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     internal const string LibraryName = "TestLibrary";
 
     /// <summary>

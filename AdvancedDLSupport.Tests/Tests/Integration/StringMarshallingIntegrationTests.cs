@@ -30,10 +30,10 @@ namespace AdvancedDLSupport.Tests.Integration;
 
 public class StringMarshallingIntegrationTests : LibraryTestBase<IStringLibrary>
 {
-    private const string LibraryName = "StringTests";
+    private const string _libraryName = "StringTests";
 
     public StringMarshallingIntegrationTests()
-        : base(LibraryName)
+        : base(_libraryName)
     {
     }
 
@@ -113,7 +113,7 @@ public class StringMarshallingIntegrationTests : LibraryTestBase<IStringLibrary>
         Assert.Equal(expected, (long)Library.LPWStringLength(testString).ToUInt64());
     }
 
-    #if NETCOREAPP || NETSTANDARD2_1
+    // ReSharper disable once InconsistentNaming
     [Fact]
     public void CanCallFunctionWithLPUTF8StrReturnValue()
     {
@@ -121,6 +121,7 @@ public class StringMarshallingIntegrationTests : LibraryTestBase<IStringLibrary>
         Assert.Equal("Hello, 🦈!", actual);
     }
 
+    // ReSharper disable once InconsistentNaming
     [Fact]
     public void CanCallFunctionWithLPUTF8StrParameter()
     {
@@ -129,17 +130,6 @@ public class StringMarshallingIntegrationTests : LibraryTestBase<IStringLibrary>
 
         Assert.Equal(expected, (long)Library.LPUTF8StringLength(testString).ToUInt64());
     }
-    #else
-        [Fact(Skip = "Unsupported on this runtime.")]
-        public void CanCallFunctionWithLPUTF8StrReturnValue()
-        {
-        }
-
-        [Fact(Skip = "Unsupported on this runtime.")]
-        public void CanCallFunctionWithLPUTF8StrParameter()
-        {
-        }
-    #endif
 
     [Fact]
     public void CanCallFunctionWithCallerFreeReturnParameter()

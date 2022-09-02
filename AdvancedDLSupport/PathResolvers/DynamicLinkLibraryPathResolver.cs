@@ -35,16 +35,16 @@ namespace AdvancedDLSupport;
 /// </summary>
 internal class DynamicLinkLibraryPathResolver : ILibraryPathResolver
 {
-    private static readonly ILibraryPathResolver LocalPathResolver;
+    private static readonly ILibraryPathResolver _localPathResolver;
 
-    private static readonly ILibraryPathResolver PathResolver;
+    private static readonly ILibraryPathResolver _pathResolver;
 
     private bool SearchLocalFirst { get; }
 
     static DynamicLinkLibraryPathResolver()
     {
-        LocalPathResolver = new LocalPathResolver();
-        PathResolver = SelectPathResolver();
+        _localPathResolver = new LocalPathResolver();
+        _pathResolver = SelectPathResolver();
     }
 
     /// <summary>
@@ -133,7 +133,7 @@ internal class DynamicLinkLibraryPathResolver : ILibraryPathResolver
         {
             foreach (var candidate in candidates)
             {
-                var result = LocalPathResolver.Resolve(candidate);
+                var result = _localPathResolver.Resolve(candidate);
                 if (result.IsSuccess)
                 {
                     return result;
@@ -143,7 +143,7 @@ internal class DynamicLinkLibraryPathResolver : ILibraryPathResolver
 
         foreach (var candidate in candidates)
         {
-            var result = PathResolver.Resolve(candidate);
+            var result = _pathResolver.Resolve(candidate);
             if (result.IsSuccess)
             {
                 return result;

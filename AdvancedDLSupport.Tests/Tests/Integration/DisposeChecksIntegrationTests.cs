@@ -31,17 +31,17 @@ namespace AdvancedDLSupport.Tests.Integration;
 
 public class DisposeChecksIntegrationTests : LibraryTestBase<IDisposeCheckLibrary>
 {
-    private const string LibraryName = "DisposeTests";
+    private const string _libraryName = "DisposeTests";
 
     public DisposeChecksIntegrationTests()
-        : base(LibraryName)
+        : base(_libraryName)
     {
     }
 
     [Fact]
     public void DisposedLibraryWithoutGeneratedChecksDoesNotThrow()
     {
-        var library = new NativeLibraryBuilder().ActivateInterface<IDisposeCheckLibrary>(LibraryName);
+        var library = new NativeLibraryBuilder().ActivateInterface<IDisposeCheckLibrary>(_libraryName);
         library.Dispose();
         library.Multiply(5, 5);
     }
@@ -65,7 +65,7 @@ public class DisposeChecksIntegrationTests : LibraryTestBase<IDisposeCheckLibrar
     {
         Library.Dispose();
 
-        var newLibrary = new NativeLibraryBuilder(Config).ActivateInterface<IDisposeCheckLibrary>(LibraryName);
+        var newLibrary = new NativeLibraryBuilder(Config).ActivateInterface<IDisposeCheckLibrary>(_libraryName);
 
         newLibrary.Multiply(5, 5);
         Assert.NotSame(Library, newLibrary);

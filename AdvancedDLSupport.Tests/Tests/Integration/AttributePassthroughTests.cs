@@ -30,10 +30,10 @@ namespace AdvancedDLSupport.Tests.Integration;
 
 public class AttributePassthroughTests : LibraryTestBase<IAttributePassthroughLibrary>
 {
-    private const string LibraryName = nameof(AttributePassthroughTests);
+    private const string _libraryName = nameof(AttributePassthroughTests);
 
     public AttributePassthroughTests()
-        : base(LibraryName)
+        : base(_libraryName)
     {
     }
 

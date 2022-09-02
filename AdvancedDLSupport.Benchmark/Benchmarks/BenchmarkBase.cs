@@ -38,7 +38,7 @@ public abstract class BenchmarkBase
     /// <summary>
     /// Gets a source matrix that can be inverted.
     /// </summary>
-    protected static readonly Matrix2 Source = new Matrix2 { Row0 = { X = 4, Y = 7 }, Row1 = { X = 2, Y = 6 } };
+    protected static Matrix2 Source { get; } = new() { Row0 = { X = 4, Y = 7 }, Row1 = { X = 2, Y = 6 } };
 
     /// <summary>
     /// Gets a delegate-based implementation.

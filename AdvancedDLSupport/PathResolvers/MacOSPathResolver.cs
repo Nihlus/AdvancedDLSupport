@@ -33,7 +33,7 @@ namespace AdvancedDLSupport;
 /// </summary>
 internal sealed class MacOSPathResolver : ILibraryPathResolver
 {
-    private static readonly IReadOnlyList<string> EnvironmentVariables = new[]
+    private static readonly IReadOnlyList<string> _environmentVariables = new[]
     {
         "DYLD_FRAMEWORK_PATH",
         "DYLD_LIBRARY_PATH",
@@ -44,7 +44,7 @@ internal sealed class MacOSPathResolver : ILibraryPathResolver
     /// <inheritdoc />
     public ResolvePathResult Resolve(string library)
     {
-        foreach (var variable in EnvironmentVariables)
+        foreach (var variable in _environmentVariables)
         {
             var libraryPaths = Environment.GetEnvironmentVariable(variable)?.Split(':').Where(p => !p.IsNullOrWhiteSpace());
 

@@ -30,7 +30,7 @@ namespace AdvancedDLSupport.Tests.Integration;
 
 public class MixedModeTests : IDisposable
 {
-    private const string LibraryName = "MixedModeTests";
+    private const string _libraryName = "MixedModeTests";
 
     private readonly MixedModeClass _mixedModeClass;
     private readonly NativeLibraryBuilder _builder;
@@ -39,7 +39,7 @@ public class MixedModeTests : IDisposable
     {
         _builder = new NativeLibraryBuilder(ImplementationOptions.GenerateDisposalChecks);
 
-        _mixedModeClass = _builder.ActivateClass<MixedModeClass>(LibraryName);
+        _mixedModeClass = _builder.ActivateClass<MixedModeClass>(_libraryName);
     }
 
     [Fact]
@@ -48,41 +48,41 @@ public class MixedModeTests : IDisposable
         Assert.Throws<ArgumentException>
         (
             () =>
-                _builder.ActivateClass<MixedModeClassThatIsNotAbstract>(LibraryName)
+                _builder.ActivateClass<MixedModeClassThatIsNotAbstract>(_libraryName)
         );
     }
 
     [Fact]
     public void CanActivateClassWithMultipleNativeInterfaces()
     {
-        _builder.ActivateClass<MixedModeClassWithMultipleNativeInterfaces>(LibraryName);
+        _builder.ActivateClass<MixedModeClassWithMultipleNativeInterfaces>(_libraryName);
     }
 
     [Fact]
     public void CanActivateClassWithNativeSymbolInInterface()
     {
-        var library = _builder.ActivateClass<MixedModeClassWithNativeSymbolInInterface>(LibraryName);
+        var library = _builder.ActivateClass<MixedModeClassWithNativeSymbolInInterface>(_libraryName);
         Assert.Equal(5, library.SubtractWithRemappedName(10, 5));
     }
 
     [Fact]
     public void CanActivateClassWithNativeSymbolInClass()
     {
-        var library = _builder.ActivateClass<MixedModeClassWithNativeSymbolInClass>(LibraryName);
+        var library = _builder.ActivateClass<MixedModeClassWithNativeSymbolInClass>(_libraryName);
         Assert.Equal(5, library.SubtractWithRemappedName(10, 5));
     }
 
     [Fact]
     public void CanActivateClassWithNativeSymbolInBothInterfaceAndClass()
     {
-        var library = _builder.ActivateClass<MixedModeClassWithNativeSymbolInInterfaceAndClass>(LibraryName);
+        var library = _builder.ActivateClass<MixedModeClassWithNativeSymbolInInterfaceAndClass>(_libraryName);
         Assert.Equal(5, library.SubtractWithRemappedName(10, 5));
     }
 
     [Fact]
     public void CanActivateClassWithInheritedNativeInterfaces()
     {
-        _builder.ActivateClass<MixedModeClassWithInheritedInterface>(LibraryName);
+        _builder.ActivateClass<MixedModeClassWithInheritedInterface>(_libraryName);
     }
 
     [Fact]
@@ -132,6 +132,6 @@ public class MixedModeTests : IDisposable
 
     public void Dispose()
     {
-        _mixedModeClass?.Dispose();
+        _mixedModeClass.Dispose();
     }
 }

@@ -46,7 +46,7 @@ internal sealed class PropertyImplementationGenerator : ImplementationGeneratorB
     /// <inheritdoc/>
     public override GeneratorComplexity Complexity => Terminating;
 
-    private const MethodAttributes PropertyMethodAttributes =
+    private const MethodAttributes _propertyMethodAttributes =
         PrivateScope |
         Public |
         Virtual |
@@ -157,7 +157,7 @@ internal sealed class PropertyImplementationGenerator : ImplementationGeneratorB
         var setterMethod = TargetType.DefineMethod
         (
             actualSetMethod!.Name,
-            PropertyMethodAttributes,
+            _propertyMethodAttributes,
             actualSetMethod.CallingConvention,
             typeof(void),
             actualSetMethod.GetParameters().Select(p => p.ParameterType).ToArray()
@@ -239,7 +239,7 @@ internal sealed class PropertyImplementationGenerator : ImplementationGeneratorB
         var getterMethod = TargetType.DefineMethod
         (
             actualGetMethod.Name,
-            PropertyMethodAttributes,
+            _propertyMethodAttributes,
             actualGetMethod.CallingConvention,
             actualGetMethod.ReturnType,
             Type.EmptyTypes

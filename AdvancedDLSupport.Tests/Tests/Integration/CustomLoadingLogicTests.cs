@@ -31,13 +31,13 @@ namespace AdvancedDLSupport.Tests.Integration;
 
 public class CustomLoadingLogicTests : LibraryTestBase<IStringLibrary>
 {
-    private const string LibraryName = "StringTests";
+    private const string _libraryName = "StringTests";
 
     private LibraryLoadingOverride? _libraryLogicOverride;
     private SymbolLoadingOverride? _symbolLogicOverride;
 
     public CustomLoadingLogicTests()
-        : base(LibraryName)
+        : base(_libraryName)
     {
     }
 

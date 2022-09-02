@@ -24,7 +24,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace AdvancedDLSupport.Tests.Data;
+namespace AdvancedDLSupport.Tests.Data.Delegates;
 
 public class DelegateLibraryDelegates
 {

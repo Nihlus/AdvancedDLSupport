@@ -34,13 +34,13 @@ namespace Mono.DllMap.Tests.Unit;
 
 public class AttributeParserTests
 {
-    private const string NonNegatedAttributeList = "foo,bar";
-    private const string NegatedAttributeList = "!foo,bar";
+    private const string _nonNegatedAttributeList = "foo,bar";
+    private const string _negatedAttributeList = "!foo,bar";
 
     [Fact]
     public void CanParseNonNegatedAttributeList()
     {
-        var actual = DllMapAttributeParser.Parse<TestEnum>(NonNegatedAttributeList);
+        var actual = DllMapAttributeParser.Parse<TestEnum>(_nonNegatedAttributeList);
 
         Assert.True(actual.HasFlagFast(Foo));
         Assert.True(actual.HasFlagFast(Bar));
@@ -50,7 +50,7 @@ public class AttributeParserTests
     [Fact]
     public void CanParseNegatedAttributeList()
     {
-        var actual = DllMapAttributeParser.Parse<TestEnum>(NegatedAttributeList);
+        var actual = DllMapAttributeParser.Parse<TestEnum>(_negatedAttributeList);
 
         Assert.False(actual.HasFlagFast(Foo));
         Assert.False(actual.HasFlagFast(Bar));
@@ -63,7 +63,7 @@ public class AttributeParserTests
         Assert.Throws<ArgumentException>
         (
             () =>
-                DllMapAttributeParser.Parse<int>(NonNegatedAttributeList)
+                DllMapAttributeParser.Parse<int>(_nonNegatedAttributeList)
         );
     }
 
@@ -73,7 +73,7 @@ public class AttributeParserTests
         Assert.Throws<ArgumentException>
         (
             () =>
-                DllMapAttributeParser.Parse<TestEnumWithoutFlagAttribute>(NonNegatedAttributeList)
+                DllMapAttributeParser.Parse<TestEnumWithoutFlagAttribute>(_nonNegatedAttributeList)
         );
     }
 

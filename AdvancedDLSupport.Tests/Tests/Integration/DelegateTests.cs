@@ -25,6 +25,7 @@
 using System;
 using System.Runtime.InteropServices;
 using AdvancedDLSupport.Tests.Data;
+using AdvancedDLSupport.Tests.Data.Delegates;
 using AdvancedDLSupport.Tests.TestBases;
 using Xunit;
 
@@ -32,12 +33,12 @@ namespace AdvancedDLSupport.Tests.Integration;
 
 public class DelegateTests
 {
-    private const string LibraryName = "GenericDelegateTests";
+    private const string _libraryName = "GenericDelegateTests";
 
     public class FromManagedToNative : LibraryTestBase<IDelegateLibrary>
     {
         public FromManagedToNative()
-            : base(LibraryName)
+            : base(_libraryName)
         {
         }
 
@@ -147,7 +148,7 @@ public class DelegateTests
     public class FromNativeToManaged : LibraryTestBase<IDelegateLibrary>
     {
         public FromNativeToManaged()
-            : base(LibraryName)
+            : base(_libraryName)
         {
         }
 
@@ -230,7 +231,7 @@ public class DelegateTests
         }
 
         public DelegateLifetime()
-            : base(LibraryName)
+            : base(_libraryName)
         {
         }
 

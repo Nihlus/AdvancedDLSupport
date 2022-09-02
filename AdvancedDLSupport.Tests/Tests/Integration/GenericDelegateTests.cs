@@ -30,12 +30,12 @@ namespace AdvancedDLSupport.Tests.Integration;
 
 public class GenericDelegateTests
 {
-    private const string LibraryName = "GenericDelegateTests";
+    private const string _libraryName = "GenericDelegateTests";
 
     public class FromManagedToNative : LibraryTestBase<IGenericDelegateLibrary>
     {
         public FromManagedToNative()
-            : base(LibraryName)
+            : base(_libraryName)
         {
         }
 
@@ -110,7 +110,7 @@ public class GenericDelegateTests
     public class FromNativeToManaged : LibraryTestBase<IGenericDelegateLibrary>
     {
         public FromNativeToManaged()
-            : base(LibraryName)
+            : base(_libraryName)
         {
         }
 

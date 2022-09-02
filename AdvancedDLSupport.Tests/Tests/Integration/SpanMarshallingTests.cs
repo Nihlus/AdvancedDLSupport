@@ -31,10 +31,10 @@ namespace AdvancedDLSupport.Tests.Integration;
 
 public class SpanMarshallingTests : LibraryTestBase<ISpanMarshallingTests>
 {
-    private const string LibraryName = "SpanMarshallingTests";
+    private const string _libraryName = "SpanMarshallingTests";
 
     public SpanMarshallingTests()
-        : base(LibraryName)
+        : base(_libraryName)
     {
     }
 
@@ -69,7 +69,7 @@ public class SpanMarshallingTests : LibraryTestBase<ISpanMarshallingTests>
     {
         var activator = GetImplementationBuilder();
 
-        Assert.Throws<NotSupportedException>(() => activator.ActivateInterface<IFailsReturnsSpanInvalid>(LibraryName));
+        Assert.Throws<NotSupportedException>(() => activator.ActivateInterface<IFailsReturnsSpanInvalid>(_libraryName));
     }
 
     [Fact]
@@ -77,6 +77,6 @@ public class SpanMarshallingTests : LibraryTestBase<ISpanMarshallingTests>
     {
         var activator = GetImplementationBuilder();
 
-        Assert.Throws<InvalidOperationException>(() => activator.ActivateInterface<IFailsReturnsSpanNoAttr>(LibraryName));
+        Assert.Throws<InvalidOperationException>(() => activator.ActivateInterface<IFailsReturnsSpanNoAttr>(_libraryName));
     }
 }

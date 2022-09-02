@@ -30,10 +30,10 @@ namespace AdvancedDLSupport.Tests.Integration;
 
 public class FunctionIntegrationTests : LibraryTestBase<IFunctionLibrary>
 {
-    private const string LibraryName = "FunctionTests";
+    private const string _libraryName = "FunctionTests";
 
     public FunctionIntegrationTests()
-        : base(LibraryName)
+        : base(_libraryName)
     {
     }
 

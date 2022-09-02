@@ -30,10 +30,10 @@ namespace AdvancedDLSupport.Tests.Integration;
 
 public class NullableStructTests : LibraryTestBase<INullableLibrary>
 {
-    private const string LibraryName = "NullableTests";
+    private const string _libraryName = "NullableTests";
 
     public NullableStructTests()
-        : base(LibraryName)
+        : base(_libraryName)
     {
     }
 

@@ -53,6 +53,7 @@ public class NativeLibraryBuilder
     /// <summary>
     /// Gets the name of the dynamic assembly.
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     internal const string DynamicAssemblyName = "DLSupportDynamicAssembly";
 
     /// <summary>
@@ -78,16 +79,16 @@ public class NativeLibraryBuilder
 
     private readonly ModuleBuilder _moduleBuilder;
 
-    private static readonly object BuilderLock = new object();
+    private static readonly object _builderLock = new();
 
-    private static readonly ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type> TypeCache;
+    private static readonly ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type> _typeCache;
 
     private ILibraryLoader? _customLibraryLoader;
     private ISymbolLoader? _customSymbolLoader;
 
     static NativeLibraryBuilder()
     {
-        TypeCache = new ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type>
+        _typeCache = new ConcurrentDictionary<GeneratedImplementationTypeIdentifier, Type>
         (
             new LibraryIdentifierEqualityComparer()
         );
@@ -211,14 +212,14 @@ public class NativeLibraryBuilder
 
         foreach (var generatedType in typeDictionary)
         {
-            lock (BuilderLock)
+            lock (_builderLock)
             {
-                if (TypeCache.ContainsKey(generatedType.Key))
+                if (_typeCache.ContainsKey(generatedType.Key))
                 {
                     continue;
                 }
 
-                TypeCache.TryAdd(generatedType.Key, generatedType.Value);
+                _typeCache.TryAdd(generatedType.Key, generatedType.Value);
             }
         }
     }
@@ -368,12 +369,12 @@ public class NativeLibraryBuilder
 
         // Check if we've already generated a type for this configuration
         var key = new GeneratedImplementationTypeIdentifier(baseClassType, interfaceTypes, Options);
-        lock (BuilderLock)
+        lock (_builderLock)
         {
-            if (!TypeCache.TryGetValue(key, out var generatedType))
+            if (!_typeCache.TryGetValue(key, out var generatedType))
             {
                 generatedType = GenerateInterfaceImplementationType(baseClassType, interfaceTypes);
-                TypeCache.TryAdd(key, generatedType);
+                _typeCache.TryAdd(key, generatedType);
             }
 
             try
@@ -448,15 +449,15 @@ public class NativeLibraryBuilder
         // Check if we've already generated a type for this configuration
         var key = new GeneratedImplementationTypeIdentifier(classType, interfaceTypes, Options);
         Type? generatedType;
-        lock (BuilderLock)
+        lock (_builderLock)
         {
-            if (TypeCache.TryGetValue(key, out generatedType))
+            if (_typeCache.TryGetValue(key, out generatedType))
             {
                 return new Tuple<GeneratedImplementationTypeIdentifier, Type>(key, generatedType);
             }
 
             generatedType = GenerateInterfaceImplementationType(classType, interfaceTypes);
-            TypeCache.TryAdd(key, generatedType);
+            _typeCache.TryAdd(key, generatedType);
         }
 
         return new Tuple<GeneratedImplementationTypeIdentifier, Type>(key, generatedType);

@@ -34,6 +34,11 @@ namespace AdvancedDLSupport.AOT;
 /// </summary>
 public class PersistentDynamicAssemblyProvider : IDynamicAssemblyProvider
 {
+    private readonly AssemblyBuilder _dynamicAssembly;
+
+    private bool _isDisposed;
+    private ModuleBuilder? _dynamicModule;
+
     /// <summary>
     /// Gets a value indicating whether or not the assembly is debuggable.
     /// </summary>
@@ -43,18 +48,12 @@ public class PersistentDynamicAssemblyProvider : IDynamicAssemblyProvider
     /// <summary>
     /// Gets the name of the dynamic assembly.
     /// </summary>
-    public const string DynamicAssemblyName = "DLSupportDynamicAssembly";
+    public static string DynamicAssemblyName => "DLSupportDynamicAssembly";
 
     /// <summary>
     /// Gets the output filename of the assembly.
     /// </summary>
     public string OutputFilename { get; }
-
-    private bool _isDisposed;
-
-    private AssemblyBuilder _dynamicAssembly;
-
-    private ModuleBuilder? _dynamicModule;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PersistentDynamicAssemblyProvider"/> class.

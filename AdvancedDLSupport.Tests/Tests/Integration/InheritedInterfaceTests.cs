@@ -32,10 +32,10 @@ public class InheritedInterfaceTests
 {
     public class IdenticalInheritedInterfaceTests : LibraryTestBase<IInterfaceWithCombinedIdenticalSignatures>
     {
-        private const string LibraryName = "FunctionTests";
+        private const string _libraryName = "FunctionTests";
 
         public IdenticalInheritedInterfaceTests()
-            : base(LibraryName)
+            : base(_libraryName)
         {
         }
 
@@ -69,10 +69,10 @@ public class InheritedInterfaceTests
     public class DifferentEntrypointInheritedInterfaceTests
         : LibraryTestBase<IInterfaceWithCombinedIdenticalSignaturesWithDifferentEntrypoints>
     {
-        private const string LibraryName = "FunctionTests";
+        private const string _libraryName = "FunctionTests";
 
         public DifferentEntrypointInheritedInterfaceTests()
-            : base(LibraryName)
+            : base(_libraryName)
         {
         }
 

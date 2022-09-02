@@ -34,12 +34,12 @@ internal static class ILGeneratorExtensions
     /// <summary>
     /// Holds the real EmitCalli overload, if it exists on this runtime.
     /// </summary>
-    private static readonly Action<ILGenerator, OpCode, CallingConvention, Type, Type[]>? RealEmitCalli;
+    private static readonly Action<ILGenerator, OpCode, CallingConvention, Type, Type[]>? _realEmitCalli;
 
     /// <summary>
     /// Holds a delegate wrapping an action to retrieve an unmanaged signature helper.
     /// </summary>
-    private static readonly Func<CallingConvention, Type, SignatureHelper>? GetMethodSignatureHelper;
+    private static readonly Func<CallingConvention, Type, SignatureHelper>? _getMethodSignatureHelper;
 
     static ILGeneratorExtensions()
     {
@@ -54,7 +54,7 @@ internal static class ILGeneratorExtensions
         if (!(realEmitCalli is null))
         {
             var delegateType = typeof(Action<ILGenerator, OpCode, CallingConvention, Type, Type[]>);
-            RealEmitCalli = (Action<ILGenerator, OpCode, CallingConvention, Type, Type[]>)Delegate.CreateDelegate
+            _realEmitCalli = (Action<ILGenerator, OpCode, CallingConvention, Type, Type[]>)Delegate.CreateDelegate
             (
                 delegateType,
                 realEmitCalli
@@ -75,7 +75,7 @@ internal static class ILGeneratorExtensions
         }
 
         var getHelperDelegateType = typeof(Func<CallingConvention, Type, SignatureHelper>);
-        GetMethodSignatureHelper = (Func<CallingConvention, Type, SignatureHelper>)Delegate.CreateDelegate
+        _getMethodSignatureHelper = (Func<CallingConvention, Type, SignatureHelper>)Delegate.CreateDelegate
         (
             getHelperDelegateType,
             getMethodSignatureHelper
@@ -97,18 +97,18 @@ internal static class ILGeneratorExtensions
         Type[] parameterTypes
     )
     {
-        if (!(RealEmitCalli is null))
+        if (!(_realEmitCalli is null))
         {
-            RealEmitCalli(@this, OpCodes.Calli, callingConvention, returnType, parameterTypes);
+            _realEmitCalli(@this, OpCodes.Calli, callingConvention, returnType, parameterTypes);
             return;
         }
 
-        if (GetMethodSignatureHelper is null)
+        if (_getMethodSignatureHelper is null)
         {
             throw new PlatformNotSupportedException("Calli is not supported on this runtime.");
         }
 
-        var sig = GetMethodSignatureHelper(callingConvention, returnType);
+        var sig = _getMethodSignatureHelper(callingConvention, returnType);
 
         if (!(parameterTypes is null))
         {

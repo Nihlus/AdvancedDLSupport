@@ -36,10 +36,10 @@ public class NativeLibraryBuilderIntegrationTests
 {
     public class ActivateInterface : LibraryTestBase<IBaseLibrary>
     {
-        private const string LibraryName = "BaseTests";
+        private const string _libraryName = "BaseTests";
 
         public ActivateInterface()
-            : base(LibraryName)
+            : base(_libraryName)
         {
         }
 
@@ -54,7 +54,7 @@ public class NativeLibraryBuilderIntegrationTests
         {
             var incorrectBitness = RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x32" : "x64";
 
-            var libraryName = $"{LibraryName}-{incorrectBitness}";
+            var libraryName = $"{_libraryName}-{incorrectBitness}";
             var libraryPath = Path.Combine("lib", incorrectBitness, libraryName);
 
             Assert.Throws<LibraryLoadingException>
@@ -66,7 +66,7 @@ public class NativeLibraryBuilderIntegrationTests
         [Fact]
         public void LoadingSameInterfaceAndSameFileTwiceProducesDifferentReferences()
         {
-            var secondLoad = new NativeLibraryBuilder().ActivateInterface<IBaseLibrary>(LibraryName);
+            var secondLoad = new NativeLibraryBuilder().ActivateInterface<IBaseLibrary>(_libraryName);
 
             Assert.NotSame(Library, secondLoad);
         }
@@ -75,7 +75,7 @@ public class NativeLibraryBuilderIntegrationTests
         public void LoadingSameInterfaceWithSameOptionsAndSameFileTwiceUsesSameGeneratedType()
         {
             var secondLoad = new NativeLibraryBuilder(ImplementationOptions.GenerateDisposalChecks)
-                .ActivateInterface<IBaseLibrary>(LibraryName);
+                .ActivateInterface<IBaseLibrary>(_libraryName);
 
             Assert.IsType(Library.GetType(), secondLoad);
         }
@@ -85,7 +85,7 @@ public class NativeLibraryBuilderIntegrationTests
         {
             var options = ImplementationOptions.UseLazyBinding;
 
-            var secondLoad = new NativeLibraryBuilder(options).ActivateInterface<IBaseLibrary>(LibraryName);
+            var secondLoad = new NativeLibraryBuilder(options).ActivateInterface<IBaseLibrary>(_libraryName);
 
             Assert.IsNotType(Library.GetType(), secondLoad);
         }
@@ -95,7 +95,7 @@ public class NativeLibraryBuilderIntegrationTests
         {
             var options = ImplementationOptions.UseLazyBinding;
 
-            var secondLoad = new NativeLibraryBuilder(options).ActivateInterface<IBaseLibrary>(LibraryName);
+            var secondLoad = new NativeLibraryBuilder(options).ActivateInterface<IBaseLibrary>(_libraryName);
 
             Assert.NotSame(Library, secondLoad);
         }
@@ -105,7 +105,7 @@ public class NativeLibraryBuilderIntegrationTests
         {
             Assert.Throws<ArgumentException>
             (
-                () => NativeLibraryBuilder.Default.ActivateInterface<SimpleClass>(LibraryName)
+                () => NativeLibraryBuilder.Default.ActivateInterface<SimpleClass>(_libraryName)
             );
         }
 

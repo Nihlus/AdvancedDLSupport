@@ -37,7 +37,7 @@ public class NativeLibraryBuilderTests
 {
     public class DiscoverCompiledTypes : NativeLibraryBuilderTestBase
     {
-        private static readonly Action ClearCache;
+        private static readonly Action _clearCache;
 
         static DiscoverCompiledTypes()
         {
@@ -53,12 +53,12 @@ public class NativeLibraryBuilderTests
                 return;
             }
 
-            ClearCache = Expression.Lambda<Action>(Expression.Call(Expression.Field(null, typeCacheField), clearMethod)).Compile();
+            _clearCache = Expression.Lambda<Action>(Expression.Call(Expression.Field(null, typeCacheField), clearMethod)).Compile();
         }
 
         public DiscoverCompiledTypes()
         {
-            ClearCache();
+            _clearCache();
         }
 
         [Fact]

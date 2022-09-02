@@ -38,7 +38,7 @@ internal static class MethodBuilderExtensions
     /// <summary>
     /// Holds blacklisted attributes which will not be copied to their respective types.
     /// </summary>
-    private static readonly IReadOnlyDictionary<Type, IReadOnlyList<Type>> AttributeBlacklist = new Dictionary<Type, IReadOnlyList<Type>>
+    private static readonly IReadOnlyDictionary<Type, IReadOnlyList<Type>> _attributeBlacklist = new Dictionary<Type, IReadOnlyList<Type>>
     {
         { typeof(IntPtr), new[] { typeof(MarshalAsAttribute) } }
     };
@@ -83,7 +83,7 @@ internal static class MethodBuilderExtensions
         var returnValueBuilder = @this.DefineParameter(0, source.ReturnParameterAttributes, null);
         foreach (var attribute in source.ReturnParameterCustomAttributes)
         {
-            if (AttributeBlacklist.ContainsKey(newReturnParameterType) && AttributeBlacklist[newReturnParameterType].Contains(attribute.AttributeType))
+            if (_attributeBlacklist.ContainsKey(newReturnParameterType) && _attributeBlacklist[newReturnParameterType].Contains(attribute.AttributeType))
             {
                 continue;
             }
@@ -108,7 +108,7 @@ internal static class MethodBuilderExtensions
                 var parameterBuilder = @this.DefineParameter(i + 1, methodParameterAttributes, methodParameterName);
                 foreach (var attribute in methodParameterCustomAttributes)
                 {
-                    if (AttributeBlacklist.ContainsKey(targetParameterType) && AttributeBlacklist[targetParameterType].Contains(attribute.AttributeType))
+                    if (_attributeBlacklist.ContainsKey(targetParameterType) && _attributeBlacklist[targetParameterType].Contains(attribute.AttributeType))
                     {
                         continue;
                     }

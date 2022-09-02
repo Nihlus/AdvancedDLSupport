@@ -31,16 +31,18 @@ public class InitialCleanupFixture
     public InitialCleanupFixture()
     {
         var targetDirectory = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "aot-test"));
-        if (targetDirectory.Exists)
+        if (!targetDirectory.Exists)
         {
-            try
-            {
-                targetDirectory.Delete(true);
-            }
-            catch
-            {
-                // TODO: currently workaround, as files created by other tests in the same run, aren't closed yet.
-            }
+            return;
+        }
+
+        try
+        {
+            targetDirectory.Delete(true);
+        }
+        catch
+        {
+            // TODO: currently workaround, as files created by other tests in the same run aren't closed yet.
         }
     }
 }

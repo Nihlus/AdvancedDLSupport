@@ -61,11 +61,10 @@ public interface IStringLibrary
 
     UIntPtr LPWStringLength([MarshalAs(UnmanagedType.LPWStr)] string value);
 
-    #if NETCOREAPP || NETSTANDARD2_1
+    // ReSharper disable once InconsistentNaming
     [return: MarshalAs(UnmanagedType.LPUTF8Str)]
     string GetLPUTF8String();
 
+    // ReSharper disable once InconsistentNaming
     UIntPtr LPUTF8StringLength([MarshalAs(UnmanagedType.LPUTF8Str)] string value);
-    #endif
-
 }

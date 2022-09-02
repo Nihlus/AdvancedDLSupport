@@ -30,10 +30,10 @@ namespace AdvancedDLSupport.Tests.Integration;
 
 public class DllMapTests : LibraryTestBase<IRemappedLibrary>
 {
-    private const string LibraryName = "OriginalLibraryName";
+    private const string _libraryName = "OriginalLibraryName";
 
     public DllMapTests()
-        : base(LibraryName)
+        : base(_libraryName)
     {
     }
 

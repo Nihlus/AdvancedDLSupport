@@ -31,10 +31,10 @@ namespace AdvancedDLSupport.Tests.Integration;
 
 public class LazyLoadingIntegrationTests : LibraryTestBase<ILazyLoadingLibrary>
 {
-    private const string LibraryName = "LazyLoadingTests";
+    private const string _libraryName = "LazyLoadingTests";
 
     public LazyLoadingIntegrationTests()
-        : base(LibraryName)
+        : base(_libraryName)
     {
     }
 
@@ -49,7 +49,7 @@ public class LazyLoadingIntegrationTests : LibraryTestBase<ILazyLoadingLibrary>
         Assert.Throws<SymbolLoadingException>
         (
             () =>
-                new NativeLibraryBuilder().ActivateInterface<ILazyLoadingLibrary>(LibraryName)
+                new NativeLibraryBuilder().ActivateInterface<ILazyLoadingLibrary>(_libraryName)
         );
     }
 
@@ -69,7 +69,7 @@ public class LazyLoadingIntegrationTests : LibraryTestBase<ILazyLoadingLibrary>
         Assert.Throws<SymbolLoadingException>
         (
             () =>
-                new NativeLibraryBuilder().ActivateInterface<ILazyLoadingLibrary>(LibraryName)
+                new NativeLibraryBuilder().ActivateInterface<ILazyLoadingLibrary>(_libraryName)
         );
     }
 

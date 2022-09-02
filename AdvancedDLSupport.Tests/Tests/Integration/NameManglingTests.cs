@@ -30,10 +30,10 @@ namespace AdvancedDLSupport.Tests.Integration;
 
 public class NameManglingTests : LibraryTestBase<INameManglingTests>
 {
-    private const string LibraryName = "NameManglingTests";
+    private const string _libraryName = "NameManglingTests";
 
     public NameManglingTests()
-        : base(LibraryName)
+        : base(_libraryName)
     {
     }
 

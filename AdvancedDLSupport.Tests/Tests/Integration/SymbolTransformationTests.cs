@@ -30,10 +30,10 @@ namespace AdvancedDLSupport.Tests.Integration
 {
     public class SymbolTransformationTests : LibraryTestBase<ISymbolTransformationTests>
     {
-        private const string LibraryName = "SymbolTransformationTests";
+        private const string _libraryName = "SymbolTransformationTests";
 
         public SymbolTransformationTests()
-            : base(LibraryName)
+            : base(_libraryName)
         {
         }
 

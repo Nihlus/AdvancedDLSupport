@@ -33,14 +33,14 @@ namespace AdvancedDLSupport.Tests.Integration;
 
 public class PropertyIntegrationTests
 {
-    private const string LibraryName = "PropertyTests";
-    private const string TestCollectionName = "VolatilePropertyData";
+    private const string _libraryName = "PropertyTests";
+    private const string _testCollectionName = "VolatilePropertyData";
 
-    [Collection(TestCollectionName)]
+    [Collection(_testCollectionName)]
     public class Getter : LibraryTestBase<IPropertyLibrary>
     {
         public Getter()
-            : base(LibraryName)
+            : base(_libraryName)
         {
             Library.ResetData();
         }
@@ -70,11 +70,11 @@ public class PropertyIntegrationTests
         }
     }
 
-    [Collection(TestCollectionName)]
+    [Collection(_testCollectionName)]
     public class Setter : LibraryTestBase<IPropertyLibrary>
     {
         public Setter()
-            : base(LibraryName)
+            : base(_libraryName)
         {
             Library.ResetData();
         }
@@ -118,7 +118,7 @@ public class PropertyIntegrationTests
             Assert.Throws<NotSupportedException>
             (
                 () =>
-                    builder.ActivateInterface<IPropertyWithClassTypeLibrary>(LibraryName)
+                    builder.ActivateInterface<IPropertyWithClassTypeLibrary>(_libraryName)
             );
         }
     }

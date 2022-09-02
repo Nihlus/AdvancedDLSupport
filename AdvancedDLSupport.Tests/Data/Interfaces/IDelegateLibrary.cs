@@ -20,6 +20,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using AdvancedDLSupport.Tests.Data.Delegates;
+
 #pragma warning disable SA1600, CS1591
 
 namespace AdvancedDLSupport.Tests.Data;

@@ -29,10 +29,10 @@ namespace AdvancedDLSupport.Tests.TestBases;
 
 public abstract class IndirectCallsTestBase<T> : LibraryTestBase<T> where T : class, IIndirectCallLibrary
 {
-    private const string LibraryName = "IndirectCallTests";
+    private const string _libraryName = "IndirectCallTests";
 
     protected IndirectCallsTestBase()
-        : base(LibraryName)
+        : base(_libraryName)
     {
     }
 
