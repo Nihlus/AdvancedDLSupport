@@ -65,19 +65,19 @@ public abstract class NativeLibraryBase : IDisposable
     /// </summary>
     /// <param name="path">The path to the library.</param>
     /// <param name="options">Whether or not this library can be disposed.</param>
-    /// <param name="libLoader">Overriding library loader.</param>
-    /// <param name="symLoader">Overriding symbol loader.</param>
+    /// <param name="libraryLoader">Overriding library loader.</param>
+    /// <param name="symbolLoader">Overriding symbol loader.</param>
     [PublicAPI, AnonymousConstructor]
     protected NativeLibraryBase
     (
         string? path,
         ImplementationOptions options,
-        ILibraryLoader? libLoader = null,
-        ISymbolLoader? symLoader = null
+        ILibraryLoader? libraryLoader = null,
+        ISymbolLoader? symbolLoader = null
     )
     {
-        _libraryLoader = libLoader ?? PlatformLoaderBase.PlatformLoader;
-        _symbolLoader = symLoader ?? PlatformLoaderBase.PlatformLoader;
+        _libraryLoader = libraryLoader ?? PlatformLoaderBase.PlatformLoader;
+        _symbolLoader = symbolLoader ?? PlatformLoaderBase.PlatformLoader;
         Options = options;
         _libraryHandle = _libraryLoader.LoadLibrary(path);
     }

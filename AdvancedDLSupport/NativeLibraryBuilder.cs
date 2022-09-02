@@ -603,14 +603,16 @@ public class NativeLibraryBuilder
     /// <param name="finalType">The constructed anonymous type.</param>
     /// <param name="library">The path to or name of the library.</param>
     /// <param name="options">The generator options.</param>
+    /// <param name="libraryLoader">The library loader to use.</param>
+    /// <param name="symbolLoader">The symbol loader to use.</param>
     /// <returns>An instance of the anonymous type.</returns>
     private object CreateAnonymousImplementationInstance
     (
         Type finalType,
         string? library,
         ImplementationOptions options,
-        ILibraryLoader? libLoader = null,
-        ISymbolLoader? symLoader = null
+        ILibraryLoader? libraryLoader = null,
+        ISymbolLoader? symbolLoader = null
     )
     {
         return Activator.CreateInstance
@@ -618,8 +620,8 @@ public class NativeLibraryBuilder
             finalType,
             library,
             options,
-            libLoader,
-            symLoader
+            libraryLoader,
+            symbolLoader
         )!;
     }
 
