@@ -34,7 +34,7 @@ jobs:
           dotnet build -c Release --no-restore -p:Platform=${{ matrix.platform }}
 
       - name: Test
-        run: dotnet test Tests/Mono.DllMap.Tests -c Release --no-restore --no-build --verbosity minimal -p:Platform=${{ matrix.platform }}
+        run: dotnet test Tests/Mono.DllMap.Tests -c Release --no-restore --no-build --verbosity minimal
 
       - name: Test (native)
         run: dotnet test Tests/AdvancedDLSupport.Tests -c Release --verbosity minimal -p:Platform=${{ matrix.platform }}
