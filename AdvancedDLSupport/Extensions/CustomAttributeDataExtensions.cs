@@ -21,6 +21,7 @@
 //
 
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -44,10 +45,22 @@ internal static class CustomAttributeDataExtensions
         var namedFields = @this.NamedArguments!.Where(a => a.IsField).ToList();
         var namedProperties = @this.NamedArguments!.Where(a => a.MemberInfo is PropertyInfo).ToList();
 
+        var arguments = @this.ConstructorArguments.Select(a =>
+            {
+                if (!a.ArgumentType.IsArray)
+                {
+                    return a.Value;
+                }
+
+                var list = (ReadOnlyCollection<CustomAttributeTypedArgument>)a.Value!;
+                return list.Select(e => e.Value).ToArray();
+            }
+        ).ToArray();
+
         return new CustomAttributeBuilder
         (
             @this.Constructor,
-            @this.ConstructorArguments.Select(a => a.Value).ToArray(),
+            arguments,
             namedProperties.Select(p => p.MemberInfo).Cast<PropertyInfo>().ToArray(),
             namedProperties.Select(p => p.TypedValue.Value).ToArray(),
             namedFields.Select(f => f.MemberInfo).Cast<FieldInfo>().ToArray(),
