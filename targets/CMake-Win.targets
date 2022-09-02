@@ -1,15 +1,13 @@
 <Project>
     <PropertyGroup>
-        <CMakeGenerator>"Visual Studio 16 2019"</CMakeGenerator>
+        <CMakeExtraArguments>-A x64</CMakeExtraArguments>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Platform)' == 'x86'">
-        <CMakeGenerator>"Visual Studio 16 2019"</CMakeGenerator>
         <CMakeExtraArguments>-A Win32</CMakeExtraArguments>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Platform)' == 'x64'">
-        <CMakeGenerator>"Visual Studio 16 2019" -A x64</CMakeGenerator>
         <CMakeExtraArguments>-A x64</CMakeExtraArguments>
     </PropertyGroup>
 
