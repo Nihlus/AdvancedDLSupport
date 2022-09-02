@@ -119,7 +119,7 @@ internal sealed class RefPermutationImplementationGenerator : ImplementationGene
         IReadOnlyList<IntrospectiveMethodInfo> permutations
     )
     {
-        if (!(definition.GetWrappedMember() is MethodBuilder builder))
+        if (definition.GetWrappedMember() is not MethodBuilder builder)
         {
             throw new ArgumentNullException(nameof(definition), "Could not unwrap introspective method to method builder.");
         }

@@ -39,7 +39,7 @@ internal sealed class LinuxPathResolver : ILibraryPathResolver
 
         string libraryLocation;
 
-        if (!(libraryPaths is null))
+        if (libraryPaths is not null)
         {
             foreach (var path in libraryPaths)
             {
@@ -61,7 +61,7 @@ internal sealed class LinuxPathResolver : ILibraryPathResolver
                     Path.GetFileName(l) == Path.GetFileName(library)
             );
 
-            if (!(cachedMatch is null))
+            if (cachedMatch is not null)
             {
                 return ResolvePathResult.FromSuccess(cachedMatch);
             }

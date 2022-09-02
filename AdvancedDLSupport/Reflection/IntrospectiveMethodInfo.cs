@@ -176,7 +176,7 @@ public class IntrospectiveMethodInfo : IntrospectiveMemberBase<MethodInfo>
                     typeof(MarshalAsAttribute)
                 ) as MarshalAsAttribute;
 
-                if (!(parameterMarshalAsAttribute is null))
+                if (parameterMarshalAsAttribute is not null)
                 {
                     customAttributes.Add(parameterMarshalAsAttribute.GetAttributeData());
                 }
@@ -217,7 +217,7 @@ public class IntrospectiveMethodInfo : IntrospectiveMemberBase<MethodInfo>
                     a.AttributeType == typeof(MarshalAsAttribute)
             )?.ToInstance<MarshalAsAttribute>();
 
-        if (!(returnParameterMarshalAsAttribute is null) || !RuntimeInformation.FrameworkDescription.Contains("Mono"))
+        if (returnParameterMarshalAsAttribute is not null || !RuntimeInformation.FrameworkDescription.Contains("Mono"))
         {
             return;
         }
@@ -229,7 +229,7 @@ public class IntrospectiveMethodInfo : IntrospectiveMemberBase<MethodInfo>
             methodInfo.ReturnParameter, typeof(MarshalAsAttribute), false
         ) as MarshalAsAttribute;
 
-        if (!(returnParameterMarshalAsAttribute is null))
+        if (returnParameterMarshalAsAttribute is not null)
         {
             returnCustomAttributes.Add(returnParameterMarshalAsAttribute.GetAttributeData());
         }

@@ -147,7 +147,7 @@ internal sealed class DelegateMethodImplementationGenerator : ImplementationGene
         FieldInfo delegateField
     )
     {
-        if (!(method.GetWrappedMember() is MethodBuilder builder))
+        if (method.GetWrappedMember() is not MethodBuilder builder)
         {
             throw new ArgumentNullException(nameof(method), "Could not unwrap introspective method to method builder.");
         }

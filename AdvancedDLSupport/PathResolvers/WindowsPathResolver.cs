@@ -39,7 +39,7 @@ internal sealed class WindowsPathResolver : ILibraryPathResolver
         string libraryLocation;
 
         var entryAssembly = Assembly.GetEntryAssembly();
-        if (!(entryAssembly is null) && Directory.GetParent(entryAssembly.Location) is var parentDirectory)
+        if (entryAssembly is not null && Directory.GetParent(entryAssembly.Location) is var parentDirectory)
         {
             var executingDir = parentDirectory?.FullName ?? Directory.GetDirectoryRoot(entryAssembly.Location);
 

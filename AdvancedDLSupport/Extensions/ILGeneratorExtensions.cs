@@ -51,7 +51,7 @@ internal static class ILGeneratorExtensions
             new[] { typeof(OpCode), typeof(CallingConvention), typeof(Type), typeof(Type[]) }
         );
 
-        if (!(realEmitCalli is null))
+        if (realEmitCalli is not null)
         {
             var delegateType = typeof(Action<ILGenerator, OpCode, CallingConvention, Type, Type[]>);
             _realEmitCalli = (Action<ILGenerator, OpCode, CallingConvention, Type, Type[]>)Delegate.CreateDelegate
@@ -97,7 +97,7 @@ internal static class ILGeneratorExtensions
         Type[] parameterTypes
     )
     {
-        if (!(_realEmitCalli is null))
+        if (_realEmitCalli is not null)
         {
             _realEmitCalli(@this, OpCodes.Calli, callingConvention, returnType, parameterTypes);
             return;
@@ -110,7 +110,7 @@ internal static class ILGeneratorExtensions
 
         var sig = _getMethodSignatureHelper(callingConvention, returnType);
 
-        if (!(parameterTypes is null))
+        if (parameterTypes is not null)
         {
             foreach (var parameterType in parameterTypes)
             {

@@ -36,7 +36,7 @@ internal class StdCallEntrypointMangler : IEntrypointMangler
     /// <inheritdoc />
     public string Mangle<T>(T member) where T : IIntrospectiveMember
     {
-        if (!(member is IntrospectiveMethodInfo method))
+        if (member is not IntrospectiveMethodInfo method)
         {
             throw new NotSupportedException("The given member cannot be mangled by this mangler.");
         }
@@ -54,7 +54,7 @@ internal class StdCallEntrypointMangler : IEntrypointMangler
     /// <inheritdoc />
     public bool IsManglerApplicable(MemberInfo member)
     {
-        if (!(member is IntrospectiveMethodInfo method))
+        if (member is not IntrospectiveMethodInfo method)
         {
             return false;
         }

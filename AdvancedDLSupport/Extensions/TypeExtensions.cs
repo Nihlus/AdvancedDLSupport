@@ -217,7 +217,7 @@ internal static class TypeExtensions
             throw new ArgumentException($"The type {typeof(T).Name} was not an interface.", nameof(T));
         }
 
-        return !(@this.GetInterface(typeof(T).Name) is null);
+        return @this.GetInterface(typeof(T).Name) is not null;
     }
 
     /// <summary>

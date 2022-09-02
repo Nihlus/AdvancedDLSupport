@@ -108,7 +108,7 @@ internal sealed class GenericDelegateWrapper : CallWrapperBase
     private TypeInfo EmitExplicitDelegateDefinition(ModuleBuilder module, Type genericDelegateType)
     {
         var existingDelegate = GetCreatedExplicitDelegateType(genericDelegateType);
-        if (!(existingDelegate is null))
+        if (existingDelegate is not null)
         {
             return existingDelegate.GetTypeInfo();
         }

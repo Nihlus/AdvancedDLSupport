@@ -56,7 +56,7 @@ internal sealed class LocalPathResolver : ILibraryPathResolver
     public ResolvePathResult Resolve(string library)
     {
         // First, check next to the entry executable
-        if (!(_entryAssemblyDirectory is null))
+        if (_entryAssemblyDirectory is not null)
         {
             var entryResult = ScanPathForLibrary(_entryAssemblyDirectory, library);
             if (entryResult.IsSuccess)
@@ -65,7 +65,7 @@ internal sealed class LocalPathResolver : ILibraryPathResolver
             }
         }
 
-        if (!(_executingAssemblyDirectory is null))
+        if (_executingAssemblyDirectory is not null)
         {
             var executingResult = ScanPathForLibrary(_executingAssemblyDirectory, library);
             if (executingResult.IsSuccess)

@@ -154,7 +154,7 @@ internal sealed class StringMarshallingWrapper : CallWrapperBase
 
         // Add UTF8 string support, if available.
         var utf8UnmanagedTypeField = typeof(UnmanagedType).GetField("LPUTF8Str");
-        if (!(utf8UnmanagedTypeField is null))
+        if (utf8UnmanagedTypeField is not null)
         {
             _utf8UnmanagedType = (UnmanagedType)utf8UnmanagedTypeField.GetValue(null);
             var utf8PtrToStringMethod = typeof(Marshal).GetMethod
@@ -417,7 +417,7 @@ internal sealed class StringMarshallingWrapper : CallWrapperBase
             }
             default:
             {
-                if (!(_utf8UnmanagedType is null) && unmanagedType == _utf8UnmanagedType)
+                if (_utf8UnmanagedType is not null && unmanagedType == _utf8UnmanagedType)
                 {
                     return _stringToPtrMethods[_utf8UnmanagedType.Value];
                 }
@@ -464,7 +464,7 @@ internal sealed class StringMarshallingWrapper : CallWrapperBase
             }
             default:
             {
-                if (!(_utf8UnmanagedType is null) && unmanagedType == _utf8UnmanagedType)
+                if (_utf8UnmanagedType is not null && unmanagedType == _utf8UnmanagedType)
                 {
                     return _ptrToStringMethods[_utf8UnmanagedType.Value];
                 }
@@ -504,7 +504,7 @@ internal sealed class StringMarshallingWrapper : CallWrapperBase
             }
             default:
             {
-                if (!(_utf8UnmanagedType is null) && unmanagedType == _utf8UnmanagedType)
+                if (_utf8UnmanagedType is not null && unmanagedType == _utf8UnmanagedType)
                 {
                     return _freeCoTaskMemMethod;
                 }

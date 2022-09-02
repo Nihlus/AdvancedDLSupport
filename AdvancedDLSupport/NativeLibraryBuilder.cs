@@ -655,7 +655,7 @@ public class NativeLibraryBuilder
                 // Skip methods that were already constructed - happens with inherited interfaces and multiple
                 // identical definitions
                 var existingMethod = constructedMethods.FirstOrDefault(m => m.HasSameSignatureAs(method));
-                if (!(existingMethod is null))
+                if (existingMethod is not null)
                 {
                     if (existingMethod.HasSameNativeEntrypointAs(targetMethod))
                     {
@@ -676,7 +676,7 @@ public class NativeLibraryBuilder
                     method.ParameterTypes.ToArray()
                 );
 
-                if (!(baseClassMethod is null))
+                if (baseClassMethod is not null)
                 {
                     if (!baseClassMethod.IsAbstract)
                     {
@@ -687,7 +687,7 @@ public class NativeLibraryBuilder
                 // If we have an existing method at this point, this new method must be created as an explicit
                 // interface implementation. Therefore, we override the method name.
                 IntrospectiveMethodInfo definition;
-                if (!(existingMethod is null))
+                if (existingMethod is not null)
                 {
                     definition = pipeline.GenerateDefinitionFromSignature
                     (
@@ -753,7 +753,7 @@ public class NativeLibraryBuilder
 
                 // Skip properties with a managed implementation
                 var baseClassProperty = classType.GetProperty(property.Name, property.PropertyType);
-                if (!(baseClassProperty is null))
+                if (baseClassProperty is not null)
                 {
                     var isFullyManaged = !baseClassProperty.GetGetMethod()!.IsAbstract &&
                                          !baseClassProperty.GetSetMethod()!.IsAbstract;

@@ -80,7 +80,7 @@ public abstract class CallWrapperBase : ImplementationGeneratorBase<Introspectiv
     {
         var definition = workUnit.Definition;
 
-        if (!(definition.GetWrappedMember() is MethodBuilder builder))
+        if (definition.GetWrappedMember() is not MethodBuilder builder)
         {
             throw new ArgumentNullException(nameof(workUnit), "Could not unwrap introspective method to method builder.");
         }

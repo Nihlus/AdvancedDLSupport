@@ -52,7 +52,7 @@ internal static class Program
                     b =>
                     {
                         var isClrJob = b.Job.Env.Runtime.Name == "Clr";
-                        var isRunningOnMono = !(Type.GetType("Mono.Runtime") is null);
+                        var isRunningOnMono = Type.GetType("Mono.Runtime") is not null;
 
                         if (!isClrJob)
                         {

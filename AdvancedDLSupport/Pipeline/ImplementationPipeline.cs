@@ -238,7 +238,7 @@ public class ImplementationPipeline
         // If either the interface or abstract implementation have attributes, select the one which does
         // If both have attributes, select the abstract implementation
         // If neither have attributes, select the interface definition
-        if (!(abstractImplementation is null))
+        if (abstractImplementation is not null)
         {
             if (abstractImplementation.CustomAttributes.Any())
             {
@@ -258,7 +258,7 @@ public class ImplementationPipeline
         }
 
         var attributePassthroughDefinition = interfaceDefinition;
-        if (!(abstractImplementation is null) && abstractImplementation.CustomAttributes.Any())
+        if (abstractImplementation is not null && abstractImplementation.CustomAttributes.Any())
         {
             attributePassthroughDefinition = abstractImplementation;
         }

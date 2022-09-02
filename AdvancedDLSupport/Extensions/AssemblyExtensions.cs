@@ -38,6 +38,6 @@ internal static class AssemblyExtensions
     /// <returns>true if it has one; otherwise, false.</returns>
     public static bool HasCustomAttribute<T>(this Assembly @this) where T : Attribute
     {
-        return !(@this.GetCustomAttribute<T>() is null);
+        return @this.GetCustomAttribute<T>() is not null;
     }
 }
