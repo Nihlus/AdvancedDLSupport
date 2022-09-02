@@ -37,6 +37,7 @@ internal static class TypeExtensions
     /// <summary>
     /// A class used for testing whether a generic argument is blittable/unmanaged.
     /// </summary>
+    // ReSharper disable once UnusedTypeParameter
     private class UnmanagedTest<T>
         where T : unmanaged
     {
@@ -51,7 +52,7 @@ internal static class TypeExtensions
     {
         try
         {
-            typeof(UnmanagedTest<>).MakeGenericType(type);
+            _ = typeof(UnmanagedTest<>).MakeGenericType(type);
             return true;
         }
         catch
