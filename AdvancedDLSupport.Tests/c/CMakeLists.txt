@@ -36,9 +36,6 @@ list(
         SpanMarshallingTests
 )
 
-# Uncomment if testing on a non-unicode platform
-add_definitions(-DUNICODE)
-
 foreach (target ${StandardTargets})
 	add_library(${target} SHARED src/${target}.c)
     target_include_directories(${target}

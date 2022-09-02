@@ -14,5 +14,6 @@
     <PropertyGroup>
         <NativeOutputPrefix />
         <NativeOutputExtension>dll</NativeOutputExtension>
+        <CMakeExtraArguments>-DUNICODE=1</CMakeExtraArguments>
     </PropertyGroup>
 </Project>
