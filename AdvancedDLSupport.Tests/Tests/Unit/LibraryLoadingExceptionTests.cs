@@ -21,9 +21,6 @@
 //
 
 using System;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using Xunit;
 
 #pragma warning disable SA1600, CS1591
