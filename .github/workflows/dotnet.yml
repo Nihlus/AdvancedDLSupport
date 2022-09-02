@@ -1,0 +1,73 @@
+name: .NET
+
+env:
+  GITHUB_USER: Nihlus
+  GITHUB_FEED: https://nuget.pkg.github.com/Nihlus
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+        platform: [ AnyCPU, x64, x86 ]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Build
+        if: matrix.platform == 'AnyCPU'
+        run: |
+          dotnet restore
+          dotnet build -c Release --no-restore
+
+      - name: Test
+        if: matrix.platform == 'AnyCPU'
+        run: dotnet test Tests/Mono.DllMap.Tests -c Release --no-restore --no-build --verbosity minimal
+
+      - name: Test (native)
+        run: dotnet test Tests/AdvancedDLSupport.Tests -c Release --verbosity minimal -p:Platform=${{ matrix.platform }}
+
+      - name: Package
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push' && matrix.os == 'ubuntu-latest' && matrix.platform == 'AnyCPU'
+        run: dotnet pack -c Release --no-restore --no-build --version-suffix "github$GITHUB_RUN_ID"
+      - uses: actions/upload-artifact@v3
+        with:
+          name: nupkg
+          path: nuget/*
+
+  prerelease:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download package artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: nupkg
+          path: nuget
+
+      # To ensure that the current version being pushed does not get pruned we prune first.
+      - name: Prune packages older than 4 versions (new version is the 5th)
+        uses: smartsquaregmbh/delete-old-packages@v0.4.0
+        with:
+          keep: 4
+          names: |
+            AdvancedDLSupport
+            Mono.DllMap
+
+      - name: Push to GitHub Feed
+        run: |
+          for f in ./nuget/*; do
+            curl -vX PUT -u "$GITHUB_USER:$GITHUB_TOKEN" -F package=@$f $GITHUB_FEED
+          done
