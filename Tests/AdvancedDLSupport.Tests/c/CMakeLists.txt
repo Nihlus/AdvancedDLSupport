@@ -38,6 +38,10 @@ list(
 
 if(UNICODE)
     add_compile_definitions(UNICODE)
+
+    if(MSVC)
+        add_compile_options("/utf-8")
+    endif()
 endif()
 
 foreach (target ${StandardTargets})
